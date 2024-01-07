@@ -8,9 +8,14 @@
 			"args": [
 				"-fdiagnostics-color=always",
 				"-g",
-				"${file}",
+				"${workspaceFolder}/src/glad.c",
+				"${workspaceFolder}/src/*.cpp",
+				"${workspaceFolder}/src/Files/Engine/*.cpp",
+				"${workspaceFolder}/src/Files/Engine/Objects/*.cpp",
+				"${workspaceFolder}/src/Files/Engine/Render/OpenGL/*.cpp",
 				"-o",
-				"${fileDirname}/Output/TheFrim"
+				"${workspaceFolder}/Output/TheFrim",
+				"-lglfw",
 			],
 			"options": {
 				"cwd": "${fileDirname}"

@@ -1,4 +1,4 @@
-/*
+/* 
     Copyright (c) 2023-2024 Kade
 
     Please read the LICENSE.md file for more information on licensing.
@@ -9,7 +9,7 @@
 #define _RENDERER_H_
 
 #include "../../../Includes.h"
-#include "../../../include/glm/vec2.hpp"
+#include <glm/vec2.hpp>
 namespace Engine
 {
     namespace Render

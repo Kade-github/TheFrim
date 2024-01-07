@@ -86,9 +86,10 @@ int main(int argc, char* argv[])
 
 /* funny windows */
 
+#ifdef _WIN32
+
 #include <Windows.h>
 
-#ifdef _WIN32
 int APIENTRY WinMain(HINSTANCE hInstance,
     HINSTANCE hPrevInstance,
     LPSTR lpCmdLine, int nCmdShow)

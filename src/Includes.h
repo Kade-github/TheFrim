@@ -10,6 +10,7 @@
 #ifndef _INCLUDES_H_
 #define _INCLUDES_H_
 
+#include <vector>
 #include <iostream>
 #include <thread>
 #include <fstream>
@@ -18,6 +19,6 @@
 #include <unordered_map>
 
 #include <glad/gl.h>
-#include <glfw/glfw3.h>
+#include <GLFW/glfw3.h>
 
 #endif

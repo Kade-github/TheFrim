@@ -10,7 +10,6 @@
 
 #include "../../Includes.h"
 #include "Data/Version.h"
-#include "../../include/glm/vec2.hpp"
 
 #include "Render/Renderer.h"
 
