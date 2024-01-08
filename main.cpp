@@ -4,8 +4,6 @@
     Please read the LICENSE.md file for more information on licensing.
 */
 
-#pragma comment(lib,"x64\\glfw3_mt.lib")
-
 #include "Includes.h"
 #include "Files/Engine/Logging.h"
 #include "Files/Engine/Game.h"
