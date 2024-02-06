@@ -8,6 +8,8 @@
 #ifndef _GAMEOBJECT_H
 #define _GAMEOBJECT_H
 
+#include "../../Includes.h"
+
 #include "../../../include/glm/vec2.hpp"
 #include "../../../include/glm/vec3.hpp"
 

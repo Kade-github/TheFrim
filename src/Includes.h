@@ -17,6 +17,8 @@
 #include <list>
 #include <string>
 #include <unordered_map>
+#include <stddef.h>
+#include <cstddef>
 
 #include <glad/gl.h>
 #include <GLFW/glfw3.h>

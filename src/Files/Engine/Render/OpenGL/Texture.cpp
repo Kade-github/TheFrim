@@ -102,8 +102,8 @@ namespace Engine
 				}
 
 				glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex2D), (void*)0);
-				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex2D), (void*)offsetof(Data::Vertex2D, Data::Vertex2D::uvs));
-				glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex2D), (void*)offsetof(Data::Vertex2D, Data::Vertex2D::color));
+				glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex2D), (void*)offsetof(Data::Vertex2D, uvs));
+				glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex2D), (void*)offsetof(Data::Vertex2D, color));
 
 				glBindVertexArray(this->vao);
 				glBindBuffer(GL_ARRAY_BUFFER, this->vbo);
@@ -111,6 +111,6 @@ namespace Engine
 
 				UnbindTexture();
 			}
-        }
     }
+  }
 }

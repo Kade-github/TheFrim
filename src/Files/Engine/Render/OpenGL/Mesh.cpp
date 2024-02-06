@@ -45,13 +45,13 @@ namespace Engine
                 glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex), (void*)0);
                 // vertex texture coords
                 glEnableVertexAttribArray(1);
-                glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex), (void*)offsetof(Data::Vertex, Data::Vertex::uvs));
+                glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex), (void*)offsetof(Data::Vertex, vertices));
                 // vertex normals
                 glEnableVertexAttribArray(2);
-                glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex), (void*)offsetof(Data::Vertex, Data::Vertex::normals));
+                glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex), (void*)offsetof(Data::Vertex, normals));
                 // vertex colors
                 glEnableVertexAttribArray(3);
-                glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex), (void*)offsetof(Data::Vertex, Data::Vertex::colors));
+                glVertexAttribPointer(3, 4, GL_FLOAT, GL_FALSE, sizeof(Data::Vertex), (void*)offsetof(Data::Vertex, colors));
 
                 glBindVertexArray(0);
             }

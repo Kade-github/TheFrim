@@ -18,6 +18,12 @@ namespace Engine
         {
         private:
         public:
+            Sprite2D(std::string path);
+
+            void OnCreate() override;
+            void OnDestroy() override;
+
+            void Render() override;
         };
     }
 }
