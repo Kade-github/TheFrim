@@ -1,99 +1,63 @@
-/*
-    Copyright (c) 2023-2024 Kade
+#include "Engine/Game.h"
 
-    Please read the LICENSE.md file for more information on licensing.
-*/
-
-#include "Includes.h"
-#include "Files/Engine/Logging.h"
-#include "Files/Engine/Game.h"
-
-/* Main function (or entry point if you want) */
-
-int main(int argc, char* argv[])
+int main()
 {
-    Engine::Logging::Init();
+	Game game("The Frim", "1.0.0");
 
-    Engine::Logging::Log("Initializing GLFW", "info");
+	if (!glfwInit())
+	{
+		game.log->Write("Failed to initialize GLFW");
+		exit(EXIT_FAILURE);
+	}
 
-    /* Initialize the library */
-    if (!glfwInit())
-        return -1;
+	game.log->Write("GLFW initialized");
 
-    Engine::Logging::Log("Creating window", "info");
+	glfwSetErrorCallback([](int error, const char* description)
+	{ 
+		std::cout << "[GLFW] Error: " << description << std::endl;
+	});
 
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
+	glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 2);
+	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
+	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
+	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
+	glfwWindowHint(GLFW_SAMPLES, 4);
 
-    Engine::Logging::Log("Creating render thread", "info");
+	game.CreateWindow(1280,720);
 
-    bool _running = true;
+	glfwMakeContextCurrent(game.GetWindow());
 
-    /* Create render thread */
-    GLFWwindow* window = NULL;
+	if (!gladLoadGLLoader((GLADloadproc)glfwGetProcAddress))
+	{
+		game.log->Write("Failed to initialize GLAD");
+		return -1;
+	}
 
-    /* Create a windowed mode window */
-    window = glfwCreateWindow(1280, 720, "The Frim", NULL, NULL);
-    if (!window)
-    {
-        Engine::Logging::Log("Failed to create window", "error");
-        glfwTerminate();
-        return -1;
-    }
+	game.log->Write("GLAD initialized");
 
+	glfwSetFramebufferSizeCallback(game.GetWindow(), [](GLFWwindow* window, int width, int height)
+	{
+		 Game::instance->SetWindowSize(width, height);
+	});
 
-    std::thread th = std::thread([&] {
+	glfwSetCursorPosCallback(game.GetWindow(), [](GLFWwindow* window, double xpos, double ypos)
+	{
+		Game::instance->SetCursorPos(xpos, ypos);
+	});
 
+	glEnable(GL_DEPTH_TEST);
 
-        /* Create game class */
+	while (!glfwWindowShouldClose(game.GetWindow()))
+	{
+		game.Render();
 
-        Engine::Game game("The Frim", Engine::Data::Version(1, 0, 0), window);
+		glfwSwapBuffers(game.GetWindow());
+		glfwPollEvents();
+	}
 
-        /* Game resolution */
+	glfwTerminate();
 
-        game.SetSize(glm::vec2(1280, 720));
-
-        game.Init();
-
-        /* Normally, i'd tell you to lock something that is going to be modified in another thread. But since we don't modify it; it's fair game. */
-        while (_running)
-        {
-            /* Handle rendering here */
-
-            game.Render();
-        }
-    });
-
-    glfwMakeContextCurrent(NULL);
-
-    Engine::Logging::Log("Starting input thread", "info");
-
-    /* Loop until the user closes the window */
-    while (!glfwWindowShouldClose(window))
-    {
-        /* Handle input here */
-        glfwWaitEvents();
-    }
-    _running = false;
-
-    Engine::Logging::Log("Terminating game", "info");
-
-    Engine::Logging::Destroy();
-
-    glfwDestroyWindow(window);
-
-    glfwTerminate();
-    return 0;
+	return 0;
 }
-
-/* funny windows */
-
-#ifdef _WIN32
-
-#include <Windows.h>
-
-int APIENTRY WinMain(HINSTANCE hInstance,
-    HINSTANCE hPrevInstance,
-    LPSTR lpCmdLine, int nCmdShow)
-{
-    return main(__argc, __argv);
-}
-#endif
