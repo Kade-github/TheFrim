@@ -26,7 +26,26 @@ find_library(
   PATHS
   lib)
 
-set(SOURCE_FILES main.cpp glad.c "Engine/Game.h" "Engine/Game.cpp" "Engine/Logging.h" "Engine/Objects/Scene.h" "Engine/Objects/GameObject.h" "Engine/OpenGL/Texture.h" "Engine/OpenGL/Texture.cpp" "Engine/OpenGL/Shader.h" "Engine/OpenGL/Shader.cpp" "Engine/OpenGL/Render.h" "Engine/stbi.h" "Engine/stbi.cpp")
+set(SOURCE_FILES 
+main.cpp 
+glad.c 
+"Engine/Game.h" 
+"Engine/Game.cpp" 
+"Engine/Logging.h" 
+"Engine/Objects/Scene.h" 
+"Engine/Objects/GameObject.h" 
+"Engine/OpenGL/Texture.h" 
+"Engine/OpenGL/Texture.cpp" 
+"Engine/OpenGL/Shader.h" 
+"Engine/OpenGL/Shader.cpp" 
+"Engine/OpenGL/Renderer.h" 
+"Engine/stbi.h" 
+"Engine/stbi.cpp" 
+"Engine/OpenGL/Renderer.cpp"
+"Engine/Objects/Camera.h" 
+"Engine/Objects/Base/Cube.h"
+"Engine/Objects/Base/Cube.cpp"
+ "Game/TestScene.h" "Game/TestScene.cpp")
 
 add_executable(TheFrim ${SOURCE_FILES})
 

@@ -7,6 +7,7 @@
 #include "../../../Include/glad/glad.h"
 #include <iostream>
 #include <string>
+#include "../../../Include/glm/glm.hpp"
 
 struct texData
 {
@@ -56,6 +57,11 @@ public:
 	Texture(unsigned char* data, const unsigned int width, const unsigned int height);
 	Texture(unsigned char* data, const unsigned int width, const unsigned int height, bool mssa);
 	~Texture();
+
+	glm::vec2 getSrc(float x, float y)
+	{
+		return glm::vec2(x / width, y / height);
+	}
 
 	//Texture interface
 	bool SetData(unsigned char* data, const unsigned int width, const unsigned int height);

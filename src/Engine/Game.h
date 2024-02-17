@@ -4,6 +4,11 @@
 #pragma once
 
 #include "Logging.h"
+
+#include "OpenGL/Renderer.h"
+
+#include "Objects/Scene.h"
+
 #include "../../Include/glfw/glfw3.h"
 #include "../../Include/glad/glad.h"
 #include "../../Include/glm/vec2.hpp"
@@ -21,15 +26,32 @@ class Game
 	float _cursorY = 0;
 public:
 	static Game* instance;
+
+	Shader* shader;
+
+	Renderer* render;
 	Logging* log;
+
+	bool isFullscreen = false;
+
+	Scene* currentScene;
 
 	Game(std::string title, std::string version);
 
 	void CreateWindow(int width, int height);
 
+	void CreateRenderer();
+
+	void StartGame(Scene* s);
+
 	void Render();
 
-	void SetCursorPos(float x, float y) { _cursorX = x; _cursorY = y; }
+	void SetCursorPos(float x, float y) { 
+		_cursorX = x; _cursorY = y;
+
+		if (currentScene != nullptr)
+			currentScene->MouseMove(x, y);
+	}
 
 	void SetWindowSize(int width, int height) 
 	{ 

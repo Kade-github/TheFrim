@@ -10,7 +10,48 @@
 class Scene
 {
 public:
-	std::vector<GameObject*> objects;
+	int lastId = 0;
+
+	Scene()
+	{
+		camera = new Camera();
+	}
+
+	Camera* camera;
+
+	std::vector<GameObject*> objects = {};
+
+	virtual void MouseMove(float x, float y) {};
+	virtual void KeyPress(int key) {};
+	virtual void KeyRelease(int key) {};
+
+	void AddObject(GameObject* object)
+	{
+		object->camera = camera;
+		object->id = lastId;
+		objects.push_back(object);
+		lastId++;
+	}
+
+	void RemoveObject(GameObject* object)
+	{
+		for (int i = 0; i < objects.size(); i++)
+		{
+			if (objects[i]->id == object->id)
+			{
+				objects.erase(objects.begin() + i);
+				break;
+			}
+		}
+	}
+
+	virtual void Draw()
+	{
+		for (int i = 0; i < objects.size(); i++)
+		{
+			objects[i]->Draw();
+		}
+	}
 };
 
 #endif

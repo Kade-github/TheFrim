@@ -1,4 +1,6 @@
 #include "Engine/Game.h"
+#include "Engine/Objects/Base/Cube.h"
+#include "Game/TestScene.h"
 
 int main()
 {
@@ -37,6 +39,8 @@ int main()
 
 	game.log->Write("GLAD initialized");
 
+	game.CreateRenderer();
+
 	glfwSetFramebufferSizeCallback(game.GetWindow(), [](GLFWwindow* window, int width, int height)
 	{
 		 Game::instance->SetWindowSize(width, height);
@@ -47,7 +51,53 @@ int main()
 		Game::instance->SetCursorPos(xpos, ypos);
 	});
 
+	glfwSetKeyCallback(game.GetWindow(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
+	{
+		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+			glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+		if (Game::instance->currentScene != nullptr)
+		{
+			if (action == GLFW_PRESS)
+			{
+				switch (key)
+				{
+				case GLFW_KEY_F4:
+					if (Game::instance->isFullscreen)
+					{
+						glfwSetWindowMonitor(window, NULL, 40, 40, 1280, 720, 0);
+						Game::instance->isFullscreen = false;
+					}
+					else
+					{
+						GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+						const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+						glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+						Game::instance->isFullscreen = true;
+					}
+					break;
+				}
+
+				Game::instance->currentScene->KeyPress(key);
+			}
+			else if (action == GLFW_RELEASE)
+				Game::instance->currentScene->KeyRelease(key);
+		}
+	});
+
 	glEnable(GL_DEPTH_TEST);
+
+	glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+	game.StartGame(new TestScene());
+
+	glm::vec3 cubePos = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	Texture* sh = Texture::createWithImage("Assets/Textures/sheet.png");
+
+	game.currentScene->AddObject(new Cube(cubePos, 2.0f, 2.0f, 2.0f, sh));
+
+	game.currentScene->camera->LookAt(cubePos);
 
 	while (!glfwWindowShouldClose(game.GetWindow()))
 	{
