@@ -39,6 +39,8 @@ void Game::CreateRenderer()
 	shader = new Shader();
 	shader->LoadShader("Assets/Shaders/vert.glsl", "Assets/Shaders/frag.glsl");
 
+	shader->Bind();
+
 	render = new Renderer();
 
 	render->Init();
@@ -49,6 +51,8 @@ void Game::CreateRenderer()
 	log->Write("OpenGL renderer: " + std::string((char*)glGetString(GL_RENDERER)));
 	log->Write("OpenGL vendor: " + std::string((char*)glGetString(GL_VENDOR)));
 	log->Write("OpenGL shading language version: " + std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
+
+	_camera = new Camera();
 }
 
 void Game::StartGame(Scene* s)
@@ -58,8 +62,8 @@ void Game::StartGame(Scene* s)
 
 void Game::Render()
 {
+	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 
 	// set mouse
 
@@ -74,4 +78,6 @@ void Game::Render()
 	}
 
 	currentScene->Draw();
+
+	render->Draw(GetCamera());
 }

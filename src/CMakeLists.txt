@@ -12,20 +12,6 @@ include_directories(${CMAKE_SOURCE_DIR}../Lib)
 
 find_package(OpenGL REQUIRED)
 
-find_path(
-  GLFW_INCLUDE_DIR
-  NAMES
-  GLFW
-  PATHS
-  include)
-
-find_library(
-  GLFW_LIBRARY
-  NAMES
-  glfw glfw3 glfw3dll
-  PATHS
-  lib)
-
 set(SOURCE_FILES 
 main.cpp 
 glad.c 
@@ -45,11 +31,12 @@ glad.c
 "Engine/Objects/Camera.h" 
 "Engine/Objects/Base/Cube.h"
 "Engine/Objects/Base/Cube.cpp"
- "Game/TestScene.h" "Game/TestScene.cpp")
+ "Game/TestScene.h" "Game/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp" "Engine/Objects/Base/Blocks/Grass.h")
 
 add_executable(TheFrim ${SOURCE_FILES})
 
 target_link_libraries(TheFrim glfw)
+target_link_libraries(TheFrim assimp)
 
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"

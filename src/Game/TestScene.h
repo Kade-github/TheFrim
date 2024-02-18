@@ -3,7 +3,7 @@
 
 #pragma once
 
-#include "../Engine/Game.h"
+#include "../Engine/Objects/Scene.h"
 
 class TestScene : public Scene
 {

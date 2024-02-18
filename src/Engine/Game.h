@@ -3,14 +3,10 @@
 
 #pragma once
 
-#include "Logging.h"
-
 #include "OpenGL/Renderer.h"
-
+#include "Logging.h"
 #include "Objects/Scene.h"
-
 #include "../../Include/glfw/glfw3.h"
-#include "../../Include/glad/glad.h"
 
 class Game
 {
@@ -23,6 +19,9 @@ class Game
 
 	float _cursorX = 0;
 	float _cursorY = 0;
+
+	Camera* _camera = NULL;
+
 public:
 	static Game* instance;
 
@@ -54,6 +53,8 @@ public:
 	}
 
 	GLFWwindow* GetWindow() { return _window; }
+
+	Camera* GetCamera() { return _camera; }
 
 	glm::vec2 GetWindowSize() { return glm::vec2(_width, _height); }
 

@@ -14,10 +14,7 @@ public:
 
 	Scene()
 	{
-		camera = new Camera();
 	}
-
-	Camera* camera;
 
 	std::vector<GameObject*> objects = {};
 
@@ -27,7 +24,6 @@ public:
 
 	void AddObject(GameObject* object)
 	{
-		object->camera = camera;
 		object->id = lastId;
 		objects.push_back(object);
 		lastId++;

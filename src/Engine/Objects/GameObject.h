@@ -3,7 +3,8 @@
 
 #pragma once
 
-#include "Camera.h"
+#include "../../../Include/glm/gtc/type_ptr.hpp"
+#include "../../../Include/glm/gtc/matrix_transform.hpp"
 
 class GameObject
 {
@@ -15,7 +16,6 @@ public:
 
 	int id = 0;
 
-	Camera* camera;
 	glm::vec3 position = {};
 
 	glm::vec3 rotateAxis = glm::vec3(0.5, 0.5, 0.5);

@@ -16,6 +16,8 @@ Texture* Texture::createWithImage(std::string filePath)
 		return tt;
 	}
 
+	t->path = filePath;
+
 	return t;
 }
 

@@ -24,6 +24,8 @@ public:
 	//GL object
 	GLuint id{};
 
+	std::string path;
+
 	//Constructors and destructor
 
 	bool dontDelete = false;

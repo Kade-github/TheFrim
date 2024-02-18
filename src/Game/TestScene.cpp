@@ -1,4 +1,5 @@
 #include "TestScene.h"
+#include "../Engine/Game.h"
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -36,6 +37,8 @@ void TestScene::Draw()
 	const float sensitivity = 0.1f;
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
+
+	Camera* camera = Game::instance->GetCamera();
 
 	float p = camera->pitch + yoffset;
 	if (p >= 89.0f)
