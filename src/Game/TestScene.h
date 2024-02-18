@@ -3,11 +3,10 @@
 
 #pragma once
 
-#include "../Engine/Objects/Scene.h"
+#include "../Engine/Game.h"
 
 class TestScene : public Scene
 {
-	void MouseMove(float x, float y) override;
 
 	void Draw() override;
 };

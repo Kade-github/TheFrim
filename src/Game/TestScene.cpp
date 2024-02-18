@@ -1,6 +1,4 @@
 #include "TestScene.h"
-#include "../../Include/glfw/glfw3.h"
-#include "../Engine/Game.h"
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -9,8 +7,19 @@ bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
 
-void TestScene::MouseMove(float x, float y)
+
+
+void TestScene::Draw()
 {
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	glm::vec2 mousePos = Game::instance->GetCursorPos();
+
+	float x = mousePos.x;
+	float y = mousePos.y;
+
 	if (firstMouse)
 	{
 		lastX = x;
@@ -38,14 +47,6 @@ void TestScene::MouseMove(float x, float y)
 	camera->pitch = p;
 
 	camera->SetDirection();
-}
-
-
-void TestScene::Draw()
-{
-	float currentFrame = glfwGetTime();
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
 
 	// camera movement
 

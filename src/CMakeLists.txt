@@ -49,7 +49,7 @@ glad.c
 
 add_executable(TheFrim ${SOURCE_FILES})
 
-target_link_libraries(TheFrim glfw3)
+target_link_libraries(TheFrim glfw)
 
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"

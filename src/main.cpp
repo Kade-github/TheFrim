@@ -1,6 +1,7 @@
-#include "Engine/Game.h"
-#include "Engine/Objects/Base/Cube.h"
 #include "Game/TestScene.h"
+#include "Engine/Objects/Base/Cube.h"
+
+#include <thread>
 
 int main()
 {
@@ -46,10 +47,6 @@ int main()
 		 Game::instance->SetWindowSize(width, height);
 	});
 
-	glfwSetCursorPosCallback(game.GetWindow(), [](GLFWwindow* window, double xpos, double ypos)
-	{
-		Game::instance->SetCursorPos(xpos, ypos);
-	});
 
 	glfwSetKeyCallback(game.GetWindow(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
 	{
@@ -75,6 +72,14 @@ int main()
 						glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 						Game::instance->isFullscreen = true;
 					}
+					break;
+				case GLFW_KEY_F1:
+					if (Game::instance->lockedCursor)
+						glfwSetInputMode(Game::instance->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+					else
+						glfwSetInputMode(Game::instance->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+
+					Game::instance->lockedCursor = !Game::instance->lockedCursor;
 					break;
 				}
 
@@ -104,13 +109,29 @@ int main()
 
 	game.currentScene->AddObject(cube2);
 
+	glfwMakeContextCurrent(NULL);
 
+	// start render thread
 
-	while (!glfwWindowShouldClose(game.GetWindow()))
+	bool running = true;
+
+	std::thread renderThread([&game, running]()
 	{
-		game.Render();
+		glfwMakeContextCurrent(game.GetWindow());
+		while (running)
+		{
+			game.Render();
 
-		glfwSwapBuffers(game.GetWindow());
+			glfwSwapBuffers(game.GetWindow());
+		}
+	});
+
+	renderThread.detach();
+
+	while (running)
+	{
+		if (glfwWindowShouldClose(game.GetWindow()))
+			running = false;
 		glfwPollEvents();
 	}
 

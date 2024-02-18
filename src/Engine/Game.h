@@ -32,6 +32,7 @@ public:
 	Logging* log;
 
 	bool isFullscreen = false;
+	bool lockedCursor = true;
 
 	Scene* currentScene;
 
@@ -45,12 +46,6 @@ public:
 
 	void Render();
 
-	void SetCursorPos(float x, float y) { 
-		_cursorX = x; _cursorY = y;
-
-		if (currentScene != nullptr)
-			currentScene->MouseMove(x, y);
-	}
 
 	void SetWindowSize(int width, int height) 
 	{ 
