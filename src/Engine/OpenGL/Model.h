@@ -20,10 +20,12 @@ public:
     std::vector<Texture*> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
     std::vector<Mesh>    meshes;
     std::string directory;
+    std::string path;
 
     // constructor, expects a filepath to a 3D model.
     Model(std::string const& path)
     {
+        this->path = path;
         loadModel(path);
     }
 private:
@@ -31,8 +33,7 @@ private:
     void loadModel(std::string path);
     void processNode(aiNode* node, const aiScene* scene);
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-    std::vector<Texture*> loadMaterialTextures(aiMaterial* mat, aiTextureType type,
-        std::string typeName);
+    std::vector<Texture*> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
 };
 
 #endif

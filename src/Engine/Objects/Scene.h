@@ -16,6 +16,14 @@ public:
 	{
 	}
 
+	~Scene()
+	{
+		for (int i = 0; i < objects.size(); i++)
+		{
+			delete objects[i];
+		}
+	}
+
 	std::vector<GameObject*> objects = {};
 
 	virtual void MouseMove(float x, float y) {};
@@ -40,6 +48,8 @@ public:
 			}
 		}
 	}
+
+	virtual void Create() {};
 
 	virtual void Draw()
 	{

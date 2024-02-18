@@ -24,14 +24,12 @@ glad.c
 "Engine/OpenGL/Texture.cpp" 
 "Engine/OpenGL/Shader.h" 
 "Engine/OpenGL/Shader.cpp" 
-"Engine/OpenGL/Renderer.h" 
+ 
 "Engine/stbi.h" 
 "Engine/stbi.cpp" 
-"Engine/OpenGL/Renderer.cpp"
+
 "Engine/Objects/Camera.h" 
-"Engine/Objects/Base/Cube.h"
-"Engine/Objects/Base/Cube.cpp"
- "Game/TestScene.h" "Game/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp" "Engine/Objects/Base/Blocks/Grass.h")
+"Game/TestScene.h" "Game/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp" "Engine/Objects/Base/Chunk.h")
 
 add_executable(TheFrim ${SOURCE_FILES})
 

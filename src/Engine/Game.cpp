@@ -41,12 +41,6 @@ void Game::CreateRenderer()
 
 	shader->Bind();
 
-	render = new Renderer();
-
-	render->Init();
-
-	render->SetProjection(75.0f, _width, _height, 0.1f, 100.0f);
-
 	log->Write("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 	log->Write("OpenGL renderer: " + std::string((char*)glGetString(GL_RENDERER)));
 	log->Write("OpenGL vendor: " + std::string((char*)glGetString(GL_VENDOR)));
@@ -55,8 +49,10 @@ void Game::CreateRenderer()
 	_camera = new Camera();
 }
 
-void Game::StartGame(Scene* s)
+void Game::SetScene(Scene* s)
 {
+	if (currentScene != nullptr)
+		delete currentScene;
 	currentScene = s;
 }
 
@@ -77,7 +73,6 @@ void Game::Render()
 		_cursorY = mY;
 	}
 
-	currentScene->Draw();
 
-	render->Draw(GetCamera());
+	currentScene->Draw();
 }

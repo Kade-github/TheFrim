@@ -1,4 +1,5 @@
 #include "TestScene.h"
+#include "../Engine/Objects/Camera.h"
 #include "../Engine/Game.h"
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -8,7 +9,10 @@ bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
 
+void TestScene::Create()
+{
 
+}
 
 void TestScene::Draw()
 {

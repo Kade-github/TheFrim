@@ -3,10 +3,12 @@
 
 #pragma once
 
-#include "OpenGL/Renderer.h"
 #include "Logging.h"
 #include "Objects/Scene.h"
 #include "../../Include/glfw/glfw3.h"
+
+#include "Objects/Camera.h"
+#include "OpenGL/Shader.h"
 
 class Game
 {
@@ -27,7 +29,6 @@ public:
 
 	Shader* shader;
 
-	Renderer* render;
 	Logging* log;
 
 	bool isFullscreen = false;
@@ -41,7 +42,7 @@ public:
 
 	void CreateRenderer();
 
-	void StartGame(Scene* s);
+	void SetScene(Scene* s);
 
 	void Render();
 

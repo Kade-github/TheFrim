@@ -4,6 +4,7 @@
 
 Texture* stbi_h::stbi_load_file(std::string filePath)
 {
+	stbi_set_flip_vertically_on_load(true);
 	int w;
 	int h;
 	unsigned char* c = stbi_load(filePath.c_str(), &w, &h, nullptr, 4);
@@ -20,6 +21,7 @@ unsigned char* stbi_h::stbi_load_file_data(std::string filePath, int* w, int* h)
 
 Texture* stbi_h::stbi_load_memory(char* memory, int size)
 {
+	stbi_set_flip_vertically_on_load(true);
 	int w = 0;
 	int h = 0;
 

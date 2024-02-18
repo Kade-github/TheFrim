@@ -42,6 +42,11 @@ public:
 	{
 		return glm::lookAt(position, position + cameraFront, cameraUp);
 	}
+
+	glm::mat4 GetProjectionMatrix(float width, float height)
+	{
+		return glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
+	}
 };
 
 #endif

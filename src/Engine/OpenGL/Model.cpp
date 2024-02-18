@@ -108,8 +108,7 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 
 std::vector<Texture*> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName)
 {
-    using namespace std;
-    vector<Texture*> textures;
+    std::vector<Texture*> textures;
     for (unsigned int i = 0; i < mat->GetTextureCount(type); i++)
     {
         aiString str;
@@ -127,11 +126,9 @@ std::vector<Texture*> Model::loadMaterialTextures(aiMaterial* mat, aiTextureType
         }
         if (!skip)
         {   // if texture hasn't been loaded already, load it
+            Texture* texture = Texture::createWithImage(directory + '/' + std::string(str.C_Str()));
 
-            std::string p = directory + '/' + std::string(str.C_Str());
-
-            Texture* texture = Texture::createWithImage(p.c_str());
-            textures_loaded.push_back(texture);  // store it as texture loaded for entire model, to ensure we won't unnecessary load duplicate textures.
+            textures.push_back(texture);
         }
     }
     return textures;

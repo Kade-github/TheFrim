@@ -25,6 +25,7 @@ public:
 	GLuint id{};
 
 	std::string path;
+	std::string type;
 
 	//Constructors and destructor
 
