@@ -91,13 +91,20 @@ int main()
 
 	game.StartGame(new TestScene());
 
-	glm::vec3 cubePos = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	Texture* sh = Texture::createWithImage("Assets/Textures/sheet.png");
 
-	game.currentScene->AddObject(new Cube(cubePos, 2.0f, 2.0f, 2.0f, sh));
+	Cube* cube = new Cube(glm::vec3(1.0f, 1.0f, 1.0f), 2.0f, 2.0f, 2.0f, sh);
 
-	game.currentScene->camera->LookAt(cubePos);
+	game.currentScene->AddObject(cube);
+
+	Cube* cube2 = new Cube(glm::vec3(-1.0f, 1.0f, 1.0f), 2.0f, 2.0f, 2.0f, sh);
+
+	cube2->rotateAxis = glm::vec3(1.0f, 1.0f, 1.0f);
+
+	game.currentScene->AddObject(cube2);
+
+
 
 	while (!glfwWindowShouldClose(game.GetWindow()))
 	{

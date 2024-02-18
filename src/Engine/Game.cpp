@@ -43,7 +43,7 @@ void Game::CreateRenderer()
 
 	render->Init();
 
-	render->SetProjection(45.0f, _width, _height, 0.1f, 100.0f);
+	render->SetProjection(75.0f, _width, _height, 0.1f, 100.0f);
 
 	log->Write("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 	log->Write("OpenGL renderer: " + std::string((char*)glGetString(GL_RENDERER)));

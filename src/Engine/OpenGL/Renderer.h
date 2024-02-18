@@ -43,30 +43,40 @@ public:
 
 	void Init();
 
-	void Draw(Texture* texture, Shader* shader, Camera* camera);
+	void Draw(Texture* texture, Shader* shader, Camera* camera, glm::vec3 axis, float angle);
 
-	void AddQuad(glm::vec3 position, glm::vec3 sizeX, float z, glm::vec2 texCoords)
+	void AddQuad(glm::vec3 position, glm::vec3 sizeX, float z, glm::vec4 texCoords, glm::vec3 normal, bool flipVert = false)
 	{
-		// 2 triangles (with size x, y, z)
-
 		glm::vec3 tl = glm::vec3(position.x, position.y + sizeX.y, position.z);
 		glm::vec3 tr = glm::vec3(position.x + sizeX.x, position.y + sizeX.y, position.z + sizeX.z);
 		glm::vec3 bl = glm::vec3(position.x, position.y, position.z + z);
 		glm::vec3 br = glm::vec3(position.x + sizeX.x, position.y, position.z + sizeX.z + z);
 
-		AddVertex(tl, glm::vec2(texCoords.x, texCoords.y + 1));
-		AddVertex(bl, glm::vec2(texCoords.x, texCoords.y));
-		AddVertex(tr, glm::vec2(texCoords.x + 1, texCoords.y + 1));
-		AddVertex(tr, glm::vec2(texCoords.x + 1, texCoords.y + 1));
-		AddVertex(bl, glm::vec2(texCoords.x, texCoords.y));
-		AddVertex(br, glm::vec2(texCoords.x + 1, texCoords.y));
+		glm::vec2 srcTl = glm::vec2(texCoords.x, texCoords.y);
+		glm::vec2 srcBl = glm::vec2(texCoords.x, texCoords.y + texCoords.w);
+		glm::vec2 srcTr = glm::vec2(texCoords.x + texCoords.z, texCoords.y);
+		glm::vec2 srcBr = glm::vec2(texCoords.x + texCoords.z, texCoords.y + texCoords.w);
+
+		if (flipVert)
+		{
+			srcTl = glm::vec2(texCoords.x, texCoords.y + texCoords.w);
+			srcBl = glm::vec2(texCoords.x, texCoords.y);
+			srcTr = glm::vec2(texCoords.x + texCoords.z, texCoords.y + texCoords.w);
+			srcBr = glm::vec2(texCoords.x + texCoords.z, texCoords.y);
+		}
+
+		AddVertex(tl, normal, srcTl);
+		AddVertex(tr, normal, srcTr);
+		AddVertex(bl, normal, srcBl);
+		AddVertex(bl, normal, srcBl);
+		AddVertex(tr, normal, srcTr);
+		AddVertex(br, normal, srcBr);
+
 	}
 
-	void AddVertex(glm::vec3 position, glm::vec2 texCoords)
+	void AddVertex(glm::vec3 position, glm::vec3 normal, glm::vec2 texCoords)
 	{
 		Vertex vertex;
-
-		glm::vec3 normal = glm::vec3(0.0f, 0.0f, 0.0f);
 
 		vertex.position = position;
 		vertex.normal = normal;

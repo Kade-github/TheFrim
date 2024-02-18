@@ -58,9 +58,9 @@ public:
 	Texture(unsigned char* data, const unsigned int width, const unsigned int height, bool mssa);
 	~Texture();
 
-	glm::vec2 getSrc(float x, float y)
+	glm::vec4 getSrc(float x, float y)
 	{
-		return glm::vec2(x / width, y / height);
+		return glm::vec4(x / width, y / height, 128.0 / width, 128.0 / height);
 	}
 
 	//Texture interface

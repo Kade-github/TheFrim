@@ -19,6 +19,9 @@ public:
 	Camera* camera;
 	glm::vec3 position = {};
 
+	glm::vec3 rotateAxis = glm::vec3(0.5, 0.5, 0.5);
+	float angle = 0;
+
 	virtual void Draw() {};
 };
 

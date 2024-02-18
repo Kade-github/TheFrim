@@ -2,6 +2,7 @@
 out vec4 FragColor;
   
 uniform vec3 lightPos;
+uniform vec3 lightColor;
 
 in vec2 TexCoord;
 in vec3 Normal;
