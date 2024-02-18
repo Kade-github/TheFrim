@@ -51,4 +51,7 @@ add_executable(TheFrim ${SOURCE_FILES})
 
 target_link_libraries(TheFrim glfw3)
 
-set_target_properties(TheFrim PROPERTIES VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}")
+set_target_properties(TheFrim PROPERTIES 
+VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+CMAKE_CXX_STANDARD 20
+)
