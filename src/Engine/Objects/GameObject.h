@@ -3,7 +3,6 @@
 
 #pragma once
 
-#include "../../../Include/glm/vec3.hpp"
 #include "Camera.h"
 
 class GameObject

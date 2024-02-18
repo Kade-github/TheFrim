@@ -1,9 +1,8 @@
-#ifndef _RENDER_H
-#define _RENDER_H
+#ifndef _RENDERER_H
+#define _RENDERER_H
 
 #pragma once
 
-#include "../../Include/glm/glm.hpp"
 #include "Texture.h"
 #include "Shader.h"
 #include "../Objects/Camera.h"

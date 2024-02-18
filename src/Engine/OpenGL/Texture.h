@@ -7,7 +7,7 @@
 #include "../../../Include/glad/glad.h"
 #include <iostream>
 #include <string>
-#include "../../../Include/glm/glm.hpp"
+#include "../../../Include/glm/vec4.hpp"
 
 struct texData
 {

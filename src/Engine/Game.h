@@ -11,7 +11,6 @@
 
 #include "../../Include/glfw/glfw3.h"
 #include "../../Include/glad/glad.h"
-#include "../../Include/glm/vec2.hpp"
 
 class Game
 {
