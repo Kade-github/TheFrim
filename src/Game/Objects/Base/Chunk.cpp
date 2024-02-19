@@ -11,6 +11,19 @@ void Chunk::AddToDraw(std::vector<Vertex> _v, std::vector<unsigned int> _i)
 
 Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 {
+	// fill blocks with nullptr
+
+	for (int x = 0; x < 16; x++)
+	{
+		for (int y = 0; y < 256; y++)
+		{
+			for (int z = 0; z < 16; z++)
+			{
+				blocks[x][y][z] = nullptr;
+			}
+		}
+	}
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -25,17 +38,18 @@ void Chunk::AddBlock(Block* block)
 	block->textureHeight = sheet->height;
 	block->textureWidth = sheet->width;
 
-	blocks[std::floor(pos.x)][std::floor(pos.y)][std::floor(pos.z)] = block;
+	blocks[(int)pos.x][(int)-pos.y][(int)pos.z] = block;
 }
 
 void Chunk::GenerateMesh()
 {
+
 	vertices.clear();
 	indices.clear();
 	
 	for (int x = position.x; x < position.x + 16; x++)
 	{
-		for (int y = position.y; y > position.y -256; y--)
+		for (int y = position.y; y < position.y + 256; y++)
 		{
 			for (int z = position.z; z < position.z + 16; z++)
 			{
@@ -45,12 +59,30 @@ void Chunk::GenerateMesh()
 
 					// get adjacent blocks
 
-					Block* front = blocks[x][y][z - 1];
-					Block* back = blocks[x][y][z + 1];
-					Block* right = blocks[x - 1][y][z];
-					Block* left = blocks[x + 1][y][z];
-					Block* top = blocks[x][y + 1][z];
-					Block* bottom = blocks[x][y - 1][z];
+					Block* front = nullptr;
+					Block* back = nullptr;
+					Block* right = nullptr;
+					Block* left = nullptr;
+					Block* top = nullptr;
+					Block* bottom = nullptr;
+
+					if (z - 1 >= 0)
+						front = blocks[x][y][z - 1];
+
+					if (z + 1 < 16)
+						back = blocks[x][y][z + 1];
+
+					if (x - 1 >= 0)
+						right = blocks[x - 1][y][z];
+
+					if (x + 1 < 16)
+						left = blocks[x + 1][y][z];
+
+					if (y - 1 >= 0)
+						top = blocks[x][y + 1][z];
+
+					if (y + 1 < 256)
+						bottom = blocks[x][y - 1][z];
 
 					if (front == nullptr)
 					{

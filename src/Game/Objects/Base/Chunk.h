@@ -22,7 +22,7 @@ class Chunk : public GameObject
 public:
 	Texture* sheet;
 
-	std::map<int,std::map<int, std::map<int, Block*>>> blocks;
+	Block* blocks[16][256][16] = {};
 
 	void AddToDraw(std::vector<Vertex> _v, std::vector<unsigned int> _i);
 
