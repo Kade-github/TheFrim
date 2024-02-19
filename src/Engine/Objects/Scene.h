@@ -34,6 +34,7 @@ public:
 	{
 		object->id = lastId;
 		objects.push_back(object);
+		object->Create();
 		lastId++;
 	}
 

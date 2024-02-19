@@ -29,14 +29,15 @@ glad.c
 "Engine/stbi.cpp" 
 
 "Engine/Objects/Camera.h" 
-"Game/TestScene.h" "Game/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp" "Game/Objects/Base/Chunk.h" "Game/Objects/Base/Block.h" "Game/Objects/Base/Block.cpp" "Game/Objects/Base/Chunk.cpp")
+"Game/TestScene.h" "Game/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp" "Game/Objects/Base/Chunk.h" "Game/Objects/Base/Block.h" "Game/Objects/Base/Block.cpp" "Game/Objects/Base/Chunk.cpp" "Game/Objects/Base/Blocks/Grass.h" "Game/Objects/Base/Blocks/Dirt.h")
 
 add_executable(TheFrim ${SOURCE_FILES})
 
-target_link_libraries(TheFrim glfw)
-target_link_libraries(TheFrim assimp)
-
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-CMAKE_CXX_STANDARD 20
 )
+
+target_compile_features(TheFrim PUBLIC cxx_std_17)
+
+target_link_libraries(TheFrim glfw)
+target_link_libraries(TheFrim assimp)

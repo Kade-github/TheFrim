@@ -2,6 +2,8 @@
 #include "../Engine/Objects/Camera.h"
 #include "../Engine/Game.h"
 
+#include "Objects/Base/Blocks/Grass.h"
+#include "Objects/Base/Blocks/Dirt.h"
 #include "Objects/Base/Chunk.h"
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -13,28 +15,29 @@ float lastX = 400, lastY = 300;
 
 void TestScene::Create()
 {
-	Texture* t = Texture::createWithImage("Assets/Textures/sheet_debug.png");
+	Texture* t = Texture::createWithImage("Assets/Textures/sheet.png");
 
-	Chunk* c = new Chunk(glm::vec3(0,0,0), t);
+	// 1 chunk 16x256x16
 
-	// 10x10x10 chunk
+	Chunk* chunk = new Chunk(glm::vec3(0, 0, 0), t);
 
-	for (int y = 0; y < 256; y++)
+	for (int x = 0; x < 16; x++)
 	{
-		for (int x = 0; x < 16; x++)
+		for (int y = 0; y > -256; y--)
 		{
 			for (int z = 0; z < 16; z++)
 			{
-				Block* b = new Block(glm::vec3(x, y, z), BlockType::GRASS);
-				c->AddBlock(b);
+				if (y < 0)
+					chunk->AddBlock(new Dirt(glm::vec3(x, y, z)));
+				else
+					chunk->AddBlock(new Grass(glm::vec3(x, y, z)));
 			}
 		}
 	}
-	
 
-	c->GenerateMesh();
+	chunk->GenerateMesh();
 
-	AddObject(c);
+	AddObject(chunk);
 
 }
 
@@ -92,6 +95,16 @@ void TestScene::Draw()
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 		camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * 10.0f;
+
+	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_F2) == GLFW_PRESS)
+	{
+		Chunk* c = (Chunk*)objects[0];
+		std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
+		c->GenerateMesh();
+		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+
+		std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
+	}
 
 
 	Scene::Draw();

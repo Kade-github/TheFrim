@@ -3,6 +3,7 @@
 
 #include "Block.h"
 #include <map>
+#include <mutex>
 #include "../../../Engine/OpenGL/Texture.h"
 #include "../../../Engine/Objects/GameObject.h"
 
@@ -14,6 +15,9 @@ class Chunk : public GameObject
 
 	std::vector<Vertex> vertices = {};
 	std::vector<unsigned int> indices = {};
+
+	float blockWidth = 128;
+	float blockHeight = 128;
 
 public:
 	Texture* sheet;
@@ -27,6 +31,8 @@ public:
 	void AddBlock(Block* block);
 
 	void GenerateMesh();
+
+	void Create() override;
 
 	void Draw() override;
 };

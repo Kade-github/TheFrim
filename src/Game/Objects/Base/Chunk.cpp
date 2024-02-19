@@ -20,65 +20,73 @@ Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 
 void Chunk::AddBlock(Block* block)
 {
-	block->CreateFaces();
 	glm::vec3 pos = block->position;
 
-	if (pos.x == -1)
-		pos.x = 15;
+	block->textureHeight = sheet->height;
+	block->textureWidth = sheet->width;
 
-	blocks[pos.x][pos.y][pos.z] = block;
+	blocks[std::floor(pos.x)][std::floor(pos.y)][std::floor(pos.z)] = block;
 }
 
 void Chunk::GenerateMesh()
 {
 	vertices.clear();
 	indices.clear();
-
-	for (auto& x : blocks)
+	
+	for (int x = position.x; x < position.x + 16; x++)
 	{
-		for (auto& y : x.second)
+		for (int y = position.y; y > position.y -256; y--)
 		{
-			for (auto& z : y.second)
+			for (int z = position.z; z < position.z + 16; z++)
 			{
-				Block* b = z.second;
+				if (blocks[x][y][z] != nullptr)
+				{
+					Block* b = blocks[x][y][z];
 
-				if (b == NULL)
-					continue;
+					// get adjacent blocks
 
-				// get adjacent blocks
+					Block* front = blocks[x][y][z - 1];
+					Block* back = blocks[x][y][z + 1];
+					Block* right = blocks[x - 1][y][z];
+					Block* left = blocks[x + 1][y][z];
+					Block* top = blocks[x][y + 1][z];
+					Block* bottom = blocks[x][y - 1][z];
 
-				Block* front = blocks[x.first][y.first][z.first - 1];
-				Block* back = blocks[x.first][y.first][z.first + 1];
-				Block* right = blocks[x.first - 1][y.first][z.first];
-				Block* left = blocks[x.first + 1][y.first][z.first];
-				Block* top = blocks[x.first][y.first + 1][z.first];
-				Block* bottom = blocks[x.first][y.first - 1][z.first];
+					if (front == nullptr)
+					{
+						BlockFace frontFace = b->CreateFrontFace();
+						AddToDraw(frontFace.vertices, frontFace.indices);
+					}
 
-				BlockFace frontFace = b->GetFrontFace();
-				BlockFace backFace = b->GetBackFace();
-				BlockFace rightFace = b->GetRightFace();
-				BlockFace leftFace = b->GetLeftFace();
-				BlockFace topFace = b->GetTopFace();
-				BlockFace bottomFace = b->GetBottomFace();
+					if (back == nullptr)
+					{
+						BlockFace backFace = b->CreateBackFace();
+						AddToDraw(backFace.vertices, backFace.indices);
+					}
+					if (right == nullptr)
+					{
+						BlockFace rightFace = b->CreateRightFace();
+						AddToDraw(rightFace.vertices, rightFace.indices);
+					}
 
-				if (front == nullptr)
-					AddToDraw(frontFace.vertices, frontFace.indices);
+					if (left == nullptr)
+					{
+						BlockFace leftFace = b->CreateLeftFace();
+						AddToDraw(leftFace.vertices, leftFace.indices);
+					}
 
-				if (back == nullptr)
-					AddToDraw(backFace.vertices, backFace.indices);
+					if (top == nullptr)
+					{
+						BlockFace topFace = b->CreateTopFace();
+						AddToDraw(topFace.vertices, topFace.indices);
+					}
 
-				if (right == nullptr)
-					AddToDraw(rightFace.vertices, rightFace.indices);
-
-				if (left == nullptr)
-					AddToDraw(leftFace.vertices, leftFace.indices);
-
-				if (top == nullptr)
-					AddToDraw(topFace.vertices, topFace.indices);
-
-				if (bottom == nullptr)
-					AddToDraw(bottomFace.vertices, bottomFace.indices);
-				
+					if (bottom == nullptr)
+					{
+						BlockFace bottomFace = b->CreateBottomFace();
+						AddToDraw(bottomFace.vertices, bottomFace.indices);
+					}
+				}
 			}
 		}
 	}
@@ -103,11 +111,16 @@ void Chunk::GenerateMesh()
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
+
+}
+
+void Chunk::Create()
+{
 }
 
 void Chunk::Draw()
 {
-	if (vertices.size() == 0 || indices.size() == 0)
+	if (indices.size() == 0)
 		return;
 
 	glBindVertexArray(VAO);

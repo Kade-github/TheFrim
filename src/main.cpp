@@ -4,6 +4,7 @@
 
 #include <thread>
 
+
 int main()
 {
 	Game game("The Frim", "1.0.0");
@@ -74,6 +75,10 @@ int main()
 						GLFWmonitor* monitor = glfwGetPrimaryMonitor();
 						const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 						glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+
+						Game::instance->GetCamera()->width = mode->width;
+						Game::instance->GetCamera()->height = mode->height;
+
 						Game::instance->isFullscreen = true;
 					}
 					break;

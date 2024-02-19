@@ -1,7 +1,7 @@
 #ifndef _BLOCK_H
 #define _BLOCK_H
 
-#include "../../Include/glm/glm.hpp"
+#include "../../../../Include/glm/glm.hpp"
 #include <vector>
 
 class Vertex {
@@ -50,16 +50,31 @@ enum BlockType
 
 class Block
 {
-	std::vector<Vertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
 public:
 	glm::vec3 position;
 	BlockType type;
+
+	float blockWidth = 128;
+	float blockHeight = 128;
+
+	float textureWidth = 128;
+	float textureHeight = 128;
 
 	std::vector<BlockFace> faces;
 
 	Block(glm::vec3 _position, BlockType _type);
 
-	void CreateFaces();
+	std::vector<Vertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
+
+	virtual BlockFace CreateFrontFace();
+	virtual BlockFace CreateBackFace();
+	virtual BlockFace CreateLeftFace();
+	virtual BlockFace CreateRightFace();
+	virtual BlockFace CreateTopFace();
+	virtual BlockFace CreateBottomFace();
+
+	glm::vec4 GetUV(int x, int y);
+	glm::vec4 GetUVVerticallyFlipped(int x, int y);
 
 	BlockFace GetFrontFace();
 	BlockFace GetBackFace();

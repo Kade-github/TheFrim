@@ -22,6 +22,8 @@ public:
 	float angle = 0;
 
 	virtual void Draw() {};
+
+	virtual void Create() {};
 };
 
 #endif

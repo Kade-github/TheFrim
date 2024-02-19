@@ -17,71 +17,68 @@ std::vector<Vertex> Block::CreateQuad(glm::vec3 position, glm::vec3 size, float 
 	return vertices;
 }
 
-void Block::CreateFaces()
+BlockFace Block::CreateFrontFace()
+{
+	std::vector<Vertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, glm::vec4());
+
+	return BlockFace(frontVertices, { 0, 1, 3, 1, 2, 3 });
+}
+
+BlockFace Block::CreateBackFace()
 {
 	std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
-	// front face
-
-	std::vector<Vertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, glm::vec4(0, 0, 0.167, 1));
-
-	BlockFace frontFace = BlockFace(frontVertices, indices);
-
-	frontFace.sum = frontVertices[0].position + frontVertices[1].position + frontVertices[2].position + frontVertices[3].position;
+	std::vector<Vertex> backVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 1, 0), 0, glm::vec4());
 
 	std::swap(indices[0], indices[1]);
 	std::swap(indices[3], indices[4]);
 
-	// back face
-
-	std::vector<Vertex> backVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 1, 0), 0, glm::vec4(0.167, 0, 0.167, 1));
-
-	// right face
-
-	std::vector<Vertex> rightVertices = CreateQuad(position, glm::vec3(0, 1, 1), 0, glm::vec4(0.5, 0, 0.167, 1));
-
-	BlockFace rightFace = BlockFace(rightVertices, indices);
-	BlockFace backFace = BlockFace(backVertices, indices);
-
-	rightFace.sum = rightVertices[0].position + rightVertices[1].position + rightVertices[2].position + rightVertices[3].position;
-	backFace.sum = backVertices[0].position + backVertices[1].position + backVertices[2].position + backVertices[3].position;
-
-	std::swap(indices[0], indices[1]);
-	std::swap(indices[3], indices[4]);
-
-	// left face
-
-	std::vector<Vertex> leftVertices = CreateQuad(position + glm::vec3(1,0,0), glm::vec3(0, 1, 1), 0, glm::vec4(0.33, 0, 0.167, 1));
-
-	BlockFace leftFace = BlockFace(leftVertices, indices);
-
-	leftFace.sum = leftVertices[0].position + leftVertices[1].position + leftVertices[2].position + leftVertices[3].position;
-
-
-	// top face
-
-	std::vector<Vertex> topVertices = CreateQuad(position + glm::vec3(0,1,0), glm::vec3(1, 0, 0), 1, glm::vec4(0.833, 0, 0.167, 1));
-
-	BlockFace topFace = BlockFace(topVertices, indices);
-
-	topFace.sum = topVertices[0].position + topVertices[1].position + topVertices[2].position + topVertices[3].position;
-
-	// bottom face
-
-	std::vector<Vertex> bottomVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 0, 0), -1, glm::vec4(0.66, 0, 0.167, 1));
-
-	BlockFace bottomFace = BlockFace(bottomVertices, indices);
-
-	bottomFace.sum = bottomVertices[0].position + bottomVertices[1].position + bottomVertices[2].position + bottomVertices[3].position;
-
-	faces.push_back(topFace);
-	faces.push_back(bottomFace);
-	faces.push_back(leftFace);
-	faces.push_back(backFace);
-	faces.push_back(frontFace);
-	faces.push_back(rightFace);
-
+	return BlockFace(backVertices, indices);
 }
+
+BlockFace Block::CreateLeftFace()
+{
+	std::vector<Vertex> leftVertices = CreateQuad(position + glm::vec3(1, 0, 0), glm::vec3(0, 1, 1), 0, glm::vec4());
+
+	return BlockFace(leftVertices, { 0, 1, 3, 1, 2, 3 });
+}
+
+BlockFace Block::CreateRightFace()
+{
+	std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
+
+	std::vector<Vertex> rightVertices = CreateQuad(position, glm::vec3(0, 1, 1), 0, glm::vec4());
+
+	std::swap(indices[0], indices[1]);
+	std::swap(indices[3], indices[4]);
+
+	return BlockFace(rightVertices, indices);
+}
+
+BlockFace Block::CreateTopFace()
+{
+	std::vector<Vertex> topVertices = CreateQuad(position + glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), 1, glm::vec4());
+
+	return BlockFace(topVertices, { 0, 1, 3, 1, 2, 3 });
+}
+
+BlockFace Block::CreateBottomFace()
+{
+	std::vector<Vertex> bottomVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 0, 0), -1, glm::vec4());
+
+	return BlockFace(bottomVertices, { 0, 1, 3, 1, 2, 3 });
+}
+
+glm::vec4 Block::GetUVVerticallyFlipped(int x, int y)
+{
+	float _x = x / textureWidth;
+	float _y = (y / textureHeight) - 0.01f;
+	float width = blockWidth / textureWidth;
+	float height = blockHeight / textureHeight;
+
+	return glm::vec4(_x, _y + height, width, -height);
+}
+
 
 Block::Block(glm::vec3 _position, BlockType _type)
 {
@@ -120,4 +117,15 @@ BlockFace Block::GetTopFace()
 BlockFace Block::GetBottomFace()
 {
 	return faces[1];
+}
+
+glm::vec4 Block::GetUV(int x, int y)
+{
+	float _x = x / textureWidth;
+	float _y = y / textureHeight;
+	float width = blockWidth / textureWidth;
+	float height = blockHeight / textureHeight;
+
+	return glm::vec4(_x, _y, width, height);
+	
 }

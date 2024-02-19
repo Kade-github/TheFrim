@@ -22,7 +22,7 @@ public:
 	float yaw = 0;
 	float pitch = 0;
 
-	float fov = 45.0f;
+	float fov = 75.0f;
 
 	void LookAt(glm::vec3 target)
 	{

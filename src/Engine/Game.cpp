@@ -63,6 +63,7 @@ void Game::Render()
 {
 	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glViewport(0, 0, _camera->width, _camera->height);
 
 	// set mouse
 

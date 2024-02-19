@@ -2,10 +2,10 @@
 #define _MODEL_H
 
 #include "Mesh.h"
-#include "../../Include/assimp/Importer.hpp"
-#include "../../Include/assimp/scene.h"
-#include "../../Include/assimp/mesh.h"
-#include "../../Include/assimp/postprocess.h"
+#include "../../../Include/assimp/Importer.hpp"
+#include "../../../Include/assimp/scene.h"
+#include "../../../Include/assimp/mesh.h"
+#include "../../../Include/assimp/postprocess.h"
 
 /// <summary>
 /// A bunch of this code is from https://learnopengl.com/code_viewer_gh.php?code=includes/learnopengl/model.h
