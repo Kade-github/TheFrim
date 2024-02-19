@@ -6,6 +6,8 @@ A Story focused 3D-Voxel (minecraft clone) game completely written from *scratch
 
 The game can be build with **Cmake** the main CMakeLists.txt is in the `src/` directory.
 
+The project is **cross-compatible** with Linux and Windows; I personally used clang-16 on std::C++20
+
 ```cmake
 cmake -B build
 cmake --build build
