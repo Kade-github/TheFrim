@@ -4,12 +4,12 @@
 #include "../../../../Include/glm/glm.hpp"
 #include <vector>
 
-class Vertex {
+struct VVertex {
 public:
 	glm::vec3 position;
 	glm::vec2 uv;
 
-	Vertex(glm::vec3 _position, glm::vec2 _uv)
+	VVertex(glm::vec3 _position, glm::vec2 _uv)
 	{
 		position = _position;
 		uv = _uv;
@@ -19,7 +19,7 @@ public:
 class BlockFace {
 public:
 	glm::vec3 sum;
-	std::vector<Vertex> vertices;
+	std::vector<VVertex> vertices;
 	std::vector<unsigned int> indices;
 
 	BlockFace()
@@ -29,7 +29,7 @@ public:
 		sum = glm::vec3(0, 0, 0);
 	}
 
-	BlockFace(std::vector<Vertex> _vertices, std::vector<unsigned int> _indices)
+	BlockFace(std::vector<VVertex> _vertices, std::vector<unsigned int> _indices)
 	{
 		vertices = _vertices;
 		indices = _indices;
@@ -64,7 +64,7 @@ public:
 
 	Block(glm::vec3 _position, BlockType _type);
 
-	std::vector<Vertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
+	std::vector<VVertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
 
 	virtual BlockFace CreateFrontFace();
 	virtual BlockFace CreateBackFace();

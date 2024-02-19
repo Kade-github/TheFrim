@@ -13,7 +13,7 @@ class Chunk : public GameObject
 
 	// final vertices and indices
 
-	std::vector<Vertex> vertices = {};
+	std::vector<VVertex> vertices = {};
 	std::vector<unsigned int> indices = {};
 
 	float blockWidth = 128;
@@ -24,7 +24,7 @@ public:
 
 	Block* blocks[16][256][16] = {};
 
-	void AddToDraw(std::vector<Vertex> _v, std::vector<unsigned int> _i);
+	void AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i);
 
 	Chunk(glm::vec3 pos, Texture* _spr);
 

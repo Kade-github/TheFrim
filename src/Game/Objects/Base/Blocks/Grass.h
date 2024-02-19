@@ -14,7 +14,7 @@ public:
 	{
 		glm::vec4 side = GetUVVerticallyFlipped(0, 256);
 
-		std::vector<Vertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, side);
+		std::vector<VVertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, side);
 
 		return BlockFace(frontVertices, { 0, 1, 3, 1, 2, 3 });
 	}
@@ -25,7 +25,7 @@ public:
 
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
-		std::vector<Vertex> backVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 1, 0), 0, side);
+		std::vector<VVertex> backVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 1, 0), 0, side);
 
 		std::swap(indices[0], indices[1]);
 		std::swap(indices[3], indices[4]);
@@ -37,7 +37,7 @@ public:
 	{
 		glm::vec4 side = GetUVVerticallyFlipped(0, 256);
 
-		std::vector<Vertex> leftVertices = CreateQuad(position + glm::vec3(1, 0, 0), glm::vec3(0, 1, 1), 0, side);
+		std::vector<VVertex> leftVertices = CreateQuad(position + glm::vec3(1, 0, 0), glm::vec3(0, 1, 1), 0, side);
 
 		return BlockFace(leftVertices, { 0, 1, 3, 1, 2, 3 });
 	}
@@ -48,7 +48,7 @@ public:
 
 		glm::vec4 side = GetUVVerticallyFlipped(0, 256);
 
-		std::vector<Vertex> rightVertices = CreateQuad(position, glm::vec3(0, 1, 1), 0, side);
+		std::vector<VVertex> rightVertices = CreateQuad(position, glm::vec3(0, 1, 1), 0, side);
 
 		std::swap(indices[0], indices[1]);
 		std::swap(indices[3], indices[4]);
@@ -60,7 +60,7 @@ public:
 	{
 		glm::vec4 grass = GetUV(0, 128);
 
-		std::vector<Vertex> topVertices = CreateQuad(position + glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), 1, grass);
+		std::vector<VVertex> topVertices = CreateQuad(position + glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), 1, grass);
 
 		return BlockFace(topVertices, { 0, 1, 3, 1, 2, 3 });
 	}
@@ -69,7 +69,7 @@ public:
 	{
 		glm::vec4 dirt = GetUV(0, 0);
 
-		std::vector<Vertex> bottomVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 0, 0), -1, dirt);
+		std::vector<VVertex> bottomVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 0, 0), -1, dirt);
 
 		return BlockFace(bottomVertices, { 0, 1, 3, 1, 2, 3 });
 	}

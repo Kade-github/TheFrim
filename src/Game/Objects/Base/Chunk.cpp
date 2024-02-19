@@ -1,7 +1,7 @@
 #include "Chunk.h"
 #include "../../../Engine/Game.h"
 
-void Chunk::AddToDraw(std::vector<Vertex> _v, std::vector<unsigned int> _i)
+void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
 {
 	vertices.insert(vertices.end(), _v.begin(), _v.end());
 
@@ -129,17 +129,17 @@ void Chunk::GenerateMesh()
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VVertex), &vertices[0], GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VVertex), (void*)0);
 	glEnableVertexAttribArray(0);
 
 	// uv attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (void*)offsetof(Vertex, uv));
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VVertex), (void*)offsetof(VVertex, uv));
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);

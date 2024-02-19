@@ -41,3 +41,5 @@ src/CMakeCache.txt
 src/Makefile
 
 TheFrim
+
+src/build/*
