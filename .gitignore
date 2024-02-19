@@ -34,3 +34,8 @@
 .vs/*
 src/out/*
 log.txt
+
+src/CMakeFiles/*
+src/cmake_install.cmake
+src/CMakeCache.txt
+src/Makefile
