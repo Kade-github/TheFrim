@@ -2,14 +2,13 @@
 #ifndef _SHADER_H_
 #define _SHADER_H_
 
-#include "../../../Include/glad/glad.h"
 #include <unordered_map>
 #include <string>
 
 class Shader
 {
 public:
-    GLuint program = 0;
+    unsigned int program = 0;
 
     ~Shader();
 

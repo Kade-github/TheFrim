@@ -1,6 +1,7 @@
 #include "Shader.h"
 #include <fstream>
 #include <iostream>
+#include "../../../Include/glad/glad.h"
 
 Shader::~Shader()
 {

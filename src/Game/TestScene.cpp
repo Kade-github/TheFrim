@@ -1,5 +1,4 @@
 #include "TestScene.h"
-#include "../Engine/Objects/Camera.h"
 #include "../Engine/Game.h"
 
 #include "Objects/Base/Blocks/Grass.h"

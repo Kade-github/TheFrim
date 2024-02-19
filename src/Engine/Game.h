@@ -5,6 +5,7 @@
 
 #include "Logging.h"
 #include "Objects/Scene.h"
+#include "../../Include/glad/glad.h"
 #include "../../Include/glfw/glfw3.h"
 
 #include "Objects/Camera.h"

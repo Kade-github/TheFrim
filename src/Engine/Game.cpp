@@ -45,7 +45,6 @@ void Game::CreateRenderer()
 	log->Write("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 	log->Write("OpenGL renderer: " + std::string((char*)glGetString(GL_RENDERER)));
 	log->Write("OpenGL vendor: " + std::string((char*)glGetString(GL_VENDOR)));
-	log->Write("OpenGL shading language version: " + std::string((char*)glGetString(GL_SHADING_LANGUAGE_VERSION)));
 
 	_camera = new Camera();
 }
