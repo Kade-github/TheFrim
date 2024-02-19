@@ -70,7 +70,10 @@ public:
 
 	glm::mat4 GetProjectionMatrix()
 	{
-		return glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
+		if (width == 0 || height == 0)
+			return glm::perspective(glm::radians(fov), 1.0f, 0.1f, 100.0f);
+		else
+			return glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
 	}
 };
 

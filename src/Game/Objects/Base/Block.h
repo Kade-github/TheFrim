@@ -1,7 +1,7 @@
 #ifndef _BLOCK_H
 #define _BLOCK_H
 
-#include "../../../../Include/glm/glm.hpp"
+#include <glm/glm.hpp>
 #include <vector>
 
 struct VVertex {

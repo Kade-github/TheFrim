@@ -1,5 +1,5 @@
 #include "Texture.h"
-#include "../../../Include/glad/glad.h"
+#include <glad/glad.h>
 #include "../stbi.h"
 
 Texture* Texture::createWithImage(std::string filePath)

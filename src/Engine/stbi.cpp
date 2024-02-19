@@ -1,6 +1,6 @@
 #define STB_IMAGE_IMPLEMENTATION
 #define STBI_NO_SIMD
-#include "../../Include/stb_image.h"
+#include <stb_image.h>
 #include "stbi.h"
 
 Texture* stbi_h::stbi_load_file(std::string filePath)

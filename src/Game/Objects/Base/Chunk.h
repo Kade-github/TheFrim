@@ -4,8 +4,8 @@
 #include "Block.h"
 #include <map>
 #include <mutex>
-#include "../../../Engine/OpenGL/Texture.h"
-#include "../../../Engine/Objects/GameObject.h"
+#include <OpenGL/Texture.h>
+#include <Objects/GameObject.h>
 
 class Chunk : public GameObject
 {

@@ -1,5 +1,5 @@
 #include "TestScene.h"
-#include "../Engine/Game.h"
+#include <Game.h>
 
 #include "Objects/Base/Blocks/Grass.h"
 #include "Objects/Base/Blocks/Dirt.h"
