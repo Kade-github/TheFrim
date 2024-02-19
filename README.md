@@ -15,6 +15,10 @@ cmake --build build
 
 Then copy the `Assets` folder into the `build` folder.
 
+```bash
+cp ../Assets build/Assets -r
+```
+
 # Libraries and Attributions
 
 [The OpenGL Spec](https://www.opengl.org/)
