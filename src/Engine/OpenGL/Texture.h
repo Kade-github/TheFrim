@@ -4,7 +4,6 @@
 #define _TEXTURE_H
 
 
-#include "../../../Include/glad/glad.h"
 #include <iostream>
 #include <string>
 #include "../../../Include/glm/vec4.hpp"
@@ -22,7 +21,7 @@ class Texture
 {
 public:
 	//GL object
-	GLuint id{};
+	unsigned int id{};
 
 	std::string path;
 	std::string type;
@@ -68,16 +67,8 @@ public:
 
 	//Texture interface
 	bool SetData(unsigned char* data, const unsigned int width, const unsigned int height);
-	bool Bind()
-	{
-		glBindTexture(GL_TEXTURE_2D, id);
-		return false;
-	}
-	bool Unbind()
-	{
-		glBindTexture(GL_TEXTURE_2D, 0);
-		return false;
-	}
+	bool Bind();
+	bool Unbind();
 };
 
 #endif

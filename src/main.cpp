@@ -1,5 +1,4 @@
 #include "Engine/Game.h"
-#include "../Include/glad/glad.h"
 #include "Game/TestScene.h"
 
 #include <thread>

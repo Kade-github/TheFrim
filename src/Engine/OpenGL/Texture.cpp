@@ -1,5 +1,5 @@
 #include "Texture.h"
-
+#include "../../../Include/glad/glad.h"
 #include "../stbi.h"
 
 Texture* Texture::createWithImage(std::string filePath)
@@ -105,4 +105,16 @@ bool Texture::SetData(unsigned char* data, const unsigned int _width, const unsi
 	//Game::instance->createTexture(this);
 
 	return true;
+}
+
+bool Texture::Bind()
+{
+	glBindTexture(GL_TEXTURE_2D, id);
+	return false;
+}
+
+bool Texture::Unbind()
+{
+	glBindTexture(GL_TEXTURE_2D, 0);
+	return false;
 }

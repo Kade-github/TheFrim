@@ -1,5 +1,6 @@
 #include "Chunk.h"
 #include "../../../Engine/Game.h"
+#include "../../../../Include/glad/glad.h"
 
 void Chunk::AddToDraw(std::vector<Vertex> _v, std::vector<unsigned int> _i)
 {
