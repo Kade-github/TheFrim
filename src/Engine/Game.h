@@ -50,6 +50,10 @@ public:
 	void SetWindowSize(int width, int height) 
 	{ 
 		_width = width; _height = height; 
+
+		_camera->width = width;
+		_camera->height = height;
+
 		glViewport(0, 0, _width, _height);
 	}
 

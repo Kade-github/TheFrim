@@ -9,6 +9,9 @@
 class Camera
 {
 public:
+	float width = 1280;
+	float height = 720;
+
 	glm::vec3 lightPos = glm::vec3(0.0f, 5.0f, 0.0f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -38,12 +41,34 @@ public:
 		cameraFront = glm::normalize(direction);
 	}
 
+	glm::vec2 WorldToScreen(glm::vec3 worldPos)
+	{
+		glm::mat4 view = GetViewMatrix();
+		glm::mat4 projection = GetProjectionMatrix();
+
+		glm::vec4 clipCoords = projection * glm::vec4(worldPos, 1.0f);
+		clipCoords /= clipCoords.w;
+
+		glm::vec4 ndc = glm::inverse(projection) * clipCoords;
+		ndc.z = -1.0f;
+		ndc.w = 0.0f;
+
+		glm::vec4 viewPos = glm::inverse(view) * ndc;
+		viewPos = glm::vec4(viewPos.x, viewPos.y, -viewPos.z, 1.0f);
+
+		glm::vec2 screenPos;
+		screenPos.x = (viewPos.x + 1.0f) * width / 2.0f;
+		screenPos.y = (1.0f - viewPos.y) * height / 2.0f;
+
+		return screenPos;
+	}
+
 	glm::mat4 GetViewMatrix()
 	{
 		return glm::lookAt(position, position + cameraFront, cameraUp);
 	}
 
-	glm::mat4 GetProjectionMatrix(float width, float height)
+	glm::mat4 GetProjectionMatrix()
 	{
 		return glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
 	}

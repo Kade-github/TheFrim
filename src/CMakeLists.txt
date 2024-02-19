@@ -29,7 +29,7 @@ glad.c
 "Engine/stbi.cpp" 
 
 "Engine/Objects/Camera.h" 
-"Game/TestScene.h" "Game/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp" "Engine/Objects/Base/Chunk.h")
+"Game/TestScene.h" "Game/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp" "Game/Objects/Base/Chunk.h" "Game/Objects/Base/Block.h" "Game/Objects/Base/Block.cpp" "Game/Objects/Base/Chunk.cpp")
 
 add_executable(TheFrim ${SOURCE_FILES})
 

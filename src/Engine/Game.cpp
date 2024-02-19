@@ -10,6 +10,7 @@ Game::Game(std::string title, std::string version)
 	log = new Logging("log.txt");
 
 	instance = this;
+	currentScene = nullptr;
 }
 
 void Game::CreateWindow(int width, int height)
@@ -54,6 +55,8 @@ void Game::SetScene(Scene* s)
 	if (currentScene != nullptr)
 		delete currentScene;
 	currentScene = s;
+
+	currentScene->Create();
 }
 
 void Game::Render()
