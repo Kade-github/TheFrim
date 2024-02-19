@@ -8,14 +8,10 @@ The game can be build with **Cmake** the main CMakeLists.txt is in the `src/` di
 
 The project is **cross-compatible** with Linux and Windows; I personally used clang-16 on std::C++20
 
-```cmake
+```bash
 cmake -B build
 cmake --build build
-```
-
-Then copy the `Assets` folder into the `build` folder.
-
-```bash
+# Then copy the `Assets` folder into the `build` folder.
 cp ../Assets build/Assets -r
 ```
 
