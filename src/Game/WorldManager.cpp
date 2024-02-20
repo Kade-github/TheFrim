@@ -1,18 +1,9 @@
 #include "WorldManager.h"
 #include <Game.h>
 #include <fstream>
-#include <zstr.hpp>
+#include "../zstr/src/zstr.hpp"
 
-#ifdef _WIN32
 #include <filesystem>
-#else
-#include <experimental/filesystem>
-using namespace Data;
-namespace std
-{
-	namespace filesystem = experimental::filesystem;
-}
-#endif
 
 WorldManager* WorldManager::instance = nullptr;
 
@@ -30,7 +21,6 @@ WorldManager::WorldManager(std::string worldPath, Texture* _tp, std::function<vo
 		CreateWorld();
 	else
 		LoadWorld();
-
 }
 
 void WorldManager::UploadChunks()
