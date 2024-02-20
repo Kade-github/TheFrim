@@ -13,15 +13,14 @@ void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
 
 Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 {
+	generatedVAO = false;
 	sheet = _spr;
 }
 
-void Chunk::GenerateMesh(Data::Chunk c)
+void Chunk::GenerateMesh(Data::Chunk* c)
 {
 	if (isLoaded)
 		return;
-
-	isLoaded = true;
 
 	blocks.clear();
 
@@ -34,9 +33,9 @@ void Chunk::GenerateMesh(Data::Chunk c)
 		{
 			for (int z = 0; z < 16; z++)
 			{
-				if (c.blocks[y][x][z] >= 1)
+				if (c->blocks[y][x][z] >= 1)
 				{
-					int dB = c.blocks[y][x][z];
+					int dB = c->blocks[y][x][z];
 
 					// get adjacent blocks
 
@@ -48,22 +47,38 @@ void Chunk::GenerateMesh(Data::Chunk c)
 					bool bottom = false;
 
 					if (z - 1 >= 0)
-						front = c.blocks[y][x][z - 1] >= 1;
+						front = c->blocks[y][x][z - 1] >= 1;
 
 					if (z + 1 < 16)
-						back = c.blocks[y][x][z + 1] >= 1;
+						back = c->blocks[y][x][z + 1] >= 1;
 
 					if (x - 1 >= 0)
-						right = c.blocks[y][x][z] >= 1;
+						right = c->blocks[y][x][z] >= 1;
 
 					if (x + 1 < 16)
-						left = c.blocks[y][x][z] >= 1;
+						left = c->blocks[y][x][z] >= 1;
 
 					if (y - 1 >= 0)
-						top = c.blocks[y - 1][x][z] >= 1;
+						top = c->blocks[y - 1][x][z] >= 1;
 
 					if (y + 1 < 256)
-						bottom = c.blocks[y + 1][x][z] >= 1;
+						bottom = c->blocks[y + 1][x][z] >= 1;
+
+					if (forwardC != NULL && z == 0)
+						if (forwardC->isGenerated)
+							front = forwardC->blocks[y][x][15] >= 1;
+
+					if (backwardC != NULL && z == 15)
+						if (backwardC->isGenerated)
+							back = backwardC->blocks[y][x][0] >= 1;
+
+					if (leftC != NULL && x == 0)
+						if (leftC->isGenerated)
+							left = leftC->blocks[y][15][z] >= 1;
+
+					if (rightC != NULL && x == 15)
+						if (rightC->isGenerated)
+							right = rightC->blocks[y][0][z] >= 1;
 
 					Block* b = nullptr;
 
@@ -126,15 +141,13 @@ void Chunk::GenerateMesh(Data::Chunk c)
 		}
 	}
 
-	UploadMesh();
+	isLoaded = true;
 }
 
 void Chunk::UploadMesh()
 {
 	if (rendered)
 		return;
-
-	rendered = true;
 
 	if (vertices.size() == 0 || indices.size() == 0)
 	{
@@ -167,17 +180,20 @@ void Chunk::UploadMesh()
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
+
+	rendered = true;
 }
 
 void Chunk::Clean()
 {
 	if (!rendered)
 		return;
-	rendered = false;
 	glBindVertexArray(VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
 	glBindVertexArray(0);
+
+	rendered = false;
 }
 
 
@@ -186,19 +202,15 @@ void Chunk::UnloadMesh()
 	if (!isLoaded)
 		return;
 
-	isLoaded = false;
-
 	for (auto b : blocks)
 		delete b;
 
 	blocks.clear();
 
-	if (vertices.size() == 0 || indices.size() == 0)
-		return;
-
-
 	vertices.clear();
 	indices.clear();
+
+	isLoaded = false;
 }
 
 void Chunk::Create()
@@ -207,7 +219,7 @@ void Chunk::Create()
 
 void Chunk::Draw()
 {
-	if (!isLoaded)
+	if (!rendered)
 		return;
 
 	if (indices.size() == 0)

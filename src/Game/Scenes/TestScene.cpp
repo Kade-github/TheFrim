@@ -87,6 +87,21 @@ void TestScene::Draw()
 
 	ImGui::Text("Camera Pos: %f, %f, %f", camera->position.x, camera->position.y, camera->position.z);
 
+	ImGui::Text("Chunks Loaded: %d", wm->loadedChunks.size());
+
+	ImGui::Text("Chunks Rendered: %d", wm->renderedChunks);
+
+	int verticeCount = 0;
+
+	for (auto& c : wm->loadedChunks)
+	{
+		if (c->rendered)
+			verticeCount += c->vertices.size();
+		
+	}
+
+	ImGui::Text("Vertices Rendered: %d", verticeCount);
+
 	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 0.1f, 400.0f);
 
 	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);

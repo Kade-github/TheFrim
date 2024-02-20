@@ -5,26 +5,22 @@
 
 #include <filesystem>
 
-WorldManager *WorldManager::instance = nullptr;
+WorldManager* WorldManager::instance = nullptr;
 
 std::mutex mtx;
 
 void WorldManager::CreateChunk(Chunk* pC)
 {
-	if (pC->forward == NULL)
-		pC->forward = GetChunk(pC->position.x, pC->position.z + 16);
-	if (pC->backward == NULL)
-		pC->backward = GetChunk(pC->position.x, pC->position.z - 16);
-	if (pC->left == NULL)
-		pC->left = GetChunk(pC->position.x - 16, pC->position.z);
-	if (pC->right == NULL)
-		pC->right = GetChunk(pC->position.x + 16, pC->position.z);
+	pC->forwardC = GetChunk(pC->position.x, pC->position.z + 16);
+	pC->backwardC = GetChunk(pC->position.x, pC->position.z - 16);
+	pC->leftC = GetChunk(pC->position.x - 16, pC->position.z);
+	pC->rightC = GetChunk(pC->position.x + 16, pC->position.z);
 
 	chunkGenerated(pC);
 	chunks.push_back(pC);
 }
 
-WorldManager::WorldManager(std::string worldPath, Texture *_tp, std::function<void(Chunk *)> onGenerated)
+WorldManager::WorldManager(std::string worldPath, Texture* _tp, std::function<void(Chunk*)> onGenerated)
 {
 	instance = this;
 
@@ -38,7 +34,7 @@ WorldManager::WorldManager(std::string worldPath, Texture *_tp, std::function<vo
 		LoadWorld();
 
 	_edgeThread = std::thread([&]()
-							  {
+		{
 			while (true)
 			{
 				instance->GenerateEdgeChunks();
@@ -46,7 +42,7 @@ WorldManager::WorldManager(std::string worldPath, Texture *_tp, std::function<vo
 			} });
 
 	_generateThread = std::thread([&]()
-								  {
+		{
 			while (true)
 			{
 				GenerateMeshes();
@@ -57,9 +53,9 @@ WorldManager::WorldManager(std::string worldPath, Texture *_tp, std::function<vo
 	_edgeThread.detach();
 }
 
-Chunk *WorldManager::GetLoadedChunk(int x, int z)
+Chunk* WorldManager::GetLoadedChunk(int x, int z)
 {
-	for (auto &c : loadedChunks)
+	for (auto& c : loadedChunks)
 	{
 		if (c->position.x == x && c->position.z == z)
 			return c;
@@ -70,26 +66,46 @@ Chunk *WorldManager::GetLoadedChunk(int x, int z)
 
 void WorldManager::UploadChunks()
 {
-	// figure out which chunks should be loaded
+	// figure out which chunks should be rendered and loaded
+
+	Camera* camera = Game::instance->GetCamera();
 
 	loadedChunks = {};
+	renderedChunks = 0;
 
-	for (auto &c : chunks)
+	for (int i = 0; i < chunks.size(); i++)
 	{
+		Chunk* c = chunks[i];
 
-		if (c->isLoaded && !c->rendered)
+		if (!c->isLoaded)
+			continue;
+
+		glm::vec3 r = c->position;
+		r.y = 128;
+
+		// angle from yaw
+
+		float angle = camera->YawAngleTo(r);
+		float diff = std::abs(glm::distance(r, camera->position));
+
+		if (angle <= 180 || diff <= 40)
 		{
-			c->UploadMesh();
-			loadedChunks.push_back(c);
+			if (!c->rendered)
+				c->UploadMesh();
 		}
-		else if (!c->isLoaded && c->rendered)
-			c->UnloadMesh();
+		else if (c->rendered)
+			c->Clean();
+
+		if (c->rendered)
+			renderedChunks++;
+
+		loadedChunks.push_back(c);
 	}
 }
 
-Data::Chunk *WorldManager::GenerateChunk(int x, int z)
+void WorldManager::GenerateChunk(int x, int z)
 {
-	Data::World *w = &_world;
+	Data::World* w = &_world;
 
 	Game::instance->log->Write("Generating chunk at " + std::to_string(x) + " " + std::to_string(z));
 
@@ -97,23 +113,13 @@ Data::Chunk *WorldManager::GenerateChunk(int x, int z)
 
 	c.isGenerated = true;
 
-	Chunk *ch = new Chunk(glm::vec3(c.x, c.y, c.z), texturePack);
-
-	ch->forward = GetChunk(ch->position.x, ch->position.z + 16);
-	ch->backward = GetChunk(ch->position.x, ch->position.z - 16);
-	ch->left = GetChunk(ch->position.x - 16, ch->position.z);
-	ch->right = GetChunk(ch->position.x + 16, ch->position.z);
-
-	Data::Chunk* d = nullptr;
+	Chunk* ch = new Chunk(glm::vec3(c.x, c.y, c.z), texturePack);
 
 	{
 		std::lock_guard<std::mutex> lock(mtx);
 		w->chunks.push_back(c);
-		d = &w->chunks.back();
 		CreateChunk(ch);
 	}
-
-	return d;
 }
 
 void WorldManager::CreateWorld()
@@ -129,14 +135,14 @@ void WorldManager::CreateWorld()
 
 	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
 
-	World *w = &_world;
+	World* w = &_world;
 
 	for (int x = -10; x < 10; x++)
 	{
 		for (int z = -10; z < 10; z++)
 		{
 			_generatePool.detach_task([x, z]()
-									  { instance->GenerateChunk(x * 16, z * 16); });
+				{ instance->GenerateChunk(x * 16, z * 16); });
 		}
 	}
 
@@ -159,23 +165,23 @@ void WorldManager::LoadWorld()
 
 	std::cout << "Loaded " + std::to_string(_world.chunks.size()) + " chunks" << std::endl;
 
-	for (auto &c : _world.chunks)
+	for (auto& c : _world.chunks)
 	{
 		c.isGenerated = true;
-		Chunk *ch = new Chunk(glm::vec3(c.x, c.y, c.z), texturePack);
+		Chunk* ch = new Chunk(glm::vec3(c.x, c.y, c.z), texturePack);
 		_generatePool.detach_task([ch]()
-								  {
-									  {
-										  std::lock_guard<std::mutex> lock(mtx);
-										  instance->CreateChunk(ch);
-									  } });
+			{
+				{
+					std::lock_guard<std::mutex> lock(mtx);
+					instance->CreateChunk(ch);
+				} });
 	}
 }
 
 void WorldManager::SaveWorld()
 {
 	std::thread([&]()
-				{
+		{
 			Game::instance->log->Write("Saving world...");
 			_generatePool.wait();
 
@@ -189,84 +195,48 @@ void WorldManager::SaveWorld()
 
 void WorldManager::GenerateMeshes()
 {
-	Camera *camera = Game::instance->GetCamera();
+	_generatePool.wait();
 
-	for (int i = 0; i < chunks.size(); i++)
+	Camera* camera = Game::instance->GetCamera();
 	{
-		Chunk *c = chunks[i];
-		glm::vec3 r = c->position;
-		r.y = 128;
-
-		float diff = std::abs(glm::distance(r, camera->position));
-
-		float angle = atan2(camera->position.z - r.z, camera->position.x - r.x);
-
-		if (diff < camera->cameraFar && angle > -180 && angle < 180)
+		std::lock_guard<std::mutex> lock(mtx);
+		for (int i = 0; i < chunks.size(); i++)
 		{
-			if (!c->isLoaded)
-				c->GenerateMesh(_world.chunks[i]);
+			Chunk* c = chunks[i];
+			glm::vec3 r = c->position;
+			r.y = 128;
+
+			float diff = std::abs(glm::distance(r, camera->position));
+
+			_generatePool.detach_task([c, diff, i, camera]()
+				{
+					if (diff < camera->cameraFar)
+					{
+						if (!c->isLoaded)
+							c->GenerateMesh(&instance->_world.chunks[i]);
+					}
+					else if (c->isLoaded)
+						c->UnloadMesh();
+				});
+
 		}
-		else if (c->isLoaded)
-			c->UnloadMesh();
+		_generatePool.wait();
 	}
 }
 
 void WorldManager::GenerateEdgeChunks()
 {
-	Camera *camera = Game::instance->GetCamera();
+	Camera* camera = Game::instance->GetCamera();
 
-	for (auto &c : loadedChunks)
-	{
-		if (c->forward == NULL)
-		{
-			glm::vec3 forwardChunk = glm::vec3(c->position.x, 128, c->position.z + 16);
-			float diff = std::abs(glm::distance(forwardChunk, camera->position));
-
-			float angle = atan2(camera->position.z - forwardChunk.z, camera->position.x - forwardChunk.x);
-
-			if (diff < camera->cameraFar && angle < 180 && angle > -180)
-				c->forward = GenerateChunk(c->position.x, c->position.z + 16);
-		}
-
-		if (c->backward == NULL)
-		{
-			glm::vec3 backwardChunk = glm::vec3(c->position.x, 128, c->position.z - 16);
-			float diff = std::abs(glm::distance(backwardChunk, camera->position));
-
-			float angle = atan2(camera->position.z - backwardChunk.z, camera->position.x - backwardChunk.x);
-
-			if (diff < camera->cameraFar && angle < 180 && angle > -180)
-				c->backward = GenerateChunk(c->position.x, c->position.z - 16);
-		}
-
-		if (c->left == NULL)
-		{
-			glm::vec3 leftChunk = glm::vec3(c->position.x - 16, 128, c->position.z);
-			float diff = std::abs(glm::distance(leftChunk, camera->position));
-
-			float angle = atan2(camera->position.z - leftChunk.z, camera->position.x - leftChunk.x);
-
-			if (diff < camera->cameraFar && angle < 180 && angle > -180)
-				c->left = GenerateChunk(c->position.x - 16, c->position.z);
-		}
-
-		if (c->right == NULL)
-		{
-			glm::vec3 rightChunk = glm::vec3(c->position.x + 16, 128, c->position.z);
-			float diff = std::abs(glm::distance(rightChunk, camera->position));
-
-			float angle = atan2(camera->position.z - rightChunk.z, camera->position.x - rightChunk.x);
-
-			if (diff < camera->cameraFar && angle < 180 && angle > -180)
-				c->right = GenerateChunk(c->position.x + 16, c->position.z);
-		}
-	}
+	// TODO
+	
 }
 
-Data::Chunk *WorldManager::GetChunk(int x, int z)
+Data::Chunk* WorldManager::GetChunk(int x, int z)
 {
-	for (auto &c : _world.chunks)
+	for (int i = 0; i < _world.chunks.size(); i++)
 	{
+		Data::Chunk& c = _world.chunks[i];
 		if (c.isGenerated)
 			if (c.x == x && c.z == z)
 				return &c;

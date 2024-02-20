@@ -34,6 +34,20 @@ public:
 		SetDirection();
 	}
 
+	float YawAngleTo(glm::vec3 pos)
+	{
+		float angle = glm::degrees(atan2(pos.z - position.z, pos.x - position.x)) - yaw;
+
+		angle += 90; // center the angle
+
+		angle = fmod(angle, 360.0f);
+
+		if (angle < 0)
+			angle += 360.0f;
+
+		return angle;
+	}
+
 	void SetDirection()
 	{
 		glm::vec3 direction;

@@ -18,23 +18,25 @@ class Chunk : public GameObject
 
 	// final vertices and indices
 
-	std::vector<VVertex> vertices = {};
 	std::vector<unsigned int> indices = {};
 
 	float blockWidth = 128;
 	float blockHeight = 128;
 
 public:
+
+	std::vector<VVertex> vertices = {};
+
 	Texture* sheet;
 
 
 	bool isLoaded = false;
 	bool rendered = false;
 
-	Data::Chunk* forward;
-	Data::Chunk* backward;
-	Data::Chunk* left;
-	Data::Chunk* right;
+	Data::Chunk* forwardC;
+	Data::Chunk* backwardC;
+	Data::Chunk* leftC;
+	Data::Chunk* rightC;
 
 	std::vector<Block*> blocks;
 
@@ -42,7 +44,7 @@ public:
 
 	Chunk(glm::vec3 pos, Texture* _spr);
 
-	void GenerateMesh(Data::Chunk c);
+	void GenerateMesh(Data::Chunk* c);
 
 	void UploadMesh();
 	void Clean();

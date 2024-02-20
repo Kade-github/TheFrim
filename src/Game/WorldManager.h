@@ -9,14 +9,15 @@ class WorldManager
 	BS::thread_pool _generatePool;
 	std::string _path;
 
-	std::vector<Chunk*> loadedChunks;
-
 	std::thread _edgeThread;
 	std::thread _generateThread;
 
 	Data::World _world;
 public:
 	static WorldManager* instance;
+
+	std::vector<Chunk*> loadedChunks;
+	int renderedChunks = 0;
 
 	std::function<void(Chunk*)> chunkGenerated;
 
@@ -30,7 +31,7 @@ public:
 
 	void CreateChunk(Chunk* pC);
 
-	Data::Chunk* GenerateChunk(int x, int z);
+	void GenerateChunk(int x, int z);
 	void GenerateEdgeChunks();
 	void GenerateMeshes();
 
