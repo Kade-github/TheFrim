@@ -131,9 +131,20 @@ void Chunk::GenerateMesh(Data::Chunk c)
 
 void Chunk::UploadMesh()
 {
+	if (rendered)
+		return;
+
+	rendered = true;
+
 	if (vertices.size() == 0 || indices.size() == 0)
 	{
 		return;
+	}
+
+	if (!generatedVAO)
+	{
+		generatedVAO = true;
+		glGenVertexArrays(1, &VAO);
 	}
 
 	glBindVertexArray(VAO);
@@ -158,6 +169,18 @@ void Chunk::UploadMesh()
 	glBindVertexArray(0);
 }
 
+void Chunk::Clean()
+{
+	if (!rendered)
+		return;
+	rendered = false;
+	glBindVertexArray(VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+	glBindVertexArray(0);
+}
+
+
 void Chunk::UnloadMesh()
 {
 	if (!isLoaded)
@@ -176,17 +199,10 @@ void Chunk::UnloadMesh()
 
 	vertices.clear();
 	indices.clear();
-
-
-	glBindVertexArray(VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	glBindVertexArray(0);
 }
 
 void Chunk::Create()
 {
-	glGenVertexArrays(1, &VAO);
 }
 
 void Chunk::Draw()

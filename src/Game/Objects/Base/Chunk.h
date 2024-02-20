@@ -14,6 +14,8 @@ class Chunk : public GameObject
 {
 	unsigned int VBO, VAO, EBO;
 
+	bool generatedVAO = false;
+
 	// final vertices and indices
 
 	std::vector<VVertex> vertices = {};
@@ -25,7 +27,9 @@ class Chunk : public GameObject
 public:
 	Texture* sheet;
 
+
 	bool isLoaded = false;
+	bool rendered = false;
 
 	Data::Chunk* forward;
 	Data::Chunk* backward;
@@ -41,6 +45,7 @@ public:
 	void GenerateMesh(Data::Chunk c);
 
 	void UploadMesh();
+	void Clean();
 	void UnloadMesh();
 
 	void Create() override;

@@ -8,11 +8,11 @@ class WorldManager
 {
 	BS::thread_pool _generatePool;
 	std::string _path;
-	std::vector<Chunk*> _toUpload;
-	std::vector<Data::Chunk> _toCreate;
 
 	std::vector<Chunk*> loadedChunks;
+
 	std::thread _edgeThread;
+	std::thread _generateThread;
 
 	Data::World _world;
 public:
@@ -28,8 +28,11 @@ public:
 
 	WorldManager(std::string worldPath, Texture* _tp, std::function<void(Chunk*)> onGenerated);
 
-	void GenerateChunk(int x, int z);
+	void CreateChunk(Chunk* pC);
+
+	Data::Chunk* GenerateChunk(int x, int z);
 	void GenerateEdgeChunks();
+	void GenerateMeshes();
 
 	Data::Chunk* GetChunk(int x, int z);
 	Chunk* GetLoadedChunk(int x, int z);
