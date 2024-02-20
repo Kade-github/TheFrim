@@ -1,8 +1,9 @@
-#include "Engine/Game.h"
-#include "Game/TestScene.h"
-
+#include "Game/Scenes/TestScene.h"
 #include <thread>
 
+#include <imgui.h>
+#include <External/imgui_impl_glfw.h>
+#include <External/imgui_impl_opengl3.h>
 
 int main()
 {
@@ -23,7 +24,7 @@ int main()
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 
-	game.CreateWindow(1280,720);
+	game.CCreateWindow(1280,720);
 
 	glfwMakeContextCurrent(game.GetWindow());
 
@@ -103,7 +104,6 @@ int main()
 
 	glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 
-	game.SetScene(new TestScene());
 
 	glfwMakeContextCurrent(NULL);
 
@@ -114,12 +114,37 @@ int main()
 	std::thread renderThread([&game, running]()
 	{
 		glfwMakeContextCurrent(game.GetWindow());
+
+		game.SetScene(new TestScene());
+
+		// create imgui
+
+		IMGUI_CHECKVERSION();
+		ImGui::CreateContext();
+		ImGui_ImplGlfw_InitForOpenGL(game.GetWindow(), true);
+		ImGui_ImplOpenGL3_Init("#version 150");
+
 		while (running)
 		{
+			ImGui_ImplOpenGL3_NewFrame();
+			ImGui_ImplGlfw_NewFrame();
+			ImGui::NewFrame();
+
 			game.Render();
+
+			ImGui::Render();
+			int display_w, display_h;
+			glfwGetFramebufferSize(game.GetWindow(), &display_w, &display_h);
+			glViewport(0, 0, display_w, display_h);
+			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 			glfwSwapBuffers(game.GetWindow());
 		}
+
+		ImGui_ImplOpenGL3_Shutdown();
+		ImGui_ImplGlfw_Shutdown();
+		ImGui::DestroyContext();
+		glfwMakeContextCurrent(NULL);
 	});
 
 	renderThread.detach();

@@ -1,9 +1,6 @@
 #include "TestScene.h"
-#include <Game.h>
+#include <imgui.h>
 
-#include "Objects/Base/Blocks/Grass.h"
-#include "Objects/Base/Blocks/Dirt.h"
-#include "Objects/Base/Chunk.h"
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -14,29 +11,14 @@ float lastX = 400, lastY = 300;
 
 void TestScene::Create()
 {
-	Texture* t = Texture::createWithImage("Assets/Textures/sheet.png");
-
-	// 1 chunk 16x256x16
-
-	Chunk* chunk = new Chunk(glm::vec3(0, 0, 0), t);
-
-	for (int x = 0; x < 16; x++)
+	wm = new WorldManager("world.frim", Texture::createWithImage("Assets/Textures/sheet.png"), [&](Chunk* c)
 	{
-		for (int y = 0; y > -256; y--)
-		{
-			for (int z = 0; z < 16; z++)
-			{
-				if (y < 0)
-					chunk->AddBlock(new Dirt(glm::vec3(x, y, z)));
-				else
-					chunk->AddBlock(new Grass(glm::vec3(x, y, z)));
-			}
-		}
-	}
+		AddObject(c);
+	});
 
-	chunk->GenerateMesh();
+	Camera* camera = Game::instance->GetCamera();
 
-	AddObject(chunk);
+	camera->position = glm::vec3(0.0f, 129.0f, 0.0f);
 
 }
 
@@ -95,15 +77,15 @@ void TestScene::Draw()
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 		camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * 10.0f;
 
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_F2) == GLFW_PRESS)
-	{
-		Chunk* c = (Chunk*)objects[0];
-		std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-		c->GenerateMesh();
-		std::chrono::steady_clock::time_point end = std::chrono::steady_clock::now();
+	wm->UploadChunks();
 
-		std::cout << "Time difference = " << std::chrono::duration_cast<std::chrono::milliseconds>(end - begin).count() << "[ms]" << std::endl;
-	}
+	ImGui::Begin("Debug");
+
+	ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
+
+	ImGui::Text("Camera Pos: %f, %f, %f", camera->position.x, camera->position.y, camera->position.z);
+
+	ImGui::End();
 
 
 	Scene::Draw();

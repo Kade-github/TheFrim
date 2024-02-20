@@ -1,5 +1,7 @@
 #include "Chunk.h"
 #include <Game.h>
+#include "Blocks/Dirt.h"
+#include "Blocks/Grass.h"
 
 void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
 {
@@ -11,7 +13,15 @@ void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
 
 Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 {
-	// fill blocks with nullptr
+	glGenVertexArrays(1, &VAO);
+
+	sheet = _spr;
+}
+
+void Chunk::GenerateMesh(Data::Chunk c)
+{
+	if (isLoaded)
+		return;
 
 	for (int x = 0; x < 16; x++)
 	{
@@ -19,101 +29,89 @@ Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 		{
 			for (int z = 0; z < 16; z++)
 			{
-				blocks[x][y][z] = nullptr;
-			}
-		}
-	}
-
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	sheet = _spr;
-}
-
-void Chunk::AddBlock(Block* block)
-{
-	glm::vec3 pos = block->position;
-
-	block->textureHeight = sheet->height;
-	block->textureWidth = sheet->width;
-
-	blocks[(int)pos.x][(int)-pos.y][(int)pos.z] = block;
-}
-
-void Chunk::GenerateMesh()
-{
-
-	vertices.clear();
-	indices.clear();
-	
-	for (int x = position.x; x < position.x + 16; x++)
-	{
-		for (int y = position.y; y < position.y + 256; y++)
-		{
-			for (int z = position.z; z < position.z + 16; z++)
-			{
-				if (blocks[x][y][z] != nullptr)
+				if (c.blocks[y][x][z] >= 1)
 				{
-					Block* b = blocks[x][y][z];
+					int dB = c.blocks[y][x][z];
 
 					// get adjacent blocks
 
-					Block* front = nullptr;
-					Block* back = nullptr;
-					Block* right = nullptr;
-					Block* left = nullptr;
-					Block* top = nullptr;
-					Block* bottom = nullptr;
+					bool front = false;
+					bool back = false;
+					bool right = false;
+					bool left = false;
+					bool top = false;
+					bool bottom = false;
 
 					if (z - 1 >= 0)
-						front = blocks[x][y][z - 1];
+						front = c.blocks[y][x][z - 1] >= 1;
 
 					if (z + 1 < 16)
-						back = blocks[x][y][z + 1];
+						back = c.blocks[y][x][z + 1] >= 1;
 
 					if (x - 1 >= 0)
-						right = blocks[x - 1][y][z];
+						right = c.blocks[y][x][z] >= 1;
 
 					if (x + 1 < 16)
-						left = blocks[x + 1][y][z];
+						left = c.blocks[y][x][z] >= 1;
 
 					if (y - 1 >= 0)
-						top = blocks[x][y + 1][z];
+						top = c.blocks[y - 1][x][z] >= 1;
 
 					if (y + 1 < 256)
-						bottom = blocks[x][y - 1][z];
+						bottom = c.blocks[y + 1][x][z] >= 1;
 
-					if (front == nullptr)
+					Block* b = nullptr;
+
+					int realY = 128 + (128 - y);
+
+					switch (dB)
+					{
+					case 1:
+						b = new Dirt(position + glm::vec3(x, realY, z));
+						blocks.push_back(b);
+						break;
+					case 2:
+						b = new Grass(position + glm::vec3(x, realY, z));
+						blocks.push_back(b);
+						break;
+					}
+
+					if (b == nullptr)
+						continue;
+
+					b->textureHeight = sheet->height;
+					b->textureWidth = sheet->width;
+
+					if (!front)
 					{
 						BlockFace frontFace = b->CreateFrontFace();
 						AddToDraw(frontFace.vertices, frontFace.indices);
 					}
 
-					if (back == nullptr)
+					if (!back)
 					{
 						BlockFace backFace = b->CreateBackFace();
 						AddToDraw(backFace.vertices, backFace.indices);
 					}
-					if (right == nullptr)
+					if (!right)
 					{
 						BlockFace rightFace = b->CreateRightFace();
 						AddToDraw(rightFace.vertices, rightFace.indices);
 					}
 
-					if (left == nullptr)
+					if (!left)
 					{
 						BlockFace leftFace = b->CreateLeftFace();
 						AddToDraw(leftFace.vertices, leftFace.indices);
 					}
 
-					if (top == nullptr)
+					if (!top)
 					{
 						BlockFace topFace = b->CreateTopFace();
 						AddToDraw(topFace.vertices, topFace.indices);
 					}
 
-					if (bottom == nullptr)
+					if (!bottom)
 					{
 						BlockFace bottomFace = b->CreateBottomFace();
 						AddToDraw(bottomFace.vertices, bottomFace.indices);
@@ -123,10 +121,20 @@ void Chunk::GenerateMesh()
 		}
 	}
 
+	UploadMesh();
+}
+
+void Chunk::UploadMesh()
+{
 	if (vertices.size() == 0 || indices.size() == 0)
 		return;
 
+	isLoaded = true;
+
 	glBindVertexArray(VAO);
+
+	glGenBuffers(1, &VBO);
+	glGenBuffers(1, &EBO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VVertex), &vertices[0], GL_STATIC_DRAW);
@@ -143,7 +151,29 @@ void Chunk::GenerateMesh()
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
+}
 
+void Chunk::UnloadMesh()
+{
+	if (!isLoaded)
+		return;
+	if (vertices.size() == 0 || indices.size() == 0)
+		return;
+
+	for (auto b : blocks)
+		delete b;
+
+	blocks.clear();
+
+	vertices.clear();
+	indices.clear();
+
+	isLoaded = false;
+
+	glBindVertexArray(VAO);
+	glDeleteBuffers(1, &VBO);
+	glDeleteBuffers(1, &EBO);
+	glBindVertexArray(0);
 }
 
 void Chunk::Create()
@@ -152,6 +182,9 @@ void Chunk::Create()
 
 void Chunk::Draw()
 {
+	if (!isLoaded)
+		return;
+
 	if (indices.size() == 0)
 		return;
 

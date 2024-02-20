@@ -84,39 +84,6 @@ Block::Block(glm::vec3 _position, BlockType _type)
 {
 	position = _position;
 	type = _type;
-
-	faces = { };
-}
-
-
-BlockFace Block::GetFrontFace()
-{
-	return faces[4];
-}
-
-BlockFace Block::GetBackFace()
-{
-	return faces[3];
-}
-
-BlockFace Block::GetLeftFace()
-{
-	return faces[2];
-}
-
-BlockFace Block::GetRightFace()
-{
-	return faces[5];
-}
-
-BlockFace Block::GetTopFace()
-{
-	return faces[0];
-}
-
-BlockFace Block::GetBottomFace()
-{
-	return faces[1];
 }
 
 glm::vec4 Block::GetUV(int x, int y)

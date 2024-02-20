@@ -3,10 +3,13 @@
 
 #pragma once
 
-#include <Objects/Scene.h>
+#include <Game.h>
+#include "../WorldManager.h"
 
 class TestScene : public Scene
 {
+	WorldManager* wm;
+
 	void Create() override;
 	void Draw() override;
 };

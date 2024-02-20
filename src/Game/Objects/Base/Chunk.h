@@ -6,6 +6,7 @@
 #include <mutex>
 #include <OpenGL/Texture.h>
 #include <Objects/GameObject.h>
+#include "../../Data/World.h"
 
 class Chunk : public GameObject
 {
@@ -22,15 +23,18 @@ class Chunk : public GameObject
 public:
 	Texture* sheet;
 
-	Block* blocks[16][256][16] = {};
+	bool isLoaded = false;
+
+	std::vector<Block*> blocks;
 
 	void AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i);
 
 	Chunk(glm::vec3 pos, Texture* _spr);
 
-	void AddBlock(Block* block);
+	void GenerateMesh(Data::Chunk c);
 
-	void GenerateMesh();
+	void UploadMesh();
+	void UnloadMesh();
 
 	void Create() override;
 

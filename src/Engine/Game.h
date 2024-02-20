@@ -39,7 +39,7 @@ public:
 
 	Game(std::string title, std::string version);
 
-	void CreateWindow(int width, int height);
+	void CCreateWindow(int width, int height);
 
 	void CreateRenderer();
 

@@ -7,7 +7,6 @@
       "inheritEnvironments": [ "clang_cl_x64" ],
       "buildRoot": "${projectDir}\\out\\build\\${name}",
       "installRoot": "${projectDir}\\out\\install\\${name}",
-      "cmakeCommandArgs": "-DCMAKE_CXX_STANDARD=20",
       "buildCommandArgs": "",
       "ctestCommandArgs": ""
     },

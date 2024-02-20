@@ -42,3 +42,4 @@ src/Makefile
 TheFrim
 
 src/build/*
+*.frim

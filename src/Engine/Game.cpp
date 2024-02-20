@@ -13,7 +13,7 @@ Game::Game(std::string title, std::string version)
 	currentScene = nullptr;
 }
 
-void Game::CreateWindow(int width, int height)
+void Game::CCreateWindow(int width, int height)
 {
 	log->Write("Creating window...");
 
@@ -60,7 +60,7 @@ void Game::SetScene(Scene* s)
 
 void Game::Render()
 {
-	glClearColor(0.05f, 0.05f, 0.05f, 1.0f);
+	glClearColor(0.64f, 0.7f, 0.7f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, _camera->width, _camera->height);
 
@@ -75,7 +75,6 @@ void Game::Render()
 		_cursorX = mX;
 		_cursorY = mY;
 	}
-
 
 	currentScene->Draw();
 }

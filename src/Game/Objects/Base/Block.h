@@ -60,8 +60,6 @@ public:
 	float textureWidth = 128;
 	float textureHeight = 128;
 
-	std::vector<BlockFace> faces;
-
 	Block(glm::vec3 _position, BlockType _type);
 
 	std::vector<VVertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
@@ -76,12 +74,6 @@ public:
 	glm::vec4 GetUV(int x, int y);
 	glm::vec4 GetUVVerticallyFlipped(int x, int y);
 
-	BlockFace GetFrontFace();
-	BlockFace GetBackFace();
-	BlockFace GetLeftFace();
-	BlockFace GetRightFace();
-	BlockFace GetTopFace();
-	BlockFace GetBottomFace();
 };
 
 #endif

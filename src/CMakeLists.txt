@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.1...3.28)
+cmake_minimum_required(VERSION 3.27)
 
 project(
 	TheFrim
@@ -6,11 +6,11 @@ project(
 	LANGUAGES C CXX
 	DESCRIPTION "3D Voxel Story Game"
 )
-find_package(OpenGL REQUIRED)
 
 set(SOURCE_FILES 
 main.cpp 
 glad.c 
+miniz.c
 "Engine/Game.h" 
 "Engine/Game.cpp" 
 "Engine/Logging.h" 
@@ -23,9 +23,10 @@ glad.c
  
 "Engine/stbi.h" 
 "Engine/stbi.cpp" 
+"Engine/External/imgui_impl_glfw.h"
 
 "Engine/Objects/Camera.h" 
-"Game/TestScene.h" "Game/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp" "Game/Objects/Base/Chunk.h" "Game/Objects/Base/Block.h" "Game/Objects/Base/Block.cpp" "Game/Objects/Base/Chunk.cpp" "Game/Objects/Base/Blocks/Grass.h" "Game/Objects/Base/Blocks/Dirt.h" "Game/Data/World.h")
+"Game/Scenes/TestScene.h" "Game/Scenes/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp"  "Game/Objects/Base/Block.h" "Game/Objects/Base/Block.cpp" "Game/Objects/Base/Chunk.cpp" "Game/Objects/Base/Blocks/Grass.h" "Game/Objects/Base/Blocks/Dirt.h" "Game/Data/World.h"  "Game/Data/World.cpp" "Game/WorldManager.h" "Game/WorldManager.cpp" "Engine/External/imgui_impl_glfw.cpp" "Engine/External/imgui_impl_opengl3.cpp" "Engine/External/imgui_impl_opengl3.h" "Engine/External/imgui_impl_opengl3_loader.h")
 
 add_executable(TheFrim ${SOURCE_FILES})
 
@@ -36,11 +37,22 @@ VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 target_compile_features(TheFrim PUBLIC cxx_std_17)
 
 target_include_directories(TheFrim PUBLIC "${CMAKE_SOURCE_DIR}/../Include")
-target_include_directories(TheFrim PUBLIC "${CMAKE_SOURCE_DIR}/../Lib")
 target_include_directories(TheFrim PUBLIC "${CMAKE_SOURCE_DIR}/Engine")
 
 include_directories(${CMAKE_SOURCE_DIR}../Include)
 include_directories(${CMAKE_SOURCE_DIR}../Lib)
 
+find_package(imgui CONFIG REQUIRED)
+target_link_libraries(TheFrim imgui::imgui)
+
+find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(TheFrim glfw)
-target_link_libraries(TheFrim assimp)
+
+find_package(miniz CONFIG REQUIRED)
+target_link_libraries(TheFrim miniz::miniz)
+
+find_package(assimp CONFIG REQUIRED)
+target_link_libraries(TheFrim assimp::assimp)
+
+add_subdirectory(zstr)
+target_link_libraries(TheFrim zstr::zstr)
