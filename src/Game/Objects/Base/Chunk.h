@@ -1,12 +1,14 @@
 #ifndef _CHUNK_H
 #define _CHUNK_H
 
+#include <glm/glm.hpp>
 #include "Block.h"
 #include <map>
 #include <mutex>
 #include <OpenGL/Texture.h>
 #include <Objects/GameObject.h>
 #include "../../Data/World.h"
+#include <functional>
 
 class Chunk : public GameObject
 {
