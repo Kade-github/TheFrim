@@ -12,6 +12,8 @@ public:
 	float width = 1280;
 	float height = 720;
 
+	float cameraFar = 100.0f;
+
 	glm::vec3 lightPos = glm::vec3(0.0f, 5.0f, 0.0f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -71,9 +73,9 @@ public:
 	glm::mat4 GetProjectionMatrix()
 	{
 		if (width == 0 || height == 0)
-			return glm::perspective(glm::radians(fov), 1.0f, 0.1f, 100.0f);
+			return glm::perspective(glm::radians(fov), 1.0f, 0.1f, cameraFar);
 		else
-			return glm::perspective(glm::radians(fov), width / height, 0.1f, 100.0f);
+			return glm::perspective(glm::radians(fov), width / height, 0.1f, cameraFar);
 	}
 };
 

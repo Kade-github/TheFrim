@@ -10,6 +10,10 @@ class WorldManager
 	std::string _path;
 	std::vector<Chunk*> _toUpload;
 	std::vector<Data::Chunk> _toCreate;
+
+	std::vector<Chunk*> loadedChunks;
+	std::thread _edgeThread;
+
 	Data::World _world;
 public:
 	static WorldManager* instance;
@@ -25,6 +29,9 @@ public:
 	WorldManager(std::string worldPath, Texture* _tp, std::function<void(Chunk*)> onGenerated);
 
 	void GenerateChunk(int x, int z);
+	void GenerateEdgeChunks();
+
+	Data::Chunk GetChunk(int x, int z);
 
 	void CreateWorld();
 	void LoadWorld();

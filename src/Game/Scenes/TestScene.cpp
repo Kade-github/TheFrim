@@ -5,6 +5,8 @@
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
 
+float cameraSpeed = 10.0f;
+
 bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
@@ -66,24 +68,28 @@ void TestScene::Draw()
 	// camera movement
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
-		camera->position += camera->cameraFront * deltaTime * 10.0f;
+		camera->position += camera->cameraFront * deltaTime * cameraSpeed;
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
-		camera->position -= camera->cameraFront * deltaTime * 10.0f;
+		camera->position -= camera->cameraFront * deltaTime * cameraSpeed;
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
-		camera->position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * 10.0f;
+		camera->position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * cameraSpeed;
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
-		camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * 10.0f;
+		camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * cameraSpeed;
 
 	wm->UploadChunks();
 
-	ImGui::Begin("Debug");
+	ImGui::Begin("Debug", 0, ImGuiWindowFlags_AlwaysAutoResize);
 
 	ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
 
 	ImGui::Text("Camera Pos: %f, %f, %f", camera->position.x, camera->position.y, camera->position.z);
+
+	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 0.1f, 400.0f);
+
+	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
 
 	ImGui::End();
 

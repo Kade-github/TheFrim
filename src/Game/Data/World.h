@@ -12,6 +12,7 @@ namespace Data
 
 	struct Chunk
 	{
+		bool isGenerated = false;
 		uint8_t blocks[256][16][16];
 		int32_t x, y, z;
 
