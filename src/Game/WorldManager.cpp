@@ -35,6 +35,17 @@ WorldManager::WorldManager(std::string worldPath, Texture* _tp, std::function<vo
 
 }
 
+Chunk* WorldManager::GetLoadedChunk(int x, int z)
+{
+	for (auto& c : loadedChunks)
+	{
+		if (c->position.x == x && c->position.z == z)
+			return c;
+	}
+
+	return nullptr;
+}
+
 void WorldManager::UploadChunks()
 {
 
@@ -43,27 +54,22 @@ void WorldManager::UploadChunks()
 		std::unique_lock<std::mutex> lock(mtx, std::try_to_lock);
 		if (lock.owns_lock())
 		{
-			Chunk* c = _toUpload.back();
+			Chunk* c = _toUpload[0];
+
+			if (c->forward == NULL)
+				c->forward = GetChunk(c->position.x, c->position.z + 16);
+			if (c->backward == NULL)
+				c->backward = GetChunk(c->position.x, c->position.z - 16);
+			if (c->left == NULL)
+				c->left = GetChunk(c->position.x - 16, c->position.z);
+			if (c->right == NULL)
+				c->right = GetChunk(c->position.x + 16, c->position.z);
 
 			chunkGenerated(c);
 			chunks.push_back(c);
 
-			_toUpload.pop_back();
-		}
-	}
+			_toUpload.erase(_toUpload.begin());
 
-	if (_toCreate.size() != 0)
-	{
-		std::unique_lock<std::mutex> lock(mtx, std::try_to_lock);
-		if (lock.owns_lock())
-		{
-			Data::Chunk& c = _toCreate.back();
-
-			c.isGenerated = true;
-
-			Chunk* ch = new Chunk(glm::vec3(c.x, c.y, c.z), texturePack);
-			_toUpload.push_back(ch);
-			_toCreate.pop_back();
 		}
 	}
 
@@ -87,10 +93,14 @@ void WorldManager::UploadChunks()
 		{
 
 			if (!c->isLoaded)
+			{
 				c->GenerateMesh(_world.chunks[i]);
+			}
 		}
 		else if (c->isLoaded)
+		{
 			c->UnloadMesh();
+		}
 
 		if (c->isLoaded)
 			loadedChunks.push_back(c);
@@ -107,18 +117,24 @@ void WorldManager::GenerateChunk(int x, int z)
 
 	Game::instance->log->Write("Generating chunk at " + std::to_string(x) + " " + std::to_string(z));
 
-	_generatePool.detach_task([x,z,w]()
-		{
-			Data::Chunk c = w->generateChunk(x, z);
+	Data::Chunk c = w->generateChunk(x, z);
 
-			c.isGenerated = true;
+	c.isGenerated = true;
 
-			{
-				std::lock_guard<std::mutex> lock(mtx);
-				w->chunks.push_back(c);
-				instance->_toCreate.push_back(c);
-			}
-		});
+	Chunk* ch = new Chunk(glm::vec3(c.x, c.y, c.z), texturePack);
+
+	ch->forward = GetChunk(ch->position.x, ch->position.z + 16);
+	ch->backward = GetChunk(ch->position.x, ch->position.z - 16);
+	ch->left = GetChunk(ch->position.x - 16, ch->position.z);
+	ch->right = GetChunk(ch->position.x + 16, ch->position.z);
+
+	{
+		std::lock_guard<std::mutex> lock(mtx);
+		w->chunks.push_back(c);
+		_toUpload.push_back(ch);
+	}
+
+
 }
 
 void WorldManager::CreateWorld()
@@ -140,20 +156,13 @@ void WorldManager::CreateWorld()
 	{
 		for (int z = -10; z < 10; z++)
 		{
-			GenerateChunk(x * 16, z * 16);
+			_generatePool.detach_task([x, z]() {
+				instance->GenerateChunk(x * 16, z * 16);
+			});
 		}
 	}
 
-	std::thread([&]()
-		{
-			_generatePool.wait();
-
-			zstr::ofstream os_p(_path, std::ios::binary);
-
-			msgpack::pack(os_p, _world);
-
-			Game::instance->log->Write("World saved to " + _path);
-		}).detach();
+	SaveWorld();
 }
 
 void WorldManager::LoadWorld()
@@ -178,8 +187,10 @@ void WorldManager::LoadWorld()
 		c.isGenerated = true;
 		Chunk* ch = new Chunk(glm::vec3(_c->x, _c->y, _c->z), texturePack);
 		_generatePool.detach_task([_c, ch]() {
-			std::lock_guard<std::mutex> lock(mtx);
-			instance->_toUpload.push_back(ch);
+			{
+				std::lock_guard<std::mutex> lock(mtx);
+				instance->_toUpload.push_back(ch);
+			}
 
 		});
 	}
@@ -187,47 +198,45 @@ void WorldManager::LoadWorld()
 
 void WorldManager::SaveWorld()
 {
+	std::thread([&]()
+		{
+			Game::instance->log->Write("Saving world...");
+			_generatePool.wait();
 
+			zstr::ofstream os_p(_path, std::ios::binary);
+
+			msgpack::pack(os_p, _world);
+
+			Game::instance->log->Write("World saved to " + _path);
+		}).detach();
 }
 
 void WorldManager::GenerateEdgeChunks()
 {
 	for (auto& c : loadedChunks)
 	{
-		Data::Chunk forward;
-		Data::Chunk back;
-		Data::Chunk left;
-		Data::Chunk right;
-		{
-			mtx.lock();
-			forward = GetChunk(c->position.x, c->position.z + 16);
-			back = GetChunk(c->position.x, c->position.z - 16);
-			left = GetChunk(c->position.x - 16, c->position.z);
-			right = GetChunk(c->position.x + 16, c->position.z);
-			mtx.unlock();
-			if (!forward.isGenerated)
-				GenerateChunk(c->position.x, c->position.z + 16);
+		if (c->forward == NULL)
+			GenerateChunk(c->position.x, c->position.z + 16);
 
-			if (!back.isGenerated)
-				GenerateChunk(c->position.x, c->position.z - 16);
+		if (c->backward == NULL)
+			GenerateChunk(c->position.x, c->position.z - 16);
 
-			if (!left.isGenerated)
-				GenerateChunk(c->position.x - 16, c->position.z);
+		if (c->left == NULL)
+			GenerateChunk(c->position.x - 16, c->position.z);
 
-			if (!right.isGenerated)
-				GenerateChunk(c->position.x + 16, c->position.z);
-		}
+		if (c->right == NULL)
+			GenerateChunk(c->position.x + 16, c->position.z);
 	}
 }
 
-Data::Chunk WorldManager::GetChunk(int x, int z)
+Data::Chunk* WorldManager::GetChunk(int x, int z)
 {
 	for (auto& c : _world.chunks)
 	{
 		if (c.isGenerated)
 			if (c.x == x && c.z == z)
-				return c;
+				return &c;
 	}
 
-	return Data::Chunk();
+	return nullptr;
 }

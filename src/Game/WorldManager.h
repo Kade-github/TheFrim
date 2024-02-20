@@ -31,7 +31,8 @@ public:
 	void GenerateChunk(int x, int z);
 	void GenerateEdgeChunks();
 
-	Data::Chunk GetChunk(int x, int z);
+	Data::Chunk* GetChunk(int x, int z);
+	Chunk* GetLoadedChunk(int x, int z);
 
 	void CreateWorld();
 	void LoadWorld();

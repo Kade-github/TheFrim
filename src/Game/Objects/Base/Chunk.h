@@ -27,6 +27,11 @@ public:
 
 	bool isLoaded = false;
 
+	Data::Chunk* forward;
+	Data::Chunk* backward;
+	Data::Chunk* left;
+	Data::Chunk* right;
+
 	std::vector<Block*> blocks;
 
 	void AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i);

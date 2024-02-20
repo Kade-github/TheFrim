@@ -13,8 +13,6 @@ void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
 
 Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 {
-	glGenVertexArrays(1, &VAO);
-
 	sheet = _spr;
 }
 
@@ -22,6 +20,13 @@ void Chunk::GenerateMesh(Data::Chunk c)
 {
 	if (isLoaded)
 		return;
+
+	isLoaded = true;
+
+	blocks.clear();
+
+	vertices.clear();
+	indices.clear();
 
 	for (int x = 0; x < 16; x++)
 	{
@@ -127,9 +132,9 @@ void Chunk::GenerateMesh(Data::Chunk c)
 void Chunk::UploadMesh()
 {
 	if (vertices.size() == 0 || indices.size() == 0)
+	{
 		return;
-
-	isLoaded = true;
+	}
 
 	glBindVertexArray(VAO);
 
@@ -157,18 +162,21 @@ void Chunk::UnloadMesh()
 {
 	if (!isLoaded)
 		return;
-	if (vertices.size() == 0 || indices.size() == 0)
-		return;
+
+	isLoaded = false;
 
 	for (auto b : blocks)
 		delete b;
 
 	blocks.clear();
 
+	if (vertices.size() == 0 || indices.size() == 0)
+		return;
+
+
 	vertices.clear();
 	indices.clear();
 
-	isLoaded = false;
 
 	glBindVertexArray(VAO);
 	glDeleteBuffers(1, &VBO);
@@ -178,6 +186,7 @@ void Chunk::UnloadMesh()
 
 void Chunk::Create()
 {
+	glGenVertexArrays(1, &VAO);
 }
 
 void Chunk::Draw()
