@@ -277,22 +277,8 @@ void WorldManager::SaveWorld()
 {
 	std::thread([&]()
 		{
-			Game::instance->log->Write("Saving world...");
-
-			if (!std::filesystem::exists(_path))
-				std::filesystem::create_directories(_path);
-
-			zstr::ofstream os_p(_path + "/world.frim", std::ios::binary);
-
-			msgpack::pack(os_p, _world);
-
-			for (auto& r : regions)
-			{
-				_world.saveRegion(r.data);
-			}
-
-			Game::instance->log->Write("World saved to " + _path); })
-		.detach();
+			instance->SaveWorldNow();
+		}).detach();
 }
 
 void WorldManager::RenderChunks()
@@ -349,4 +335,23 @@ void WorldManager::RenderChunks()
 			}
 		}
 	}
+}
+
+void WorldManager::SaveWorldNow()
+{
+	Game::instance->log->Write("Saving world...");
+
+	if (!std::filesystem::exists(_path))
+		std::filesystem::create_directories(_path);
+
+	zstr::ofstream os_p(_path + "/world.frim", std::ios::binary);
+
+	msgpack::pack(os_p, _world);
+
+	for (auto& r : regions)
+	{
+		_world.saveRegion(r.data);
+	}
+
+	Game::instance->log->Write("World saved to " + _path);
 }

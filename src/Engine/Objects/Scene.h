@@ -50,6 +50,8 @@ public:
 		}
 	}
 
+	virtual void Destroy() {};
+
 	virtual void Create() {};
 
 	virtual void Draw()

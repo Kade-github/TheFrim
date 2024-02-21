@@ -47,6 +47,7 @@ public:
 
 	void Render();
 
+	void Destroy();
 
 	void SetWindowSize(int width, int height) 
 	{ 

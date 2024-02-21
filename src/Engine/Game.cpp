@@ -78,3 +78,12 @@ void Game::Render()
 
 	currentScene->Draw();
 }
+
+void Game::Destroy()
+{
+	log->Write("Destroying game...");
+
+	currentScene->Destroy();
+
+	log->Write("Game destroyed successfully");
+}

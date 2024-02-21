@@ -26,6 +26,7 @@ void TestScene::Create()
 
 }
 
+
 void TestScene::Draw()
 {
 	float currentFrame = glfwGetTime();
@@ -98,4 +99,9 @@ void TestScene::Draw()
 
 
 	Scene::Draw();
+}
+
+void TestScene::Destroy()
+{
+	wm->SaveWorldNow();
 }

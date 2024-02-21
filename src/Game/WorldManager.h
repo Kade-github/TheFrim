@@ -73,6 +73,7 @@ public:
 	void CreateWorld();
 	void LoadWorld();
 	void SaveWorld();
+	void SaveWorldNow();
 
 	void RenderChunks();
 };

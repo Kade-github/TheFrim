@@ -110,8 +110,9 @@ int main()
 	// start render thread
 
 	bool running = true;
+	bool threadIsRunning = true;
 
-	std::thread renderThread([&game, running]()
+	std::thread renderThread([&game, &running, &threadIsRunning]()
 	{
 		glfwMakeContextCurrent(game.GetWindow());
 
@@ -140,11 +141,7 @@ int main()
 
 			glfwSwapBuffers(game.GetWindow());
 		}
-
-		ImGui_ImplOpenGL3_Shutdown();
-		ImGui_ImplGlfw_Shutdown();
-		ImGui::DestroyContext();
-		glfwMakeContextCurrent(NULL);
+		threadIsRunning = false;
 	});
 
 	renderThread.detach();
@@ -155,6 +152,19 @@ int main()
 			running = false;
 		glfwWaitEvents();
 	}
+
+	Game::instance->log->Write("Shutting down...");
+
+	while (threadIsRunning)
+	{
+		std::this_thread::sleep_for(std::chrono::milliseconds(10));
+	}
+
+	game.Destroy();
+
+	ImGui_ImplOpenGL3_Shutdown();
+	ImGui_ImplGlfw_Shutdown();
+	ImGui::DestroyContext();
 
 	glfwTerminate();
 

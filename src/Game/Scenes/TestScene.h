@@ -12,6 +12,7 @@ class TestScene : public Scene
 
 	void Create() override;
 	void Draw() override;
+	void Destroy() override;
 };
 
 #endif
