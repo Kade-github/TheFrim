@@ -9,6 +9,8 @@ public:
 	int startX = 0, startZ = 0;
 	int endX = 0, endZ = 0;
 
+	bool loaded = true;
+
 	Data::Region data;
 
 	std::vector<Chunk*> chunks;

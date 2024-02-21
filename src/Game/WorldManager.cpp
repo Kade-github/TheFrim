@@ -77,13 +77,11 @@ void WorldManager::UnloadRegion(Region& r)
 			_c->UnloadMesh();
 		if (_c->rendered)
 			_c->Clean();
+		Game::instance->currentScene->RemoveObject(_c);
 		delete _c;
 	}
 
-	{
-		std::lock_guard<std::mutex> lock(mtx);
-		regions.erase(std::remove(regions.begin(), regions.end(), r), regions.end());
-	}
+	regions.erase(std::remove(regions.begin(), regions.end(), r), regions.end());
 }
 
 Data::Region WorldManager::GetRegion(int x, int z, int endX, int endZ)
@@ -138,14 +136,8 @@ void WorldManager::LoadChunks()
 		{
 			Region& r = regions[i];
 
-			glm::vec3 thisPos = glm::vec3(r.startX, 128, r.startZ);
-			float thisDistance = glm::distance(cPos, thisPos);
-
-			if (thisDistance > camera->cameraFar * 3)
-			{
-				//UnloadRegion(r);
-				//break;
-			}
+			if (!r.loaded)
+				continue;
 
 			for (auto& c : r.chunks)
 			{
@@ -306,12 +298,27 @@ void WorldManager::SaveWorld()
 void WorldManager::RenderChunks()
 {
 	Camera* camera = Game::instance->GetCamera();
-
+	glm::vec3 cPos = glm::vec3(camera->position.x, 128, camera->position.z);
 	renderedChunks = 0;
 
 	for (int i = 0; i < regions.size(); i++)
 	{
 		Region& r = regions[i];
+
+		if (!r.loaded)
+			continue;
+
+		glm::vec3 thisPos = glm::vec3(r.startX, 128, r.startZ);
+		float thisDistance = glm::distance(cPos, thisPos);
+
+		if (thisDistance > camera->cameraFar * 3)
+		{
+			r.loaded = false;
+			std::lock_guard<std::mutex> lock(mtx);
+			UnloadRegion(r);
+			break;
+		}
+
 		for (auto& c : r.chunks)
 		{
 			if (c->id < 0)
