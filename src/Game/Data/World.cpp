@@ -1,27 +1,39 @@
 #include "World.h"
+#include <iostream>
+#include <filesystem>
+#include "../../zstr/src/zstr.hpp"
 
-Data::Chunk Data::World::generateChunk(int x, int z)
+std::mutex m;
+
+Data::Chunk Data::Region::getChunk(int x, int z)
 {
-	Chunk chunk;
-
-	chunk.x = x;
-	chunk.y = 0;
-	chunk.z = z;
-
-
-	for (int _x = 0; _x < 16; _x++)
+	std::lock_guard<std::mutex> lock(m);
+	for (int i = 0; i < chunks.size(); i++)
 	{
-		for (int _z = 0; _z < 16; _z++)
+		if (chunks[i].x == x && chunks[i].z == z)
 		{
-			for (int _y = 128; _y < 256; _y++)
-			{
-				if (_y == 128)
-					chunk.blocks[_y][_x][_z] = 2;
-				else
-					chunk.blocks[_y][_x][_z] = 1;
-			}
+			return chunks[i];
 		}
 	}
+	return Chunk();
+}
 
-	return chunk;
+void Data::Region::addChunk(Chunk c)
+{
+	std::lock_guard<std::mutex> lock(m);
+	chunks.push_back(c);
+}
+
+Data::Region Data::World::getRegion(int x, int z)
+{
+	for (auto& file : std::filesystem::directory_iterator(_path))
+	{
+		if (file.path().extension() == ".region")
+		{
+			std::string name = file.path().filename().string();
+			name = name.substr(0, name.find("."));
+			
+		}
+	}
+	return Region();
 }

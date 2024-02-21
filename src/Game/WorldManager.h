@@ -9,7 +9,6 @@ class WorldManager
 	BS::thread_pool _generatePool;
 	std::string _path;
 
-	std::thread _edgeThread;
 	std::thread _generateThread;
 
 	Data::World _world;
@@ -31,11 +30,11 @@ public:
 
 	void CreateChunk(Chunk* pC);
 
-	void GenerateChunk(int x, int z);
-	void GenerateEdgeChunks();
+	Chunk* GenerateChunk(int x, int z);
+	void EdgeCheck(Chunk* c);
 	void GenerateMeshes();
 
-	Data::Chunk* GetChunk(int x, int z);
+	Data::Chunk GetChunk(int x, int z);
 	Chunk* GetLoadedChunk(int x, int z);
 
 	void CreateWorld();

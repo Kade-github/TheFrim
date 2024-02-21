@@ -33,18 +33,13 @@ public:
 	bool isLoaded = false;
 	bool rendered = false;
 
-	Data::Chunk* forwardC;
-	Data::Chunk* backwardC;
-	Data::Chunk* leftC;
-	Data::Chunk* rightC;
-
 	std::vector<Block*> blocks;
 
 	void AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i);
 
 	Chunk(glm::vec3 pos, Texture* _spr);
 
-	void GenerateMesh(Data::Chunk* c);
+	void GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC);
 
 	void UploadMesh();
 	void Clean();

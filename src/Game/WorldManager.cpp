@@ -11,11 +11,6 @@ std::mutex mtx;
 
 void WorldManager::CreateChunk(Chunk* pC)
 {
-	pC->forwardC = GetChunk(pC->position.x, pC->position.z + 16);
-	pC->backwardC = GetChunk(pC->position.x, pC->position.z - 16);
-	pC->leftC = GetChunk(pC->position.x - 16, pC->position.z);
-	pC->rightC = GetChunk(pC->position.x + 16, pC->position.z);
-
 	chunkGenerated(pC);
 	chunks.push_back(pC);
 }
@@ -33,14 +28,6 @@ WorldManager::WorldManager(std::string worldPath, Texture* _tp, std::function<vo
 	else
 		LoadWorld();
 
-	_edgeThread = std::thread([&]()
-		{
-			while (true)
-			{
-				instance->GenerateEdgeChunks();
-				std::this_thread::sleep_for(std::chrono::milliseconds(400));
-			} });
-
 	_generateThread = std::thread([&]()
 		{
 			while (true)
@@ -49,8 +36,6 @@ WorldManager::WorldManager(std::string worldPath, Texture* _tp, std::function<vo
 				std::this_thread::sleep_for(std::chrono::milliseconds(250));
 			} });
 	_generateThread.detach();
-
-	_edgeThread.detach();
 }
 
 Chunk* WorldManager::GetLoadedChunk(int x, int z)
@@ -103,46 +88,78 @@ void WorldManager::UploadChunks()
 	}
 }
 
-void WorldManager::GenerateChunk(int x, int z)
+Chunk* WorldManager::GenerateChunk(int x, int z)
 {
-	Data::World* w = &_world;
-
+	Chunk* ch = nullptr;
 	Game::instance->log->Write("Generating chunk at " + std::to_string(x) + " " + std::to_string(z));
-
-	Data::Chunk c = w->generateChunk(x, z);
+	Data::Chunk c = instance->_world.generateChunk(x, z);
 
 	c.isGenerated = true;
 
-	Chunk* ch = new Chunk(glm::vec3(c.x, c.y, c.z), texturePack);
+	ch = new Chunk(glm::vec3(c.x, 0, c.z), texturePack);
+	
+	instance->_world.addChunk(c);
 
-	{
-		std::lock_guard<std::mutex> lock(mtx);
-		w->chunks.push_back(c);
-		CreateChunk(ch);
-	}
+	return ch;
 }
+
+void WorldManager::EdgeCheck(Chunk* c)
+{
+	Data::Chunk forwardC = instance->GetChunk(c->position.x, c->position.z + 16);
+	Data::Chunk backwardC = instance->GetChunk(c->position.x, c->position.z - 16);
+	Data::Chunk leftC = instance->GetChunk(c->position.x - 16, c->position.z);
+	Data::Chunk rightC = instance->GetChunk(c->position.x + 16, c->position.z);
+
+	if (!forwardC.isGenerated)
+	{
+		Chunk* t = instance->GenerateChunk(c->position.x, c->position.z + 16);
+		forwardC = instance->GetChunk(c->position.x, c->position.z + 16);
+		instance->CreateChunk(t);
+	}
+
+	if (!backwardC.isGenerated)
+	{
+		Chunk* t = instance->GenerateChunk(c->position.x, c->position.z - 16);
+		backwardC = instance->GetChunk(c->position.x, c->position.z - 16);
+		instance->CreateChunk(t);
+	}
+
+	if (!leftC.isGenerated)
+	{
+		Chunk* t = instance->GenerateChunk(c->position.x - 16, c->position.z);
+		leftC = instance->GetChunk(c->position.x - 16, c->position.z);
+		instance->CreateChunk(t);
+	}
+
+	if (!rightC.isGenerated)
+	{
+		Chunk* t = instance->GenerateChunk(c->position.x + 16, c->position.z);
+		rightC = instance->GetChunk(c->position.x + 16, c->position.z);
+		instance->CreateChunk(t);
+	}
+
+	c->GenerateMesh(instance->GetChunk(c->position.x, c->position.z), forwardC, backwardC, leftC, rightC);
+}
+
 
 void WorldManager::CreateWorld()
 {
 
-	using namespace Data;
-
-	_world = World();
+	_world = Data::World();
 
 	_world.name = "Test";
 
-	// generate 4x4 chunks
 
-	std::chrono::steady_clock::time_point begin = std::chrono::steady_clock::now();
-
-	World* w = &_world;
 
 	for (int x = -10; x < 10; x++)
 	{
 		for (int z = -10; z < 10; z++)
 		{
 			_generatePool.detach_task([x, z]()
-				{ instance->GenerateChunk(x * 16, z * 16); });
+				{
+					Chunk* c = instance->GenerateChunk(x * 16, z * 16);
+					instance->CreateChunk(c);
+				});
 		}
 	}
 
@@ -168,7 +185,7 @@ void WorldManager::LoadWorld()
 	for (auto& c : _world.chunks)
 	{
 		c.isGenerated = true;
-		Chunk* ch = new Chunk(glm::vec3(c.x, c.y, c.z), texturePack);
+		Chunk* ch = new Chunk(glm::vec3(c.x, 0, c.z), texturePack);
 		_generatePool.detach_task([ch]()
 			{
 				{
@@ -185,7 +202,10 @@ void WorldManager::SaveWorld()
 			Game::instance->log->Write("Saving world...");
 			_generatePool.wait();
 
-			zstr::ofstream os_p(_path, std::ios::binary);
+			if (!std::filesystem::exists(_path))
+				std::filesystem::create_directories(_path);
+
+			zstr::ofstream os_p(_path + "/world.frim", std::ios::binary);
 
 			msgpack::pack(os_p, _world);
 
@@ -200,47 +220,33 @@ void WorldManager::GenerateMeshes()
 	Camera* camera = Game::instance->GetCamera();
 	{
 		std::lock_guard<std::mutex> lock(mtx);
-		for (int i = 0; i < chunks.size(); i++)
+		std::vector<Chunk*> chun = chunks;
+		for (int i = 0; i < chun.size(); i++)
 		{
-			Chunk* c = chunks[i];
+			Chunk* c = chun[i];
+
+
 			glm::vec3 r = c->position;
 			r.y = 128;
 
 			float diff = std::abs(glm::distance(r, camera->position));
 
-			_generatePool.detach_task([c, diff, i, camera]()
-				{
-					if (diff < camera->cameraFar)
-					{
-						if (!c->isLoaded)
-							c->GenerateMesh(&instance->_world.chunks[i]);
-					}
-					else if (c->isLoaded)
-						c->UnloadMesh();
-				});
+			if (diff <= camera->cameraFar)
+			{
+				if (c->isLoaded)
+					continue;
+				instance->EdgeCheck(c);
+			}
+			else
+				c->UnloadMesh();
 
 		}
 		_generatePool.wait();
 	}
 }
 
-void WorldManager::GenerateEdgeChunks()
+
+Data::Chunk WorldManager::GetChunk(int x, int z)
 {
-	Camera* camera = Game::instance->GetCamera();
-
-	// TODO
-	
-}
-
-Data::Chunk* WorldManager::GetChunk(int x, int z)
-{
-	for (int i = 0; i < _world.chunks.size(); i++)
-	{
-		Data::Chunk& c = _world.chunks[i];
-		if (c.isGenerated)
-			if (c.x == x && c.z == z)
-				return &c;
-	}
-
-	return nullptr;
+	return _world.getChunk(x, z);
 }
