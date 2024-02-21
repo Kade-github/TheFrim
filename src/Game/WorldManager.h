@@ -47,17 +47,18 @@ public:
 	std::vector<Region> regions;
 
 	int renderedChunks = 0;
-
-	std::function<void(Chunk*)> chunkGenerated;
-
 	Texture* texturePack;
 
 	std::string name;
 
-	WorldManager(std::string worldPath, Texture* _tp, std::function<void(Chunk*)> onGenerated);
+	WorldManager(std::string worldPath, Texture* _tp);
+
+	bool IsRegionLoaded(int x, int z, int endX, int endZ);
+
+	Data::Region GetRegion(int x, int z, int endX, int endZ);
 
 	void UnloadRegion(Region& r);
-	void LoadRegion(int x, int z);
+	void LoadRegion(int x, int z, int endX, int endZ);
 	void GenerateRegion(int x, int z);
 	std::vector<Chunk*> CreateChunksInRegion(Data::Region& r);
 

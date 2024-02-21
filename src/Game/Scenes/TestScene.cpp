@@ -18,10 +18,7 @@ void TestScene::Create()
 	if (!std::filesystem::exists("worlds"))
 		std::filesystem::create_directory("worlds");
 
-	wm = new WorldManager("worlds/test", Texture::createWithImage("Assets/Textures/sheet.png"), [&](Chunk* c)
-	{
-		AddObject(c);
-	});
+	wm = new WorldManager("worlds/test", Texture::createWithImage("Assets/Textures/sheet.png"));
 
 	Camera* camera = Game::instance->GetCamera();
 

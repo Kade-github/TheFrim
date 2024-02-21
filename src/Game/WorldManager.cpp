@@ -10,13 +10,23 @@ WorldManager* WorldManager::instance = nullptr;
 std::mutex mtx;
 std::mutex chunk_mtx;
 
-WorldManager::WorldManager(std::string worldPath, Texture* _tp, std::function<void(Chunk*)> onGenerated)
+bool WorldManager::IsRegionLoaded(int x, int z, int endX, int endZ)
+{
+	for (auto& r : regions)
+	{
+		if (r.startX == x && r.startZ == z && r.endX == endX && r.endZ == endZ)
+			return true;
+	}
+
+	return false;
+}
+
+WorldManager::WorldManager(std::string worldPath, Texture* _tp)
 {
 	instance = this;
 
 	_path = worldPath;
 	texturePack = _tp;
-	chunkGenerated = onGenerated;
 
 	if (!std::filesystem::exists(_path))
 		CreateWorld();
@@ -28,23 +38,24 @@ WorldManager::WorldManager(std::string worldPath, Texture* _tp, std::function<vo
 			while (true)
 			{
 				LoadChunks();
-				std::this_thread::sleep_for(std::chrono::milliseconds(100));
+				std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			} });
 	_generateThread.detach();
 }
 
 
-void WorldManager::LoadRegion(int x, int z)
+void WorldManager::LoadRegion(int x, int z, int endX, int endZ)
 {
-	Data::Region r = _world.getRegion(x, z);
+	Data::Region r = GetRegion(x, z, endX, endZ);
 
 	if (r.startX == 0 && r.startZ == 0 && r.endX == 0 && r.endZ == 0)
 	{
-		GenerateRegion(x, z);
+		GenerateRegion(x / 128, z / 128);
 		return;
 	}
 	else
 	{
+		Game::instance->log->Write("Loading region " + std::to_string(r.startX) + " " + std::to_string(r.startZ) + " " + std::to_string(r.endX) + " " + std::to_string(r.endZ));
 		std::vector<Chunk*> chunks = CreateChunksInRegion(r);
 
 		regions.push_back({ r.startX, r.startZ, r.endX, r.endZ, r, chunks });
@@ -68,6 +79,18 @@ void WorldManager::UnloadRegion(Region& r)
 	}
 }
 
+Data::Region WorldManager::GetRegion(int x, int z, int endX, int endZ)
+{
+	// if the region is already loaded, lets not waste time.
+	for (auto& r : regions)
+	{
+		if (r.startX == x && r.startZ == z && r.endX == endX && r.endZ == endZ)
+			return r.data;
+	}
+
+	return _world.getRegion(x, z, endX, endZ);
+}
+
 std::vector<Chunk*> WorldManager::CreateChunksInRegion(Data::Region& r)
 {
 	std::vector<Chunk*> chunks;
@@ -76,7 +99,6 @@ std::vector<Chunk*> WorldManager::CreateChunksInRegion(Data::Region& r)
 	{
 		Chunk* chunk = new Chunk(glm::vec3(c.x, 0, c.z), instance->texturePack);
 		chunks.push_back(chunk);
-		chunkGenerated(chunk);
 	}
 
 	return chunks;
@@ -86,14 +108,16 @@ std::vector<Chunk*> WorldManager::CreateChunksInRegion(Data::Region& r)
 void WorldManager::LoadChunks()
 {
 	Camera* camera = Game::instance->GetCamera();
-
-	std::vector<glm::vec2> toLoad;
+	std::vector<glm::vec4> toGen;
 
 	{
 		std::lock_guard<std::mutex> lock(mtx);
 		for (int i = 0; i < regions.size(); i++)
 		{
 			Region& r = regions[i];
+
+			int loadedChunks = 0;
+
 			int index = 0;
 			for (auto& c : r.chunks)
 			{
@@ -106,13 +130,11 @@ void WorldManager::LoadChunks()
 				{
 					if (!c->isLoaded)
 					{
-						Data::Chunk data = r.data.getChunk(c->position.x, c->position.z);
-						Data::Chunk forward = r.data.getChunk(c->position.x, c->position.z + 16);
-						Data::Chunk backward = r.data.getChunk(c->position.x, c->position.z - 16);
-						Data::Chunk left = r.data.getChunk(c->position.x - 16, c->position.z);
-						Data::Chunk right = r.data.getChunk(c->position.x + 16, c->position.z);
-
-
+						Data::Chunk data = regions[i].data.getChunk(c->position.x, c->position.z);
+						Data::Chunk forward = regions[i].data.getChunk(c->position.x, c->position.z + 16);
+						Data::Chunk backward = regions[i].data.getChunk(c->position.x, c->position.z - 16);
+						Data::Chunk left = regions[i].data.getChunk(c->position.x - 16, c->position.z);
+						Data::Chunk right = regions[i].data.getChunk(c->position.x + 16, c->position.z);
 
 						c->GenerateMesh(data, forward, backward, left, right);
 					}
@@ -124,26 +146,72 @@ void WorldManager::LoadChunks()
 						c->UnloadMesh();
 					}
 				}
+
+				if (c->isLoaded)
+					loadedChunks++;
+
 				index++;
 			}
-		}
-	}
 
-	for (auto& c : toLoad)
-	{
-		LoadRegion(c[0], c[1]);
+			// check in each direction if we need to load more regions
+
+			glm::vec3 r1 = glm::vec3(r.startX, 128, r.startZ - 16);
+			glm::vec3 r2 = glm::vec3(r.startX - 16, 128, r.startZ);
+			glm::vec3 r3 = glm::vec3(r.endX, 128, r.endZ + 16);
+			glm::vec3 r4 = glm::vec3(r.endX + 16, 128, r.endZ);
+
+			glm::vec3 cam = glm::vec3(camera->position.x, 128, camera->position.z);
+
+			float diff1 = glm::distance(cam, r1);
+			float diff2 = glm::distance(cam, r2);
+			float diff3 = glm::distance(cam, r3);
+			float diff4 = glm::distance(cam, r4);
+
+			if (diff1 <= camera->cameraFar)
+			{
+				if (!IsRegionLoaded(r.endX, r.endZ, r.endX + 128, r.endZ + 128))
+					toGen.push_back(glm::vec4(r.endX, r.endZ, r.endX + 128, r.endZ + 128));
+			}
+
+			if (diff2 <= camera->cameraFar)
+			{
+				if (!IsRegionLoaded(r.startX - 128, r.startZ - 128, r.startX, r.startZ))
+					toGen.push_back(glm::vec4((r.startX - 128), (r.startZ - 128), r.startX, r.startZ));
+			}
+
+			if (diff3 <= camera->cameraFar)
+			{
+				if (!IsRegionLoaded(r.startX - 128, r.endZ, r.startX, r.endZ + 128))
+					toGen.push_back(glm::vec4(r.startX - 128, r.endZ, r.startX, r.endZ + 128));
+	
+			}
+
+			if (diff4 <= camera->cameraFar)
+			{
+				if (!IsRegionLoaded(r.endX, r.startZ - 128, r.endX + 128, r.startZ))
+					toGen.push_back(glm::vec4(r.endX, r.startZ - 128, r.endX + 128, r.startZ));
+			}
+		}
+
+		for (auto& r : toGen)
+		{
+			LoadRegion(r.x, r.y, r.z, r.w);
+		}
 	}
 }
 
 void WorldManager::GenerateRegion(int x, int z)
 {
-	Data::Region r = _world.generateRegion(x * (128), z * (128));
+	int _x = x * 128;
+	int _z = z * 128;
+
+	Game::instance->log->Write("Generating region " + std::to_string(_x) + " " + std::to_string(_z));
+
+	Data::Region r = _world.generateRegion(_x, _z);
+
 
 	std::vector<Chunk*> chunks = CreateChunksInRegion(r);
-	{
-		std::lock_guard<std::mutex> lock(mtx);
-		regions.push_back({ r.startX, r.startZ, r.endX, r.endZ, r, chunks });
-	}
+	regions.push_back({ r.startX, r.startZ, r.endX, r.endZ, r, chunks });
 }
 
 
@@ -159,14 +227,16 @@ void WorldManager::CreateWorld()
 
 	// generate 4x4 regions
 
-	for (int x = -2; x < 2; x++)
 	{
-		for (int z = -2; z < 2; z++)
+		std::lock_guard<std::mutex> lock(mtx);
+		for (int x = -2; x < 2; x++)
 		{
-			GenerateRegion(x, z);
+			for (int z = -2; z < 2; z++)
+			{
+				GenerateRegion(x, z);
+			}
 		}
 	}
-	
 	SaveWorld();
 }
 
@@ -190,7 +260,11 @@ void WorldManager::LoadWorld()
 
 	// load regions
 
-	LoadRegion(0, 0);
+	_world.scanForRegions();
+
+	Game::instance->log->Write("Loading world " + _world.name + " from " + _path + ". Found: " + std::to_string(_world.storedRegions.size()) + " regions.");
+
+	LoadRegion(0, 0, 128, 128);
 
 }
 
@@ -229,6 +303,11 @@ void WorldManager::RenderChunks()
 		Region& r = regions[i];
 		for (auto& c : r.chunks)
 		{
+			if (c->id < 0)
+			{
+				Game::instance->currentScene->AddObject(c);
+			}
+
 			if (!c->isLoaded)
 				continue;
 

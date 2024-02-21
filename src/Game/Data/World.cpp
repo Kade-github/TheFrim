@@ -25,7 +25,7 @@ void Data::Region::addChunk(Chunk c)
 	chunks.push_back(c);
 }
 
-Data::Region Data::World::getRegion(int x, int z)
+void Data::World::scanForRegions()
 {
 	for (auto& file : std::filesystem::directory_iterator(_path))
 	{
@@ -39,14 +39,27 @@ Data::Region Data::World::getRegion(int x, int z)
 		if (parts.size() != 5)
 			continue;
 
+		storedRegions.push_back(name);
+	}
+}
+
+Data::Region Data::World::getRegion(int x, int z, int endX, int endZ)
+{
+	for (auto& stored : storedRegions)
+	{
+		std::vector<std::string> parts = StringTools::Split(stored, "_");
+
+		if (parts.size() != 5)
+			continue;
+
 		int _x = std::stoi(parts[1]);
 		int _z = std::stoi(parts[2]);
 		int _endX = std::stoi(parts[3]);
 		int _endZ = std::stoi(parts[4]);
 
-		if (x >= _x && x <= _endX && z >= _z && z <= _endZ)
+		if (x == _x && z == _z && endX == _endX && endZ == _endZ)
 		{
-			zstr::ifstream f(file.path().string(), std::ios::binary);
+			zstr::ifstream f(_path + "/" + stored + ".r", std::ios::binary);
 
 			std::stringstream buffer;
 
@@ -60,9 +73,13 @@ Data::Region Data::World::getRegion(int x, int z)
 
 			upd.get().convert(r);
 
+			for (auto& c : r.chunks)
+				c.isGenerated = true;
+
 			return r;
 		}
 	}
+
 	return Region();
 }
 

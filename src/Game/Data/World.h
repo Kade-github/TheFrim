@@ -39,6 +39,7 @@ namespace Data
 	{
 	public:
 		std::string _path = "";
+		std::vector<std::string> storedRegions;
 		std::string name;
 
 		World()
@@ -46,7 +47,9 @@ namespace Data
 			name = "";
 		}
 
-		Region getRegion(int x, int z);
+		void scanForRegions();
+
+		Region getRegion(int x, int z, int endX, int endZ);
 
 		Region generateRegion(int x, int z);
 
