@@ -56,10 +56,14 @@ public:
 	bool IsRegionLoaded(int x, int z, int endX, int endZ);
 
 	Data::Region GetRegion(int x, int z, int endX, int endZ);
+	Data::Region GetRegion(int x, int z);
 
 	void UnloadRegion(Region& r);
 	void LoadRegion(int x, int z, int endX, int endZ);
+
+	void ShouldLoad(int x, int z);
 	void GenerateRegion(int x, int z);
+
 	std::vector<Chunk*> CreateChunksInRegion(Data::Region& r);
 
 	void LoadChunks();
