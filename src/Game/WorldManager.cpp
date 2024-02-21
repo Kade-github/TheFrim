@@ -178,7 +178,7 @@ void WorldManager::CreateWorld()
 {
 	_world = Data::World();
 
-	_world.name = "Test";
+	_world.name = "test";
 
 	_world._path = std::filesystem::current_path().string() + "/worlds/" + _world.name;
 

@@ -122,7 +122,9 @@ void Data::World::saveRegion(Region r)
 {
 	std::string name = "r_" + std::to_string(r.startX) + "_" + std::to_string(r.startZ) + "_" + std::to_string(r.endX) + "_" + std::to_string(r.endZ) + ".r";
 
-	zstr::ofstream file(_path + "/" + name, std::ios::binary);
+	zstr::ofstream file;
+
+	file.open(_path + "/" + name);
 
 	msgpack::pack(file, r);
 
