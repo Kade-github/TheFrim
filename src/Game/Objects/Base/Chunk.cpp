@@ -22,9 +22,6 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 	if (isLoaded)
 		return;
 
-
-	isLoaded = true;
-
 	blocks.clear();
 
 	vertices.clear();
@@ -137,6 +134,9 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 			}
 		}
 	}
+
+
+	isLoaded = true;
 }
 
 void Chunk::UploadMesh()

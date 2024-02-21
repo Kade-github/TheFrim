@@ -33,6 +33,8 @@ WorldManager::WorldManager(std::string worldPath, Texture* _tp)
 	else
 		LoadWorld();
 
+	_generatePool.reset(5);
+
 	_generateThread = std::thread([&]()
 		{
 			while (true)
@@ -95,11 +97,12 @@ std::vector<Chunk*> WorldManager::CreateChunksInRegion(Data::Region& r)
 {
 	std::vector<Chunk*> chunks;
 
-	for (auto& c : r.chunks)
-	{
-		Chunk* chunk = new Chunk(glm::vec3(c.x, 0, c.z), instance->texturePack);
-		chunks.push_back(chunk);
-	}
+	for(int x = 0; x < 5; x++)
+		for (int z = 0; z < 5; z++)
+		{
+			Chunk* chunk = new Chunk(glm::vec3(x * 16, 0, z * 16), instance->texturePack);
+			chunks.push_back(chunk);
+		}
 
 	return chunks;
 
@@ -116,87 +119,44 @@ void WorldManager::LoadChunks()
 		{
 			Region& r = regions[i];
 
-			int loadedChunks = 0;
-
-			int index = 0;
 			for (auto& c : r.chunks)
 			{
-				glm::vec3 re = glm::vec3(c->position.x, 128, c->position.z);
-				glm::vec3 cam = glm::vec3(camera->position.x, 128, camera->position.z);
+				_generatePool.detach_task([c, camera, i]() {
+					glm::vec3 re = glm::vec3(c->position.x, 128, c->position.z);
+					glm::vec3 cam = glm::vec3(camera->position.x, 128, camera->position.z);
 
-				float diff = glm::distance(cam, re);
+					float diff = glm::distance(cam, re);
 
-				if (diff <= camera->cameraFar)
-				{
-					if (!c->isLoaded)
+					if (diff <= camera->cameraFar)
 					{
-						Data::Chunk data = regions[i].data.getChunk(c->position.x, c->position.z);
-						Data::Chunk forward = regions[i].data.getChunk(c->position.x, c->position.z + 16);
-						Data::Chunk backward = regions[i].data.getChunk(c->position.x, c->position.z - 16);
-						Data::Chunk left = regions[i].data.getChunk(c->position.x - 16, c->position.z);
-						Data::Chunk right = regions[i].data.getChunk(c->position.x + 16, c->position.z);
+						if (!c->isLoaded)
+						{
+							Data::Chunk data = instance->regions[i].data.getChunk(c->position.x, c->position.z);
+							Data::Chunk forward = instance->regions[i].data.getChunk(c->position.x, c->position.z + 16);
+							Data::Chunk backward = instance->regions[i].data.getChunk(c->position.x, c->position.z - 16);
+							Data::Chunk left = instance->regions[i].data.getChunk(c->position.x - 16, c->position.z);
+							Data::Chunk right = instance->regions[i].data.getChunk(c->position.x + 16, c->position.z);
 
-						c->GenerateMesh(data, forward, backward, left, right);
+							c->GenerateMesh(data, forward, backward, left, right);
+						}
 					}
-				}
-				else
-				{
-					if (c->isLoaded)
+					else
 					{
-						c->UnloadMesh();
+						if (c->isLoaded)
+						{
+							c->UnloadMesh();
+						}
 					}
-				}
 
-				if (c->isLoaded)
-					loadedChunks++;
 
-				index++;
+				});
 			}
 
-			// check in each direction if we need to load more regions
 
-			glm::vec3 r1 = glm::vec3(r.startX, 128, r.startZ - 16);
-			glm::vec3 r2 = glm::vec3(r.startX - 16, 128, r.startZ);
-			glm::vec3 r3 = glm::vec3(r.endX, 128, r.endZ + 16);
-			glm::vec3 r4 = glm::vec3(r.endX + 16, 128, r.endZ);
-
-			glm::vec3 cam = glm::vec3(camera->position.x, 128, camera->position.z);
-
-			float diff1 = glm::distance(cam, r1);
-			float diff2 = glm::distance(cam, r2);
-			float diff3 = glm::distance(cam, r3);
-			float diff4 = glm::distance(cam, r4);
-
-			if (diff1 <= camera->cameraFar)
-			{
-				if (!IsRegionLoaded(r.endX, r.endZ, r.endX + 128, r.endZ + 128))
-					toGen.push_back(glm::vec4(r.endX, r.endZ, r.endX + 128, r.endZ + 128));
-			}
-
-			if (diff2 <= camera->cameraFar)
-			{
-				if (!IsRegionLoaded(r.startX - 128, r.startZ - 128, r.startX, r.startZ))
-					toGen.push_back(glm::vec4((r.startX - 128), (r.startZ - 128), r.startX, r.startZ));
-			}
-
-			if (diff3 <= camera->cameraFar)
-			{
-				if (!IsRegionLoaded(r.startX - 128, r.endZ, r.startX, r.endZ + 128))
-					toGen.push_back(glm::vec4(r.startX - 128, r.endZ, r.startX, r.endZ + 128));
-	
-			}
-
-			if (diff4 <= camera->cameraFar)
-			{
-				if (!IsRegionLoaded(r.endX, r.startZ - 128, r.endX + 128, r.startZ))
-					toGen.push_back(glm::vec4(r.endX, r.startZ - 128, r.endX + 128, r.startZ));
-			}
 		}
 
-		for (auto& r : toGen)
-		{
-			LoadRegion(r.x, r.y, r.z, r.w);
-		}
+		_generatePool.wait();
+
 	}
 }
 
@@ -208,7 +168,6 @@ void WorldManager::GenerateRegion(int x, int z)
 	Game::instance->log->Write("Generating region " + std::to_string(_x) + " " + std::to_string(_z));
 
 	Data::Region r = _world.generateRegion(_x, _z);
-
 
 	std::vector<Chunk*> chunks = CreateChunksInRegion(r);
 	regions.push_back({ r.startX, r.startZ, r.endX, r.endZ, r, chunks });
@@ -229,13 +188,8 @@ void WorldManager::CreateWorld()
 
 	{
 		std::lock_guard<std::mutex> lock(mtx);
-		for (int x = -2; x < 2; x++)
-		{
-			for (int z = -2; z < 2; z++)
-			{
-				GenerateRegion(x, z);
-			}
-		}
+		GenerateRegion(0, 0);
+		GenerateRegion(-1, 0);
 	}
 	SaveWorld();
 }
@@ -273,7 +227,6 @@ void WorldManager::SaveWorld()
 	std::thread([&]()
 		{
 			Game::instance->log->Write("Saving world...");
-			_generatePool.wait();
 
 			if (!std::filesystem::exists(_path))
 				std::filesystem::create_directories(_path);

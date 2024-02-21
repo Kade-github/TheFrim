@@ -9,20 +9,28 @@ std::mutex m;
 Data::Chunk Data::Region::getChunk(int x, int z)
 {
 	std::lock_guard<std::mutex> lock(m);
-	for (int i = 0; i < chunks.size(); i++)
-	{
-		if (chunks[i].x == x && chunks[i].z == z)
-		{
-			return chunks[i];
-		}
-	}
-	return Chunk();
+	int realX = (x - startX) / 16;
+	int realZ = (z - startZ) / 16;
+
+	if (realX < 0 || realX > 4 || realZ < 0 || realZ > 4)
+		return Chunk();
+
+	return chunks[realX][realZ];
 }
 
 void Data::Region::addChunk(Chunk c)
 {
 	std::lock_guard<std::mutex> lock(m);
-	chunks.push_back(c);
+
+	int realX = (c.x - startX) / 16;
+	int realZ = (c.z - startZ) / 16;
+
+	if (realX < 0 || realX > 4 || realZ < 0 || realZ > 4)
+	{
+		return;
+	}
+
+	chunks[realX][realZ] = c;
 }
 
 void Data::World::scanForRegions()
@@ -73,8 +81,9 @@ Data::Region Data::World::getRegion(int x, int z, int endX, int endZ)
 
 			upd.get().convert(r);
 
-			for (auto& c : r.chunks)
-				c.isGenerated = true;
+			for (int i = 0; i < 5; i++)
+				for (int j = 0; j < 5; j++)
+					r.chunks[i][j].isGenerated = true;
 
 			return r;
 		}
@@ -89,8 +98,8 @@ Data::Region Data::World::generateRegion(int x, int z)
 
 	int chunkSize = 16;
 
-	int width = (chunkSize * 8);
-	int height = (chunkSize * 8);
+	int width = (chunkSize * 5);
+	int height = (chunkSize * 5);
 
 	r.startX = x;
 	r.startZ = z;

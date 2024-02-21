@@ -23,9 +23,12 @@ namespace Data
 		int32_t startX = 0, startZ = 0;
 		int32_t endX = 0, endZ = 0;
 
-		std::vector<Chunk> chunks;
+		std::vector<std::vector<Chunk>> chunks = std::vector<std::vector<Chunk>>(5);
 
-		Region() = default;
+		Region() {
+			for (int i = 0; i < 5; i++)
+				chunks[i] = std::vector<Chunk>(5);
+		};
 
 		Chunk getChunk(int x, int z);
 		void addChunk(Chunk c);
