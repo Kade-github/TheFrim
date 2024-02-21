@@ -11,9 +11,14 @@ bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
 
+#include <filesystem>
+
 void TestScene::Create()
 {
-	wm = new WorldManager("world.frim", Texture::createWithImage("Assets/Textures/sheet.png"), [&](Chunk* c)
+	if (!std::filesystem::exists("worlds"))
+		std::filesystem::create_directory("worlds");
+
+	wm = new WorldManager("worlds/test", Texture::createWithImage("Assets/Textures/sheet.png"), [&](Chunk* c)
 	{
 		AddObject(c);
 	});
@@ -79,7 +84,6 @@ void TestScene::Draw()
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 		camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * cameraSpeed;
 
-	wm->UploadChunks();
 
 	ImGui::Begin("Debug", 0, ImGuiWindowFlags_AlwaysAutoResize);
 
@@ -87,26 +91,13 @@ void TestScene::Draw()
 
 	ImGui::Text("Camera Pos: %f, %f, %f", camera->position.x, camera->position.y, camera->position.z);
 
-	ImGui::Text("Chunks Loaded: %d", wm->loadedChunks.size());
-
-	ImGui::Text("Chunks Rendered: %d", wm->renderedChunks);
-
-	int verticeCount = 0;
-
-	for (auto& c : wm->loadedChunks)
-	{
-		if (c->rendered)
-			verticeCount += c->vertices.size();
-		
-	}
-
-	ImGui::Text("Vertices Rendered: %d", verticeCount);
-
 	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 0.1f, 400.0f);
 
 	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
 
 	ImGui::End();
+
+	wm->RenderChunks();
 
 
 	Scene::Draw();

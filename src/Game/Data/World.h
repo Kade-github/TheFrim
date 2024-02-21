@@ -20,38 +20,17 @@ namespace Data
 	};
 
 	struct Region {
-		int32_t startX, startZ;
-		int32_t endX, endZ;
+		int32_t startX = 0, startZ = 0;
+		int32_t endX = 0, endZ = 0;
 
 		std::vector<Chunk> chunks;
+
+		Region() = default;
 
 		Chunk getChunk(int x, int z);
 		void addChunk(Chunk c);
 
-		inline Chunk generateChunk(int x, int z)
-		{
-			Chunk chunk;
-
-			chunk.x = x;
-			chunk.z = z;
-
-
-			for (int _x = 0; _x < 16; _x++)
-			{
-				for (int _z = 0; _z < 16; _z++)
-				{
-					for (int _y = 128; _y < 256; _y++)
-					{
-						if (_y == 128)
-							chunk.blocks[_y][_x][_z] = 2;
-						else
-							chunk.blocks[_y][_x][_z] = 1;
-					}
-				}
-			}
-
-			return chunk;
-		}
+		Chunk generateChunk(int x, int z);
 
 		MSGPACK_DEFINE_ARRAY(startX, startZ, endX, endZ, chunks);
 	};
@@ -61,7 +40,6 @@ namespace Data
 	public:
 		std::string _path = "";
 		std::string name;
-		std::vector<std::string> regions;
 
 		World()
 		{
@@ -70,7 +48,11 @@ namespace Data
 
 		Region getRegion(int x, int z);
 
-		MSGPACK_DEFINE_ARRAY(name, regions);
+		Region generateRegion(int x, int z);
+
+		void saveRegion(Region r);
+
+		MSGPACK_DEFINE_ARRAY(name);
 
 	};
 };

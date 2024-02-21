@@ -27,9 +27,9 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 	vertices.clear();
 	indices.clear();
 
-	for (int x = 0; x < 16; x++)
+	for (int y = 255; y > 0; y--)
 	{
-		for (int y = 0; y < 256; y++)
+		for (int x = 0; x < 16; x++)
 		{
 			for (int z = 0; z < 16; z++)
 			{
@@ -47,47 +47,45 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 					bool bottom = false;
 
 					if (z - 1 >= 0)
-						front = c.blocks[y][x][z - 1] >= 1;
+						front = c.blocks[y][x][z + 1] >= 1;
 
 					if (z + 1 < 16)
-						back = c.blocks[y][x][z + 1] >= 1;
+						back = c.blocks[y][x][z - 1] >= 1;
 
 					if (x - 1 >= 0)
-						right = c.blocks[y][x][z] >= 1;
+						right = c.blocks[y][x - 1][z] >= 1;
 
 					if (x + 1 < 16)
-						left = c.blocks[y][x][z] >= 1;
+						left = c.blocks[y][x + 1][z] >= 1;
 
-					if (y - 1 >= 0)
-						top = c.blocks[y - 1][x][z] >= 1;
+					if (y + 1 >= 0)
+						top = c.blocks[y + 1][x][z] >= 1;
 
-					if (y + 1 < 256)
-						bottom = c.blocks[y + 1][x][z] >= 1;
+					if (y - 1 < 256)
+						bottom = c.blocks[y - 1][x][z] >= 1;
 
-					if (z == 0)
-						front = forwardC.blocks[y][x][15] >= 1;
+					if (z == 0 && !back)
+						back = backwardC.blocks[y][x][15] >= 1;
 
-					if (z == 15)
-						back = backwardC.blocks[y][x][0] >= 1;
+					if (z == 15 && !front)
+						front = forwardC.blocks[y][x][0] >= 1;
 
-					if (x == 0)
+					if (x == 0 && !left)
 						left = leftC.blocks[y][15][z] >= 1;
 
-					if (x == 15)
+					if (x == 15 && !right)
 						right = rightC.blocks[y][0][z] >= 1;
 
 					Block* b = nullptr;
 
-					int realY = 128 + (128 - y);
-
 					switch (dB)
 					{
 					case 1:
-						b = new Dirt(position + glm::vec3(x, realY, z));
+						b = new Dirt(position + glm::vec3(x, y, z));
 						blocks.push_back(b);
 						break;
 					case 2:
-						b = new Grass(position + glm::vec3(x, realY, z));
+						b = new Grass(position + glm::vec3(x, y, z));
 						blocks.push_back(b);
 						break;
 					}

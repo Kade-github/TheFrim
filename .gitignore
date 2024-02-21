@@ -45,3 +45,5 @@ src/build/*
 *.frim
 imgui.ini
 .vscode/settings.json
+
+worlds/*

@@ -4,6 +4,35 @@
 #include "Objects/Base/Chunk.h"
 #include <BS_thread_pool.hpp>
 
+class Region {
+public:
+	int startX = 0, startZ = 0;
+	int endX = 0, endZ = 0;
+
+	Data::Region data;
+
+	std::vector<Chunk*> chunks;
+
+	Region(int _startX, int _startZ, int _endX, int _endZ, Data::Region _data, std::vector<Chunk*> _chunks)
+	{
+		startX = _startX;
+		startZ = _startZ;
+		endX = _endX;
+		endZ = _endZ;
+		data = _data;
+		chunks = _chunks;
+	}
+
+	Region() = default;
+
+	// equals operator
+
+	bool operator==(const Region& r) const
+	{
+		return startX == r.startX && startZ == r.startZ && endX == r.endX && endZ == r.endZ;
+	}
+};
+
 class WorldManager
 {
 	BS::thread_pool _generatePool;
@@ -15,7 +44,8 @@ class WorldManager
 public:
 	static WorldManager* instance;
 
-	std::vector<Chunk*> loadedChunks;
+	std::vector<Region> regions;
+
 	int renderedChunks = 0;
 
 	std::function<void(Chunk*)> chunkGenerated;
@@ -24,25 +54,20 @@ public:
 
 	std::string name;
 
-	std::vector<Chunk*> chunks;
-
 	WorldManager(std::string worldPath, Texture* _tp, std::function<void(Chunk*)> onGenerated);
 
-	void CreateChunk(Chunk* pC);
+	void UnloadRegion(Region& r);
+	void LoadRegion(int x, int z);
+	void GenerateRegion(int x, int z);
+	std::vector<Chunk*> CreateChunksInRegion(Data::Region& r);
 
-	Chunk* GenerateChunk(int x, int z);
-	void EdgeCheck(Chunk* c);
-	void GenerateMeshes();
-
-	Data::Chunk GetChunk(int x, int z);
-	Chunk* GetLoadedChunk(int x, int z);
+	void LoadChunks();
 
 	void CreateWorld();
 	void LoadWorld();
 	void SaveWorld();
 
-
-	void UploadChunks();
+	void RenderChunks();
 };
 
 #endif
