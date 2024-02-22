@@ -16,6 +16,7 @@ public:
 
 	bool visible = true;
 
+	int order = 0;
 	int id = -1;
 
 	glm::vec3 position = {};

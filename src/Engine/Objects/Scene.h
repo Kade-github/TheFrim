@@ -34,6 +34,15 @@ public:
 	{
 		object->id = lastId;
 		objects.push_back(object);
+
+		std::qsort(&objects[0], objects.size(), sizeof(GameObject*), [](const void* a, const void* b) -> int
+			{
+			GameObject* _a = *(GameObject**)a;
+			GameObject* _b = *(GameObject**)b;
+
+			return _a->order - _b->order;
+		});
+
 		object->Create();
 		lastId++;
 	}

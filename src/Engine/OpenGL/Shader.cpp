@@ -47,7 +47,9 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2,
 
 void Shader::SetUniformMat4f(const std::string& name, const float* matrix)
 {
-    glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, matrix);
+    int active = glGetUniformLocation(program, name.c_str());
+
+    glUniformMatrix4fv(active, 1, GL_FALSE, matrix);
 }
 
 void Shader::LoadShader(std::string vert_shader, std::string frag_shader)

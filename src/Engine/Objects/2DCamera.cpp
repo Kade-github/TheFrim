@@ -3,6 +3,9 @@
 
 Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 {
+	_w = Game::instance->GetWindowSize().x;
+	_h = Game::instance->GetWindowSize().y;
+
 	glGenFramebuffers(1, &fb);
 	glBindFramebuffer(GL_FRAMEBUFFER, fb);
 
@@ -22,8 +25,52 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 	glGenBuffers(1, &vbo);
 	glGenVertexArrays(1, &vao);
 
-	glGenBuffers(1, &s_vbo);
+	glBindVertexArray(vao);
+
+	glBindBuffer(GL_ARRAY_BUFFER, vbo);
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, u));
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+
 	glGenVertexArrays(1, &s_vao);
+
+	glBindVertexArray(s_vao);
+
+	glGenBuffers(1, &s_vbo);
+
+
+	Vertex2D tl = { 0, 0, 0, 0, 0 };
+	Vertex2D tr = { _w, 0, 0, 1, 0 };
+	Vertex2D bl = { 0, _h, 0, 0, 1 };
+	Vertex2D br = { _w, _h, 0, 1, 1 };
+
+	vertices.push_back(tl);
+	vertices.push_back(tr);
+	vertices.push_back(bl);
+	vertices.push_back(bl);
+	vertices.push_back(tr);
+	vertices.push_back(br);
+
+	glEnableVertexAttribArray(0);
+	glEnableVertexAttribArray(1);
+
+	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex2D), vertices.data(), GL_STATIC_DRAW);
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)0);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, u));
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
+
 
 }
 
@@ -82,22 +129,25 @@ void Camera2D::Draw()
 		}
 	}
 
+	s->Bind();
+
+	glm::mat4 projection = glm::ortho(0.0f, _w, _h, 0.0f);
+	s->SetUniformMat4f("projection", &projection[0][0]);
+
+	glDisable(GL_DEPTH_TEST);
+
 	glBindFramebuffer(GL_FRAMEBUFFER, fb);
-	glClearColor(0, 0, 0, 1);
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClearColor(0, 0, 0, 0);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
 	glViewport(0,0, _w, _h);
 
-	glm::mat4 projection = glm::ortho(0.0f, _w, _h, 0.0f, -1.0f, 1.0f);
 
 	for (int i = 0; i < draws.size(); i++)
 	{
 		Draw2D draw = draws[i];
-		if (draw.textureId == NULL)
-		{
+		if (draw.shaderId == NULL)
 			s->Bind();
-			s->SetUniformMat4f("projection", &projection[0][0]);
-		}
 		else
 		{
 			draw.shaderId->Bind();
@@ -110,65 +160,43 @@ void Camera2D::Draw()
 		glBindVertexArray(vao);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
-
-		glBufferData(GL_ARRAY_BUFFER, draw.vertices.size() * sizeof(Vertex2D), &draw.vertices[0], GL_STATIC_DRAW);
-
-		// position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		// uv attribute
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, texCoords));
-		glEnableVertexAttribArray(1);
+		glBufferData(GL_ARRAY_BUFFER, draw.vertices.size() * sizeof(Vertex2D), draw.vertices.data(), GL_STATIC_DRAW);
 
 		glDrawArrays(GL_TRIANGLES, 0, draw.vertices.size());
 
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+
 		glBindVertexArray(0);
+
+		if (draw.textureId != NULL)
+			draw.textureId->Unbind();
+
+		if (draw.shaderId != NULL)
+			draw.shaderId->Unbind();
+		else
+			s->Unbind();
 	}
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 
-	Shader* baseShader = Game::instance->shader;
+	glViewport(0, 0, Game::instance->GetWindowSize().x, Game::instance->GetWindowSize().y);
 
-	baseShader->Bind();
+	s->Bind();
 
-	t->Bind();
+	if (t != NULL)
+		t->Bind();
 
 	glBindVertexArray(s_vao);
-
-	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
-
-	vertices = {};
-
-	glm::vec3 cameraTopLeft = glm::inverse(c->GetViewMatrix()) * glm::vec4(-1, 1, 0, 1);
-	glm::vec3 cameraBottomRight = glm::inverse(c->GetViewMatrix()) * glm::vec4(1, -1, 0, 1);
-
-	vertices.push_back(Cam::Vertex(cameraTopLeft, glm::vec2(0, 0))); // tl
-	vertices.push_back(Cam::Vertex(glm::vec3(cameraTopLeft.x, cameraBottomRight.y, cameraTopLeft.z), glm::vec2(0, 1))); // bl
-	vertices.push_back(Cam::Vertex(glm::vec3(cameraBottomRight.x, cameraTopLeft.y, cameraTopLeft.z), glm::vec2(1, 0))); // tr
-	vertices.push_back(Cam::Vertex(glm::vec3(cameraBottomRight.x, cameraTopLeft.y, cameraTopLeft.z), glm::vec2(1, 0))); // tr
-	vertices.push_back(Cam::Vertex(glm::vec3(cameraTopLeft.x, cameraBottomRight.y, cameraTopLeft.z), glm::vec2(0, 1))); // bl
-	vertices.push_back(Cam::Vertex(cameraBottomRight, glm::vec2(1, 1))); // br
-
-	baseShader->SetUniformMat4f("view", &c->GetViewMatrix()[0][0]);
-	baseShader->SetUniformMat4f("projection", &c->GetProjectionMatrix()[0][0]);
-
-	glm::mat4 mtx_trans = glm::mat4(1.0f);
-
-	baseShader->SetUniformMat4f("model", &mtx_trans[0][0]);
-
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Cam::Vertex), &vertices[0], GL_STATIC_DRAW);
-
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Cam::Vertex), (void*)0);
-	glEnableVertexAttribArray(0);
-
-	// uv attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Cam::Vertex), (void*)offsetof(Cam::Vertex, uv));
-	glEnableVertexAttribArray(1);
 
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
 	glBindVertexArray(0);
+
+	if (t != NULL)
+		t->Unbind();
+
+	s->Unbind();
+
+	glEnable(GL_DEPTH_TEST);
 
 }

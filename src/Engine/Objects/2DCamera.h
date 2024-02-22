@@ -3,24 +3,9 @@
 
 #include "2DGameObject.h"
 
-namespace Cam
-{
-	struct Vertex {
-	public:
-		glm::vec3 position;
-		glm::vec2 uv;
-
-		Vertex(glm::vec3 _position, glm::vec2 _uv)
-		{
-			position = _position;
-			uv = _uv;
-		}
-	};
-}
-
-
 class Camera2D : public GameObject
 {
+	int _lastId = 0;
 	float _w, _h;
 public:
 	unsigned int s_vao, s_vbo;
@@ -32,8 +17,7 @@ public:
 	Shader* s = NULL;
 
 	std::vector<GameObject2D*> objects = {};
-	std::vector<Cam::Vertex> vertices = {};
-
+	std::vector<Vertex2D> vertices = {};
 
 	Camera2D(glm::vec3 pos);
 
@@ -43,7 +27,10 @@ public:
 
 	void AddObject(GameObject2D* object)
 	{
+		object->id = _lastId;
 		objects.push_back(object);
+
+		_lastId++;
 	}
 
 	void RemoveObject(GameObject2D* object)

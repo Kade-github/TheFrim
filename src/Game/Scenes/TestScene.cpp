@@ -1,9 +1,7 @@
 #include "TestScene.h"
 #include <imgui.h>
-
+#include "Objects/2DSprite.h"
 #include <filesystem>
-
-#include <Objects/2DCamera.h>
 
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
@@ -27,14 +25,20 @@ void TestScene::Create()
 
 	camera->position = glm::vec3(0.0f, 129.0f, 0.0f);
 
-	Camera2D* cam = new Camera2D(glm::vec3(0,0,0));
+	cam2d = new Camera2D(glm::vec3(0,0,0));
+
+	cam2d->order = 1;
 
 	Shader* Shader2D = new Shader();
 	Shader2D->LoadShader("Assets/Shaders/vert2d.glsl", "Assets/Shaders/frag2d.glsl");
 
-	cam->s = Shader2D;
+	cam2d->s = Shader2D;
 
-	AddObject(cam);
+	Sprite2D * sprite = new Sprite2D("Assets/Textures/sheet.png", glm::vec3(200,200, 0));
+
+	cam2d->AddObject(sprite);
+
+	AddObject(cam2d);
 }
 
 
@@ -107,7 +111,6 @@ void TestScene::Draw()
 	ImGui::End();
 
 	wm->RenderChunks();
-
 
 	Scene::Draw();
 }

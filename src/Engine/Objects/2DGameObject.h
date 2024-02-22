@@ -8,8 +8,18 @@
 
 struct Vertex2D
 {
-	glm::vec3 position;
-	glm::vec2 texCoords;
+public:
+	float x, y, z;
+	float u, v;
+
+	Vertex2D(float _x, float _y, float _z, float _u, float _v)
+	{
+		x = _x;
+		y = _y;
+		z = _z;
+		u = _u;
+		v = _v;
+	}
 };
 
 struct Draw2D
@@ -24,6 +34,11 @@ struct Draw2D
 class GameObject2D : public GameObject
 {
 public:
+	GameObject2D(glm::vec3 pos) : GameObject(pos)
+	{
+
+	}
+
 	Texture* t = NULL;
 	Shader* s = NULL;
 
