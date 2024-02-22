@@ -26,7 +26,7 @@ miniz.c
 "Engine/External/imgui_impl_glfw.h"
 
 "Engine/Objects/Camera.h" 
-"Game/Scenes/TestScene.h" "Game/Scenes/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp"  "Game/Objects/Base/Block.h" "Game/Objects/Base/Block.cpp" "Game/Objects/Base/Chunk.cpp" "Game/Objects/Base/Blocks/Grass.h" "Game/Objects/Base/Blocks/Dirt.h" "Game/Data/World.h"   "Game/WorldManager.h" "Game/WorldManager.cpp" "Engine/External/imgui_impl_glfw.cpp" "Engine/External/imgui_impl_opengl3.cpp" "Engine/External/imgui_impl_opengl3.h" "Engine/External/imgui_impl_opengl3_loader.h" "Game/Data/World.cpp" "Engine/Helpers/StringTools.h")
+"Game/Scenes/TestScene.h" "Game/Scenes/TestScene.cpp" "Engine/OpenGL/Mesh.h" "Engine/OpenGL/Mesh.cpp" "Engine/OpenGL/Model.h" "Engine/OpenGL/Model.cpp"  "Game/Objects/Base/Block.h" "Game/Objects/Base/Block.cpp" "Game/Objects/Base/Chunk.cpp" "Game/Objects/Base/Blocks/Grass.h" "Game/Objects/Base/Blocks/Dirt.h" "Game/Data/World.h"   "Game/WorldManager.h" "Game/WorldManager.cpp" "Engine/External/imgui_impl_glfw.cpp" "Engine/External/imgui_impl_opengl3.cpp" "Engine/External/imgui_impl_opengl3.h" "Engine/External/imgui_impl_opengl3_loader.h" "Game/Data/World.cpp" "Engine/Helpers/StringTools.h" "Engine/Objects/2DCamera.h" "Engine/Objects/2DCamera.cpp" "Engine/Objects/2DGameObject.h" )
 
 add_executable(TheFrim ${SOURCE_FILES})
 

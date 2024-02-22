@@ -79,6 +79,27 @@ public:
 		return screenPos;
 	}
 
+	glm::vec3 ScreenToWorld(glm::vec2 screenPos)
+	{
+		glm::mat4 view = GetViewMatrix();
+		glm::mat4 projection = GetProjectionMatrix();
+
+		glm::vec4 clipCoords;
+		clipCoords.x = (2.0f * screenPos.x) / width - 1.0f;
+		clipCoords.y = 1.0f - (2.0f * screenPos.y) / height;
+		clipCoords.z = -1.0f;
+		clipCoords.w = 1.0f;
+
+		glm::vec4 eyeCoords = glm::inverse(projection) * clipCoords;
+		eyeCoords.z = -1.0f;
+		eyeCoords.w = 0.0f;
+
+		glm::vec4 rayWorld = glm::inverse(view) * eyeCoords;
+		rayWorld = glm::normalize(rayWorld);
+
+		return glm::vec3(rayWorld.x, rayWorld.y, rayWorld.z);
+	}
+
 	glm::mat4 GetViewMatrix()
 	{
 		return glm::lookAt(position, position + cameraFront, cameraUp);

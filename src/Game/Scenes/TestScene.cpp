@@ -1,6 +1,10 @@
 #include "TestScene.h"
 #include <imgui.h>
 
+#include <filesystem>
+
+#include <Objects/2DCamera.h>
+
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -11,7 +15,6 @@ bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
 
-#include <filesystem>
 
 void TestScene::Create()
 {
@@ -24,6 +27,14 @@ void TestScene::Create()
 
 	camera->position = glm::vec3(0.0f, 129.0f, 0.0f);
 
+	Camera2D* cam = new Camera2D(glm::vec3(0,0,0));
+
+	Shader* Shader2D = new Shader();
+	Shader2D->LoadShader("Assets/Shaders/vert2d.glsl", "Assets/Shaders/frag2d.glsl");
+
+	cam->s = Shader2D;
+
+	AddObject(cam);
 }
 
 
