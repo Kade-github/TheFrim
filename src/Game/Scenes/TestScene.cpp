@@ -34,10 +34,6 @@ void TestScene::Create()
 
 	cam2d->s = Shader2D;
 
-	Sprite2D * sprite = new Sprite2D("Assets/Textures/sheet.png", glm::vec3(200,200, 0));
-
-	cam2d->AddObject(sprite);
-
 	AddObject(cam2d);
 }
 
