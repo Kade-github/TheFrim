@@ -42,7 +42,7 @@ public:
 		return t;
 	}
 
-	static Texture* createWithImage(std::string filePath);
+	static Texture* createWithImage(std::string filePath, bool flipped = true);
 
 	static Texture* loadTextureFromData(char* data, size_t outLength);
 	static Texture* loadTextureFromData(unsigned char* data, int w, int h);

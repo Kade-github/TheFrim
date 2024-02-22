@@ -2,11 +2,13 @@
 #include "Game.h"
 #include <algorithm>
 
+std::vector<Fnt*>* Fnt::fonts = NULL;
+
 Fnt::Fnt(std::string font)
 {
 	name = font;
 	pugi::xml_document doc;
-	pugi::xml_parse_result result = doc.load_file(("Assets/Fonts/" + name).c_str());
+	pugi::xml_parse_result result = doc.load_file(("Assets/Fonts/" + name + ".fnt").c_str());
 
 	if (!result)
 	{
@@ -33,7 +35,7 @@ Fnt::Fnt(std::string font)
 	{
 		std::string page = pages.first_child().attribute("file").as_string();
 		std::string path = "Assets/Fonts/" + page;
-		_texture = Texture::createWithImage(path);
+		_texture = Texture::createWithImage(path, false);
 	}
 	else
 	{
@@ -58,6 +60,8 @@ Fnt::Fnt(std::string font)
 
 			fc.src = { x / _texture->width, y / _texture->height,w / _texture->width, h / _texture->height };
 
+			fc.xAdvance = c.attribute("xadvance").as_int();
+
 			chars.push_back(fc);
 		}
 	}
@@ -73,6 +77,7 @@ Fnt::Fnt(std::string font)
 
 	if (kernings != NULL)
 	{
+		hasKernings = true;
 		for (pugi::xml_node k : kernings.children())
 		{
 			int id = k.attribute("first").as_int();
@@ -103,16 +108,25 @@ Fnt::Fnt(std::string font)
 
 void Fnt::ClearCache()
 {
-	if (fonts.size() == 0)
+	if (fonts == NULL)
+		fonts = new std::vector<Fnt*>();
+
+	if (fonts->size() == 0)
 		return;
-	fonts.clear();
+	fonts->clear();
 }
 
 Fnt* Fnt::GetFont(std::string font)
 {
-	for (Fnt& f : fonts)
-		if (f.name == font)
-			return &f;
+	if (fonts == NULL)
+		fonts = new std::vector<Fnt*>();
 
-	fonts.push_back(Fnt(font));
+	for (Fnt* f : *fonts)
+		if (f->name == font)
+			return f;
+
+	Fnt* f = new Fnt(font);
+
+	fonts->push_back(f);
+	return f;
 }

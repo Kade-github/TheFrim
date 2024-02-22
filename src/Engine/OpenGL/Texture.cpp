@@ -2,9 +2,15 @@
 #include <glad/glad.h>
 #include "../stbi.h"
 
-Texture* Texture::createWithImage(std::string filePath)
+Texture* Texture::createWithImage(std::string filePath, bool flipped)
 {
-	Texture* t = stbi_h::stbi_load_file(filePath);
+	Texture* t = NULL;
+
+	if (flipped)
+		t = stbi_h::stbi_load_file(filePath);
+	else
+		t = stbi_h::stbi_load_file_non_flipped(filePath);
+
 	t->fromSTBI = true;
 
 	if (stbi_h::get_error())

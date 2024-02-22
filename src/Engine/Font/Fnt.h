@@ -25,26 +25,26 @@ struct FntChar
 	}
 };
 
-class Fnt
-{
-	int ogSize = 0;
+class Fnt {
 	Texture* _texture = NULL;
 	std::string _path = "";
 public:
-	static std::vector<Fnt> fonts;
+	int ogSize = 0;
+	static std::vector<Fnt*>* fonts;
+	bool hasKernings = false;
 	std::vector<FntChar> chars{};
 	std::string name = "";
 
 	Fnt(std::string font);
 
-	~Fnt()
-	{
-		delete _texture;
-	}
-
 	static void ClearCache();
 
 	static Fnt* GetFont(std::string font);
+
+	Texture* GetTexture()
+	{
+		return _texture;
+	}
 
 	FntChar GetChar(char c)
 	{

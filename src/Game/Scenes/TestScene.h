@@ -10,7 +10,6 @@
 class TestScene : public Scene
 {
 	WorldManager* wm;
-	Camera2D* cam2d;
 	void Create() override;
 	void Draw() override;
 	void Destroy() override;

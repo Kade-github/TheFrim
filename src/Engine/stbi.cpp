@@ -14,6 +14,17 @@ Texture* stbi_h::stbi_load_file(std::string filePath)
 	return new Texture(c, w, h);
 }
 
+Texture* stbi_h::stbi_load_file_non_flipped(std::string filePath)
+{
+	stbi_set_flip_vertically_on_load(false);
+	int w;
+	int h;
+	unsigned char* c = stbi_load(filePath.c_str(), &w, &h, nullptr, 4);
+	if (get_error())
+		std::cout << "[Image] [Error] failure to load " << stbi_failure_reason() << std::endl;
+	return new Texture(c, w, h);
+}
+
 unsigned char* stbi_h::stbi_load_file_data(std::string filePath, int* w, int* h)
 {
 	unsigned char* c = stbi_load(filePath.c_str(), w, h, nullptr, 4);

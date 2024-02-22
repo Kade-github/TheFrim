@@ -24,6 +24,14 @@ public:
 	 * \return The loaded texture
 	 */
 	static Texture* stbi_load_file(std::string filePath);
+
+	/**
+	 * \brief Loads a texture from an image (that isn't vertically flipped)
+	 * \param filePath The file path
+	 * \return The loaded texture
+	 */
+	static Texture* stbi_load_file_non_flipped(std::string filePath);
+
 	/**
 	 * \brief Loads the file data for a given image
 	 * \param filePath The file path

@@ -4,15 +4,33 @@
 #include "2DGameObject.h"
 #include "Font/Fnt.h"
 
+struct RenderedCharacter
+{
+	float w;
+	float h;
+	glm::vec4 src;
+	bool space = false;
+	int advance;
+};
+
+struct Line
+{
+	int w;
+	std::vector<RenderedCharacter> characters;
+};
+
 class Text2D : public GameObject2D
 {
 public:
+	bool alienMode = false;
 	std::string text = "";
 	Fnt* font = NULL;
 	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
-	float scale = 1.0f;
+	int size = 12;
 
-	Text2D(std::string text, Fnt* font, glm::vec3 pos, glm::vec3 color, float scale = 1.0f);
+	bool wrap = false;
+
+	Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec3 color, int size = 12);
 
 	void Draw() override;
 };
