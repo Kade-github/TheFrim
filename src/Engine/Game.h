@@ -56,6 +56,8 @@ public:
 		_camera->width = width;
 		_camera->height = height;
 
+		currentScene->Resize(width, height);
+
 		glViewport(0, 0, _width, _height);
 	}
 

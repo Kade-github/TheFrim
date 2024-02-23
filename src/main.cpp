@@ -1,4 +1,4 @@
-#include "Game/Scenes/TestScene.h"
+#include "Game/Scenes/MainMenu.h"
 #include <thread>
 
 #include <imgui.h>
@@ -118,7 +118,7 @@ int main()
 	{
 		glfwMakeContextCurrent(game.GetWindow());
 
-		game.SetScene(new TestScene());
+		game.SetScene(new MainMenu());
 
 		// create imgui
 

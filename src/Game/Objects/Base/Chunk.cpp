@@ -240,7 +240,7 @@ void Chunk::Draw()
 
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
-	Game::instance->shader->Bind();
+	s->Unbind();
 
 	sheet->Unbind();
 

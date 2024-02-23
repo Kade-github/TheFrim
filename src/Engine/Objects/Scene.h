@@ -59,6 +59,8 @@ public:
 		}
 	}
 
+	virtual void Resize(float _w, float _h) {};
+
 	virtual void Destroy() {};
 
 	virtual void Create() {};
