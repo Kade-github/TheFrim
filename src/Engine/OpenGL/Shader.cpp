@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <glad/glad.h>
+#include <filesystem>
 
 Shader::~Shader()
 {
@@ -62,7 +63,8 @@ void Shader::LoadShader(std::string vert_shader, std::string frag_shader)
 
     if (!vertF.is_open() || !fragF.is_open())
     {
-        std::cout << "Couldn't find shaders." << std::endl;
+        std::cout << std::filesystem::current_path() << std::endl;
+        std::cout << "Couldn't find shaders at " << vert_shader << " and " << frag_shader << std::endl;
         return;
     }
 

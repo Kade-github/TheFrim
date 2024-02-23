@@ -83,11 +83,6 @@ int main()
 					}
 					break;
 				case GLFW_KEY_F1:
-					if (Game::instance->lockedCursor)
-						glfwSetInputMode(Game::instance->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-					else
-						glfwSetInputMode(Game::instance->GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-
 					Game::instance->lockedCursor = !Game::instance->lockedCursor;
 					break;
 				}
@@ -104,7 +99,7 @@ int main()
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
-	glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+	glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 
 
 	glfwMakeContextCurrent(NULL);
