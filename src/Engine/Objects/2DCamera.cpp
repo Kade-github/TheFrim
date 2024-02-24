@@ -1,8 +1,12 @@
 #include "2DCamera.h"
 #include <Game.h>
+#include <imgui.h>
+#include <Helpers/StringTools.h>
 
 Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 {
+	debugText = new Text2D("", "ArialFrim", glm::vec3(0, 0, 0), glm::vec4(1, 1, 1, 1));
+
 	_w = Game::instance->GetWindowSize().x;
 	_h = Game::instance->GetWindowSize().y;
 
@@ -31,9 +35,11 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, u));
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)(offsetof(Vertex2D, r)));
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -46,10 +52,10 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 	glGenBuffers(1, &s_vbo);
 
 
-	Vertex2D tl = { 0, 0, 0, 0, 0 };
-	Vertex2D tr = { _w, 0, 0, 1, 0 };
-	Vertex2D bl = { 0, _h, 0, 0, 1 };
-	Vertex2D br = { _w, _h, 0, 1, 1 };
+	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1)};
+	Vertex2D tr = { glm::vec3{_w,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1)};
+	Vertex2D bl = { glm::vec3{0,_h,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1)};
+	Vertex2D br = { glm::vec3{_w,_h,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1)};
 
 	vertices.push_back(tl);
 	vertices.push_back(tr);
@@ -60,12 +66,14 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
+	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex2D), vertices.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, u));
+	glVertexAttribPointer(2, 4, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)(offsetof(Vertex2D, r)));
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
@@ -92,10 +100,28 @@ void Camera2D::Resize()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Camera2D::DrawDebugText(std::string text, glm::vec2 pos, int size)
+{
+	debugText->text = text;
+	debugText->size = size;
+	debugText->position = glm::vec3(pos, 0);
+	debugText->color = glm::vec4(1, 1, 1, 1);
+	debugText->Draw();
+	dbgDraws.push_back(debugText->draws[0]);
+}
+
 void Camera2D::Draw()
 {
 	if (s == NULL)
 		return;
+
+	dbgDraws.clear();
+
+	float fps = ImGui::GetIO().Framerate;
+
+	std::string format = StringTools::ToTheDecimial(fps, 0);
+
+	DrawDebugText("FPS: " + format, glm::vec2(4, _h - 28), 24);
 
 	Camera* c = Game::instance->GetCamera();
 
@@ -112,21 +138,32 @@ void Camera2D::Draw()
 		{
 			Draw2D draw = object->draws[j];
 			// check if the texture and shader are already in there
-			bool found = false;
 			for (int k = 0; k < draws.size(); k++)
 			{
 				if (draws[k].textureId == draw.textureId && draws[k].shaderId == draw.shaderId)
 				{
-					found = true;
 					for (int l = 0; l < draw.vertices.size(); l++)
-					{
 						draws[k].vertices.push_back(draw.vertices[l]);
-					}
 					break;
 				}
 			}
 			draws.push_back(draw);
 		}
+	}
+
+	for(int i = 0; i < dbgDraws.size(); i++)
+	{
+		Draw2D draw = dbgDraws[i];
+		for (int k = 0; k < draws.size(); k++)
+		{
+			if (draws[k].textureId == draw.textureId && draws[k].shaderId == draw.shaderId)
+			{
+				for (int l = 0; l < draw.vertices.size(); l++)
+					draws[k].vertices.push_back(draw.vertices[l]);
+				break;
+			}
+		}
+		draws.push_back(draw);
 	}
 
 	s->Bind();

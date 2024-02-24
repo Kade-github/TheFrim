@@ -67,7 +67,12 @@ public:
 
 	glm::vec2 GetWindowSize() { return glm::vec2(_width, _height); }
 
-	glm::vec2 GetCursorPos() { return glm::vec2(_cursorX, _cursorY); }
+	glm::vec2 GetCursorPos() { 
+		// invert y axis
+		float y =  _height - _cursorY;
+
+		return glm::vec2(_cursorX, y); 
+	}
 };
 
 #endif

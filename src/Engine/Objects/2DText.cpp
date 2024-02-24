@@ -1,7 +1,7 @@
 #include "2DText.h"
 #include <Game.h>
 
-Text2D::Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec3 color, int size) : GameObject2D(pos)
+Text2D::Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec4 color, int size) : GameObject2D(pos)
 {
 	this->text = text;
 	this->font = Fnt::GetFont(font);
@@ -26,7 +26,10 @@ void Text2D::Draw()
 
 	float scale = (float)size / (float)font->ogSize;
 
+	float totalHeight = 0;
+
 	Line currentLine;
+	currentLine.w = 0;
 
 	for (int i = 0; i < text.size(); i++)
 	{
@@ -59,11 +62,15 @@ void Text2D::Draw()
 			c.advance = advance;
 			p.x += advance;
 
+			currentLine.w += advance;
+
 			if (wrap && p.x + characterWidth > cam->width)
 			{
 				lines.push_back(currentLine);
 				currentLine = Line();
+				currentLine.w = 0;
 				p.x = position.x;
+				totalHeight += size;
 			}
 
 			currentLine.characters.push_back(c);
@@ -78,6 +85,7 @@ void Text2D::Draw()
 		rc.src = c.src;
 
 		p.x += advance;
+		currentLine.w += advance;
 
 		currentLine.characters.push_back(rc);
 	}
@@ -87,11 +95,20 @@ void Text2D::Draw()
 
 	float y = position.y;
 
+	if (center)
+		y = position.y - (totalHeight / 2.0f);
+
 	std::vector<Vertex2D> vertices;
 
 	for (int i = 0; i < lines.size(); i++)
 	{
+		Line l = lines[i];
 		float x = position.x;
+
+		if (center)
+			x = position.x - (l.w / 2.0f);
+
+
 		for (int j = 0; j < lines[i].characters.size(); j++)
 		{
 			RenderedCharacter& rc = lines[i].characters[j];
@@ -121,12 +138,12 @@ void Text2D::Draw()
 				br.y = y + rc.h;
 			}
 
-			vertices.push_back(Vertex2D(tl.x, tl.y, tl.z, rc.src.x, rc.src.y));
-			vertices.push_back(Vertex2D(bl.x, bl.y, bl.z, rc.src.x, rc.src.y + rc.src.w));
-			vertices.push_back(Vertex2D(tr.x, tr.y, tr.z, rc.src.x + rc.src.z, rc.src.y));
-			vertices.push_back(Vertex2D(tr.x, tr.y, tr.z, rc.src.x + rc.src.z, rc.src.y));
-			vertices.push_back(Vertex2D(bl.x, bl.y, bl.z, rc.src.x, rc.src.y + rc.src.w));
-			vertices.push_back(Vertex2D(br.x, br.y, br.z, rc.src.x + rc.src.z, rc.src.y + rc.src.w));
+			vertices.push_back(Vertex2D(tl, rc.src, color));
+			vertices.push_back(Vertex2D(bl, glm::vec2{ rc.src.x, rc.src.y + rc.src.w }, color));
+			vertices.push_back(Vertex2D(tr, glm::vec2{ rc.src.x + rc.src.z, rc.src.y }, color));
+			vertices.push_back(Vertex2D(tr, glm::vec2{ rc.src.x + rc.src.z, rc.src.y }, color));
+			vertices.push_back(Vertex2D(bl, glm::vec2{ rc.src.x, rc.src.y + rc.src.w }, color));
+			vertices.push_back(Vertex2D(br, glm::vec2{ rc.src.x + rc.src.z, rc.src.y + rc.src.w }, color));
 
 			call.vertices.insert(call.vertices.end(), vertices.begin(), vertices.end());
 			

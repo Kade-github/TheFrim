@@ -25,12 +25,12 @@ public:
 	bool alienMode = false;
 	std::string text = "";
 	Fnt* font = NULL;
-	glm::vec3 color = glm::vec3(1.0f, 1.0f, 1.0f);
 	int size = 12;
 
 	bool wrap = false;
+	bool center = false;
 
-	Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec3 color, int size = 12);
+	Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec4 color, int size = 12);
 
 	void Draw() override;
 };

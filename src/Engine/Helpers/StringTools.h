@@ -31,6 +31,9 @@ public:
 		if (decimalIndex == std::string::npos)
 			return str;
 
+        if (decimalPlaces == 0)
+            return str.substr(0, decimalIndex);
+
 		return str.substr(0, decimalIndex + decimalPlaces + 1);
 	}
 };

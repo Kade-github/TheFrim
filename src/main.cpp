@@ -24,7 +24,7 @@ int main()
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 
-	game.CCreateWindow(1280,720);
+	game.CCreateWindow(1920,1080);
 
 	glfwMakeContextCurrent(game.GetWindow());
 
@@ -67,7 +67,7 @@ int main()
 				case GLFW_KEY_F4:
 					if (Game::instance->isFullscreen)
 					{
-						glfwSetWindowMonitor(window, NULL, 40, 40, 1280, 720, 0);
+						glfwSetWindowMonitor(window, NULL, 40, 40, 1920, 1080, 0);
 						Game::instance->isFullscreen = false;
 					}
 					else

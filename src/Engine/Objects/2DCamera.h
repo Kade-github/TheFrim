@@ -2,12 +2,13 @@
 #define _2DCAMERA_H
 
 #include "2DGameObject.h"
+#include "2DText.h"
 
 class Camera2D : public GameObject
 {
 	int _lastId = 0;
-	float _w, _h;
 public:
+	float _w, _h;
 	unsigned int s_vao, s_vbo;
 
 	unsigned int vao, vbo;
@@ -15,6 +16,9 @@ public:
 
 	Texture* t = NULL;
 	Shader* s = NULL;
+
+	Text2D* debugText = NULL;
+	std::vector<Draw2D> dbgDraws = {};
 
 	std::vector<GameObject2D*> objects = {};
 	std::vector<Vertex2D> vertices = {};
@@ -24,6 +28,8 @@ public:
 	~Camera2D();
 
 	void Resize();
+
+	void DrawDebugText(std::string text, glm::vec2 pos, int size);
 
 	void AddObject(GameObject2D* object)
 	{

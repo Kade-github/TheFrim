@@ -57,7 +57,7 @@ miniz.c
 "Game/Scenes/MainMenu.cpp" 
 "Game/Objects/Menu/Bar.h"
 "Game/Objects/Menu/Bar.cpp"
-)
+ "Engine/Helpers/Collision2D.h" "Engine/Helpers/Collision2D.cpp" "Game/Scenes/Worlds.h")
 
 add_executable(TheFrim ${SOURCE_FILES})
 
@@ -65,7 +65,7 @@ set_target_properties(TheFrim PROPERTIES
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
 
-target_compile_features(TheFrim PUBLIC cxx_std_17)
+target_compile_features(TheFrim PUBLIC cxx_std_20)
 
 target_include_directories(TheFrim PUBLIC "${CMAKE_SOURCE_DIR}/../Include")
 target_include_directories(TheFrim PUBLIC "${CMAKE_SOURCE_DIR}/Engine")
