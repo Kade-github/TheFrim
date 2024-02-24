@@ -34,8 +34,10 @@ public:
 
 	bool isFullscreen = false;
 	bool lockedCursor = true;
+	bool switchScene = false;
 
 	Scene* currentScene;
+	Scene* toScene;
 
 	Game(std::string title, std::string version);
 
@@ -44,6 +46,7 @@ public:
 	void CreateRenderer();
 
 	void SetScene(Scene* s);
+	void SwitchScene(Scene* s);
 
 	void Render();
 

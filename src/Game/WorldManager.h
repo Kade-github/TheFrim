@@ -55,6 +55,10 @@ public:
 
 	WorldManager(std::string worldPath, Texture* _tp);
 
+	WorldManager(Data::World _world, Texture* _tp);
+
+	static std::vector<Data::World> GetWorlds();
+
 	bool IsRegionLoaded(int x, int z, int endX, int endZ);
 
 	Data::Region GetRegion(int x, int z, int endX, int endZ);

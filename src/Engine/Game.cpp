@@ -58,8 +58,24 @@ void Game::SetScene(Scene* s)
 	currentScene->Create();
 }
 
+void Game::SwitchScene(Scene* s)
+{
+	toScene = s;
+	switchScene = true;
+}
+
 void Game::Render()
 {
+	if (switchScene)
+	{
+		if (currentScene != nullptr)
+			currentScene->Destroy();
+		currentScene = toScene;
+		currentScene->Create();
+		toScene = nullptr;
+		switchScene = false;
+	}
+
 	glClearColor(0.64f, 0.7f, 0.7f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 	glViewport(0, 0, _camera->width, _camera->height);

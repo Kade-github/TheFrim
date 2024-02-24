@@ -57,7 +57,7 @@ miniz.c
 "Game/Scenes/MainMenu.cpp" 
 "Game/Objects/Menu/Bar.h"
 "Game/Objects/Menu/Bar.cpp"
- "Engine/Helpers/Collision2D.h" "Engine/Helpers/Collision2D.cpp" "Game/Scenes/Worlds.h")
+ "Engine/Helpers/Collision2D.h" "Engine/Helpers/Collision2D.cpp" "Game/Scenes/Worlds.h" "Game/Scenes/Worlds.cpp" "Game/Objects/Menu/World.h" "Game/Objects/Menu/World.cpp")
 
 add_executable(TheFrim ${SOURCE_FILES})
 

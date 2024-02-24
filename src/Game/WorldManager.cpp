@@ -45,6 +45,41 @@ WorldManager::WorldManager(std::string worldPath, Texture* _tp)
 	_generateThread.detach();
 }
 
+std::vector<Data::World> WorldManager::GetWorlds()
+{
+
+	std::vector<Data::World> worlds;
+
+	for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::current_path().string() + "/worlds"))
+	{
+		std::string path = entry.path().string();
+		if (entry.is_directory() && std::filesystem::exists(path + "/world.frim"))
+		{
+			Data::World _world;
+
+			zstr::ifstream is_p(path + "/world.frim", std::ios::binary);
+
+			std::stringstream buffer;
+
+			buffer << is_p.rdbuf();
+
+			msgpack::unpacked upd = msgpack::unpack(buffer.str().data(), buffer.str().size());
+
+			is_p.close();
+
+			upd.get().convert(_world);
+
+			worlds.push_back(_world);
+		}
+	}
+
+	return worlds;
+}
+
+WorldManager::WorldManager(Data::World _world, Texture* _tp)
+{
+}
+
 void WorldManager::LoadRegion(int x, int z, int endX, int endZ)
 {
 	Data::Region r = GetRegion(x, z, endX, endZ);

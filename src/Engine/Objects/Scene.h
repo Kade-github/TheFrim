@@ -27,6 +27,7 @@ public:
 	std::vector<GameObject*> objects = {};
 
 	virtual void MouseMove(float x, float y) {};
+	virtual void MouseClick(int button, glm::vec2 mPos) {};
 	virtual void KeyPress(int key) {};
 	virtual void KeyRelease(int key) {};
 

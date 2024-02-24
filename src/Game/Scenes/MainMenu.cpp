@@ -1,4 +1,5 @@
 #include "MainMenu.h"
+#include "Worlds.h"
 #include <cmath>
 #include <Helpers/Collision2D.h>
 
@@ -72,28 +73,46 @@ void MainMenu::Draw()
 			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width - 100), 0.1f);
 			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width), 0.1f);
 			break;
+		case -1:
+			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width - 100), 0.1f);
+			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width - 100), 0.1f);
+			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width - 100), 0.1f);
+			break;
 	}
 
-	if (Collision2D::PointInRect(mPos, selectWorld->position, glm::vec2{ selectWorld->width, selectWorld->height }))
+	if (mPos.y > 0 && mPos.x > 0 && mPos.x < c2d->_w && mPos.y < c2d->_h)
 	{
-		selectedIndex = 0;
-		selectWorld->selected = true;
-		settings->selected = false;
-		exit->selected = false;
-	}
-	else if (Collision2D::PointInRect(mPos, settings->position, glm::vec2{ settings->width, settings->height }))
-	{
-		selectedIndex = 1;
-		selectWorld->selected = false;
-		settings->selected = true;
-		exit->selected = false;
-	}
-	else if (Collision2D::PointInRect(mPos, exit->position, glm::vec2{ exit->width, exit->height }))
-	{
-		selectedIndex = 2;
-		selectWorld->selected = false;
-		settings->selected = false;
-		exit->selected = true;
+		if (Collision2D::PointInRect(mPos, selectWorld->position, glm::vec2{ selectWorld->width, selectWorld->height }))
+		{
+			selectedIndex = 0;
+			selectWorld->selected = true;
+			settings->selected = false;
+			exit->selected = false;
+			mouseSelected = true;
+		}
+		else if (Collision2D::PointInRect(mPos, settings->position, glm::vec2{ settings->width, settings->height }))
+		{
+			selectedIndex = 1;
+			selectWorld->selected = false;
+			settings->selected = true;
+			exit->selected = false;
+			mouseSelected = true;
+		}
+		else if (Collision2D::PointInRect(mPos, exit->position, glm::vec2{ exit->width, exit->height }))
+		{
+			selectedIndex = 2;
+			selectWorld->selected = false;
+			settings->selected = false;
+			exit->selected = true;
+			mouseSelected = true;
+		}
+		else if (mouseSelected)
+		{
+			selectedIndex = -1;
+			selectWorld->selected = false;
+			settings->selected = false;
+			exit->selected = false;
+		}
 	}
 
 	Scene::Draw();
@@ -103,12 +122,14 @@ void MainMenu::KeyPress(int key)
 {
 	if (key == GLFW_KEY_DOWN)
 	{
+		mouseSelected = false;
 		selectedIndex++;
 		if (selectedIndex > 2)
 			selectedIndex = 0;
 	}
 	else if (key == GLFW_KEY_UP)
 	{
+		mouseSelected = false;
 		selectedIndex--;
 		if (selectedIndex < 0)
 			selectedIndex = 2;
@@ -131,6 +152,35 @@ void MainMenu::KeyPress(int key)
 			settings->selected = false;
 			exit->selected = true;
 			break;
+	}
+
+	if (key == GLFW_KEY_ENTER)
+	{
+		switch (selectedIndex)
+		{
+			case 0:
+				Game::instance->SwitchScene(new Worlds());
+				break;
+			case 1:
+				break;
+			case 2:
+				glfwSetWindowShouldClose(Game::instance->GetWindow(), true);
+				break;
+		}
+	}
+}
+
+void MainMenu::MouseClick(int button, glm::vec2 mPos)
+{
+	if (button == GLFW_MOUSE_BUTTON_LEFT)
+	{
+		if (selectWorld->selected)
+			Game::instance->SwitchScene(new Worlds());
+		else if (settings->selected)
+		{
+		}
+		else if (exit->selected)
+			glfwSetWindowShouldClose(Game::instance->GetWindow(), true);
 	}
 }
 

@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include <mutex>
+#include <bitset>
 
 namespace Data
 {
@@ -44,6 +45,8 @@ namespace Data
 		std::string _path = "";
 		std::vector<std::string> storedRegions;
 		std::string name;
+
+		uint16_t seed;
 
 		World()
 		{

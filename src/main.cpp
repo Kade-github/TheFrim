@@ -24,7 +24,7 @@ int main()
 	glfwWindowHint(GLFW_SAMPLES, 4);
 
 
-	game.CCreateWindow(1920,1080);
+	game.CCreateWindow(1920, 1080);
 
 	glfwMakeContextCurrent(game.GetWindow());
 
@@ -48,51 +48,60 @@ int main()
 	game.CreateRenderer();
 
 	glfwSetFramebufferSizeCallback(game.GetWindow(), [](GLFWwindow* window, int width, int height)
-	{
-		 Game::instance->SetWindowSize(width, height);
-	});
+		{
+			Game::instance->SetWindowSize(width, height);
+		});
 
 
 	glfwSetKeyCallback(game.GetWindow(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
-	{
-		if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-			glfwSetWindowShouldClose(window, GLFW_TRUE);
-
-		if (Game::instance->currentScene != nullptr)
 		{
-			if (action == GLFW_PRESS)
+			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
+				glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+			if (Game::instance->currentScene != nullptr)
 			{
-				switch (key)
+				if (action == GLFW_PRESS)
 				{
-				case GLFW_KEY_F4:
-					if (Game::instance->isFullscreen)
+					switch (key)
 					{
-						glfwSetWindowMonitor(window, NULL, 40, 40, 1920, 1080, 0);
-						Game::instance->isFullscreen = false;
-					}
-					else
-					{
-						GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-						const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-						glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+					case GLFW_KEY_F4:
+						if (Game::instance->isFullscreen)
+						{
+							glfwSetWindowMonitor(window, NULL, 40, 40, 1920, 1080, 0);
+							Game::instance->isFullscreen = false;
+						}
+						else
+						{
+							GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+							const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+							glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 
-						Game::instance->GetCamera()->width = mode->width;
-						Game::instance->GetCamera()->height = mode->height;
+							Game::instance->GetCamera()->width = mode->width;
+							Game::instance->GetCamera()->height = mode->height;
 
-						Game::instance->isFullscreen = true;
+							Game::instance->isFullscreen = true;
+						}
+						break;
+					case GLFW_KEY_F1:
+						Game::instance->lockedCursor = !Game::instance->lockedCursor;
+						break;
 					}
-					break;
-				case GLFW_KEY_F1:
-					Game::instance->lockedCursor = !Game::instance->lockedCursor;
-					break;
+
+					Game::instance->currentScene->KeyPress(key);
 				}
-
-				Game::instance->currentScene->KeyPress(key);
+				else if (action == GLFW_RELEASE)
+					Game::instance->currentScene->KeyRelease(key);
 			}
-			else if (action == GLFW_RELEASE)
-				Game::instance->currentScene->KeyRelease(key);
-		}
-	});
+		});
+
+	glfwSetMouseButtonCallback(game.GetWindow(), [](GLFWwindow* window, int button, int action, int mods)
+		{
+			if (Game::instance->currentScene != nullptr)
+			{
+				glm::vec2 mPos = Game::instance->GetCursorPos();
+				Game::instance->currentScene->MouseClick(button, mPos);
+			}
+		});
 
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
@@ -110,36 +119,36 @@ int main()
 	bool threadIsRunning = true;
 
 	std::thread renderThread([&game, &running, &threadIsRunning]()
-	{
-		glfwMakeContextCurrent(game.GetWindow());
-
-		game.SetScene(new MainMenu());
-
-		// create imgui
-
-		IMGUI_CHECKVERSION();
-		ImGui::CreateContext();
-		ImGui_ImplGlfw_InitForOpenGL(game.GetWindow(), true);
-		ImGui_ImplOpenGL3_Init("#version 150");
-
-		while (running)
 		{
-			ImGui_ImplOpenGL3_NewFrame();
-			ImGui_ImplGlfw_NewFrame();
-			ImGui::NewFrame();
+			glfwMakeContextCurrent(game.GetWindow());
 
-			game.Render();
+			game.SetScene(new MainMenu());
 
-			ImGui::Render();
-			int display_w, display_h;
-			glfwGetFramebufferSize(game.GetWindow(), &display_w, &display_h);
-			glViewport(0, 0, display_w, display_h);
-			ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+			// create imgui
 
-			glfwSwapBuffers(game.GetWindow());
-		}
-		threadIsRunning = false;
-	});
+			IMGUI_CHECKVERSION();
+			ImGui::CreateContext();
+			ImGui_ImplGlfw_InitForOpenGL(game.GetWindow(), true);
+			ImGui_ImplOpenGL3_Init("#version 150");
+
+			while (running)
+			{
+				ImGui_ImplOpenGL3_NewFrame();
+				ImGui_ImplGlfw_NewFrame();
+				ImGui::NewFrame();
+
+				game.Render();
+
+				ImGui::Render();
+				int display_w, display_h;
+				glfwGetFramebufferSize(game.GetWindow(), &display_w, &display_h);
+				glViewport(0, 0, display_w, display_h);
+				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
+
+				glfwSwapBuffers(game.GetWindow());
+			}
+			threadIsRunning = false;
+		});
 
 	renderThread.detach();
 

@@ -90,6 +90,11 @@ Camera2D::~Camera2D()
 
 	glDeleteBuffers(1, &s_vbo);
 	glDeleteVertexArrays(1, &s_vao);
+
+	delete s;
+
+	if (t != NULL)
+		delete t;
 }
 
 void Camera2D::Resize()

@@ -11,7 +11,7 @@ void Bar::Draw()
 {
     label->size = 62 * (height / t->height);
     label->position.x = position.x + (width / 2);
-    label->position.y = position.y + 8;
+    label->position.y = position.y;
 
     Sprite2D::Draw();
 	label->Draw();

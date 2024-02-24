@@ -4,7 +4,6 @@
 #pragma once
 
 #include <Game.h>
-#include "../WorldManager.h"
 #include <Objects/2DCamera.h>
 #include "../Objects/Menu/Bar.h"
 
@@ -16,6 +15,7 @@ public:
 	Sprite2D* background;
 	Sprite2D* logo;
 
+	bool mouseSelected = false;
 	int selectedIndex = 0;
 	float fakeIndex = 0;
 
@@ -27,7 +27,7 @@ public:
 
 	void Draw() override;
 	void KeyPress(int key) override;
-
+	void MouseClick(int button, glm::vec2 mPos) override;
 	void Resize(float _w, float _h) override;
 };
 
