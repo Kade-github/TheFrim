@@ -1,21 +1,21 @@
-#ifndef _WORLDS_H
-#define _WORLDS_H
+#ifndef _CREATEWORLD_H
+#define _CREATEWORLD_H
 
 #include <Objects/Scene.h>
 #include <Objects/2DCamera.h>
+#include "../Objects/Menu/InputBar.h"
 #include "../Objects/Menu/Bar.h"
-#include "../WorldManager.h"
 
-class Worlds : public Scene
+class CreateWorld : public Scene
 {
 public:
-
 	Camera2D* c2d;
-
-	std::vector<Data::World> worlds;
 
 	Bar* createWorld;
 	Bar* goBack;
+
+	InputBar* name;
+	InputBar* seed;
 
 	void Create() override;
 
@@ -23,7 +23,9 @@ public:
 
 	void Draw() override;
 	void MouseClick(int button, glm::vec2 mPos) override;
-};
 
+	void OnChar(unsigned int c) override;
+	void KeyPress(int key) override;
+};
 
 #endif

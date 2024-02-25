@@ -46,7 +46,7 @@ namespace Data
 		std::vector<std::string> storedRegions;
 		std::string name;
 
-		uint16_t seed;
+		unsigned long seed;
 
 		World()
 		{

@@ -64,15 +64,25 @@ public:
 		glViewport(0, 0, _width, _height);
 	}
 
+	void CaptureCursor(bool capture)
+	{
+		if (capture)
+			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+		else
+			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	}
+
 	GLFWwindow* GetWindow() { return _window; }
 
 	Camera* GetCamera() { return _camera; }
 
 	glm::vec2 GetWindowSize() { return glm::vec2(_width, _height); }
 
-	glm::vec2 GetCursorPos() { 
-		// invert y axis
-		float y =  _height - _cursorY;
+	glm::vec2 GetCursorPos(bool invert = true) { 
+		float y = _cursorY;
+
+		if (invert) // invert y axis
+			y = _height - _cursorY;
 
 		return glm::vec2(_cursorX, y); 
 	}

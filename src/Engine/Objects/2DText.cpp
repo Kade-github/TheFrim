@@ -7,6 +7,7 @@ Text2D::Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec4 colo
 	this->font = Fnt::GetFont(font);
 	this->color = color;
 	this->size = size;
+	Draw();
 }
 
 void Text2D::Draw()
@@ -101,6 +102,8 @@ void Text2D::Draw()
 
 	std::vector<Vertex2D> vertices;
 
+	float biggestW = 0;
+
 	for (int i = 0; i < lines.size(); i++)
 	{
 		Line l = lines[i];
@@ -108,6 +111,9 @@ void Text2D::Draw()
 
 		if (center)
 			x = position.x - (l.w / 2.0f);
+
+		if (l.w > biggestW)
+			biggestW = l.w;
 
 
 		for (int j = 0; j < lines[i].characters.size(); j++)
@@ -152,6 +158,8 @@ void Text2D::Draw()
 		}
 		y += size;
 	}
+
+	width = biggestW;
 
 	draws = { call };
 }

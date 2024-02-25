@@ -24,8 +24,8 @@ miniz.c
 "Engine/stbi.cpp" 
 "Engine/External/imgui_impl_glfw.h"
 "Engine/Objects/Camera.h" 
-"Game/Scenes/TestScene.h" 
-"Game/Scenes/TestScene.cpp" 
+ 
+ 
 "Engine/OpenGL/Mesh.h" 
 "Engine/OpenGL/Mesh.cpp" 
 "Engine/OpenGL/Model.h" 
@@ -57,7 +57,7 @@ miniz.c
 "Game/Scenes/MainMenu.cpp" 
 "Game/Objects/Menu/Bar.h"
 "Game/Objects/Menu/Bar.cpp"
- "Engine/Helpers/Collision2D.h" "Engine/Helpers/Collision2D.cpp" "Game/Scenes/Worlds.h" "Game/Scenes/Worlds.cpp" "Game/Objects/Menu/World.h" "Game/Objects/Menu/World.cpp" "Game/Objects/Menu/InputBar.h" "Game/Objects/Menu/InputBar.cpp")
+ "Engine/Helpers/Collision2D.h" "Engine/Helpers/Collision2D.cpp" "Game/Scenes/Worlds.h" "Game/Scenes/Worlds.cpp" "Game/Objects/Menu/World.h" "Game/Objects/Menu/World.cpp" "Game/Objects/Menu/InputBar.h" "Game/Objects/Menu/InputBar.cpp" "Game/Scenes/CreateWorld.h" "Game/Scenes/CreateWorld.cpp" "Game/Scenes/GeneratingWorld.h" "Game/Scenes/GeneratingWorld.cpp" "Game/Scenes/Gameplay.h" "Game/Scenes/Gameplay.cpp")
 
 add_executable(TheFrim ${SOURCE_FILES})
 

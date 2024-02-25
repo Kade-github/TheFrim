@@ -9,8 +9,8 @@
 class Camera
 {
 public:
-	float width = 1280;
-	float height = 720;
+	float width = 1920;
+	float height = 1080;
 
 	float cameraFar = 100.0f;
 

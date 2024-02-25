@@ -12,6 +12,8 @@ public:
 
 	std::string text = "";
 
+	int maxChars = 26;
+
 	InputBar(glm::vec3 _pos);
 
 	void Draw() override;

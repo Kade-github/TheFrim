@@ -36,6 +36,20 @@ public:
 
 		return str.substr(0, decimalIndex + decimalPlaces + 1);
 	}
+
+    static std::string gen_random(const int len) {
+        static const char alpha[] =
+            "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+            "abcdefghijklmnopqrstuvwxyz";
+        std::string tmp_s;
+        tmp_s.reserve(len);
+
+        for (int i = 0; i < len; ++i) {
+            tmp_s += alpha[rand() % (sizeof(alpha) - 1)];
+        }
+
+        return tmp_s;
+    }
 };
 
 #endif

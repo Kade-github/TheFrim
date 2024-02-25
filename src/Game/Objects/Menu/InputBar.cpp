@@ -12,19 +12,19 @@ void InputBar::Draw()
     _text->position.y = position.y;
 
     _text->text = text;
-    _text->clip = glm::vec4(position.x, position.y, width, height);
 
     if (selected)
         _text->text = text + "_";
 
     Sprite2D::Draw();
     _text->Draw();
+
+    draws = { {draws[0], _text->draws[0]} };
 }
 
 void InputBar::AddText(char _c)
 {
-    int max = std::floor(t->width / _text->size);
-    if (text.size() < max)
+    if (text.size() < maxChars)
         text += _c;
 
 }

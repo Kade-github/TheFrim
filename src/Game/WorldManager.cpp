@@ -1,6 +1,7 @@
 #include "WorldManager.h"
 #include <Game.h>
 #include <fstream>
+#include <Helpers/StringTools.h>
 #include "../zstr/src/zstr.hpp"
 
 #include <filesystem>
@@ -21,15 +22,15 @@ bool WorldManager::IsRegionLoaded(int x, int z, int endX, int endZ)
 	return false;
 }
 
-WorldManager::WorldManager(std::string worldPath, Texture* _tp)
+WorldManager::WorldManager(std::string name, Texture* _tp, std::string _seed)
 {
 	instance = this;
 
-	_path = worldPath;
+	_path = "worlds/" + name;
 	texturePack = _tp;
 
 	if (!std::filesystem::exists(_path))
-		CreateWorld();
+		CreateWorld(_seed, name);
 	else
 		LoadWorld();
 
@@ -97,7 +98,11 @@ void WorldManager::LoadRegion(int x, int z, int endX, int endZ)
 		std::vector<Chunk*> chunks = CreateChunksInRegion(r);
 
 		regions.push_back({ r.startX, r.startZ, r.endX, r.endZ, r, chunks });
+		generatedRegions++;
 	}
+	totalRegions++;
+
+	generationProgress = (float)generatedRegions / (float)totalRegions;
 }
 
 void WorldManager::UnloadRegion(Region& r)
@@ -166,10 +171,16 @@ void WorldManager::LoadChunks()
 	glm::vec3 cPos = glm::vec3(camera->position.x, 128, camera->position.z);
 
 	{
-		std::lock_guard<std::mutex> lock(mtx);
-		for (int i = 0; i < regions.size(); i++)
+		std::vector<Region> _regions = {};
+
 		{
-			Region& r = regions[i];
+			std::lock_guard<std::mutex> lock(mtx);
+			_regions = regions;
+		}
+
+		for (int i = 0; i < _regions.size(); i++)
+		{
+			Region& r = _regions[i];
 
 			if (!r.loaded)
 				continue;
@@ -257,28 +268,62 @@ void WorldManager::GenerateRegion(int x, int z)
 	Data::Region r = _world.generateRegion(_x, _z);
 
 	std::vector<Chunk*> chunks = CreateChunksInRegion(r);
-	regions.push_back({ _x, _z, _x + 80, _z + 80, r, chunks });
+	{
+		std::lock_guard<std::mutex> lock(mtx);
+		regions.push_back({ _x, _z, _x + 80, _z + 80, r, chunks });
+		generatedRegions++;
+		generationProgress = (float)generatedRegions / (float)totalRegions;
+	}
 }
 
-void WorldManager::CreateWorld()
+void WorldManager::CreateWorld(std::string _seed, std::string _name)
 {
 	_world = Data::World();
 
-	_world.name = "test";
+	// convert seed into numbers (by converting characters to ascii)
+
+	std::string s = _seed;
+
+	if (s.size() == 0) // generate random seed
+		s = StringTools::gen_random(20);
+
+	if (s.size() > 20)
+		s = s.substr(0, 20);
+
+	unsigned long seed = 0;
+
+	for (int i = 0; i < s.size(); i++)
+		seed += (int)s[i];
+
+	_world.name = _name;
+	_world.seed = seed;
 
 	_world._path = std::filesystem::current_path().string() + "/worlds/" + _world.name;
 
 	// Generate regions
 
+	_generatePool.detach_task([this]() 
 	{
-		std::lock_guard<std::mutex> lock(mtx);
 		GenerateRegion(0, 0);
+	});
+	_generatePool.detach_task([this]()
+	{
 		GenerateRegion(-1, 0);
+	});
+	_generatePool.detach_task([this]()
+	{
 		GenerateRegion(1, 0);
-		GenerateRegion(0, 1);
+	});
+	_generatePool.detach_task([this]()
+	{
 		GenerateRegion(0, -1);
-	}
-	SaveWorld();
+	});
+	_generatePool.detach_task([this]()
+	{
+		GenerateRegion(0, 1);
+	});
+
+	totalRegions = 5;
 }
 
 void WorldManager::LoadWorld()
@@ -322,9 +367,16 @@ void WorldManager::RenderChunks()
 	glm::vec3 cPos = glm::vec3(camera->position.x, 128, camera->position.z);
 	renderedChunks = 0;
 
-	for (int i = 0; i < regions.size(); i++)
+	std::vector<Region> _regions = {};
+
 	{
-		Region& r = regions[i];
+		std::lock_guard<std::mutex> lock(mtx);
+		_regions = regions;
+	}
+
+	for (int i = 0; i < _regions.size(); i++)
+	{
+		Region& r = _regions[i];
 
 		if (!r.loaded)
 			continue;

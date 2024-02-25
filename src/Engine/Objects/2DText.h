@@ -26,7 +26,7 @@ public:
 	std::string text = "";
 	Fnt* font = NULL;
 	int size = 12;
-
+	float width = 0;
 	bool wrap = false;
 	bool center = false;
 

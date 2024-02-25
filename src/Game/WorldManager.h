@@ -43,8 +43,13 @@ class WorldManager
 	std::thread _generateThread;
 
 	Data::World _world;
+
+	int generatedRegions = 0;
+	int totalRegions = 0;
 public:
 	static WorldManager* instance;
+
+	float generationProgress = 0;
 
 	std::vector<Region> regions;
 
@@ -53,7 +58,7 @@ public:
 
 	std::string name;
 
-	WorldManager(std::string worldPath, Texture* _tp);
+	WorldManager(std::string name, Texture* _tp, std::string _seed);
 
 	WorldManager(Data::World _world, Texture* _tp);
 
@@ -74,7 +79,7 @@ public:
 
 	void LoadChunks();
 
-	void CreateWorld();
+	void CreateWorld(std::string _seed, std::string _name);
 	void LoadWorld();
 	void SaveWorld();
 	void SaveWorldNow();

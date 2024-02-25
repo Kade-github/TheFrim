@@ -1,8 +1,5 @@
-#include "TestScene.h"
-#include <imgui.h>
-#include "Objects/2DText.h"
-#include <filesystem>
-
+#include "Gameplay.h"
+#include <Game.h>
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -13,27 +10,37 @@ bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
 
-
-void TestScene::Create()
+Gameplay::Gameplay(WorldManager* _wm)
 {
-	if (!std::filesystem::exists("worlds"))
-		std::filesystem::create_directory("worlds");
+	wm = _wm;
+}
 
-	wm = new WorldManager("worlds/test", Texture::createWithImage("Assets/Textures/sheet.png"));
+void Gameplay::Create()
+{
+	c2d = new Camera2D(glm::vec3(0, 0, 0));
+
+	c2d->s = new Shader();
+
+	c2d->s->LoadShader("Assets/Shaders/vert2d.glsl", "Assets/Shaders/frag2d.glsl");
+
+	AddObject(c2d);
+
+	c2d->order = 1;
 
 	Camera* camera = Game::instance->GetCamera();
 
-	camera->position = glm::vec3(0.0f, 129.0f, 0.0f);
+	camera->position = glm::vec3(0, 128, 0);
+
+	Game::instance->CaptureCursor(true);
 }
 
-
-void TestScene::Draw()
+void Gameplay::Draw()
 {
 	float currentFrame = glfwGetTime();
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
-	glm::vec2 mousePos = Game::instance->GetCursorPos();
+	glm::vec2 mousePos = Game::instance->GetCursorPos(false);
 
 	float x = mousePos.x;
 	float y = mousePos.y;
@@ -82,25 +89,13 @@ void TestScene::Draw()
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 		camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * cameraSpeed;
 
-
-	ImGui::Begin("Debug", 0, ImGuiWindowFlags_AlwaysAutoResize);
-
-	ImGui::Text("FPS: %.2f", ImGui::GetIO().Framerate);
-
-	ImGui::Text("Camera Pos: %f, %f, %f", camera->position.x, camera->position.y, camera->position.z);
-
-	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 0.1f, 400.0f);
-
-	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
-
-	ImGui::End();
-
 	wm->RenderChunks();
 
 	Scene::Draw();
 }
 
-void TestScene::Destroy()
+void Gameplay::Destroy()
 {
 	wm->SaveWorldNow();
+	delete wm;
 }

@@ -1,5 +1,6 @@
 #include "Worlds.h"
 #include "MainMenu.h"
+#include "CreateWorld.h"
 #include <Helpers/Collision2D.h>
 
 void Worlds::Create()
@@ -58,11 +59,8 @@ void Worlds::Draw()
 
 void Worlds::MouseClick(int button, glm::vec2 mPos)
 {
-	if (page == 0)
-	{
-		if (Collision2D::PointInRect(mPos, createWorld->position, glm::vec2(createWorld->width, createWorld->height)))
-			page = 1;
-		else if (Collision2D::PointInRect(mPos, goBack->position, glm::vec2(goBack->width, goBack->height)))
-			Game::instance->SwitchScene(new MainMenu());
-	}
+	if (Collision2D::PointInRect(mPos, createWorld->position, glm::vec2(createWorld->width, createWorld->height)))
+		Game::instance->SwitchScene(new CreateWorld());
+	else if (Collision2D::PointInRect(mPos, goBack->position, glm::vec2(goBack->width, goBack->height)))
+		Game::instance->SwitchScene(new MainMenu());
 }
