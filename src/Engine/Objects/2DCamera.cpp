@@ -145,7 +145,9 @@ void Camera2D::Draw()
 			// check if the texture and shader are already in there
 			for (int k = 0; k < draws.size(); k++)
 			{
-				if (draws[k].textureId == draw.textureId && draws[k].shaderId == draw.shaderId)
+				if (draws[k].textureId == draw.textureId && draws[k].shaderId == draw.shaderId && 
+					draws[k].clipRect.x == draw.clipRect.x && draws[k].clipRect.y == draw.clipRect.y 
+					&& draws[k].clipRect.z == draw.clipRect.z && draws[k].clipRect.w == draw.clipRect.w)
 				{
 					for (int l = 0; l < draw.vertices.size(); l++)
 						draws[k].vertices.push_back(draw.vertices[l]);
@@ -199,6 +201,14 @@ void Camera2D::Draw()
 		if (draw.textureId != NULL)
 			draw.textureId->Bind();
 
+		if (draw.clipRect.x != -1)
+		{
+			glEnable(GL_SCISSOR_TEST);
+			glScissor(draw.clipRect.x, _h - draw.clipRect.w - draw.clipRect.y, draw.clipRect.z, draw.clipRect.w);
+		}
+		else
+			glDisable(GL_SCISSOR_TEST);
+
 		glBindVertexArray(vao);
 
 		glBindBuffer(GL_ARRAY_BUFFER, vbo);
@@ -218,6 +228,8 @@ void Camera2D::Draw()
 		else
 			s->Unbind();
 	}
+
+	glDisable(GL_SCISSOR_TEST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 

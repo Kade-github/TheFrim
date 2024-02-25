@@ -21,6 +21,7 @@ void Text2D::Draw()
 	Draw2D call;
 	call.textureId = font->GetTexture();
 	call.shaderId = s;
+	call.clipRect = clip;
 
 	std::vector<Line> lines;
 

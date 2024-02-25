@@ -46,6 +46,8 @@ struct Draw2D
 	Shader* shaderId;
 
 	std::vector<Vertex2D> vertices;
+
+	glm::vec4 clipRect = glm::vec4(-1, -1, -1, -1);
 };
 
 
@@ -53,6 +55,7 @@ class GameObject2D : public GameObject
 {
 public:
 	glm::vec4 color = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
+	glm::vec4 clip = glm::vec4(-1, -1, -1, -1);
 
 	GameObject2D(glm::vec3 pos) : GameObject(pos)
 	{

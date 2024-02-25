@@ -38,5 +38,5 @@ void Sprite2D::Draw()
 	vertices.push_back(tr);
 	vertices.push_back(br);
 
-	draws = { { t, s, vertices } };
+	draws = { { t, s, vertices, clip }};
 }
