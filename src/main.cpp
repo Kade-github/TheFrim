@@ -84,6 +84,11 @@ int main()
 						break;
 					case GLFW_KEY_F1:
 						Game::instance->lockedCursor = !Game::instance->lockedCursor;
+
+						if (Game::instance->lockedCursor)
+							glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+						else
+							glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
 						break;
 					}
 

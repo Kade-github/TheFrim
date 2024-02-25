@@ -27,15 +27,15 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 	vertices.clear();
 	indices.clear();
 
-	for (int y = 255; y > 0; y--)
+	for (int x = 0; x < 16; x++)
 	{
-		for (int x = 0; x < 16; x++)
+		for (int z = 0; z < 16; z++)
 		{
-			for (int z = 0; z < 16; z++)
+			for (int y = 256; y > 0; y--)
 			{
-				if (c.blocks[y][x][z] >= 1)
+				if (c.blocks[x][z][y] >= 1)
 				{
-					int dB = c.blocks[y][x][z];
+					int dB = c.blocks[x][z][y];
 
 					// get adjacent blocks
 
@@ -46,41 +46,42 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 					bool top = false;
 					bool bottom = false;
 
-					if (z - 1 >= 0)
-						front = c.blocks[y][x][z + 1] >= 1;
-
 					if (z + 1 < 16)
-						back = c.blocks[y][x][z - 1] >= 1;
+						back = c.blocks[x][z + 1][y] >= 1;
 
-					if (x - 1 >= 0)
-						right = c.blocks[y][x - 1][z] >= 1;
+					if (z - 1 >= 0)
+						front = c.blocks[x][z - 1][y] >= 1;
 
 					if (x + 1 < 16)
-						left = c.blocks[y][x + 1][z] >= 1;
+						left = c.blocks[x + 1][z][y] >= 1;
 
-					if (y + 1 >= 0)
-						top = c.blocks[y + 1][x][z] >= 1;
+					if (x - 1 >= 0)
+						right = c.blocks[x - 1][z][y] >= 1;
 
-					if (y - 1 < 256)
-						bottom = c.blocks[y - 1][x][z] >= 1;
+					if (y - 1 >= 0)
+						bottom = c.blocks[x][z][y - 1] >= 1;
 
-					if (z == 0 && !back)
-						back = backwardC.blocks[y][x][15] >= 1;
+					if (y + 1 < 256)
+						top = c.blocks[x][z][y + 1] >= 1;
 
-					if (z == 15 && !front)
-						front = forwardC.blocks[y][x][0] >= 1;
+					if (z == 0 && !front && forwardC.isGenerated)
+						front = forwardC.blocks[x][15][y] >= 1;
 
-					if (x == 0 && !left)
-						left = leftC.blocks[y][15][z] >= 1;
+					if (z == 15 && !back && backwardC.isGenerated)
+						back = backwardC.blocks[x][0][y] >= 1;
 
-					if (x == 15 && !right)
-						right = rightC.blocks[y][0][z] >= 1;
+					if (x == 0 && !right && rightC.isGenerated)
+						right = rightC.blocks[15][z][y] >= 1;
+
+					if (x == 15 && !left && leftC.isGenerated)
+						left = leftC.blocks[0][z][y] >= 1;
+
 
 					Block* b = nullptr;
 
 					switch (dB)
 					{
-					case 1:
+					default:
 						b = new Dirt(position + glm::vec3(x, y, z));
 						blocks.push_back(b);
 						break;

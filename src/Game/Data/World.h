@@ -14,7 +14,7 @@ namespace Data
 	struct Chunk
 	{
 		bool isGenerated = false;
-		uint8_t blocks[256][16][16];
+		uint8_t blocks[16][16][256];
 		int32_t x, z;
 
 		MSGPACK_DEFINE_ARRAY(blocks, x, z);
@@ -46,7 +46,9 @@ namespace Data
 		std::vector<std::string> storedRegions;
 		std::string name;
 
-		unsigned long seed;
+		unsigned long seedNum = 0;
+
+		std::string seed;
 
 		World()
 		{
@@ -55,13 +57,15 @@ namespace Data
 
 		void scanForRegions();
 
+		void parseSeed();
+
 		Region getRegion(int x, int z, int endX, int endZ);
 
 		Region generateRegion(int x, int z);
 
 		void saveRegion(Region r);
 
-		MSGPACK_DEFINE_ARRAY(name);
+		MSGPACK_DEFINE_ARRAY(name, seed);
 
 	};
 };

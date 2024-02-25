@@ -1,5 +1,6 @@
 #include "Gameplay.h"
 #include <Game.h>
+#include <imgui.h>
 
 float deltaTime = 0.0f;	// Time between current frame and last frame
 float lastFrame = 0.0f; // Time of last frame
@@ -88,6 +89,16 @@ void Gameplay::Draw()
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 		camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * cameraSpeed;
+
+	ImGui::Begin("Debug", 0, ImGuiWindowFlags_AlwaysAutoResize);
+
+	ImGui::Text("Camera Pos: %f, %f, %f", camera->position.x, camera->position.y, camera->position.z);
+
+	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 0.1f, 400.0f);
+
+	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
+
+	ImGui::End();
 
 	wm->RenderChunks();
 

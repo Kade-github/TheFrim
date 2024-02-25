@@ -290,13 +290,10 @@ void WorldManager::CreateWorld(std::string _seed, std::string _name)
 	if (s.size() > 20)
 		s = s.substr(0, 20);
 
-	unsigned long seed = 0;
-
-	for (int i = 0; i < s.size(); i++)
-		seed += (int)s[i];
-
 	_world.name = _name;
-	_world.seed = seed;
+	_world.seed = s;
+
+	_world.parseSeed();
 
 	_world._path = std::filesystem::current_path().string() + "/worlds/" + _world.name;
 
@@ -343,6 +340,7 @@ void WorldManager::LoadWorld()
 	// save directroy
 
 	_world._path = std::filesystem::current_path().string() + "/worlds/" + _world.name;
+	_world.parseSeed();
 
 	// load regions
 
@@ -367,16 +365,15 @@ void WorldManager::RenderChunks()
 	glm::vec3 cPos = glm::vec3(camera->position.x, 128, camera->position.z);
 	renderedChunks = 0;
 
-	std::vector<Region> _regions = {};
-
+	if (regions.size() != ourRegions.size())
 	{
 		std::lock_guard<std::mutex> lock(mtx);
-		_regions = regions;
+		ourRegions = regions;
 	}
 
-	for (int i = 0; i < _regions.size(); i++)
+	for (int i = 0; i < ourRegions.size(); i++)
 	{
-		Region& r = _regions[i];
+		Region& r = ourRegions[i];
 
 		if (!r.loaded)
 			continue;

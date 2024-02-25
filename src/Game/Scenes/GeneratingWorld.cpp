@@ -51,6 +51,7 @@ void GeneratingWorld::Draw()
 
 	if (wm->generationProgress >= 1 && !switched)
 	{
+		wm->SaveWorldNow();
 		switched = true;
 		Game::instance->SwitchScene(new Gameplay(wm));
 	}

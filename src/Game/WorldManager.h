@@ -52,6 +52,7 @@ public:
 	float generationProgress = 0;
 
 	std::vector<Region> regions;
+	std::vector<Region> ourRegions;
 
 	int renderedChunks = 0;
 	Texture* texturePack;

@@ -3,6 +3,9 @@
 #include <filesystem>
 #include <Helpers/StringTools.h>
 #include "../../zstr/src/zstr.hpp"
+#include <PerlinNoise.hpp>
+
+siv::PerlinNoise perlin;
 
 std::mutex m;
 
@@ -51,6 +54,18 @@ void Data::World::scanForRegions()
 	}
 }
 
+void Data::World::parseSeed()
+{
+	unsigned long _seed = 0;
+
+	for (int i = 0; i < seed.size(); i++)
+		_seed += (int)seed[i];
+
+	seedNum = _seed;
+
+	perlin.reseed(seedNum);
+}
+
 Data::Region Data::World::getRegion(int x, int z, int endX, int endZ)
 {
 	for (auto& stored : storedRegions)
@@ -83,7 +98,9 @@ Data::Region Data::World::getRegion(int x, int z, int endX, int endZ)
 
 			for (int i = 0; i < 5; i++)
 				for (int j = 0; j < 5; j++)
+				{
 					r.chunks[i][j].isGenerated = true;
+				}
 
 			return r;
 		}
@@ -99,12 +116,12 @@ Data::Region Data::World::generateRegion(int x, int z)
 	int chunkSize = 16;
 
 	int width = (chunkSize * 5);
-	int height = (chunkSize * 5);
+	int depth = (chunkSize * 5);
 
 	r.startX = x;
 	r.startZ = z;
 	r.endX = x + width;
-	r.endZ = z + height;
+	r.endZ = z + depth;
 
 	for (int _x = x; _x < r.endX; _x += 16)
 	{
@@ -113,7 +130,6 @@ Data::Region Data::World::generateRegion(int x, int z)
 			r.addChunk(r.generateChunk(_x,_z));
 		}
 	}
-
 	return r;
 	
 }
@@ -122,11 +138,18 @@ void Data::World::saveRegion(Region r)
 {
 	std::string name = "r_" + std::to_string(r.startX) + "_" + std::to_string(r.startZ) + "_" + std::to_string(r.endX) + "_" + std::to_string(r.endZ) + ".r";
 
-	zstr::ofstream file(_path + "/" + name, std::ios_base::binary);
+	try
+	{
+		zstr::ofstream file(_path + "/" + name, std::ios_base::binary);
 
-	msgpack::pack(file, r);
+		msgpack::pack(file, r);
 
-	file.close();
+		file.close();
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << "Failed to open " << name << " " << e.what() << std::endl;
+	}
 }
 
 Data::Chunk Data::Region::generateChunk(int x, int z)
@@ -136,20 +159,44 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 	chunk.x = x;
 	chunk.z = z;
 
+	// set everything to 0
 
-	for (int _y = 0; _y < 256; _y++)
+	for (int _x = 0; _x < 16; _x++)
 	{
-		for (int _x = 0; _x < 16; _x++)
+		for (int _z = 0; _z < 16; _z++)
 		{
-			for (int _z = 0; _z < 16; _z++)
+			for (int _y = 0; _y < 256; _y++)
 			{
+				chunk.blocks[_x][_z][_y] = 0;
+			}
+		}
+	}
 
-				if (_y == 128)
-					chunk.blocks[_y][_x][_z] = 2;
-				else if (_y < 128)
-					chunk.blocks[_y][_x][_z] = 1;
+	float scale = 0.002;
+
+	for (int _x = 0; _x < 16; _x++)
+	{
+		for (int _z = 0; _z < 16; _z++)
+		{
+			int worldX = (_x + x);
+			int worldZ = (_z + z);
+
+			const double noise = perlin.normalizedOctave2D(worldX * scale, worldZ * scale, 4, 0.5);
+
+			int rY = 128 + (int)((noise * 100));
+
+			if (rY < 0)
+				rY = 0;
+
+			if (rY > 255)
+				rY = 255;
+
+			for (int _y = rY; _y > 0; _y--)
+			{
+				if (_y == rY)
+					chunk.blocks[_x][_z][_y] = 2;
 				else
-					chunk.blocks[_y][_x][_z] = 0;
+					chunk.blocks[_x][_z][_y] = 1;
 			}
 		}
 	}
