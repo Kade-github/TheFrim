@@ -11,6 +11,7 @@ class Scene
 {
 public:
 	int lastId = 0;
+	bool isCreated = false;
 
 	Scene()
 	{
@@ -20,7 +21,11 @@ public:
 	{
 		for (int i = 0; i < objects.size(); i++)
 		{
-			delete objects[i];
+			GameObject* object = objects[i];
+
+			object->Destroy();
+
+			delete object;
 		}
 	}
 
@@ -30,6 +35,7 @@ public:
 	virtual void MouseClick(int button, glm::vec2 mPos) {};
 	virtual void KeyPress(int key) {};
 	virtual void KeyRelease(int key) {};
+	virtual void OnChar(unsigned int c) {};
 
 	void AddObject(GameObject* object)
 	{

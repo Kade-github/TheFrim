@@ -52,10 +52,14 @@ void Game::CreateRenderer()
 void Game::SetScene(Scene* s)
 {
 	if (currentScene != nullptr)
+	{
+		currentScene->Destroy();
 		delete currentScene;
+	}
 	currentScene = s;
 
 	currentScene->Create();
+	currentScene->isCreated = true;
 }
 
 void Game::SwitchScene(Scene* s)
@@ -69,9 +73,13 @@ void Game::Render()
 	if (switchScene)
 	{
 		if (currentScene != nullptr)
+		{
 			currentScene->Destroy();
+			delete currentScene;
+		}
 		currentScene = toScene;
 		currentScene->Create();
+		currentScene->isCreated = true;
 		toScene = nullptr;
 		switchScene = false;
 	}

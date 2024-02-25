@@ -13,6 +13,7 @@ public:
 
     Bar(glm::vec3 _pos, std::string text);
 
+
     void Draw() override;
 };
 

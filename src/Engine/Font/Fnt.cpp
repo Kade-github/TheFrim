@@ -20,7 +20,6 @@ Fnt::Fnt(std::string font)
 
 	if (info != NULL)
 	{
-		name = info.attribute("face").as_string();
 		ogSize = info.attribute("size").as_int();
 	}
 	else

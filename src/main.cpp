@@ -58,7 +58,7 @@ int main()
 			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 				glfwSetWindowShouldClose(window, GLFW_TRUE);
 
-			if (Game::instance->currentScene != nullptr)
+			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)
 			{
 				if (action == GLFW_PRESS)
 				{
@@ -96,11 +96,17 @@ int main()
 
 	glfwSetMouseButtonCallback(game.GetWindow(), [](GLFWwindow* window, int button, int action, int mods)
 		{
-			if (Game::instance->currentScene != nullptr)
+			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)
 			{
 				glm::vec2 mPos = Game::instance->GetCursorPos();
 				Game::instance->currentScene->MouseClick(button, mPos);
 			}
+		});
+
+	glfwSetCharCallback(game.GetWindow(), [](GLFWwindow* window, unsigned int codepoint)
+		{
+			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)
+				Game::instance->currentScene->OnChar(codepoint);
 		});
 
 	glEnable(GL_DEPTH_TEST);

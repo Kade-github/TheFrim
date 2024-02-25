@@ -8,7 +8,7 @@ Sprite2D::Sprite2D(std::string texture, glm::vec3 _pos) : GameObject2D(_pos)
 	height = t->height;
 }
 
-Sprite2D::~Sprite2D()
+void Sprite2D::Destroy()
 {
 	delete t;
 }

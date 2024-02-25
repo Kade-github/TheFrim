@@ -27,6 +27,8 @@ public:
 	virtual void Draw() {};
 
 	virtual void Create() {};
+
+	virtual void Destroy() {};
 };
 
 #endif

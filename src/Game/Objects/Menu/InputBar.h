@@ -8,9 +8,16 @@ class InputBar : public Sprite2D
 {
 	Text2D* _text;
 public:
+	bool selected = false;
+
+	std::string text = "";
+
 	InputBar(glm::vec3 _pos);
 
 	void Draw() override;
+
+	void AddText(char _c);
+	void RemoveText();
 };
 
 #endif

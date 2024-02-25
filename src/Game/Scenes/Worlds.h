@@ -9,6 +9,8 @@
 class Worlds : public Scene
 {
 public:
+	int page = 0;
+
 	Camera2D* c2d;
 
 	std::vector<Data::World> worlds;
@@ -19,6 +21,9 @@ public:
 	void Create() override;
 
 	void Resize(float _w, float _h) override;
+
+	void Draw() override;
+	void MouseClick(int button, glm::vec2 mPos) override;
 };
 
 

@@ -82,21 +82,6 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 }
 
-Camera2D::~Camera2D()
-{
-	glDeleteFramebuffers(1, &fb);
-	glDeleteBuffers(1, &vbo);
-	glDeleteVertexArrays(1, &vao);
-
-	glDeleteBuffers(1, &s_vbo);
-	glDeleteVertexArrays(1, &s_vao);
-
-	delete s;
-
-	if (t != NULL)
-		delete t;
-}
-
 void Camera2D::Resize()
 {
 	glBindFramebuffer(GL_FRAMEBUFFER, fb);
@@ -253,4 +238,29 @@ void Camera2D::Draw()
 
 	glEnable(GL_DEPTH_TEST);
 
+}
+
+void Camera2D::Destroy()
+{
+	glDeleteFramebuffers(1, &fb);
+	glDeleteBuffers(1, &vbo);
+	glDeleteVertexArrays(1, &vao);
+
+	glDeleteBuffers(1, &s_vbo);
+	glDeleteVertexArrays(1, &s_vao);
+
+	delete s;
+
+	if (t != NULL)
+		delete t;
+
+	delete debugText;
+
+	for (int i = 0; i < objects.size(); i++)
+	{
+		GameObject* object = objects[i];
+		object->Destroy();
+
+		delete object;
+	}
 }

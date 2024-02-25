@@ -9,7 +9,7 @@ public:
 	float width, height;
 	Sprite2D(std::string texture, glm::vec3 _pos);
 
-	~Sprite2D();
+	void Destroy() override;
 
 	void Resize(float _w, float _h);
 
