@@ -177,6 +177,15 @@ void WorldManager::LoadChunks()
 			if (!r.loaded)
 				continue;
 
+			float thisDistance = GetDistanceToRegion(r.startX / 80, r.startZ / 80);
+
+			if (thisDistance > camera->cameraFar * 3)
+			{
+				r.loaded = false;
+				UnloadRegion(r);
+				break;
+			}
+
 			for (auto& c : r.chunks)
 			{
 
@@ -360,16 +369,6 @@ void WorldManager::RenderChunks()
 
 		if (!r.loaded)
 			continue;
-
-		float thisDistance = GetDistanceToRegion(r.startX / 80, r.startZ / 80);
-
-		if (thisDistance > camera->cameraFar * 3)
-		{
-			r.loaded = false;
-			std::lock_guard<std::mutex> lock(mtx);
-			UnloadRegion(r);
-			break;
-		}
 
 		for (auto& c : r.chunks)
 		{
