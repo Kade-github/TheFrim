@@ -31,7 +31,7 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 	{
 		for (int z = 0; z < 16; z++)
 		{
-			for (int y = 256; y > 0; y--)
+			for (int y = 255; y > 0; y--)
 			{
 				if (c.blocks[x][z][y] >= 1)
 				{
