@@ -360,6 +360,7 @@ void WorldManager::RenderChunks()
 
 	if (regions.size() != ourRegions.size())
 	{
+		std::lock_guard<std::mutex> lock(mtx);
 		ourRegions = regions;
 	}
 
