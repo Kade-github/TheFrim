@@ -29,6 +29,7 @@ public:
 
 	Texture* sheet;
 
+	int topBlocks[16][16];
 
 	bool isLoaded = false;
 	bool rendered = false;

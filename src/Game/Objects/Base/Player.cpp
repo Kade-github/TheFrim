@@ -1,0 +1,74 @@
+#include "Player.h"
+#include <Game.h>
+
+float deltaTime = 0.0f;	// Time between current frame and last frame
+float lastFrame = 0.0f; // Time of last frame
+bool firstMouse = false;
+
+float lastX = 400, lastY = 300;
+
+Player::Player(glm::vec3 pos) : GameObject(pos)
+{
+}
+
+void Player::Draw()
+{
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
+	glm::vec2 mousePos = Game::instance->GetCursorPos(false);
+
+	float x = mousePos.x;
+	float y = mousePos.y;
+
+	if (firstMouse)
+	{
+		lastX = x;
+		lastY = y;
+		firstMouse = false;
+	}
+
+	float xoffset = x - lastX;
+	float yoffset = lastY - y; // reversed since y-coordinates go from bottom to top
+
+	lastX = x;
+	lastY = y;
+
+	const float sensitivity = 0.1f;
+	xoffset *= sensitivity;
+	yoffset *= sensitivity;
+
+	Camera* camera = Game::instance->GetCamera();
+
+	float p = camera->pitch + yoffset;
+	if (p >= 89.0f)
+		p = 89.0f;
+	else if (p <= -89.0f)
+		p = -89.0f;
+
+	yaw += xoffset;
+
+	SetDirection();
+
+	// camera movement
+
+	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
+		position += front * deltaTime * playerSpeed;
+
+	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
+		position -= front * deltaTime * playerSpeed;
+
+	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
+		position -= glm::normalize(glm::cross(front, up)) * deltaTime * playerSpeed;
+
+	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
+		position += glm::normalize(glm::cross(front, up)) * deltaTime * playerSpeed;
+
+	camera->position = position;
+
+	camera->pitch = p;
+	camera->yaw = yaw;
+
+	camera->SetDirection();
+}

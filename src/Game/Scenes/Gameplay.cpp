@@ -2,14 +2,6 @@
 #include <Game.h>
 #include <imgui.h>
 
-float deltaTime = 0.0f;	// Time between current frame and last frame
-float lastFrame = 0.0f; // Time of last frame
-
-float cameraSpeed = 10.0f;
-
-bool firstMouse = false;
-
-float lastX = 400, lastY = 300;
 
 Gameplay::Gameplay(WorldManager* _wm)
 {
@@ -30,73 +22,29 @@ void Gameplay::Create()
 
 	Camera* camera = Game::instance->GetCamera();
 
-	camera->position = glm::vec3(0, 128, 0);
+	player = new Player(glm::vec3(0, 128, 0));
+
+	Chunk* c = wm->GetChunk(player->position.x, player->position.z);
+
+	if (c != nullptr)
+		player->position.y = c->topBlocks[(int)player->position.x % 16][(int)player->position.z % 16];
+
+	AddObject(player);
 
 	Game::instance->CaptureCursor(true);
 }
 
 void Gameplay::Draw()
 {
-	float currentFrame = glfwGetTime();
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
-
-	glm::vec2 mousePos = Game::instance->GetCursorPos(false);
-
-	float x = mousePos.x;
-	float y = mousePos.y;
-
-	if (firstMouse)
-	{
-		lastX = x;
-		lastY = y;
-		firstMouse = false;
-	}
-
-	float xoffset = x - lastX;
-	float yoffset = lastY - y; // reversed since y-coordinates go from bottom to top
-
-	lastX = x;
-	lastY = y;
-
-	const float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
 	Camera* camera = Game::instance->GetCamera();
-
-	float p = camera->pitch + yoffset;
-	if (p >= 89.0f)
-		p = 89.0f;
-	else if (p <= -89.0f)
-		p = -89.0f;
-
-	camera->yaw += xoffset;
-	camera->pitch = p;
-
-	camera->SetDirection();
-
-	// camera movement
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
-		camera->position += camera->cameraFront * deltaTime * cameraSpeed;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
-		camera->position -= camera->cameraFront * deltaTime * cameraSpeed;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
-		camera->position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * cameraSpeed;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
-		camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * deltaTime * cameraSpeed;
 
 	ImGui::Begin("Debug", 0, ImGuiWindowFlags_AlwaysAutoResize);
 
-	ImGui::Text("Camera Pos: %f, %f, %f", camera->position.x, camera->position.y, camera->position.z);
+	ImGui::Text("Player Pos: %f, %f, %f", player->position.x, player->position.y, player->position.z);
 
 	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 32.0f, 400.0f);
 
-	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
+	ImGui::SliderFloat("Player Speed", &player->playerSpeed, 1.0f, 100.0f);
 
 	ImGui::End();
 

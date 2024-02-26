@@ -467,6 +467,19 @@ float WorldManager::GetDistanceToRegion(int x, int z)
 	return dist;
 }
 
+Chunk* WorldManager::GetChunk(int x, int z)
+{
+	for (auto& r : regions)
+	{
+		for (auto& c : r.chunks)
+		{
+			if (c->position.x < x && c->position.z < z && c->position.x + 16 >= x && c->position.z + 16 >= z)
+				return c;
+		}
+	}
+	return nullptr;
+}
+
 void WorldManager::ReloadChunks()
 {
 	std::lock_guard<std::mutex> lock(mtx);

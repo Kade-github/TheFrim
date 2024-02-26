@@ -85,6 +85,7 @@ public:
 	void SaveWorld();
 	void SaveWorldNow();
 	Data::Chunk FindChunk(int x, int z);
+	Chunk* GetChunk(int x, int z);
 	float GetDistanceToRegion(int x, int z);
 
 	void RenderChunks();

@@ -22,6 +22,10 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 	if (isLoaded)
 		return;
 
+	for(int x = 0; x < 16; x++)
+		for (int z = 0; z < 16; z++)
+			topBlocks[x][z] = 0;
+
 	blocks.clear();
 
 	vertices.clear();
@@ -106,6 +110,9 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 
 					if (b == nullptr)
 						continue;
+
+					if (topBlocks[x][z] < y)
+						topBlocks[x][z] = y;
 
 					b->textureHeight = sheet->height;
 					b->textureWidth = sheet->width;
