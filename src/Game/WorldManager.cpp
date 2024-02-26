@@ -208,11 +208,11 @@ void WorldManager::LoadChunks()
 					{
 						_generatePool.detach_task([c, i]()
 							{
-								Data::Chunk data = instance->regions[i].data.getChunk(c->position.x, c->position.z);
-								Data::Chunk forward = instance->regions[i].data.getChunk(c->position.x, c->position.z - 16);
-								Data::Chunk backward = instance->regions[i].data.getChunk(c->position.x, c->position.z + 16);
-								Data::Chunk left = instance->regions[i].data.getChunk(c->position.x + 16, c->position.z);
-								Data::Chunk right = instance->regions[i].data.getChunk(c->position.x - 16, c->position.z);
+								Data::Chunk data = instance->FindChunk(c->position.x, c->position.z);
+								Data::Chunk forward = instance->FindChunk(c->position.x, c->position.z - 16);
+								Data::Chunk backward = instance->FindChunk(c->position.x, c->position.z + 16);
+								Data::Chunk left = instance->FindChunk(c->position.x + 16, c->position.z);
+								Data::Chunk right = instance->FindChunk(c->position.x - 16, c->position.z);
 
 								c->GenerateMesh(data, forward, backward, left, right);
 							});
@@ -422,6 +422,18 @@ void WorldManager::SaveWorldNow()
 		}
 	}
 	Game::instance->log->Write("World saved to " + _path);
+}
+
+Data::Chunk WorldManager::FindChunk(int x, int z)
+{
+	for (auto& r : regions)
+	{
+		Data::Chunk c = r.data.getChunk(x, z);
+
+		if (c.isGenerated)
+			return c;
+	}
+	return Data::Chunk();
 }
 
 float WorldManager::GetDistanceToRegion(int x, int z)
