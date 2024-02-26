@@ -4,7 +4,7 @@
 #pragma once
 
 #include "GameObject.h"
-
+#include <stdlib.h>
 #include <vector>
 
 class Scene

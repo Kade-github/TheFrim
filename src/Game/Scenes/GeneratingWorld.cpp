@@ -27,7 +27,7 @@ void GeneratingWorld::Create()
 
 	c2d->AddObject(background);
 
-	Texture* t = Texture::createWithImage("Assets/Textures/Sheet.png");
+	Texture* t = Texture::createWithImage("Assets/Textures/sheet.png");
 
 	wm = new WorldManager(_name, t, _seed);
 
