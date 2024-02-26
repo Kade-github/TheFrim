@@ -56,10 +56,12 @@ void Data::World::scanForRegions()
 
 void Data::World::parseSeed()
 {
-	unsigned long _seed = 0;
+	int _seed = 0;
 
 	for (int i = 0; i < seed.size(); i++)
+	{
 		_seed += (int)seed[i];
+	}
 
 	seedNum = _seed;
 

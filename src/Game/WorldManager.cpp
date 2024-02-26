@@ -34,8 +34,6 @@ WorldManager::WorldManager(std::string name, Texture* _tp, std::string _seed)
 	else
 		LoadWorld();
 
-	_generatePool.reset(5);
-
 	_generateThread = std::thread([&]()
 		{
 			while (true)
@@ -171,16 +169,10 @@ void WorldManager::LoadChunks()
 	glm::vec3 cPos = glm::vec3(camera->position.x, 128, camera->position.z);
 
 	{
-		std::vector<Region> _regions = {};
-
+		std::lock_guard<std::mutex> lock(mtx);
+		for (int i = 0; i < regions.size(); i++)
 		{
-			std::lock_guard<std::mutex> lock(mtx);
-			_regions = regions;
-		}
-
-		for (int i = 0; i < _regions.size(); i++)
-		{
-			Region& r = _regions[i];
+			Region& r = regions[i];
 
 			if (!r.loaded)
 				continue;
@@ -189,20 +181,29 @@ void WorldManager::LoadChunks()
 			{
 
 				glm::vec3 re = glm::vec3(c->position.x, 128, c->position.z);
+				glm::vec3 re2 = glm::vec3(c->position.x + 16, 128, c->position.z);
+				glm::vec3 re3 = glm::vec3(c->position.x, 128, c->position.z + 16);
+				glm::vec3 re4 = glm::vec3(c->position.x + 16, 128, c->position.z + 16);
 
 				float diff = glm::distance(cPos, re);
+				float diff2 = glm::distance(cPos, re2);
+				float diff3 = glm::distance(cPos, re3);
+				float diff4 = glm::distance(cPos, re4);
 
-				if (diff <= camera->cameraFar)
+				float closest = std::min(diff, std::min(diff2, std::min(diff3, diff4)));
+
+
+				if (closest <= camera->cameraFar)
 				{
 					if (!c->isLoaded)
 					{
 						_generatePool.detach_task([c, i]()
 							{
 								Data::Chunk data = instance->regions[i].data.getChunk(c->position.x, c->position.z);
-								Data::Chunk forward = instance->regions[i].data.getChunk(c->position.x, c->position.z + 16);
-								Data::Chunk backward = instance->regions[i].data.getChunk(c->position.x, c->position.z - 16);
-								Data::Chunk left = instance->regions[i].data.getChunk(c->position.x - 16, c->position.z);
-								Data::Chunk right = instance->regions[i].data.getChunk(c->position.x + 16, c->position.z);
+								Data::Chunk forward = instance->regions[i].data.getChunk(c->position.x, c->position.z - 16);
+								Data::Chunk backward = instance->regions[i].data.getChunk(c->position.x, c->position.z + 16);
+								Data::Chunk left = instance->regions[i].data.getChunk(c->position.x + 16, c->position.z);
+								Data::Chunk right = instance->regions[i].data.getChunk(c->position.x - 16, c->position.z);
 
 								c->GenerateMesh(data, forward, backward, left, right);
 							});
@@ -219,26 +220,22 @@ void WorldManager::LoadChunks()
 				int realX = r.startX / 80;
 				int realZ = r.startZ / 80;
 
-				glm::vec3 checkPos = glm::vec3(r.startX - 1, 128, r.startZ);
-				float dist = glm::distance(cPos, checkPos);
+				float dist = GetDistanceToRegion(realX, realZ);
 
 				if (dist <= camera->cameraFar)
 					instance->ShouldLoad(realX - 1, realZ);
 
-				checkPos = glm::vec3(r.startX, 128, r.startZ - 1);
-				dist = glm::distance(cPos, checkPos);
+				dist = GetDistanceToRegion(realX + 1, realZ);
 
 				if (dist <= camera->cameraFar)
 					instance->ShouldLoad(realX, realZ - 1);
 
-				checkPos = glm::vec3(r.startX + 1, 128, r.startZ);
-				dist = glm::distance(cPos, checkPos);
+				dist = GetDistanceToRegion(realX, realZ - 1);
 
 				if (dist <= camera->cameraFar)
 					instance->ShouldLoad(realX + 1, realZ);
 
-				checkPos = glm::vec3(r.startX, 128, r.startZ + 1);
-				dist = glm::distance(cPos, checkPos);
+				dist = GetDistanceToRegion(realX, realZ + 1);
 
 				if (dist <= camera->cameraFar)
 					instance->ShouldLoad(realX, realZ + 1);
@@ -269,7 +266,6 @@ void WorldManager::GenerateRegion(int x, int z)
 
 	std::vector<Chunk*> chunks = CreateChunksInRegion(r);
 	{
-		std::lock_guard<std::mutex> lock(mtx);
 		regions.push_back({ _x, _z, _x + 80, _z + 80, r, chunks });
 		generatedRegions++;
 		generationProgress = (float)generatedRegions / (float)totalRegions;
@@ -302,21 +298,9 @@ void WorldManager::CreateWorld(std::string _seed, std::string _name)
 	_generatePool.detach_task([this]() 
 	{
 		GenerateRegion(0, 0);
-	});
-	_generatePool.detach_task([this]()
-	{
 		GenerateRegion(-1, 0);
-	});
-	_generatePool.detach_task([this]()
-	{
 		GenerateRegion(1, 0);
-	});
-	_generatePool.detach_task([this]()
-	{
 		GenerateRegion(0, -1);
-	});
-	_generatePool.detach_task([this]()
-	{
 		GenerateRegion(0, 1);
 	});
 
@@ -367,7 +351,6 @@ void WorldManager::RenderChunks()
 
 	if (regions.size() != ourRegions.size())
 	{
-		std::lock_guard<std::mutex> lock(mtx);
 		ourRegions = regions;
 	}
 
@@ -378,8 +361,7 @@ void WorldManager::RenderChunks()
 		if (!r.loaded)
 			continue;
 
-		glm::vec3 thisPos = glm::vec3(r.startX, 128, r.startZ);
-		float thisDistance = glm::distance(cPos, thisPos);
+		float thisDistance = GetDistanceToRegion(r.startX / 80, r.startZ / 80);
 
 		if (thisDistance > camera->cameraFar * 3)
 		{
@@ -432,10 +414,58 @@ void WorldManager::SaveWorldNow()
 
 	msgpack::pack(os_p, _world);
 
+	{
+		std::lock_guard<std::mutex> lock(mtx);
+		for (auto& r : regions)
+		{
+			_world.saveRegion(r.data);
+		}
+	}
+	Game::instance->log->Write("World saved to " + _path);
+}
+
+float WorldManager::GetDistanceToRegion(int x, int z)
+{
+	Camera* camera = Game::instance->GetCamera();
+
+	glm::vec3 cPos = glm::vec3(camera->position.x, 128, camera->position.z);
+
+	float rX = x * 80;
+	float rZ = z * 80;
+
+	float dist = 0;
+
+	dist = glm::distance(cPos, glm::vec3(rX + 80, 128, rZ + 80));
+
+	float check = glm::distance(cPos, glm::vec3(rX - 80, 128, rZ + 80));
+
+	if (check < dist)
+		dist = check;
+
+	check = glm::distance(cPos, glm::vec3(rX + 80, 128, rZ - 80));
+
+	if (check < dist)
+		dist = check;
+
+	check = glm::distance(cPos, glm::vec3(rX - 80, 128, rZ - 80));
+
+	if (check < dist)
+		dist = check;
+
+	return dist;
+}
+
+void WorldManager::ReloadChunks()
+{
+	std::lock_guard<std::mutex> lock(mtx);
 	for (auto& r : regions)
 	{
-		_world.saveRegion(r.data);
+		for (auto& c : r.chunks)
+		{
+			if (c->isLoaded)
+				c->UnloadMesh();
+			if (c->rendered)
+				c->Clean();
+		}
 	}
-
-	Game::instance->log->Write("World saved to " + _path);
 }

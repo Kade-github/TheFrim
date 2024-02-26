@@ -46,35 +46,48 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 					bool top = false;
 					bool bottom = false;
 
-					if (z + 1 < 16)
-						back = c.blocks[x][z + 1][y] >= 1;
+					if (z + 1 < 16 && c.blocks[x][z + 1][y] >= 1)
+					{
+						back = true;
+					}
 
-					if (z - 1 >= 0)
-						front = c.blocks[x][z - 1][y] >= 1;
+					if (z - 1 >= 0 && c.blocks[x][z - 1][y] >= 1)
+						front = true;
 
-					if (x + 1 < 16)
-						left = c.blocks[x + 1][z][y] >= 1;
+					if (x + 1 < 16 && c.blocks[x + 1][z][y] >= 1)
+					{
+						left = true;
+					}
 
-					if (x - 1 >= 0)
-						right = c.blocks[x - 1][z][y] >= 1;
+					if (x - 1 >= 0 && c.blocks[x - 1][z][y] >= 1)
+					{
+						right = true;
+					}
 
-					if (y - 1 >= 0)
-						bottom = c.blocks[x][z][y - 1] >= 1;
+					if (y - 1 >= 0 && c.blocks[x][z][y - 1] >= 1)
+						bottom = true;
 
-					if (y + 1 < 256)
-						top = c.blocks[x][z][y + 1] >= 1;
+					if (y + 1 < 256 && c.blocks[x][z][y + 1] >= 1)
+						top = true;
 
-					if (z == 0 && !front && forwardC.isGenerated)
-						front = forwardC.blocks[x][15][y] >= 1;
+					if (z == 0 && !front && forwardC.isGenerated && forwardC.blocks[x][15][y] >= 1)
+					{
+						front = true;
+					}
+					if (z == 15 && !back && backwardC.isGenerated && backwardC.blocks[x][0][y] >= 1)
+					{
+						back = true;
+					}
 
-					if (z == 15 && !back && backwardC.isGenerated)
-						back = backwardC.blocks[x][0][y] >= 1;
+					if (x == 0 && !right && rightC.isGenerated && rightC.blocks[0][z][y] >= 1)
+					{
+						right = true;
+					}
 
-					if (x == 0 && !right && rightC.isGenerated)
-						right = rightC.blocks[15][z][y] >= 1;
-
-					if (x == 15 && !left && leftC.isGenerated)
-						left = leftC.blocks[0][z][y] >= 1;
+					if (x == 15 && !left && leftC.isGenerated && leftC.blocks[15][z][y] >= 1)
+					{
+						left = true;
+					}
 
 
 					Block* b = nullptr;

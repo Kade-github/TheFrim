@@ -94,7 +94,7 @@ void Gameplay::Draw()
 
 	ImGui::Text("Camera Pos: %f, %f, %f", camera->position.x, camera->position.y, camera->position.z);
 
-	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 0.1f, 400.0f);
+	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 32.0f, 400.0f);
 
 	ImGui::SliderFloat("Camera Speed", &cameraSpeed, 1.0f, 100.0f);
 
@@ -103,6 +103,14 @@ void Gameplay::Draw()
 	wm->RenderChunks();
 
 	Scene::Draw();
+}
+
+void Gameplay::KeyPress(int key)
+{
+	if (key == GLFW_KEY_F2)
+		wm->ReloadChunks();
+	if (key == GLFW_KEY_F3)
+		wm->SaveWorldNow();
 }
 
 void Gameplay::Destroy()

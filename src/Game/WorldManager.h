@@ -85,7 +85,11 @@ public:
 	void SaveWorld();
 	void SaveWorldNow();
 
+	float GetDistanceToRegion(int x, int z);
+
 	void RenderChunks();
+
+	void ReloadChunks();
 };
 
 #endif

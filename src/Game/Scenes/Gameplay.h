@@ -18,6 +18,8 @@ public:
 	void Create() override;
 	void Draw() override;
 
+	void KeyPress(int key) override;
+
 	void Destroy() override;
 };
 
