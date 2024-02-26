@@ -79,12 +79,12 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 						back = true;
 					}
 
-					if (x == 0 && !right && rightC.isGenerated && rightC.blocks[0][z][y] >= 1)
+					if (x == 0 && !right && rightC.isGenerated && rightC.blocks[15][z][y] >= 1)
 					{
 						right = true;
 					}
 
-					if (x == 15 && !left && leftC.isGenerated && leftC.blocks[15][z][y] >= 1)
+					if (x == 15 && !left && leftC.isGenerated && leftC.blocks[0][z][y] >= 1)
 					{
 						left = true;
 					}
