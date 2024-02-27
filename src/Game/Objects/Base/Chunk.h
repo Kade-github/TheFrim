@@ -38,8 +38,8 @@ public:
 
 	Chunk(glm::vec3 pos, Texture* _spr);
 
-	Block* Chunk::getTopBlock(float x, float z);
-	Block* Chunk::getBlock(float x, float y, float z);
+	Block* getTopBlock(float x, float z);
+	Block* getBlock(float x, float y, float z);
 
 	void GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC);
 

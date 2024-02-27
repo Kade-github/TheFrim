@@ -2,6 +2,8 @@
 
 Game* Game::instance = nullptr;
 
+float lastFrame = 0.0f; // Time of last frame
+
 Game::Game(std::string title, std::string version)
 {
 	_title = title;
@@ -60,6 +62,7 @@ void Game::SetScene(Scene* s)
 
 	currentScene->Create();
 	currentScene->isCreated = true;
+	currentScene->Resize(_width, _height);
 }
 
 void Game::SwitchScene(Scene* s)
@@ -70,6 +73,10 @@ void Game::SwitchScene(Scene* s)
 
 void Game::Render()
 {
+	float currentFrame = glfwGetTime();
+	deltaTime = currentFrame - lastFrame;
+	lastFrame = currentFrame;
+
 	if (switchScene)
 	{
 		if (currentScene != nullptr)
@@ -80,6 +87,7 @@ void Game::Render()
 		currentScene = toScene;
 		currentScene->Create();
 		currentScene->isCreated = true;
+		currentScene->Resize(_width, _height);
 		toScene = nullptr;
 		switchScene = false;
 	}

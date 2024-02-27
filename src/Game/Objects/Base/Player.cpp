@@ -2,8 +2,6 @@
 #include <Game.h>
 #include "../../WorldManager.h"
 
-float deltaTime = 0.0f;	// Time between current frame and last frame
-float lastFrame = 0.0f; // Time of last frame
 bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
@@ -113,10 +111,6 @@ glm::vec3 Player::Ray()
 
 void Player::Draw()
 {
-	float currentFrame = glfwGetTime();
-	deltaTime = currentFrame - lastFrame;
-	lastFrame = currentFrame;
-
 	glm::vec2 mousePos = Game::instance->GetCursorPos(false);
 
 	float x = mousePos.x;
@@ -158,36 +152,40 @@ void Player::Draw()
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
 	{
 		forwardKey = true;
-		forwardVelocity += 2 * deltaTime;
+		forwardVelocity += 6;
 	}
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
 	{
 		forwardKey = true;
-		forwardVelocity -= 2 * deltaTime;
+		forwardVelocity -= 6;
 	}
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
 	{
-		strafeVelocity -= 2 * deltaTime;
+		strafeVelocity -= 6;
 	}
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 	{
-		strafeVelocity += 2 * deltaTime;
+		strafeVelocity += 6;
 	}
 
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
-		if (downVelocity == 0 && isOnGround)
-			downVelocity = 0.07;
+		if (isOnGround)
+			downVelocity = 400.0f;
 	}
+
+	strafeVelocity *= Game::instance->deltaTime;
+	forwardVelocity *= Game::instance->deltaTime;
 
 	glm::vec3 motion = position;
 
 	motion += front * forwardVelocity;
 
 	motion += glm::normalize(glm::cross(front, up)) * strafeVelocity;
+
 
 	CheckCollision(motion);
 	
@@ -233,9 +231,12 @@ void Player::Draw()
 	// gravity
 
 	glm::vec3 _to = position;
-	downVelocity -= 0.2f * deltaTime;
-	_to.y += downVelocity;
+	downVelocity -= 8.0f;
 
+	downVelocity *= Game::instance->deltaTime;
+
+	_to.y += downVelocity;
+	
 	CheckVerticalCollision(_to);
 
 	position.y = _to.y;

@@ -59,24 +59,24 @@ void MainMenu::Draw()
 	switch (selectedIndex)
 	{
 		case 0:
-			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width), 0.1f);
-			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width - 100), 0.1f);
-			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width - 100), 0.1f);
+			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width), 9.0f * Game::instance->deltaTime);
+			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width - 100),9.0f * Game::instance->deltaTime);
+			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width - 100), 9.0f * Game::instance->deltaTime);
 			break;
 		case 1:
-			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width - 100), 0.1f);
-			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width), 0.1f);
-			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width - 100), 0.1f);
+			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width - 100), 9.0f * Game::instance->deltaTime);
+			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width), 9.0f * Game::instance->deltaTime);
+			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width - 100), 9.0f * Game::instance->deltaTime);
 			break;
 		case 2:
-			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width - 100), 0.1f);
-			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width - 100), 0.1f);
-			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width), 0.1f);
+			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width - 100), 9.0f * Game::instance->deltaTime);
+			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width - 100),9.0f * Game::instance->deltaTime);
+			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width), 9.0f * Game::instance->deltaTime);
 			break;
 		case -1:
-			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width - 100), 0.1f);
-			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width - 100), 0.1f);
-			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width - 100), 0.1f);
+			selectWorld->position.x = std::lerp(selectWorld->position.x, c2d->_w - (selectWorld->width - 100), 9.0f * Game::instance->deltaTime);
+			settings->position.x = std::lerp(settings->position.x, c2d->_w - (settings->width - 100), 9.0f * Game::instance->deltaTime);
+			exit->position.x = std::lerp(exit->position.x, c2d->_w - (exit->width - 100), 9.0f * Game::instance->deltaTime);
 			break;
 	}
 

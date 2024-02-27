@@ -9,6 +9,7 @@ class Camera2D : public GameObject
 	int _lastId = 0;
 public:
 	float _w, _h;
+	float _rW, _rH;
 	unsigned int s_vao, s_vbo;
 
 	unsigned int vao, vbo;

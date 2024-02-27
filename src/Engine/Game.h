@@ -32,6 +32,11 @@ public:
 
 	Logging* log;
 
+	float deltaTime = 0.0f;
+
+	float mouseXP = 1.0f;
+	float mouseYP = 1.0f;
+
 	bool isFullscreen = false;
 	bool lockedCursor = true;
 	bool switchScene = false;
@@ -54,7 +59,15 @@ public:
 
 	void SetWindowSize(int width, int height) 
 	{ 
-		_width = width; _height = height; 
+		_width = width; 
+		_height = height; 
+
+		mouseXP = _width / 1920.0f;
+		mouseYP = _height / 1080.0f;
+
+		log->Write("Width: " + std::to_string(_width) + ". Height: " + std::to_string(_height));
+
+		log->Write("Set mouse percentages to " + std::to_string(mouseXP) + "," + std::to_string(mouseYP));
 
 		_camera->width = width;
 		_camera->height = height;
@@ -84,7 +97,12 @@ public:
 		if (invert) // invert y axis
 			y = _height - _cursorY;
 
-		return glm::vec2(_cursorX, y); 
+		float x = _cursorX;
+
+		x /= mouseXP;
+		y /= mouseYP;
+
+		return glm::vec2(x, y); 
 	}
 };
 

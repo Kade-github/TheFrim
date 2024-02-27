@@ -7,14 +7,11 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 {
 	debugText = new Text2D("", "ArialFrim", glm::vec3(0, 0, 0), glm::vec4(1, 1, 1, 1));
 
-	_w = Game::instance->GetWindowSize().x;
-	_h = Game::instance->GetWindowSize().y;
+	_w = 1920;
+	_h = 1080;
 
 	glGenFramebuffers(1, &fb);
 	glBindFramebuffer(GL_FRAMEBUFFER, fb);
-
-	_w = Game::instance->GetWindowSize().x;
-	_h = Game::instance->GetWindowSize().y;
 
 	t = new Texture(NULL, _w, _h);
 	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, t->id, 0);
@@ -51,11 +48,13 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 	glGenBuffers(1, &s_vbo);
 
+	_rW = _w;
+	_rH = _h;
 
 	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1)};
-	Vertex2D tr = { glm::vec3{_w,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1)};
-	Vertex2D bl = { glm::vec3{0,_h,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1)};
-	Vertex2D br = { glm::vec3{_w,_h,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1)};
+	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1)};
+	Vertex2D bl = { glm::vec3{0,_rH,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1)};
+	Vertex2D br = { glm::vec3{_rW,_rH,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1)};
 
 	vertices.push_back(tl);
 	vertices.push_back(tr);
@@ -84,10 +83,31 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 void Camera2D::Resize()
 {
-	glBindFramebuffer(GL_FRAMEBUFFER, fb);
-	t->resizeTexture(Game::instance->GetWindowSize().x, Game::instance->GetWindowSize().y);
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, t->id, 0);
-	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+	glm::vec2 size = Game::instance->GetWindowSize();
+
+	_rW = size.x;
+	_rH = size.y;
+	
+	Game::instance->log->Write("Resizing 2D Camera to: " + std::to_string(_rW) + "x" + std::to_string(_rH));
+
+	vertices.clear();
+
+	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1)};
+	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1)};
+	Vertex2D bl = { glm::vec3{0,_rH,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1)};
+	Vertex2D br = { glm::vec3{_rW,_rH,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1)};
+
+	vertices.push_back(tl);
+	vertices.push_back(tr);
+	vertices.push_back(bl);
+	vertices.push_back(bl);
+	vertices.push_back(tr);
+	vertices.push_back(br);
+
+	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex2D), vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
 void Camera2D::DrawDebugText(std::string text, glm::vec2 pos, int size)

@@ -184,10 +184,7 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 						AddToDraw(bottomFace.vertices, bottomFace.indices);
 					}
 
-					if (!top || !bottom || !front || !back || !right || !left) // is visible
-						blocks.push_back(b);
-					else
-						delete b;
+					blocks.push_back(b);
 				}
 			}
 		}
