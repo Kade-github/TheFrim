@@ -24,27 +24,31 @@ void Gameplay::Create()
 
 	player = new Player(glm::vec3(0, 128, 0));
 
-	Chunk* c = wm->GetChunk(player->position.x, player->position.z);
-
-	if (c != nullptr)
-		player->position.y = c->topBlocks[(int)player->position.x % 16][(int)player->position.z % 16];
-
 	AddObject(player);
+
 
 	Game::instance->CaptureCursor(true);
 }
 
 void Gameplay::Draw()
 {
+
 	Camera* camera = Game::instance->GetCamera();
 
 	ImGui::Begin("Debug", 0, ImGuiWindowFlags_AlwaysAutoResize);
 
-	ImGui::Text("Player Pos: %f, %f, %f", player->position.x, player->position.y, player->position.z);
+	ImGui::Text("Player Pos: %i, %i, %i", (int)player->position.x, (int)player->position.y, (int)player->position.z);
+
+	ImGui::Text("Player Down Speed: %f", player->downVelocity);
+
+	ImGui::Text("Player Forward Speed: %f", player->forwardVelocity);
+
+	ImGui::Text("Player Strafe Speed: %f", player->strafeVelocity);
 
 	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 32.0f, 400.0f);
 
-	ImGui::SliderFloat("Player Speed", &player->playerSpeed, 1.0f, 100.0f);
+	ImGui::SliderFloat("Player Speed", &player->playerSpeed, 0.04f, 0.1f);
+
 
 	ImGui::End();
 

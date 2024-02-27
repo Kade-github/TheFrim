@@ -29,8 +29,6 @@ public:
 
 	Texture* sheet;
 
-	int topBlocks[16][16];
-
 	bool isLoaded = false;
 	bool rendered = false;
 
@@ -39,6 +37,9 @@ public:
 	void AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i);
 
 	Chunk(glm::vec3 pos, Texture* _spr);
+
+	Block* Chunk::getTopBlock(float x, float z);
+	Block* Chunk::getBlock(float x, float y, float z);
 
 	void GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC);
 

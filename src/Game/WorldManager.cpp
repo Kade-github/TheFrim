@@ -225,30 +225,30 @@ void WorldManager::LoadChunks()
 						c->UnloadMesh();
 					}
 				}
-
-				int realX = r.startX / 80;
-				int realZ = r.startZ / 80;
-
-				float dist = GetDistanceToRegion(realX, realZ);
-
-				if (dist <= camera->cameraFar)
-					instance->ShouldLoad(realX - 1, realZ);
-
-				dist = GetDistanceToRegion(realX + 1, realZ);
-
-				if (dist <= camera->cameraFar)
-					instance->ShouldLoad(realX, realZ - 1);
-
-				dist = GetDistanceToRegion(realX, realZ - 1);
-
-				if (dist <= camera->cameraFar)
-					instance->ShouldLoad(realX + 1, realZ);
-
-				dist = GetDistanceToRegion(realX, realZ + 1);
-
-				if (dist <= camera->cameraFar)
-					instance->ShouldLoad(realX, realZ + 1);
 			}
+
+			int realX = r.startX / 80;
+			int realZ = r.startZ / 80;
+
+			float dist = GetDistanceToRegion(realX, realZ);
+
+			if (dist <= camera->cameraFar)
+				instance->ShouldLoad(realX - 1, realZ);
+
+			dist = GetDistanceToRegion(realX + 1, realZ);
+
+			if (dist <= camera->cameraFar)
+				instance->ShouldLoad(realX, realZ - 1);
+
+			dist = GetDistanceToRegion(realX, realZ - 1);
+
+			if (dist <= camera->cameraFar)
+				instance->ShouldLoad(realX + 1, realZ);
+
+			dist = GetDistanceToRegion(realX, realZ + 1);
+
+			if (dist <= camera->cameraFar)
+				instance->ShouldLoad(realX, realZ + 1);
 		}
 
 		_generatePool.wait();
@@ -467,13 +467,13 @@ float WorldManager::GetDistanceToRegion(int x, int z)
 	return dist;
 }
 
-Chunk* WorldManager::GetChunk(int x, int z)
+Chunk* WorldManager::GetChunk(float x, float z)
 {
-	for (auto& r : regions)
+	for (auto& r : ourRegions)
 	{
 		for (auto& c : r.chunks)
 		{
-			if (c->position.x < x && c->position.z < z && c->position.x + 16 >= x && c->position.z + 16 >= z)
+			if (c->position.x <= x && c->position.z <= z && c->position.x + 16 > x && c->position.z + 16 > z)
 				return c;
 		}
 	}

@@ -3,6 +3,47 @@
 #include "Blocks/Dirt.h"
 #include "Blocks/Grass.h"
 
+Block* Chunk::getTopBlock(float x, float z)
+{
+	Block* highest = NULL;
+
+	for (int i = 0; i < blocks.size(); i++)
+	{
+		float rX = blocks[i]->position.x;
+		float rZ = blocks[i]->position.z;
+		float rXE = rX + 1;
+		float rZE = rZ + 1;
+		if (rXE > x && rZE > z && rX <= x && rZ <= z)
+		{
+			if (highest == NULL)
+				highest = blocks[i];
+			else if (blocks[i]->position.y > highest->position.y)
+				highest = blocks[i];
+		}
+	}
+
+	return highest;
+}
+
+Block* Chunk::getBlock(float x, float y, float z)
+{
+	for (int i = 0; i < blocks.size(); i++)
+	{
+		float rX = blocks[i]->position.x;
+		float rY = blocks[i]->position.y;
+		float rZ = blocks[i]->position.z;
+		float rXE = rX + 1;
+		float rYE = rY + 1;
+		float rZE = rZ + 1;
+		if (rXE > x && rYE > y && rZE > z && rX <= x && rY <= y && rZ <= z)
+		{
+			return blocks[i];
+		}
+	}
+
+	return NULL;
+}
+
 void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
 {
 	vertices.insert(vertices.end(), _v.begin(), _v.end());
@@ -21,10 +62,6 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 {
 	if (isLoaded)
 		return;
-
-	for(int x = 0; x < 16; x++)
-		for (int z = 0; z < 16; z++)
-			topBlocks[x][z] = 0;
 
 	blocks.clear();
 
@@ -100,19 +137,14 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 					{
 					default:
 						b = new Dirt(position + glm::vec3(x, y, z));
-						blocks.push_back(b);
 						break;
 					case 2:
 						b = new Grass(position + glm::vec3(x, y, z));
-						blocks.push_back(b);
 						break;
 					}
 
 					if (b == nullptr)
 						continue;
-
-					if (topBlocks[x][z] < y)
-						topBlocks[x][z] = y;
 
 					b->textureHeight = sheet->height;
 					b->textureWidth = sheet->width;
@@ -151,6 +183,11 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 						BlockFace bottomFace = b->CreateBottomFace();
 						AddToDraw(bottomFace.vertices, bottomFace.indices);
 					}
+
+					if (!top || !bottom || !front || !back || !right || !left) // is visible
+						blocks.push_back(b);
+					else
+						delete b;
 				}
 			}
 		}

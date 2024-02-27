@@ -2,6 +2,7 @@
 #define _PLAYER_H
 
 #include <Objects/GameObject.h>
+#include "Chunk.h"
 
 class Player : public GameObject
 {
@@ -9,12 +10,20 @@ public:
 	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	float playerSpeed = 7.0f;
+	float playerSpeed = 0.04f;
+
+	float downVelocity = 0;
+	float forwardVelocity = 0;
+	float strafeVelocity = 0;
+
+	bool isOnGround = false;
 
 	float yaw = 0;
 	float pitch = 0;
 
 	Player(glm::vec3 pos);
+
+	void CheckCollision(glm::vec3& motion);
 
 	void SetDirection()
 	{

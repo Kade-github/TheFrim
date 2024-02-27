@@ -33,6 +33,7 @@ miniz.c
 "Game/Objects/Base/Block.h" 
 "Game/Objects/Base/Block.cpp" 
 "Game/Objects/Base/Chunk.cpp" 
+"Game/Objects/Base/Chunk.h" 
 "Game/Objects/Base/Blocks/Grass.h" 
 "Game/Objects/Base/Blocks/Dirt.h" 
 "Game/Data/World.h"   
