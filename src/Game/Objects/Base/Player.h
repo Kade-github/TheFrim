@@ -24,6 +24,7 @@ public:
 	Player(glm::vec3 pos);
 
 	void CheckCollision(glm::vec3& motion);
+	void CheckVerticalCollision(glm::vec3& motion);
 
 	void SetDirection()
 	{

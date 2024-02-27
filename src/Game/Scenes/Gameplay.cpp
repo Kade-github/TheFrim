@@ -22,7 +22,7 @@ void Gameplay::Create()
 
 	Camera* camera = Game::instance->GetCamera();
 
-	player = new Player(glm::vec3(0, 128, 0));
+	player = new Player(glm::vec3(0, 240, 0));
 
 	AddObject(player);
 

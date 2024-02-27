@@ -30,25 +30,53 @@ void Player::CheckCollision(glm::vec3& motion)
 			glm::vec3 nonCollidedPos = motion;
 
 			Block* b2 = b;
+			Block* b3 = b;
 
-			while (b != NULL || b2 != NULL)
+			while (b != NULL || b2 != NULL || b3 != NULL)
 			{
 				b = currentChunk->getBlock(nonCollidedPos.x, nonCollidedPos.y - 2, position.z);
 				if (b != NULL)
-					nonCollidedPos.x -= glm::normalize(diff).x * 0.01f;
+					nonCollidedPos.x -= glm::normalize(diff).x * 0.001f;
 
 				b2 = currentChunk->getBlock(position.x, nonCollidedPos.y - 2, nonCollidedPos.z);
 				if (b2 != NULL)
-					nonCollidedPos.z -= glm::normalize(diff).z * 0.01f;
+					nonCollidedPos.z -= glm::normalize(diff).z * 0.001f;
 
-				b = currentChunk->getBlock(nonCollidedPos.x, nonCollidedPos.y - 2, nonCollidedPos.z);
-				if (b != NULL)
-					nonCollidedPos -= glm::normalize(diff) * 0.01f;
+				b3 = currentChunk->getBlock(nonCollidedPos.x, nonCollidedPos.y - 2, nonCollidedPos.z);
+				if (b3 != NULL)
+					nonCollidedPos -= glm::normalize(diff) * 0.001f;
 
 			}
 
 			motion = nonCollidedPos;
 		}
+	}
+}
+
+void Player::CheckVerticalCollision(glm::vec3& motion)
+{
+	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
+
+	if (currentChunk != NULL)
+	{
+		float rY = motion.y - 2;
+
+		if (downVelocity > 0)
+			rY = motion.y + 3;
+
+		Block* b = currentChunk->getBlock(motion.x, rY, motion.z);
+
+		if (b != NULL)
+		{
+			motion.y = b->position.y + 3;
+			if (downVelocity > 0)
+				motion.y = b->position.y - 3;
+			if (downVelocity < 0)
+				isOnGround = true;
+			downVelocity = 0;
+		}
+		else
+			isOnGround = false;
 	}
 }
 
@@ -177,26 +205,7 @@ void Player::Draw()
 	downVelocity -= 0.2f * deltaTime;
 	_to.y += downVelocity;
 
-	Chunk* currentChunk = WorldManager::instance->GetChunk(position.x, position.z);
-
-	if (currentChunk != NULL)
-	{
-
-		Block* topBlock = currentChunk->getTopBlock(position.x, position.z);
-
-		if (topBlock != NULL)
-		{
-			if (_to.y < topBlock->position.y + 3)
-			{
-				_to.y = topBlock->position.y + 3;
-
-				downVelocity = 0;
-				isOnGround = true;
-			}
-			else
-				isOnGround = false;
-		}
-	}
+	CheckVerticalCollision(_to);
 
 	position.y = _to.y;
 
