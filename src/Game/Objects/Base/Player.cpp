@@ -57,6 +57,8 @@ void Player::CheckVerticalCollision(glm::vec3& motion)
 {
 	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 
+	isOnGround = false;
+
 	if (currentChunk != NULL)
 	{
 		float rY = motion.y - 2;
@@ -66,7 +68,7 @@ void Player::CheckVerticalCollision(glm::vec3& motion)
 
 		Block* b = currentChunk->getBlock(motion.x, rY, motion.z);
 
-		if (b != NULL)
+		while (b != NULL)
 		{
 			motion.y = b->position.y + 3;
 			if (downVelocity > 0)
@@ -74,10 +76,39 @@ void Player::CheckVerticalCollision(glm::vec3& motion)
 			if (downVelocity < 0)
 				isOnGround = true;
 			downVelocity = 0;
+
+			rY = motion.y - 2;
+
+			b = currentChunk->getBlock(motion.x, rY, motion.z);
 		}
-		else
-			isOnGround = false;
 	}
+}
+
+glm::vec3 Player::Ray()
+{
+	glm::vec3 ray = Game::instance->GetCamera()->cameraFront;
+
+	glm::vec3 pos = position;
+
+	for (int i = 0; i < 100; i++)
+	{
+		pos += ray * 0.1f;
+
+		Chunk* currentChunk = WorldManager::instance->GetChunk(pos.x, pos.z);
+
+		if (currentChunk != NULL)
+		{
+			Block* b = currentChunk->getBlock(pos.x, pos.y, pos.z);
+
+			if (b != NULL)
+			{
+				return pos;
+			}
+		}
+	}
+
+	return glm::vec3(0, 0, 0);
+	
 }
 
 void Player::Draw()
