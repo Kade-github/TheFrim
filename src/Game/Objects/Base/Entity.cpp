@@ -77,18 +77,37 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 		int _y = currentChunk->doesBlockExist(x, _to.y, z);
 
-		if (_y >= 0)
+		int _last = 0;
+
+		if (downVelocity < 0) // below
 		{
-			if (downVelocity < 0)
+			while (_y >= 0)
 			{
-				motion.y = _y + 3;
-				isOnGround = true;
-				downVelocity = 0;
+				_to.y += 0.1;
+				_last = _y;
+				_y = currentChunk->doesBlockExist(x, _to.y, z);
+				if (_y < 0) // not found
+				{
+					isOnGround = true;
+					downVelocity = 0;
+					motion.y = _last + 3;
+					break;
+				}
 			}
-			else
+		}
+		else
+		{
+			while (_y >= 0) // above
 			{
-				motion.y = _y - 2;
-				downVelocity = 0;
+				_to.y -= 0.1;
+				_last = _y;
+				_y = currentChunk->doesBlockExist(x, _to.y, z);
+				if (_y < 0) // not found
+				{
+					downVelocity = 0;
+					motion.y = _last - 1;
+					break;
+				}
 			}
 		}
 	}
@@ -110,9 +129,9 @@ void Entity::Draw()
 	// gravity
 
 	glm::vec3 _to = position;
-	downVelocity -= gravity;
+	downVelocity -= gravity * Game::instance->deltaTime;
 
-	_to.y += downVelocity;
+	_to.y += downVelocity * Game::instance->deltaTime;
 
 	CheckVerticalCollision(_to);
 
@@ -120,13 +139,14 @@ void Entity::Draw()
 
 	glm::vec3 motion = position;
 
-	motion += front * forwardVelocity;
+	motion += front * (forwardVelocity * Game::instance->deltaTime);
 
-	motion += glm::normalize(glm::cross(front, up)) * strafeVelocity;
+	motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
 
 	CheckCollision(motion);
 
 	position = motion;
 
-	// TODO: physics
+	forwardVelocity *= 0.8;
+	strafeVelocity *= 0.8;
 }

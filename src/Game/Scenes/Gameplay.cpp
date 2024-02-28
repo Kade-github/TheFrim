@@ -33,7 +33,7 @@ void Gameplay::Create()
 	if (c != NULL)
 	{
 		int y = c->getTopBlock(player->position.x, player->position.z);
-		player->position.y = y + 4;
+		player->position.y = y + 8;
 	}
 
 
@@ -56,12 +56,6 @@ void Gameplay::Draw()
 	ImGui::Text("Player Strafe Speed: %f", player->strafeVelocity);
 
 	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 32.0f, 400.0f);
-
-	ImGui::SliderFloat("Player Speed", &player->speed, 0.001f, 10.0f);
-
-	ImGui::SliderFloat("Jump Strength", &player->jumpStrength, 8.0f, 24.0f);
-
-	ImGui::SliderFloat("Gravity", &player->gravity, 0.1f, 1.0f);
 
 	ImGui::Text("Player Is On Ground: %s", player->isOnGround ? "True" : "False");
 
