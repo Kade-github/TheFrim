@@ -144,7 +144,7 @@ int main()
 			ImGui_ImplGlfw_InitForOpenGL(game.GetWindow(), true);
 			ImGui_ImplOpenGL3_Init("#version 150");
 
-			glfwSwapInterval(0);
+			glfwSwapInterval(1);
 
 			while (running)
 			{

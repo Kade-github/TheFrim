@@ -32,8 +32,8 @@ void Gameplay::Create()
 
 	if (c != NULL)
 	{
-		Block* b = c->getTopBlock(player->position.x, player->position.z);
-		player->position.y = b->position.y + 4;
+		int y = c->getTopBlock(player->position.x, player->position.z);
+		player->position.y = y + 4;
 	}
 
 
@@ -57,7 +57,7 @@ void Gameplay::Draw()
 
 	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 32.0f, 400.0f);
 
-	ImGui::SliderFloat("Player Speed", &player->playerSpeed, 0.001f, 0.1f);
+	ImGui::SliderFloat("Player Speed", &player->speed, 0.001f, 0.1f);
 
 	ImGui::SliderFloat("Jump Strength", &player->jumpStrength, 0.01, 1);
 

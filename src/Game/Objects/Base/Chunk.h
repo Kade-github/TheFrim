@@ -27,18 +27,21 @@ public:
 
 	std::vector<VVertex> vertices = {};
 
-	Texture* sheet;
+	Data::Chunk data;
+
+	Texture* sheet = NULL;
 
 	bool isLoaded = false;
 	bool rendered = false;
 
-	Block* blocks[16][256][16];
+	std::vector<Block*> blocks = {};
 
 	void AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i);
 
 	Chunk(glm::vec3 pos, Texture* _spr);
 
-	Block* getTopBlock(float x, float z);
+	int getTopBlock(float x, float z);
+	int doesBlockExist(float x, float y, float z);
 
 	void GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC);
 

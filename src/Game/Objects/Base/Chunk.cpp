@@ -3,17 +3,32 @@
 #include "Blocks/Dirt.h"
 #include "Blocks/Grass.h"
 
-Block* Chunk::getTopBlock(float x, float z)
+int Chunk::getTopBlock(float x, float z)
 {
+	if (x < 0 || x > 15 || z < 0 || z > 15)
+		return 128;
+
 	for (int y = 255; y > -1; y--)
 	{
-		if (blocks[(int)x][y][(int)z] != NULL)
-		{
-			return blocks[(int)x][y][(int)z];
-		}
+		int _y = doesBlockExist(x, y, z);
+
+		if (_y >= 0)
+			return _y;
 	}
 
-	return NULL;
+	return 0;
+}
+
+int Chunk::doesBlockExist(float x, float y, float z)
+{
+	if ((int)x < 0 || (int)x > 15 || (int)y < 0 || (int)y > 255 || (int)z < 0 || (int)z > 15)
+		return -1;
+
+	int bType = data.blocks[(int)x][(int)z][(int)y];
+
+	if (bType >= 1)
+		return (int)y;
+	return -1;
 }
 
 
@@ -36,10 +51,9 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 	if (isLoaded)
 		return;
 
-	for(int x = 0; x < 16; x++)
-		for (int z = 0; z < 16; z++)
-			for (int y = 0; y < 256; y++)
-				blocks[x][y][z] = nullptr;
+	data = c;
+
+	blocks.clear();
 
 	vertices.clear();
 	indices.clear();
@@ -160,7 +174,10 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 						AddToDraw(bottomFace.vertices, bottomFace.indices);
 					}
 
-					blocks[x][y][z] = b;
+					if (!front || !back || !right || !left || !top || !bottom)
+						blocks.push_back(b);
+					else
+						delete b;
 				}
 			}
 		}
@@ -228,16 +245,10 @@ void Chunk::UnloadMesh()
 	if (!isLoaded)
 		return;
 
-	for (int x = 0; x < 16; x++)
-		for (int z = 0; z < 16; z++)
-			for (int y = 0; y < 256; y++)
-			{
-				if (blocks[x][y][z] != nullptr)
-				{
-					delete blocks[x][y][z];
-					blocks[x][y][z] = nullptr;
-				}
-			}
+	for (auto& b : blocks)
+		delete b;
+
+	blocks.clear();
 
 	vertices.clear();
 	indices.clear();
