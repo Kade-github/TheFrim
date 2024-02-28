@@ -74,6 +74,13 @@ void Game::SwitchScene(Scene* s)
 void Game::Render()
 {
 	float currentFrame = glfwGetTime();
+
+	if (swappedScenes)
+	{
+		lastFrame = currentFrame;
+		swappedScenes = false;
+	}
+
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
@@ -90,6 +97,7 @@ void Game::Render()
 		currentScene->Resize(_width, _height);
 		toScene = nullptr;
 		switchScene = false;
+		swappedScenes = true;
 	}
 
 	glClearColor(0.64f, 0.7f, 0.7f, 1.0f);

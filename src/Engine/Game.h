@@ -31,7 +31,7 @@ public:
 	Shader* shader;
 
 	Logging* log;
-
+	bool swappedScenes = false;
 	float deltaTime = 0.0f;
 
 	float mouseXP = 1.0f;

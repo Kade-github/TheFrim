@@ -74,6 +74,7 @@ void Player::Draw()
 	if (strafeVelocity < -speed)
 		strafeVelocity = -speed;
 
+
 	Entity::Draw(); // physics
 
 	camera->position = position;

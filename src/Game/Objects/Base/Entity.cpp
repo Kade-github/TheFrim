@@ -10,11 +10,13 @@ void Entity::CheckCollision(glm::vec3& motion)
 {
 	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 
-	glm::vec3 _to = motion;
+	float toY = motion.y - 2;
 
-	_to.y -= 2;
+	glm::vec3 diff = motion - position;
 
-	glm::vec3 diff = glm::normalize(motion - position);
+	glm::vec3 rp = position;
+
+	rp.y -= 2;
 
 	float sum = abs(diff.x) + abs(diff.y) + abs(diff.z);
 
@@ -23,35 +25,66 @@ void Entity::CheckCollision(glm::vec3& motion)
 
 	if (currentChunk != NULL)
 	{
+		// raycast
+
+		float toX = (motion.x - currentChunk->position.x);
+		float toZ = (motion.z - currentChunk->position.z);
+
 		float pX = (position.x - currentChunk->position.x);
 		float pZ = (position.z - currentChunk->position.z);
-		float x = (motion.x - currentChunk->position.x);
-		float z = (motion.z - currentChunk->position.z);
-		float prevX = x;
-		float prevZ = z;
 
-		int _y = currentChunk->doesBlockExist(x, _to.y, pZ);
+		glm::vec3 ray = position;
+		ray.y = toY;
 
-		while (_y >= 0)
+		bool hit = currentChunk->doesBlockExist(toX, ray.y, toZ) >= 0;
+
+		float progress = 0;
+
+		// first raycast (x axis)
+
+		float _lastX = 0;
+
+		while (progress < 1)
 		{
-			x -= diff.x / 32;
-			_y = currentChunk->doesBlockExist(x, _to.y, pZ);
-			if (_y < 0)
+			ray.x = rp.x + (diff.x * progress);
+
+			toX = (ray.x - currentChunk->position.x);
+
+			hit = currentChunk->doesBlockExist(toX, ray.y, pZ) >= 0;
+
+			if (hit)
 				break;
+
+			progress += 0.1;
+			_lastX = ray.x;
 		}
 
-		_y = currentChunk->doesBlockExist(pX, _to.y, z);
+		// second raycast (z axis)
 
-		while (_y >= 0)
+		progress = 0;
+
+		ray = position;
+		ray.y = toY;
+
+		float _lastZ = 0;
+
+		while (progress < 1)
 		{
-			z -= diff.z / 32;
-			_y = currentChunk->doesBlockExist(pX, _to.y, z);
-			if (_y < 0)
+			ray.z = rp.z + (diff.z * progress);
+
+			toZ = (ray.z - currentChunk->position.z);
+
+			hit = currentChunk->doesBlockExist(pX, ray.y, toZ) >= 0;
+
+			if (hit)
 				break;
+
+			progress += 0.1;
+			_lastZ = ray.z;
+			
 		}
 
-		motion.x = x + currentChunk->position.x;
-		motion.z = z + currentChunk->position.z;
+		motion = glm::vec3(_lastX, motion.y, _lastZ);
 	}
 
 
@@ -63,51 +96,69 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 	isOnGround = false;
 
-	glm::vec3 _to = motion;
-
-	_to.y -= 2;
+	float toY = motion.y - 2;
 
 	if (downVelocity > 0)
-		_to.y = motion.y + 1;
+		toY = motion.y + 1;
+
+	glm::vec3 rp = position;
+	rp.y -= 2;
+
+	glm::vec3 diff = motion - position;
+
+	float sum = abs(diff.x) + abs(diff.y) + abs(diff.z);
+
+	if (sum == 0)
+	{
+		return;
+	}
 
 	if (currentChunk != NULL)
 	{
-		float x = (motion.x - currentChunk->position.x);
-		float z = (motion.z - currentChunk->position.z);
+		// raycast
+		glm::vec3 ray = position;
 
-		int _y = currentChunk->doesBlockExist(x, _to.y, z);
+		ray.y = toY;
 
-		int _last = 0;
+		float toX = (position.x - currentChunk->position.x);
+		float toZ = (position.z - currentChunk->position.z);
 
-		if (downVelocity < 0) // below
+		int _lastY = currentChunk->doesBlockExist(toX, ray.y, toZ);
+
+		bool hit = _lastY >= 0;
+
+		float progress = 0;
+
+		while (progress < 1)
 		{
-			while (_y >= 0)
-			{
-				_to.y += 0.1;
-				_last = _y;
-				_y = currentChunk->doesBlockExist(x, _to.y, z);
-				if (_y < 0) // not found
-				{
-					isOnGround = true;
-					downVelocity = 0;
-					motion.y = _last + 3;
-					break;
-				}
-			}
+			ray = rp + (diff * progress);
+
+			toX = (ray.x - currentChunk->position.x);
+			toZ = (ray.z - currentChunk->position.z);
+
+			int b = currentChunk->doesBlockExist(toX, ray.y, toZ);
+
+			_lastY = b;
+			hit = b >= 0;
+
+			if (hit)
+				break;
+
+			progress += 0.1;
 		}
-		else
+
+		if (_lastY >= 0)
 		{
-			while (_y >= 0) // above
+			if (downVelocity <= 0)
 			{
-				_to.y -= 0.1;
-				_last = _y;
-				_y = currentChunk->doesBlockExist(x, _to.y, z);
-				if (_y < 0) // not found
-				{
-					downVelocity = 0;
-					motion.y = _last - 1;
-					break;
-				}
+				isOnGround = true;
+				downVelocity = 0;
+				motion.y = _lastY + 3;
+			}
+			else
+			{
+				motion.y = _lastY - 1;
+				downVelocity = 0;
 			}
 		}
 	}
@@ -130,6 +181,12 @@ void Entity::Draw()
 
 	glm::vec3 _to = position;
 	downVelocity -= gravity * Game::instance->deltaTime;
+
+	if (downVelocity < -18)
+		downVelocity = -18;
+
+	if (downVelocity > 18)
+		downVelocity = 18;
 
 	_to.y += downVelocity * Game::instance->deltaTime;
 

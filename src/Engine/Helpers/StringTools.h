@@ -1,6 +1,6 @@
 #ifndef _STRINGTOOLS_H
 #define _STRINGTOOLS_H
-
+#include <ctime>
 #include <string>
 #include <vector>
 
@@ -43,6 +43,8 @@ public:
             "abcdefghijklmnopqrstuvwxyz";
         std::string tmp_s;
         tmp_s.reserve(len);
+
+        srand(time(NULL));
 
         for (int i = 0; i < len; ++i) {
             tmp_s += alpha[rand() % (sizeof(alpha) - 1)];

@@ -9,8 +9,6 @@ int main()
 {
 	Game game("The Frim", "1.0.0");
 
-	srand(time(NULL));
-
 	if (!glfwInit())
 	{
 		game.log->Write("Failed to initialize GLFW");
