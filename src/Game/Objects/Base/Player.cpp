@@ -44,26 +44,7 @@ void Player::Draw()
 
 	yaw += xoffset;
 
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
-		forwardVelocity += 6 * Game::instance->deltaTime;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
-		forwardVelocity -= 6 * Game::instance->deltaTime;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
-		strafeVelocity -= 6 * Game::instance->deltaTime;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
-		strafeVelocity += 6 * Game::instance->deltaTime;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
-	{
-		if (isOnGround)
-		{
-			downVelocity += jumpStrength * Game::instance->deltaTime;
-			isOnGround = false;
-		}
-	}
+	// TODO: movement stuff
 
 	Entity::Draw(); // physics
 

@@ -18,6 +18,12 @@ Data::Chunk Data::Region::getChunk(int x, int z)
 	if (realX < 0 || realX > 4 || realZ < 0 || realZ > 4)
 		return Chunk();
 
+	if (chunks.size() == 0)
+		return Chunk();
+
+	if (chunks[realX].size() == 0)
+		return Chunk();
+
 	return chunks[realX][realZ];
 }
 

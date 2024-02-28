@@ -34,7 +34,7 @@ void Entity::CheckCollision(glm::vec3& motion)
 
 		while (_y >= 0)
 		{
-			x -= diff.x / 24;
+			x -= diff.x / 32;
 			_y = currentChunk->doesBlockExist(x, _to.y, pZ);
 			if (_y < 0)
 				break;
@@ -44,7 +44,7 @@ void Entity::CheckCollision(glm::vec3& motion)
 
 		while (_y >= 0)
 		{
-			z -= diff.z / 24;
+			z -= diff.z / 32;
 			_y = currentChunk->doesBlockExist(pX, _to.y, z);
 			if (_y < 0)
 				break;
@@ -110,7 +110,7 @@ void Entity::Draw()
 	// gravity
 
 	glm::vec3 _to = position;
-	downVelocity -= gravity * Game::instance->deltaTime;
+	downVelocity -= gravity;
 
 	_to.y += downVelocity;
 
@@ -128,21 +128,5 @@ void Entity::Draw()
 
 	position = motion;
 
-	if (forwardVelocity > (speed * 0.8) * Game::instance->deltaTime)
-		forwardVelocity = (speed * 0.8) * Game::instance->deltaTime;
-
-	if (forwardVelocity < -(speed * 0.8) * Game::instance->deltaTime)
-		forwardVelocity = -(speed * 0.8) * Game::instance->deltaTime;
-
-	if (strafeVelocity > (speed * 0.8) * Game::instance->deltaTime)
-		strafeVelocity = (speed * 0.8) * Game::instance->deltaTime;
-
-	if (strafeVelocity < -(speed * 0.8) * Game::instance->deltaTime)
-		strafeVelocity = -(speed * 0.8) * Game::instance->deltaTime;
-
-	forwardVelocity *= 0.8;
-	strafeVelocity *= 0.8;
-
-	if (downVelocity < -18 * Game::instance->deltaTime)
-		downVelocity = -18 * Game::instance->deltaTime;
+	// TODO: physics
 }

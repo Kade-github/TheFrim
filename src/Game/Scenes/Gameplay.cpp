@@ -57,11 +57,11 @@ void Gameplay::Draw()
 
 	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 32.0f, 400.0f);
 
-	ImGui::SliderFloat("Player Speed", &player->speed, 0.001f, 0.1f);
+	ImGui::SliderFloat("Player Speed", &player->speed, 0.001f, 10.0f);
 
-	ImGui::SliderFloat("Jump Strength", &player->jumpStrength, 0.01, 1);
+	ImGui::SliderFloat("Jump Strength", &player->jumpStrength, 8.0f, 24.0f);
 
-	ImGui::SliderFloat("Gravity", &player->gravity, 0.01f, 0.1f);
+	ImGui::SliderFloat("Gravity", &player->gravity, 0.1f, 1.0f);
 
 	ImGui::Text("Player Is On Ground: %s", player->isOnGround ? "True" : "False");
 
