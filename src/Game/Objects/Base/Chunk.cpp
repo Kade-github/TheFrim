@@ -5,44 +5,17 @@
 
 Block* Chunk::getTopBlock(float x, float z)
 {
-	Block* highest = NULL;
-
-	for (int i = 0; i < blocks.size(); i++)
+	for (int y = 255; y > -1; y--)
 	{
-		float rX = blocks[i]->position.x;
-		float rZ = blocks[i]->position.z;
-		float rXE = rX + 1;
-		float rZE = rZ + 1;
-		if (rXE > x && rZE > z && rX <= x && rZ <= z)
+		if (blocks[(int)x][y][(int)z] != NULL)
 		{
-			if (highest == NULL)
-				highest = blocks[i];
-			else if (blocks[i]->position.y > highest->position.y)
-				highest = blocks[i];
-		}
-	}
-
-	return highest;
-}
-
-Block* Chunk::getBlock(float x, float y, float z)
-{
-	for (int i = 0; i < blocks.size(); i++)
-	{
-		float rX = blocks[i]->position.x;
-		float rY = blocks[i]->position.y;
-		float rZ = blocks[i]->position.z;
-		float rXE = rX + 1;
-		float rYE = rY + 1;
-		float rZE = rZ + 1;
-		if (rXE > x && rYE > y && rZE > z && rX <= x && rY <= y && rZ <= z)
-		{
-			return blocks[i];
+			return blocks[(int)x][y][(int)z];
 		}
 	}
 
 	return NULL;
 }
+
 
 void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
 {
@@ -63,7 +36,10 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 	if (isLoaded)
 		return;
 
-	blocks.clear();
+	for(int x = 0; x < 16; x++)
+		for (int z = 0; z < 16; z++)
+			for (int y = 0; y < 256; y++)
+				blocks[x][y][z] = nullptr;
 
 	vertices.clear();
 	indices.clear();
@@ -72,7 +48,7 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 	{
 		for (int z = 0; z < 16; z++)
 		{
-			for (int y = 255; y > 0; y--)
+			for (int y = 255; y > -1; y--)
 			{
 				if (c.blocks[x][z][y] >= 1)
 				{
@@ -184,7 +160,7 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 						AddToDraw(bottomFace.vertices, bottomFace.indices);
 					}
 
-					blocks.push_back(b);
+					blocks[x][y][z] = b;
 				}
 			}
 		}
@@ -252,10 +228,16 @@ void Chunk::UnloadMesh()
 	if (!isLoaded)
 		return;
 
-	for (auto b : blocks)
-		delete b;
-
-	blocks.clear();
+	for (int x = 0; x < 16; x++)
+		for (int z = 0; z < 16; z++)
+			for (int y = 0; y < 256; y++)
+			{
+				if (blocks[x][y][z] != nullptr)
+				{
+					delete blocks[x][y][z];
+					blocks[x][y][z] = nullptr;
+				}
+			}
 
 	vertices.clear();
 	indices.clear();

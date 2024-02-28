@@ -10,7 +10,9 @@ public:
 	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
-	float playerSpeed = 0.04f;
+	float gravity = 0.03f;
+	float jumpStrength = 0.012f;
+	float playerSpeed = 0.02f;
 
 	float downVelocity = 0;
 	float forwardVelocity = 0;

@@ -32,14 +32,13 @@ public:
 	bool isLoaded = false;
 	bool rendered = false;
 
-	std::vector<Block*> blocks;
+	Block* blocks[16][256][16];
 
 	void AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i);
 
 	Chunk(glm::vec3 pos, Texture* _spr);
 
 	Block* getTopBlock(float x, float z);
-	Block* getBlock(float x, float y, float z);
 
 	void GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC);
 

@@ -26,6 +26,16 @@ void Gameplay::Create()
 
 	AddObject(player);
 
+	wm->RenderChunks();
+
+	Chunk* c = wm->GetChunk(player->position.x, player->position.z);
+
+	if (c != NULL)
+	{
+		Block* b = c->getTopBlock(player->position.x, player->position.z);
+		player->position.y = b->position.y + 4;
+	}
+
 
 	Game::instance->CaptureCursor(true);
 }
@@ -47,7 +57,15 @@ void Gameplay::Draw()
 
 	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 32.0f, 400.0f);
 
-	ImGui::SliderFloat("Player Speed", &player->playerSpeed, 0.04f, 0.1f);
+	ImGui::SliderFloat("Player Speed", &player->playerSpeed, 0.001f, 0.1f);
+
+	ImGui::SliderFloat("Jump Strength", &player->jumpStrength, 0.01, 1);
+
+	ImGui::SliderFloat("Gravity", &player->gravity, 0.01f, 0.1f);
+
+	ImGui::Text("Player Is On Ground: %s", player->isOnGround ? "True" : "False");
+
+	ImGui::Text("Regions Loaded: %i", wm->ourRegions.size());
 
 
 	ImGui::End();
@@ -63,6 +81,11 @@ void Gameplay::KeyPress(int key)
 		wm->ReloadChunks();
 	if (key == GLFW_KEY_F3)
 		wm->SaveWorldNow();
+
+	for (int i = 0; i < objects.size(); i++)
+	{
+		objects[i]->KeyPress(key);
+	}
 }
 
 void Gameplay::Destroy()

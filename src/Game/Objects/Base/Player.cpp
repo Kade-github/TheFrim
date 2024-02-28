@@ -16,7 +16,13 @@ void Player::CheckCollision(glm::vec3& motion)
 
 	if (currentChunk != NULL)
 	{
-		Block* b = currentChunk->getBlock(motion.x, motion.y - 2, motion.z);
+		int cX = motion.x - currentChunk->position.x;
+		int cZ = motion.z - currentChunk->position.z;
+
+		int pX = position.x - currentChunk->position.x;
+		int pZ = position.z - currentChunk->position.z;
+
+		Block* b = currentChunk->blocks[(int)cX][(int)motion.y - 2][(int)cZ];
 
 		glm::vec3 diff = motion - position;
 
@@ -32,15 +38,19 @@ void Player::CheckCollision(glm::vec3& motion)
 
 			while (b != NULL || b2 != NULL || b3 != NULL)
 			{
-				b = currentChunk->getBlock(nonCollidedPos.x, nonCollidedPos.y - 2, position.z);
+				int x = (int)(nonCollidedPos.x - currentChunk->position.x);
+				b = currentChunk->blocks[(int)x][(int)nonCollidedPos.y][(int)pZ];
 				if (b != NULL)
 					nonCollidedPos.x -= glm::normalize(diff).x * 0.001f;
-
-				b2 = currentChunk->getBlock(position.x, nonCollidedPos.y - 2, nonCollidedPos.z);
+				int z = (int)(nonCollidedPos.z - currentChunk->position.z);
+				b2 = currentChunk->blocks[(int)pX][(int)nonCollidedPos.y][(int)z];
 				if (b2 != NULL)
 					nonCollidedPos.z -= glm::normalize(diff).z * 0.001f;
 
-				b3 = currentChunk->getBlock(nonCollidedPos.x, nonCollidedPos.y - 2, nonCollidedPos.z);
+				x = (int)(nonCollidedPos.x - currentChunk->position.x);
+				z = (int)(nonCollidedPos.z - currentChunk->position.z);
+
+				b3 = currentChunk->blocks[(int)x][(int)nonCollidedPos.y][(int)z];
 				if (b3 != NULL)
 					nonCollidedPos -= glm::normalize(diff) * 0.001f;
 
@@ -64,20 +74,21 @@ void Player::CheckVerticalCollision(glm::vec3& motion)
 		if (downVelocity > 0)
 			rY = motion.y + 3;
 
-		Block* b = currentChunk->getBlock(motion.x, rY, motion.z);
+		int x = (int)(motion.x - currentChunk->position.x);
+		int z = (int)(motion.z - currentChunk->position.z);
 
-		while (b != NULL)
+		Block* b = currentChunk->blocks[x][(int)rY][z];
+
+		if (b != NULL)
 		{
-			motion.y = b->position.y + 3;
-			if (downVelocity > 0)
-				motion.y = b->position.y - 3;
-			if (downVelocity < 0)
+			if (downVelocity <= 0)
+			{
 				isOnGround = true;
+				motion.y = b->position.y + 3;
+			}
+			else
+				motion.y = b->position.y - 1;
 			downVelocity = 0;
-
-			rY = motion.y - 2;
-
-			b = currentChunk->getBlock(motion.x, rY, motion.z);
 		}
 	}
 }
@@ -96,7 +107,10 @@ glm::vec3 Player::Ray()
 
 		if (currentChunk != NULL)
 		{
-			Block* b = currentChunk->getBlock(pos.x, pos.y, pos.z);
+			int x = (int)(pos.x - currentChunk->position.x);
+			int z = (int)(pos.z - currentChunk->position.z);
+
+			Block* b = currentChunk->blocks[x][(int)pos.y][z];
 
 			if (b != NULL)
 			{
@@ -174,7 +188,10 @@ void Player::Draw()
 	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
 	{
 		if (isOnGround)
-			downVelocity = 400.0f;
+		{
+			downVelocity += jumpStrength;
+			isOnGround = false;
+		}
 	}
 
 	strafeVelocity *= Game::instance->deltaTime;
@@ -231,18 +248,17 @@ void Player::Draw()
 	// gravity
 
 	glm::vec3 _to = position;
-	downVelocity -= 8.0f;
-
-	downVelocity *= Game::instance->deltaTime;
+	downVelocity -= gravity * Game::instance->deltaTime;
 
 	_to.y += downVelocity;
-	
+
+
 	CheckVerticalCollision(_to);
 
 	position.y = _to.y;
 
-	if (downVelocity < -18)
-		downVelocity = -18;
+	if (downVelocity < -18 * Game::instance->deltaTime)
+		downVelocity = -18 * Game::instance->deltaTime;
 
 	camera->position = position;
 
