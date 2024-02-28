@@ -60,7 +60,7 @@ void Player::Draw()
 	{
 		if (isOnGround)
 		{
-			downVelocity += jumpStrength;
+			downVelocity += jumpStrength * Game::instance->deltaTime;
 			isOnGround = false;
 		}
 	}
