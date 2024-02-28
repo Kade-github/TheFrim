@@ -30,7 +30,7 @@ void Entity::CheckCollision(glm::vec3& motion)
 		float prevX = x;
 		float prevZ = z;
 
-		int _y = currentChunk->doesBlockExist(x, _to.y, z);
+		int _y = currentChunk->doesBlockExist(x, _to.y, pZ);
 
 		while (_y >= 0)
 		{
@@ -38,22 +38,20 @@ void Entity::CheckCollision(glm::vec3& motion)
 			_y = currentChunk->doesBlockExist(x, _to.y, pZ);
 			if (_y < 0)
 				break;
+		}
 
+		_y = currentChunk->doesBlockExist(pX, _to.y, z);
+
+		while (_y >= 0)
+		{
 			z -= diff.z / 24;
 			_y = currentChunk->doesBlockExist(pX, _to.y, z);
 			if (_y < 0)
 				break;
-
 		}
 
-		
-		float xDiff = std::abs(prevX - x);
-		float zDiff = std::abs(prevZ - z);
-
-		if (xDiff <= 0.2)
-			motion.x = x + currentChunk->position.x;
-		if (zDiff <= 0.2)
-			motion.z = z + currentChunk->position.z;
+		motion.x = x + currentChunk->position.x;
+		motion.z = z + currentChunk->position.z;
 	}
 
 
