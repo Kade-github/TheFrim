@@ -116,6 +116,13 @@ void Game::Render()
 		_cursorY = mY;
 	}
 
+	shader->Bind();
+
+	shader->SetUniformMat4f("view", &_camera->GetViewMatrix()[0][0]);
+	shader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
+
+	shader->Unbind();
+
 	currentScene->Draw();
 }
 

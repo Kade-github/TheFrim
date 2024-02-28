@@ -42,7 +42,7 @@ void Entity::CheckCollision(glm::vec3& motion)
 
 		// first raycast (x axis)
 
-		float _lastX = 0;
+		float _lastX = motion.x;
 
 		while (progress < 1)
 		{
@@ -66,7 +66,7 @@ void Entity::CheckCollision(glm::vec3& motion)
 		ray = position;
 		ray.y = toY;
 
-		float _lastZ = 0;
+		float _lastZ = motion.z;
 
 		while (progress < 1)
 		{
@@ -84,7 +84,7 @@ void Entity::CheckCollision(glm::vec3& motion)
 			
 		}
 
-		motion = glm::vec3(_lastX, motion.y, _lastZ);
+		motion = glm::vec3(_lastX, position.y, _lastZ);
 	}
 
 
@@ -99,7 +99,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 	float toY = motion.y - 2;
 
 	if (downVelocity > 0)
-		toY = motion.y + 1;
+		toY = motion.y;
 
 	glm::vec3 rp = position;
 	rp.y -= 2;
@@ -131,10 +131,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 		while (progress < 1)
 		{
-			ray = rp + (diff * progress);
-
-			toX = (ray.x - currentChunk->position.x);
-			toZ = (ray.z - currentChunk->position.z);
+			ray.y = rp.y + (diff.y * progress);
 
 			int b = currentChunk->doesBlockExist(toX, ray.y, toZ);
 
@@ -157,8 +154,11 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 			}
 			else
 			{
-				motion.y = _lastY - 1;
-				downVelocity = 0;
+				if (_lastY > position.y)
+				{
+					motion.y = _lastY - 1;
+					downVelocity = 0;
+				}
 			}
 		}
 	}

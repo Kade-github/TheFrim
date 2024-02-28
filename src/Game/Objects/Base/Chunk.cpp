@@ -279,9 +279,6 @@ void Chunk::Draw()
 
 	s->Bind();
 
-	s->SetUniformMat4f("view", &c->GetViewMatrix()[0][0]);
-	s->SetUniformMat4f("projection", &c->GetProjectionMatrix()[0][0]);
-
 	glm::mat4 model = glm::mat4(1.0f);
 
 	s->SetUniformMat4f("model", &model[0][0]);
