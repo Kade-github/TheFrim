@@ -26,6 +26,9 @@ WorldManager::WorldManager(std::string name, Texture* _tp, std::string _seed)
 {
 	instance = this;
 
+	if (!std::filesystem::exists("worlds"))
+		std::filesystem::create_directories("worlds");
+
 	_path = "worlds/" + name;
 	texturePack = _tp;
 
@@ -46,6 +49,9 @@ WorldManager::WorldManager(std::string name, Texture* _tp, std::string _seed)
 
 std::vector<Data::World> WorldManager::GetWorlds()
 {
+	if (!std::filesystem::exists("worlds"))
+		std::filesystem::create_directories("worlds");
+
 
 	std::vector<Data::World> worlds;
 
