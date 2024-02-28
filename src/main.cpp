@@ -135,28 +135,10 @@ int main()
 
 			game.SetScene(new MainMenu());
 
-			// create imgui
-
-			IMGUI_CHECKVERSION();
-			ImGui::CreateContext();
-			ImGui_ImplGlfw_InitForOpenGL(game.GetWindow(), true);
-			ImGui_ImplOpenGL3_Init("#version 150");
-
-			glfwSwapInterval(1);
 
 			while (running)
 			{
-				ImGui_ImplOpenGL3_NewFrame();
-				ImGui_ImplGlfw_NewFrame();
-				ImGui::NewFrame();
-
 				game.Render();
-
-				ImGui::Render();
-				int display_w, display_h;
-				glfwGetFramebufferSize(game.GetWindow(), &display_w, &display_h);
-				glViewport(0, 0, display_w, display_h);
-				ImGui_ImplOpenGL3_RenderDrawData(ImGui::GetDrawData());
 
 				glfwSwapBuffers(game.GetWindow());
 			}
@@ -180,10 +162,6 @@ int main()
 	}
 
 	game.Destroy();
-
-	ImGui_ImplOpenGL3_Shutdown();
-	ImGui_ImplGlfw_Shutdown();
-	ImGui::DestroyContext();
 
 	glfwTerminate();
 

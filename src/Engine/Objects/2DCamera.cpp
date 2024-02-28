@@ -125,9 +125,24 @@ void Camera2D::Draw()
 	if (s == NULL)
 		return;
 
+	static float lT = 0;
+	static int framesDone = 0;
+	static float fps = 0;
+
+	float ct = glfwGetTime();
+
 	dbgDraws.clear();
 
-	float fps = ImGui::GetIO().Framerate;
+	if (ct - lT >= 1.0f)
+	{
+		fps = framesDone / (ct - lT);
+		lT = ct;
+		framesDone = 0;
+	}
+	else
+		fps = framesDone / (ct - lT);
+
+	framesDone++;
 
 	std::string format = StringTools::ToTheDecimial(fps, 0);
 

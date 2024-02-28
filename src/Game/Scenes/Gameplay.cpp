@@ -45,25 +45,6 @@ void Gameplay::Draw()
 
 	Camera* camera = Game::instance->GetCamera();
 
-	ImGui::Begin("Debug", 0, ImGuiWindowFlags_AlwaysAutoResize);
-
-	ImGui::Text("Player Pos: %i, %i, %i", (int)player->position.x, (int)player->position.y, (int)player->position.z);
-
-	ImGui::Text("Player Down Speed: %f", player->downVelocity);
-
-	ImGui::Text("Player Forward Speed: %f", player->forwardVelocity);
-
-	ImGui::Text("Player Strafe Speed: %f", player->strafeVelocity);
-
-	ImGui::SliderFloat("Render Distance", &camera->cameraFar, 32.0f, 400.0f);
-
-	ImGui::Text("Player Is On Ground: %s", player->isOnGround ? "True" : "False");
-
-	ImGui::Text("Regions Loaded: %i", wm->ourRegions.size());
-
-
-	ImGui::End();
-
 	wm->RenderChunks();
 
 	Scene::Draw();
