@@ -118,58 +118,6 @@ void MainMenu::Draw()
 	Scene::Draw();
 }
 
-void MainMenu::KeyPress(int key)
-{
-	if (key == GLFW_KEY_DOWN)
-	{
-		mouseSelected = false;
-		selectedIndex++;
-		if (selectedIndex > 2)
-			selectedIndex = 0;
-	}
-	else if (key == GLFW_KEY_UP)
-	{
-		mouseSelected = false;
-		selectedIndex--;
-		if (selectedIndex < 0)
-			selectedIndex = 2;
-	}
-
-	switch(selectedIndex)
-	{
-		case 0:
-			selectWorld->selected = true;
-			settings->selected = false;
-			exit->selected = false;
-			break;
-		case 1:
-			selectWorld->selected = false;
-			settings->selected = true;
-			exit->selected = false;
-			break;
-		case 2:
-			selectWorld->selected = false;
-			settings->selected = false;
-			exit->selected = true;
-			break;
-	}
-
-	if (key == GLFW_KEY_ENTER)
-	{
-		switch (selectedIndex)
-		{
-			case 0:
-				Game::instance->SwitchScene(new Worlds());
-				break;
-			case 1:
-				break;
-			case 2:
-				glfwSetWindowShouldClose(Game::instance->GetWindow(), true);
-				break;
-		}
-	}
-}
-
 void MainMenu::MouseClick(int button, glm::vec2 mPos)
 {
 	if (button == GLFW_MOUSE_BUTTON_LEFT)

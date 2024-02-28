@@ -52,8 +52,15 @@ void Worlds::Resize(float _w, float _h)
 	c2d->Resize();
 }
 
+void Worlds::CreateWorldObjects()
+{
+	// TODO: Create world objects
+}
+
 void Worlds::Draw()
 {
+	// TODO: position world objects
+
 	Scene::Draw();
 }
 

@@ -52,7 +52,6 @@ std::vector<Data::World> WorldManager::GetWorlds()
 	if (!std::filesystem::exists("worlds"))
 		std::filesystem::create_directories("worlds");
 
-
 	std::vector<Data::World> worlds;
 
 	for (const auto& entry : std::filesystem::directory_iterator(std::filesystem::current_path().string() + "/worlds"))
