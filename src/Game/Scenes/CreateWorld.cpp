@@ -115,6 +115,9 @@ void CreateWorld::OnChar(unsigned int c)
 {
 	if (name->selected)
 		name->AddText(c);
+
+	if (seed->selected)
+		seed->AddText(c);
 }
 
 void CreateWorld::KeyPress(int key)
@@ -123,5 +126,8 @@ void CreateWorld::KeyPress(int key)
 	{
 		if (name->selected)
 			name->RemoveText();
+
+		if (seed->selected)
+			seed->RemoveText();
 	}
 }
