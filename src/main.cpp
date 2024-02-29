@@ -7,7 +7,7 @@
 
 int main()
 {
-	Game game("The Frim", "0.0.1");
+	Game game("The Frim", "0.0.2");
 
 	if (!glfwInit())
 	{
