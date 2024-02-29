@@ -190,9 +190,11 @@ std::vector<Chunk*> WorldManager::CreateChunksInRegion(Data::Region* r)
 	return chunks;
 }
 
-void WorldManager::LoadChunk(Chunk* c)
+void WorldManager::LoadChunk(Chunk* c, Data::Chunk* dC)
 {
-	Data::Chunk* data = instance->FindChunkPtr(c->position.x, c->position.z);
+	Data::Chunk* data = dC;
+	if (dC == nullptr)
+		data = instance->FindChunkPtr(c->position.x, c->position.z);
 	Data::Chunk forward = instance->FindChunk(c->position.x, c->position.z - 16);
 	Data::Chunk backward = instance->FindChunk(c->position.x, c->position.z + 16);
 	Data::Chunk left = instance->FindChunk(c->position.x + 16, c->position.z);

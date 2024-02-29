@@ -122,5 +122,14 @@ glm::vec3 Player::ForwardRay()
 
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
+	if (button == GLFW_MOUSE_BUTTON_LEFT)
+	{
+		glm::vec3 ray = ForwardRay();
 
+		Chunk* chunk = WorldManager::instance->GetChunk(ray.x, ray.z);
+
+		chunk->data->removeBlock(ray.x,ray.y,ray.z);
+		chunk->UnloadMesh();
+		WorldManager::instance->LoadChunk(chunk);
+	}
 }
