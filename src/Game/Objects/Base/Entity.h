@@ -27,8 +27,6 @@ public:
 	void CheckCollision(glm::vec3& motion);
 	void CheckVerticalCollision(glm::vec3& motion);
 
-	glm::vec3 Ray();
-
 	void SetDirection()
 	{
 		glm::vec3 direction;

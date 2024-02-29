@@ -67,8 +67,8 @@ public:
 
 	bool IsRegionLoaded(int x, int z, int endX, int endZ);
 
-	Data::Region GetRegion(int x, int z, int endX, int endZ);
-	Data::Region GetRegion(int x, int z);
+	Data::Region* GetRegion(int x, int z, int endX, int endZ);
+	Data::Region* GetRegion(int x, int z);
 
 	void UnloadRegion(Region& r);
 	void LoadRegion(int x, int z, int endX, int endZ);
@@ -76,7 +76,7 @@ public:
 	void ShouldLoad(int x, int z);
 	void GenerateRegion(int x, int z);
 
-	std::vector<Chunk*> CreateChunksInRegion(Data::Region& r);
+	std::vector<Chunk*> CreateChunksInRegion(Data::Region* r);
 
 	void LoadChunks();
 
@@ -85,7 +85,11 @@ public:
 	void SaveWorld();
 	void SaveWorldNow();
 	Data::Chunk FindChunk(int x, int z);
+	Data::Chunk* FindChunkPtr(int x, int z);
 	Chunk* GetChunk(float x, float z);
+
+	void LoadChunk(Chunk* c);
+
 	float GetDistanceToRegion(int x, int z);
 
 	void RenderChunks();

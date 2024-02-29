@@ -20,6 +20,7 @@ public:
 	void Draw() override;
 
 	void KeyPress(int key) override;
+	void MouseClick(int button, glm::vec2 mPos) override;
 
 	void Destroy() override;
 };

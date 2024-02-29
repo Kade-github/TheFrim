@@ -10,6 +10,10 @@ public:
 	Player(glm::vec3 pos);
 
 	void Draw() override;
+
+	glm::vec3 ForwardRay();
+
+	void MouseClick(int button, glm::vec2 mPos) override;
 };
 
 #endif

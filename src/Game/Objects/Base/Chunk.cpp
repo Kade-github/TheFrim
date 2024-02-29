@@ -24,7 +24,7 @@ int Chunk::doesBlockExist(float x, float y, float z)
 	if ((int)x < 0 || (int)x > 15 || (int)y < 0 || (int)y > 255 || (int)z < 0 || (int)z > 15)
 		return -1;
 
-	int bType = data.blocks[(int)x][(int)z][(int)y];
+	int bType = data->blocks[(int)x][(int)z][(int)y];
 
 	if (bType >= 1)
 		return (int)y;
@@ -46,7 +46,7 @@ Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 	sheet = _spr;
 }
 
-void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC)
+void Chunk::GenerateMesh(Data::Chunk* c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC)
 {
 	if (isLoaded)
 		return;
@@ -64,9 +64,9 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 		{
 			for (int y = 255; y > -1; y--)
 			{
-				if (c.blocks[x][z][y] >= 1)
+				if (c->blocks[x][z][y] >= 1)
 				{
-					int dB = c.blocks[x][z][y];
+					int dB = c->blocks[x][z][y];
 
 					// get adjacent blocks
 
@@ -77,28 +77,28 @@ void Chunk::GenerateMesh(Data::Chunk c, Data::Chunk forwardC, Data::Chunk backwa
 					bool top = false;
 					bool bottom = false;
 
-					if (z + 1 < 16 && c.blocks[x][z + 1][y] >= 1)
+					if (z + 1 < 16 && c->blocks[x][z + 1][y] >= 1)
 					{
 						back = true;
 					}
 
-					if (z - 1 >= 0 && c.blocks[x][z - 1][y] >= 1)
+					if (z - 1 >= 0 && c->blocks[x][z - 1][y] >= 1)
 						front = true;
 
-					if (x + 1 < 16 && c.blocks[x + 1][z][y] >= 1)
+					if (x + 1 < 16 && c->blocks[x + 1][z][y] >= 1)
 					{
 						left = true;
 					}
 
-					if (x - 1 >= 0 && c.blocks[x - 1][z][y] >= 1)
+					if (x - 1 >= 0 && c->blocks[x - 1][z][y] >= 1)
 					{
 						right = true;
 					}
 
-					if (y - 1 >= 0 && c.blocks[x][z][y - 1] >= 1)
+					if (y - 1 >= 0 && c->blocks[x][z][y - 1] >= 1)
 						bottom = true;
 
-					if (y + 1 < 256 && c.blocks[x][z][y + 1] >= 1)
+					if (y + 1 < 256 && c->blocks[x][z][y + 1] >= 1)
 						top = true;
 
 					if (z == 0 && !front && forwardC.isGenerated && forwardC.blocks[x][15][y] >= 1)

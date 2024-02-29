@@ -7,7 +7,7 @@
 
 int main()
 {
-	Game game("The Frim", "1.0.0");
+	Game game("The Frim", "0.0.1");
 
 	if (!glfwInit())
 	{
@@ -103,6 +103,8 @@ int main()
 		{
 			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)
 			{
+				if (action != GLFW_PRESS)
+					return;
 				glm::vec2 mPos = Game::instance->GetCursorPos();
 				Game::instance->currentScene->MouseClick(button, mPos);
 			}

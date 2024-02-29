@@ -88,9 +88,9 @@ WorldManager::WorldManager(Data::World _world, Texture* _tp)
 
 void WorldManager::LoadRegion(int x, int z, int endX, int endZ)
 {
-	Data::Region r = GetRegion(x, z, endX, endZ);
+	Data::Region* r = GetRegion(x, z, endX, endZ);
 
-	if (r.startX == 0 && r.startZ == 0 && r.endX == 0 && r.endZ == 0)
+	if (r == nullptr)
 	{
 		int realX = x / 80;
 		int realZ = z / 80;
@@ -99,10 +99,10 @@ void WorldManager::LoadRegion(int x, int z, int endX, int endZ)
 	}
 	else
 	{
-		Game::instance->log->Write("Loading region " + std::to_string(r.startX) + " " + std::to_string(r.startZ) + " " + std::to_string(r.endX) + " " + std::to_string(r.endZ));
+		Game::instance->log->Write("Loading region " + std::to_string(r->startX) + " " + std::to_string(r->startZ) + " " + std::to_string(r->endX) + " " + std::to_string(r->endZ));
 		std::vector<Chunk*> chunks = CreateChunksInRegion(r);
-
-		regions.push_back({ r.startX, r.startZ, r.endX, r.endZ, r, chunks });
+		Region& r = regions[regions.size() - 1];
+		r.chunks = chunks;
 		generatedRegions++;
 	}
 	totalRegions++;
@@ -129,19 +129,28 @@ void WorldManager::UnloadRegion(Region& r)
 	regions.erase(std::remove(regions.begin(), regions.end(), r), regions.end());
 }
 
-Data::Region WorldManager::GetRegion(int x, int z, int endX, int endZ)
+Data::Region* WorldManager::GetRegion(int x, int z, int endX, int endZ)
 {
 	// if the region is already loaded, lets not waste time.
 	for (auto& r : regions)
 	{
 		if (r.startX == x && r.startZ == z && r.endX == endX && r.endZ == endZ)
-			return r.data;
+			return &r.data;
 	}
 
-	return _world.getRegion(x, z, endX, endZ);
+	Data::Region data = _world.getRegion(x, z, endX, endZ);
+
+	if (data.startX == 0 && data.startZ == 0 && data.endX == 0 && data.endZ == 0)
+	{
+		return nullptr;
+	}
+
+	regions.push_back({ x, z, endX, endZ, data, std::vector<Chunk*>() });
+
+	return &regions[regions.size() - 1].data;
 }
 
-Data::Region WorldManager::GetRegion(int _x, int _z)
+Data::Region* WorldManager::GetRegion(int _x, int _z)
 {
 	int x = _x / 80;
 	int z = _z / 80;
@@ -149,24 +158,47 @@ Data::Region WorldManager::GetRegion(int _x, int _z)
 	for (auto& r : regions)
 	{
 		if (r.startX == x && r.startZ == z && r.endX == x + 80 && r.endZ == z + 80)
-			return r.data;
+			return &r.data;
 	}
 
-	return _world.getRegion(x, z, x + 80, z + 80);
+	int endX = x + 80;
+	int endZ = z + 80;
+
+	Data::Region data = _world.getRegion(x, z, endX, endZ);
+
+	if (data.startX == 0 && data.startZ == 0 && data.endX == 0 && data.endZ == 0)
+	{
+		return nullptr;
+	}
+
+	regions.push_back({ x, z, endX, endZ, data, std::vector<Chunk*>() });
+
+	return &regions[regions.size() - 1].data;
 }
 
-std::vector<Chunk*> WorldManager::CreateChunksInRegion(Data::Region& r)
+std::vector<Chunk*> WorldManager::CreateChunksInRegion(Data::Region* r)
 {
 	std::vector<Chunk*> chunks;
 
 	for (int x = 0; x < 5; x++)
 		for (int z = 0; z < 5; z++)
 		{
-			Chunk* chunk = new Chunk(glm::vec3(r.startX + (x * 16), 0, r.startZ + (z * 16)), instance->texturePack);
+			Chunk* chunk = new Chunk(glm::vec3(r->startX + (x * 16), 0, r->startZ + (z * 16)), instance->texturePack);
 			chunks.push_back(chunk);
 		}
 
 	return chunks;
+}
+
+void WorldManager::LoadChunk(Chunk* c)
+{
+	Data::Chunk* data = instance->FindChunkPtr(c->position.x, c->position.z);
+	Data::Chunk forward = instance->FindChunk(c->position.x, c->position.z - 16);
+	Data::Chunk backward = instance->FindChunk(c->position.x, c->position.z + 16);
+	Data::Chunk left = instance->FindChunk(c->position.x + 16, c->position.z);
+	Data::Chunk right = instance->FindChunk(c->position.x - 16, c->position.z);
+
+	c->GenerateMesh(data, forward, backward, left, right);
 }
 
 void WorldManager::LoadChunks()
@@ -213,15 +245,9 @@ void WorldManager::LoadChunks()
 				{
 					if (!c->isLoaded)
 					{
-						_generatePool.detach_task([c, i]()
+						_generatePool.detach_task([c]()
 							{
-								Data::Chunk data = instance->FindChunk(c->position.x, c->position.z);
-								Data::Chunk forward = instance->FindChunk(c->position.x, c->position.z - 16);
-								Data::Chunk backward = instance->FindChunk(c->position.x, c->position.z + 16);
-								Data::Chunk left = instance->FindChunk(c->position.x + 16, c->position.z);
-								Data::Chunk right = instance->FindChunk(c->position.x - 16, c->position.z);
-
-								c->GenerateMesh(data, forward, backward, left, right);
+								instance->LoadChunk(c);
 							});
 					}
 				}
@@ -278,14 +304,16 @@ void WorldManager::GenerateRegion(int x, int z)
 
 	Game::instance->log->Write("Generating region " + std::to_string(_x) + " " + std::to_string(_z));
 
-	Data::Region r = _world.generateRegion(_x, _z);
+	Data::Region regData = _world.generateRegion(_x, _z);
 
-	std::vector<Chunk*> chunks = CreateChunksInRegion(r);
-	{
-		regions.push_back({ _x, _z, _x + 80, _z + 80, r, chunks });
-		generatedRegions++;
-		generationProgress = (float)generatedRegions / (float)totalRegions;
-	}
+	regions.push_back({ _x, _z, _x + 80, _z + 80, regData, std::vector<Chunk*>() });
+
+	Region& r = regions[regions.size() - 1];
+
+	std::vector<Chunk*> chunks = CreateChunksInRegion(&r.data);
+	r.chunks = chunks;
+	generatedRegions++;
+	generationProgress = (float)generatedRegions / (float)totalRegions;
 }
 
 void WorldManager::CreateWorld(std::string _seed, std::string _name)
@@ -479,6 +507,21 @@ float WorldManager::GetDistanceToRegion(int x, int z)
 		dist = check;
 
 	return dist;
+}
+
+Data::Chunk* WorldManager::FindChunkPtr(int x, int z)
+{
+	for (auto& r : regions)
+	{
+		Data::Chunk* c = r.data.getChunkPtr(x, z);
+
+		if (c == nullptr)
+			continue;
+
+		if (c->isGenerated)
+			return c;
+	}
+	return nullptr;
 }
 
 Chunk* WorldManager::GetChunk(float x, float z)

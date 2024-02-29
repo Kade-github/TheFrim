@@ -131,8 +131,6 @@ void Camera2D::Draw()
 
 	float ct = glfwGetTime();
 
-	dbgDraws.clear();
-
 	if (ct - lT >= 1.0f)
 	{
 		fps = framesDone / (ct - lT);
@@ -272,6 +270,8 @@ void Camera2D::Draw()
 	s->Unbind();
 
 	glEnable(GL_DEPTH_TEST);
+
+	dbgDraws.clear();
 
 }
 

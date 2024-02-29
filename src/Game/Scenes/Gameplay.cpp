@@ -45,6 +45,8 @@ void Gameplay::Draw()
 
 	Camera* camera = Game::instance->GetCamera();
 
+	c2d->DrawDebugText("Player Position: " + std::to_string((int)player->position.x) + ", " + std::to_string((int)player->position.y) + ", " + std::to_string((int)player->position.z), glm::vec2(4,32), 24);
+
 	wm->RenderChunks();
 
 	Scene::Draw();
@@ -60,6 +62,14 @@ void Gameplay::KeyPress(int key)
 	for (int i = 0; i < objects.size(); i++)
 	{
 		objects[i]->KeyPress(key);
+	}
+}
+
+void Gameplay::MouseClick(int button, glm::vec2 mPos)
+{
+	for (int i = 0; i < objects.size(); i++)
+	{
+		objects[i]->MouseClick(button, mPos);
 	}
 }
 

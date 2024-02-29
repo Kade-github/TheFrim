@@ -17,6 +17,16 @@ namespace Data
 		uint8_t blocks[16][16][256];
 		int32_t x, z;
 
+		void placeBlock(int x, int y, int z, uint8_t block)
+		{
+			blocks[x][z][y] = block;
+		}
+
+		void removeBlock(int x, int y, int z)
+		{
+			blocks[x][z][y] = 0;
+		}
+
 		MSGPACK_DEFINE_ARRAY(blocks, x, z);
 	};
 
@@ -32,6 +42,7 @@ namespace Data
 		};
 
 		Chunk getChunk(int x, int z);
+		Chunk* getChunkPtr(int x, int z);
 		void addChunk(Chunk c);
 
 		Chunk generateChunk(int x, int z);

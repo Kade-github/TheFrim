@@ -27,6 +27,24 @@ Data::Chunk Data::Region::getChunk(int x, int z)
 	return chunks[realX][realZ];
 }
 
+Data::Chunk* Data::Region::getChunkPtr(int x, int z)
+{
+	std::lock_guard<std::mutex> lock(m);
+	int realX = (x - startX) / 16;
+	int realZ = (z - startZ) / 16;
+
+	if (realX < 0 || realX > 4 || realZ < 0 || realZ > 4)
+		return nullptr;
+
+	if (chunks.size() == 0)
+		return nullptr;
+
+	if (chunks[realX].size() == 0)
+		return nullptr;
+
+	return &chunks[realX][realZ];
+}
+
 void Data::Region::addChunk(Chunk c)
 {
 	std::lock_guard<std::mutex> lock(m);

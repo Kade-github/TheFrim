@@ -164,15 +164,6 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 	}
 }
 
-glm::vec3 Entity::Ray()
-{
-	glm::vec3 ray = Game::instance->GetCamera()->cameraFront;
-
-	
-	return glm::vec3(0, 0, 0);
-
-}
-
 void Entity::Draw()
 {
 	SetDirection();
