@@ -74,6 +74,12 @@ public:
 
 		currentScene->Resize(width, height);
 
+		shader->Bind();
+
+		shader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
+
+		shader->Unbind();
+
 		glViewport(0, 0, _width, _height);
 	}
 

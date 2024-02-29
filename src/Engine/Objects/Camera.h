@@ -48,14 +48,7 @@ public:
 		return angle;
 	}
 
-	void SetDirection()
-	{
-		glm::vec3 direction;
-		direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
-		direction.y = sin(glm::radians(pitch));
-		direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
-		cameraFront = glm::normalize(direction);
-	}
+	void SetDirection();
 
 	glm::vec2 WorldToScreen(glm::vec3 worldPos)
 	{

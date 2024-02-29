@@ -278,11 +278,6 @@ void Chunk::Draw()
 	Camera* c = Game::instance->GetCamera();
 
 	s->Bind();
-
-	glm::mat4 model = glm::mat4(1.0f);
-
-	s->SetUniformMat4f("model", &model[0][0]);
-
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 
 	s->Unbind();

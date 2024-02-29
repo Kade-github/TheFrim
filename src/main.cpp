@@ -135,6 +135,8 @@ int main()
 
 			game.SetScene(new MainMenu());
 
+			glfwSetWindowSize(game.GetWindow(), 1920, 1080);
+			game.SetWindowSize(1920, 1080);
 
 			while (running)
 			{

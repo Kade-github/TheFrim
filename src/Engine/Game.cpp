@@ -44,6 +44,12 @@ void Game::CreateRenderer()
 
 	shader->Bind();
 
+
+	glm::mat4 model = glm::mat4(1.0f);
+
+	shader->SetUniformMat4f("model", &model[0][0]);
+
+
 	log->Write("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 	log->Write("OpenGL renderer: " + std::string((char*)glGetString(GL_RENDERER)));
 	log->Write("OpenGL vendor: " + std::string((char*)glGetString(GL_VENDOR)));
@@ -115,13 +121,6 @@ void Game::Render()
 		_cursorX = mX;
 		_cursorY = mY;
 	}
-
-	shader->Bind();
-
-	shader->SetUniformMat4f("view", &_camera->GetViewMatrix()[0][0]);
-	shader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
-
-	shader->Unbind();
 
 	currentScene->Draw();
 }

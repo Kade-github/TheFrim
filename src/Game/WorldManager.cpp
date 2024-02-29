@@ -37,12 +37,14 @@ WorldManager::WorldManager(std::string name, Texture* _tp, std::string _seed)
 	else
 		LoadWorld();
 
+	_generatePool.reset(6);
+
 	_generateThread = std::thread([&]()
 		{
 			while (true)
 			{
 				LoadChunks();
-				std::this_thread::sleep_for(std::chrono::milliseconds(10));
+				std::this_thread::sleep_for(std::chrono::milliseconds(350));
 			} });
 	_generateThread.detach();
 }
@@ -346,7 +348,14 @@ void WorldManager::LoadWorld()
 
 	Game::instance->log->Write("Loading world " + _world.name + " from " + _path + ". Found: " + std::to_string(_world.storedRegions.size()) + " regions.");
 
-	LoadRegion(0, 0, 80, 80);
+	_generatePool.detach_task([this]()
+	{
+		LoadRegion(0, 0, 80, 80);
+		LoadRegion(-80, 0, 0, 80);
+		LoadRegion(80, 0, 160, 80);
+		LoadRegion(0, -80, 80, 0);
+		LoadRegion(0, 80, 80, 160);
+	});
 }
 
 void WorldManager::SaveWorld()
