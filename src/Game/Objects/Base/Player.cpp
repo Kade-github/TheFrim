@@ -79,20 +79,10 @@ void Player::Draw()
 
 	camera->position = position;
 
-	static float lastPitch = 0;
-	static float lastYaw = 0;
-	static glm::vec3 lastPos = glm::vec3(0, 0, 0);
-
 	camera->pitch = p;
 	camera->yaw = yaw;
 
-	if (lastPitch != p || lastYaw != yaw || lastPos != camera->position)
-	{
-		camera->SetDirection();
-		lastPitch = p;
-		lastYaw = yaw;
-		lastPos = camera->position;
-	}
+	camera->SetDirection();
 }
 
 glm::vec3 Player::ForwardRay()

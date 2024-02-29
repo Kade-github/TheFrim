@@ -244,19 +244,12 @@ void WorldManager::LoadChunks()
 				if (closest <= camera->cameraFar)
 				{
 					if (!c->isLoaded)
-					{
-						_generatePool.detach_task([c]()
-							{
-								instance->LoadChunk(c);
-							});
-					}
+						instance->LoadChunk(c);
 				}
 				else
 				{
 					if (c->isLoaded)
-					{
 						c->UnloadMesh();
-					}
 				}
 			}
 
@@ -319,8 +312,6 @@ void WorldManager::GenerateRegion(int x, int z)
 void WorldManager::CreateWorld(std::string _seed, std::string _name)
 {
 	_world = Data::World();
-
-	// convert seed into numbers (by converting characters to ascii)
 
 	std::string s = _seed;
 
@@ -402,7 +393,6 @@ void WorldManager::RenderChunks()
 
 	if (regions.size() != ourRegions.size())
 	{
-		std::lock_guard<std::mutex> lock(mtx);
 		ourRegions = regions;
 	}
 
