@@ -7,6 +7,7 @@
 
 class Shader
 {
+    std::unordered_map<std::string, unsigned int> uniform_map;
 public:
     unsigned int program = 0;
 
@@ -18,6 +19,8 @@ public:
 
     void Bind();
     void Unbind();
+
+    unsigned int GetUniformLocation(const std::string& name);
 
     void SetUniform1i(const std::string& name, int value);
     void SetUniform1f(const std::string& name, float value);

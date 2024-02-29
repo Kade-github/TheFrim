@@ -21,36 +21,63 @@ void Shader::Unbind()
     glUseProgram(0);
 }
 
+unsigned int Shader::GetUniformLocation(const std::string& name)
+{
+    //Use previously defined location
+    auto key_loc = uniform_map.find(name);
+    if (key_loc != uniform_map.end())
+        return key_loc->second;
+
+    //Find and remember location
+    GLint uniform_loc = glGetUniformLocation(program, name.c_str());
+    if (uniform_loc == -1)
+    {
+        std::cout << "Uniform " << name << " not found" << std::endl;
+        return -1;
+    }
+    uniform_map[name] = uniform_loc;
+    return uniform_loc;
+}
+
+#define SETUNIFORM_GET_LOC_ID() \
+			GLint loc_id = GetUniformLocation(name); \
+			if (loc_id == -1) \
+				return;
+
 void Shader::SetUniform1i(const std::string& name, int value)
 { 
-    glUniform1i(glGetUniformLocation(program, name.c_str()), value);
+    SETUNIFORM_GET_LOC_ID();
+    glUniform1i(loc_id, value);
 }
 
 void Shader::SetUniform1f(const std::string& name, float value)
 {
-    glUniform1f(glGetUniformLocation(program, name.c_str()), value);
+    SETUNIFORM_GET_LOC_ID();
+	glUniform1f(loc_id, value);
 }
 
 void Shader::SetUniform2f(const std::string& name, float v0, float v1)
 {
-    glUniform2f(glGetUniformLocation(program, name.c_str()), v0, v1);
+    SETUNIFORM_GET_LOC_ID();
+    glUniform2f(loc_id, v0, v1);
 }
 
 void Shader::SetUniform3f(const std::string& name, float v0, float v1, float v2)
 {
-    glUniform3f(glGetUniformLocation(program, name.c_str()), v0, v1, v2);
+    SETUNIFORM_GET_LOC_ID();
+	glUniform3f(loc_id, v0, v1, v2);
 }
 
 void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2, float v3)
 {
-    glUniform4f(glGetUniformLocation(program, name.c_str()), v0, v1, v2, v3);
+    SETUNIFORM_GET_LOC_ID();
+	glUniform4f(loc_id, v0, v1, v2, v3);
 }
 
 void Shader::SetUniformMat4f(const std::string& name, const float* matrix)
 {
-    int active = glGetUniformLocation(program, name.c_str());
-
-    glUniformMatrix4fv(active, 1, GL_FALSE, matrix);
+    SETUNIFORM_GET_LOC_ID();
+	glUniformMatrix4fv(loc_id, 1, GL_FALSE, matrix);
 }
 
 void Shader::LoadShader(std::string vert_shader, std::string frag_shader)
