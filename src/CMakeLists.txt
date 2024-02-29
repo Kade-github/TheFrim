@@ -62,6 +62,13 @@ miniz.c
 
 add_executable(TheFrim ${SOURCE_FILES})
 
+if (WIN32)
+    # /ENTRY:mainCRTStartup keeps the same "main" function instead of requiring "WinMain"
+    set(SUBSYSTEM_LINKER_OPTIONS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+else()
+    set(SUBSYSTEM_LINKER_OPTIONS "-mwindows")
+endif()
+
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
