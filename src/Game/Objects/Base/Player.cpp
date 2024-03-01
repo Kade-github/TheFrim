@@ -106,6 +106,8 @@ glm::vec3 Player::ForwardRay()
 	{
 		ray = position + (end * progress);
 
+		chunk = WorldManager::instance->GetChunk(ray.x, ray.z);
+
 		rX = (ray.x - chunk->position.x);
 		rZ = (ray.z - chunk->position.z);
 
@@ -128,8 +130,12 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 		Chunk* chunk = WorldManager::instance->GetChunk(ray.x, ray.z);
 
+		Block* b = chunk->getBlock(ray.x, ray.y, ray.z);
+
+		if (b != NULL)
+			b->changed = true;
+
 		chunk->data->removeBlock(ray.x,ray.y,ray.z);
-		chunk->UnloadMesh();
-		WorldManager::instance->LoadChunk(chunk);
+		chunk->Reload();
 	}
 }

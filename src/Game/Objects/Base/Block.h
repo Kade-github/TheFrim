@@ -54,6 +54,9 @@ public:
 	glm::vec3 position;
 	BlockType type;
 
+
+	bool changed = false;
+
 	float blockWidth = 128;
 	float blockHeight = 128;
 

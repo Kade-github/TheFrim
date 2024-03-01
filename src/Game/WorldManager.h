@@ -88,7 +88,7 @@ public:
 	Data::Chunk* FindChunkPtr(int x, int z);
 	Chunk* GetChunk(float x, float z);
 
-	void LoadChunk(Chunk* c, Data::Chunk* dC = nullptr);
+	void LoadChunk(Chunk* c);
 
 	float GetDistanceToRegion(int x, int z);
 

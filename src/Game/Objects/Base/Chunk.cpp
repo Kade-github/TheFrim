@@ -31,6 +31,15 @@ int Chunk::doesBlockExist(float x, float y, float z)
 	return -1;
 }
 
+Block* Chunk::getBlock(float x, float y, float z)
+{
+	for (auto& b : blocks)
+	{
+		if ((int)b->position.x == (int)x && (int)b->position.y == (int)y && (int)b->position.z == (int)z)
+			return b;
+	}
+	return nullptr;
+}
 
 void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
 {
@@ -46,12 +55,47 @@ Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 	sheet = _spr;
 }
 
-void Chunk::GenerateMesh(Data::Chunk* c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC)
+void Chunk::CheckAdjacent(bool& back, bool& front, bool& left, bool& right, bool& bottom, bool& top, int x, int y, int z)
+{
+	if (z + 1 < 16 && data->blocks[x][z + 1][y] >= 1)
+		back = true;
+
+	if (z - 1 >= 0 && data->blocks[x][z - 1][y] >= 1)
+		front = true;
+
+	if (x + 1 < 16 && data->blocks[x + 1][z][y] >= 1)
+		left = true;
+
+	if (x - 1 >= 0 && data->blocks[x - 1][z][y] >= 1)
+		right = true;
+
+	if (y - 1 >= 0 && data->blocks[x][z][y - 1] >= 1)
+		bottom = true;
+
+	if (y + 1 < 256 && data->blocks[x][z][y + 1] >= 1)
+		top = true;
+
+	if (z == 0 && !front && forwardC != nullptr && forwardC->data != NULL && forwardC->data->blocks[x][15][y] >= 1)
+		front = true;
+	if (z == 15 && !back && backwardC != nullptr && backwardC->data != NULL && backwardC->data->blocks[x][0][y] >= 1)
+		back = true;
+
+	if (x == 0 && !right && rightC != nullptr && rightC->data != NULL && rightC->data->blocks[15][z][y] >= 1)
+		right = true;
+
+	if (x == 15 && !left && leftC != nullptr && leftC->data != NULL && leftC->data->blocks[0][z][y] >= 1)
+		left = true;
+}
+
+void Chunk::GenerateMesh(Chunk* _forward, Chunk* _backward, Chunk* _left, Chunk* _right)
 {
 	if (isLoaded)
 		return;
 
-	data = c;
+	forwardC = _forward;
+	backwardC = _backward;
+	leftC = _left;
+	rightC = _right;
 
 	blocks.clear();
 
@@ -64,9 +108,9 @@ void Chunk::GenerateMesh(Data::Chunk* c, Data::Chunk forwardC, Data::Chunk backw
 		{
 			for (int y = 255; y > -1; y--)
 			{
-				if (c->blocks[x][z][y] >= 1)
+				if (data->blocks[x][z][y] >= 1)
 				{
-					int dB = c->blocks[x][z][y];
+					int dB = data->blocks[x][z][y];
 
 					// get adjacent blocks
 
@@ -77,49 +121,7 @@ void Chunk::GenerateMesh(Data::Chunk* c, Data::Chunk forwardC, Data::Chunk backw
 					bool top = false;
 					bool bottom = false;
 
-					if (z + 1 < 16 && c->blocks[x][z + 1][y] >= 1)
-					{
-						back = true;
-					}
-
-					if (z - 1 >= 0 && c->blocks[x][z - 1][y] >= 1)
-						front = true;
-
-					if (x + 1 < 16 && c->blocks[x + 1][z][y] >= 1)
-					{
-						left = true;
-					}
-
-					if (x - 1 >= 0 && c->blocks[x - 1][z][y] >= 1)
-					{
-						right = true;
-					}
-
-					if (y - 1 >= 0 && c->blocks[x][z][y - 1] >= 1)
-						bottom = true;
-
-					if (y + 1 < 256 && c->blocks[x][z][y + 1] >= 1)
-						top = true;
-
-					if (z == 0 && !front && forwardC.isGenerated && forwardC.blocks[x][15][y] >= 1)
-					{
-						front = true;
-					}
-					if (z == 15 && !back && backwardC.isGenerated && backwardC.blocks[x][0][y] >= 1)
-					{
-						back = true;
-					}
-
-					if (x == 0 && !right && rightC.isGenerated && rightC.blocks[15][z][y] >= 1)
-					{
-						right = true;
-					}
-
-					if (x == 15 && !left && leftC.isGenerated && leftC.blocks[0][z][y] >= 1)
-					{
-						left = true;
-					}
-
+					CheckAdjacent(back, front, left, right, bottom, top, x, y, z);
 
 					Block* b = nullptr;
 
@@ -174,10 +176,7 @@ void Chunk::GenerateMesh(Data::Chunk* c, Data::Chunk forwardC, Data::Chunk backw
 						AddToDraw(bottomFace.vertices, bottomFace.indices);
 					}
 
-					if (!front || !back || !right || !left || !top || !bottom)
-						blocks.push_back(b);
-					else
-						delete b;
+					blocks.push_back(b);
 				}
 			}
 		}
@@ -287,4 +286,132 @@ void Chunk::Draw()
 	glDisable(GL_CULL_FACE);
 
 	glBindVertexArray(0);
+}
+
+void Chunk::Reload()
+{
+	if (!isLoaded)
+		return;
+
+	vertices.clear();
+	indices.clear();
+
+	std::vector<Block*> toDelete = {};
+
+	bool checkForAdjChunks = false;
+
+	for (Block* b : blocks)
+	{
+		int x = (int)(b->position.x - position.x);
+		int y = (int)(b->position.y - position.y);
+		int z = (int)(b->position.z - position.z);
+
+		if (b->changed)
+		{
+			int newType = data->blocks[x][z][y];
+			b->changed = false;
+			if (x == 0 || z == 0 || x == 15 || z == 15)
+				checkForAdjChunks = true;
+			if (newType == 0)
+			{
+				toDelete.push_back(b);
+				continue;
+			}
+
+		}
+
+		// get adjacent blocks
+
+		bool front = false;
+		bool back = false;
+		bool right = false;
+		bool left = false;
+		bool top = false;
+		bool bottom = false;
+
+		CheckAdjacent(back, front, left, right, bottom, top, x, y, z);
+
+		if (!front)
+		{
+			BlockFace frontFace = b->CreateFrontFace();
+			AddToDraw(frontFace.vertices, frontFace.indices);
+		}
+
+		if (!back)
+		{
+			BlockFace backFace = b->CreateBackFace();
+			AddToDraw(backFace.vertices, backFace.indices);
+		}
+
+		if (!right)
+		{
+			BlockFace rightFace = b->CreateRightFace();
+			AddToDraw(rightFace.vertices, rightFace.indices);
+		}
+
+		if (!left)
+		{
+			BlockFace leftFace = b->CreateLeftFace();
+			AddToDraw(leftFace.vertices, leftFace.indices);
+		}
+
+		if (!top)
+		{
+			BlockFace topFace = b->CreateTopFace();
+			AddToDraw(topFace.vertices, topFace.indices);
+		}
+
+		if (!bottom)
+		{
+			BlockFace bottomFace = b->CreateBottomFace();
+			AddToDraw(bottomFace.vertices, bottomFace.indices);
+		}
+	}
+
+	for (Block* b : toDelete)
+	{
+		blocks.erase(std::remove(blocks.begin(), blocks.end(), b), blocks.end());
+		delete b;
+	}
+
+	if (checkForAdjChunks)
+	{
+		if (forwardC != nullptr && forwardC->isLoaded)
+			forwardC->Reload();
+		if (backwardC != nullptr && backwardC->isLoaded)
+			backwardC->Reload();
+		if (leftC != nullptr && leftC->isLoaded)
+			leftC->Reload();
+		if (rightC != nullptr && rightC->isLoaded)
+			rightC->Reload();
+	}
+
+	if (rendered)
+	{
+		glBindVertexArray(VAO);
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &EBO);
+		glBindVertexArray(0);
+
+		glBindVertexArray(VAO);
+
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VVertex), &vertices[0], GL_STATIC_DRAW);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VVertex), (void*)0);
+		glEnableVertexAttribArray(0);
+
+		// uv attribute
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VVertex), (void*)offsetof(VVertex, uv));
+		glEnableVertexAttribArray(1);
+
+		glBindVertexArray(0);
+	}
 }

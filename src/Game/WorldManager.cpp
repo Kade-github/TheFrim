@@ -184,23 +184,21 @@ std::vector<Chunk*> WorldManager::CreateChunksInRegion(Data::Region* r)
 		for (int z = 0; z < 5; z++)
 		{
 			Chunk* chunk = new Chunk(glm::vec3(r->startX + (x * 16), 0, r->startZ + (z * 16)), instance->texturePack);
+			chunk->data = &r->chunks[x][z];
 			chunks.push_back(chunk);
 		}
 
 	return chunks;
 }
 
-void WorldManager::LoadChunk(Chunk* c, Data::Chunk* dC)
+void WorldManager::LoadChunk(Chunk* c)
 {
-	Data::Chunk* data = dC;
-	if (dC == nullptr)
-		data = instance->FindChunkPtr(c->position.x, c->position.z);
-	Data::Chunk forward = instance->FindChunk(c->position.x, c->position.z - 16);
-	Data::Chunk backward = instance->FindChunk(c->position.x, c->position.z + 16);
-	Data::Chunk left = instance->FindChunk(c->position.x + 16, c->position.z);
-	Data::Chunk right = instance->FindChunk(c->position.x - 16, c->position.z);
+	Chunk* forward = instance->GetChunk(c->position.x, c->position.z - 16);
+	Chunk* backward = instance->GetChunk(c->position.x, c->position.z + 16);
+	Chunk* left = instance->GetChunk(c->position.x + 16, c->position.z);
+	Chunk* right = instance->GetChunk(c->position.x - 16, c->position.z);
 
-	c->GenerateMesh(data, forward, backward, left, right);
+	c->GenerateMesh(forward, backward, left, right);
 }
 
 void WorldManager::LoadChunks()
@@ -518,7 +516,7 @@ Data::Chunk* WorldManager::FindChunkPtr(int x, int z)
 
 Chunk* WorldManager::GetChunk(float x, float z)
 {
-	for (auto& r : ourRegions)
+	for (auto& r : regions)
 	{
 		for (auto& c : r.chunks)
 		{

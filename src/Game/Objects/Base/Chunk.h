@@ -28,6 +28,10 @@ public:
 	std::vector<VVertex> vertices = {};
 
 	Data::Chunk* data;
+	Chunk* forwardC;
+	Chunk* backwardC;
+	Chunk* leftC;
+	Chunk* rightC;
 
 	Texture* sheet = NULL;
 
@@ -42,12 +46,17 @@ public:
 
 	int getTopBlock(float x, float z);
 	int doesBlockExist(float x, float y, float z);
+	Block* getBlock(float x, float y, float z);
 
-	void GenerateMesh(Data::Chunk* c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC);
+	void GenerateMesh(Chunk* _forward, Chunk* _backward, Chunk* _left, Chunk* _right);
+
+	void CheckAdjacent(bool& back, bool& forward, bool& left, bool& right, bool& bottom, bool& top, int x, int y, int z);
 
 	void UploadMesh();
 	void Clean();
 	void UnloadMesh();
+
+	void Reload();
 
 	void Create() override;
 

@@ -2,7 +2,7 @@
 #define _GAME_H
 
 #pragma once
-
+#include <mutex>
 #include "Logging.h"
 #include "Objects/Scene.h"
 #include "../../Include/glad/glad.h"
@@ -11,8 +11,15 @@
 #include "Objects/Camera.h"
 #include "OpenGL/Shader.h"
 
+struct Event {
+	int type = 0;
+	glm::vec2 pos;
+	int var1 = 0;
+};
+
 class Game
 {
+	std::mutex eventMtx;
 	GLFWwindow* _window = NULL;
 	std::string _version = "";
 	std::string _title = "";
@@ -27,6 +34,8 @@ class Game
 
 public:
 	static Game* instance;
+
+	std::vector<Event> events;
 
 	Shader* shader;
 
@@ -56,6 +65,43 @@ public:
 	void Render();
 
 	void Destroy();
+
+	void MouseMove(float x, float y) {
+		Event e;
+		e.type = 0;
+		e.pos = glm::vec2(x, y);
+		std::lock_guard<std::mutex> lock(eventMtx);
+		events.push_back(e);
+	};
+	void MouseClick(int button, glm::vec2 mPos) {
+		Event e;
+		e.type = 1;
+		e.pos = mPos;
+		e.var1 = button;
+		std::lock_guard<std::mutex> lock(eventMtx);
+		events.push_back(e);
+	};
+	void KeyPress(int key) {
+		Event e;
+		e.type = 2;
+		e.var1 = key;
+		std::lock_guard<std::mutex> lock(eventMtx);
+		events.push_back(e);
+	};
+	void KeyRelease(int key) {
+		Event e;
+		e.type = 3;
+		e.var1 = key;
+		std::lock_guard<std::mutex> lock(eventMtx);
+		events.push_back(e);
+	};
+	void OnChar(unsigned int c) {
+		Event e;
+		e.type = 4;
+		e.var1 = c;
+		std::lock_guard<std::mutex> lock(eventMtx);
+		events.push_back(e);
+	};
 
 	void SetWindowSize(int width, int height) 
 	{ 

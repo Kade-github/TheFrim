@@ -81,6 +81,26 @@ void Game::Render()
 {
 	float currentFrame = glfwGetTime();
 
+	if (events.size() > 0)
+	{
+		std::lock_guard<std::mutex> lock(eventMtx);
+		for (auto& e : events)
+		{
+			if (e.type == 0)
+				currentScene->MouseMove(e.pos.x, e.pos.y);
+			else if (e.type == 1)
+				currentScene->MouseClick(e.var1, e.pos);
+			else if (e.type == 2)
+				currentScene->KeyPress(e.var1);
+			else if (e.type == 3)
+				currentScene->KeyRelease(e.var1);
+			else if (e.type == 4)
+				currentScene->OnChar(e.var1);
+		}
+
+		events.clear();
+	}
+
 	if (swappedScenes)
 	{
 		lastFrame = currentFrame;

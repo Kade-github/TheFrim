@@ -92,10 +92,10 @@ int main()
 						break;
 					}
 
-					Game::instance->currentScene->KeyPress(key);
+					Game::instance->KeyPress(key);
 				}
 				else if (action == GLFW_RELEASE)
-					Game::instance->currentScene->KeyRelease(key);
+					Game::instance->KeyRelease(key);
 			}
 		});
 
@@ -106,14 +106,14 @@ int main()
 				if (action != GLFW_PRESS)
 					return;
 				glm::vec2 mPos = Game::instance->GetCursorPos();
-				Game::instance->currentScene->MouseClick(button, mPos);
+				Game::instance->MouseClick(button, mPos);
 			}
 		});
 
 	glfwSetCharCallback(game.GetWindow(), [](GLFWwindow* window, unsigned int codepoint)
 		{
 			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)
-				Game::instance->currentScene->OnChar(codepoint);
+				Game::instance->OnChar(codepoint);
 		});
 
 	glEnable(GL_DEPTH_TEST);
