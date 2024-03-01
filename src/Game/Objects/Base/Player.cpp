@@ -96,7 +96,7 @@ glm::vec3 Player::ForwardRay()
 	float rX = (position.x - chunk->position.x);
 	float rZ = (position.z - chunk->position.z);
 
-	bool hit = chunk->doesBlockExist(rX, ray.y, rZ);
+	int hit = chunk->doesBlockExist(rX, ray.y, rZ);
 
 	glm::vec3 end = camera->cameraFront * 5.0f;
 
@@ -111,11 +111,14 @@ glm::vec3 Player::ForwardRay()
 		rX = (ray.x - chunk->position.x);
 		rZ = (ray.z - chunk->position.z);
 
-		hit = chunk->doesBlockExist(rX, ray.y, rZ) >= 0;
-		if (hit)
+		hit = chunk->doesBlockExist(rX, ray.y, rZ);
+		if (hit >= 0)
+		{
+			ray.y = hit;
 			break;
+		}
 
-		progress += 0.1;
+		progress += 0.05;
 	}
 
 	return glm::vec3((int)ray.x, (int)ray.y, (int)ray.z);
@@ -134,6 +137,8 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 		if (b != NULL)
 			b->changed = true;
+		else
+			return;
 
 		chunk->data->removeBlock(ray.x,ray.y,ray.z);
 		chunk->Reload();
