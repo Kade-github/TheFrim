@@ -28,11 +28,17 @@ public:
 	std::vector<VVertex> vertices = {};
 
 	Data::Chunk* data;
+	Data::Chunk* forwardC;
+	Data::Chunk* backwardC;
+	Data::Chunk* leftC;
+	Data::Chunk* rightC;
 
 	Texture* sheet = NULL;
 
 	bool isLoaded = false;
 	bool rendered = false;
+	bool needData = true;
+	bool needReload = false;
 
 	std::vector<Block*> blocks = {};
 
@@ -43,11 +49,13 @@ public:
 	int getTopBlock(float x, float z);
 	int doesBlockExist(float x, float y, float z);
 
-	void GenerateMesh(Data::Chunk* c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC);
+	void GenerateMesh();
 
 	void UploadMesh();
 	void Clean();
 	void UnloadMesh();
+
+	void Reload();
 
 	void Create() override;
 
