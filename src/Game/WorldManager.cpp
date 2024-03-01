@@ -37,17 +37,14 @@ WorldManager::WorldManager(std::string name, Texture* _tp, std::string _seed)
 	else
 		LoadWorld();
 
-	unsigned int threads = std::thread::hardware_concurrency() * 3.14;
-	_generatePool.reset(threads);
-
-	Game::instance->log->Write("WorldManager created with " + std::to_string(threads) + " threads.");
+	_generatePool.reset(6);
 
 	_generateThread = std::thread([&]()
 		{
 			while (true)
 			{
 				LoadChunks();
-				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+				std::this_thread::sleep_for(std::chrono::milliseconds(350));
 			} });
 	_generateThread.detach();
 }
@@ -198,16 +195,12 @@ void WorldManager::LoadChunk(Chunk* c, Data::Chunk* dC)
 	Data::Chunk* data = dC;
 	if (dC == nullptr)
 		data = instance->FindChunkPtr(c->position.x, c->position.z);
-	Data::Chunk* forward = instance->FindChunkPtr(c->position.x, c->position.z - 16);
-	Data::Chunk* backward = instance->FindChunkPtr(c->position.x, c->position.z + 16);
-	Data::Chunk* left = instance->FindChunkPtr(c->position.x + 16, c->position.z);
-	Data::Chunk* right = instance->FindChunkPtr(c->position.x - 16, c->position.z);
+	Data::Chunk forward = instance->FindChunk(c->position.x, c->position.z - 16);
+	Data::Chunk backward = instance->FindChunk(c->position.x, c->position.z + 16);
+	Data::Chunk left = instance->FindChunk(c->position.x + 16, c->position.z);
+	Data::Chunk right = instance->FindChunk(c->position.x - 16, c->position.z);
 
-	c->data = data;
-	c->forwardC = forward;
-	c->backwardC = backward;
-	c->leftC = left;
-	c->rightC = right;
+	c->GenerateMesh(data, forward, backward, left, right);
 }
 
 void WorldManager::LoadChunks()
@@ -252,11 +245,8 @@ void WorldManager::LoadChunks()
 
 				if (closest <= camera->cameraFar)
 				{
-					if (c->needData)
-					{
+					if (!c->isLoaded)
 						instance->LoadChunk(c);
-						c->needData = false;
-					}
 				}
 				else
 				{
@@ -422,13 +412,8 @@ void WorldManager::RenderChunks()
 				Game::instance->currentScene->AddObject(c);
 			}
 
-			if (c->needData)
-				continue;
-
 			if (!c->isLoaded)
-			{
-				c->GenerateMesh();
-			}
+				continue;
 
 			glm::vec3 re = glm::vec3(c->position.x, 128, c->position.z);
 			glm::vec3 cam = glm::vec3(camera->position.x, 128, camera->position.z);
@@ -557,35 +542,4 @@ void WorldManager::ReloadChunks()
 				c->Clean();
 		}
 	}
-}
-
-void WorldManager::ReloadChunk(Chunk* c)
-{
-	Chunk* left = GetChunk(c->position.x - 16, c->position.z);
-	Chunk* right = GetChunk(c->position.x + 16, c->position.z);
-	Chunk* forward = GetChunk(c->position.x, c->position.z - 16);
-	Chunk* backward = GetChunk(c->position.x, c->position.z + 16);
-	Chunk* forwardLeft = GetChunk(c->position.x - 16, c->position.z - 16);
-	Chunk* forwardRight = GetChunk(c->position.x + 16, c->position.z - 16);
-	Chunk* backwardLeft = GetChunk(c->position.x - 16, c->position.z + 16);
-	Chunk* backwardRight = GetChunk(c->position.x + 16, c->position.z + 16);
-
-	c->Reload();
-
-	if (left != nullptr)
-		left->Reload();
-	if (right != nullptr)
-		right->Reload();
-	if (forward != nullptr)
-		forward->Reload();
-	if (backward != nullptr)
-		backward->Reload();
-	if (forwardLeft != nullptr)
-		forwardLeft->Reload();
-	if (forwardRight != nullptr)
-		forwardRight->Reload();
-	if (backwardLeft != nullptr)
-		backwardLeft->Reload();
-	if (backwardRight != nullptr)
-		backwardRight->Reload();
 }

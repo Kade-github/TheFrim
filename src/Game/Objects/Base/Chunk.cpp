@@ -46,15 +46,12 @@ Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 	sheet = _spr;
 }
 
-void Chunk::Reload()
-{
-	needReload = true;
-}
-
-void Chunk::GenerateMesh()
+void Chunk::GenerateMesh(Data::Chunk* c, Data::Chunk forwardC, Data::Chunk backwardC, Data::Chunk leftC, Data::Chunk rightC)
 {
 	if (isLoaded)
 		return;
+
+	data = c;
 
 	blocks.clear();
 
@@ -67,9 +64,9 @@ void Chunk::GenerateMesh()
 		{
 			for (int y = 255; y > -1; y--)
 			{
-				if (data->blocks[x][z][y] >= 1)
+				if (c->blocks[x][z][y] >= 1)
 				{
-					int dB = data->blocks[x][z][y];
+					int dB = c->blocks[x][z][y];
 
 					// get adjacent blocks
 
@@ -80,45 +77,45 @@ void Chunk::GenerateMesh()
 					bool top = false;
 					bool bottom = false;
 
-					if (z + 1 < 16 && data->blocks[x][z + 1][y] >= 1)
+					if (z + 1 < 16 && c->blocks[x][z + 1][y] >= 1)
 					{
 						back = true;
 					}
 
-					if (z - 1 >= 0 && data->blocks[x][z - 1][y] >= 1)
+					if (z - 1 >= 0 && c->blocks[x][z - 1][y] >= 1)
 						front = true;
 
-					if (x + 1 < 16 && data->blocks[x + 1][z][y] >= 1)
+					if (x + 1 < 16 && c->blocks[x + 1][z][y] >= 1)
 					{
 						left = true;
 					}
 
-					if (x - 1 >= 0 && data->blocks[x - 1][z][y] >= 1)
+					if (x - 1 >= 0 && c->blocks[x - 1][z][y] >= 1)
 					{
 						right = true;
 					}
 
-					if (y - 1 >= 0 && data->blocks[x][z][y - 1] >= 1)
+					if (y - 1 >= 0 && c->blocks[x][z][y - 1] >= 1)
 						bottom = true;
 
-					if (y + 1 < 256 && data->blocks[x][z][y + 1] >= 1)
+					if (y + 1 < 256 && c->blocks[x][z][y + 1] >= 1)
 						top = true;
 
-					if (z == 0 && !front && forwardC != NULL && forwardC->blocks[x][15][y] >= 1)
+					if (z == 0 && !front && forwardC.isGenerated && forwardC.blocks[x][15][y] >= 1)
 					{
 						front = true;
 					}
-					if (z == 15 && !back && backwardC != NULL && backwardC->blocks[x][0][y] >= 1)
+					if (z == 15 && !back && backwardC.isGenerated && backwardC.blocks[x][0][y] >= 1)
 					{
 						back = true;
 					}
 
-					if (x == 0 && !right && rightC != NULL && rightC->blocks[15][z][y] >= 1)
+					if (x == 0 && !right && rightC.isGenerated && rightC.blocks[15][z][y] >= 1)
 					{
 						right = true;
 					}
 
-					if (x == 15 && !left && leftC != NULL && leftC->blocks[0][z][y] >= 1)
+					if (x == 15 && !left && leftC.isGenerated && leftC.blocks[0][z][y] >= 1)
 					{
 						left = true;
 					}

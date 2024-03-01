@@ -90,8 +90,6 @@ public:
 
 	void LoadChunk(Chunk* c, Data::Chunk* dC = nullptr);
 
-	void ReloadChunk(Chunk* c);
-
 	float GetDistanceToRegion(int x, int z);
 
 	void RenderChunks();
