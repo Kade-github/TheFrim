@@ -103,7 +103,7 @@ void Gameplay::UpdateChunks()
 
 				float angle = camera->YawAngleTo(c->position);
 
-				if (angle <= 200)
+				if (angle <= 200 || diff < (camera->cameraFar / 2))
 				{
 					if (!c->rendered)
 						c->GenerateMesh();
