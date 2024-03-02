@@ -154,9 +154,9 @@ Data::Region Data::World::generateRegion(int x, int z)
 	r.endX = r.startX + width;
 	r.endZ = r.startZ + depth;
 
-	for (int _x = x; _x < r.endX; _x += 16)
+	for (int _x = r.startX; _x < r.endX; _x += 16)
 	{
-		for (int _z = z; _z < r.endZ; _z += 16)
+		for (int _z = r.startZ; _z < r.endZ; _z += 16)
 		{
 			r.addChunk(r.generateChunk(_x,_z));
 		}
@@ -222,7 +222,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			if (rY > 255)
 				rY = 255;
 
-			for (int _y = rY; _y > 0; _y--)
+			for (int _y = rY; _y > -1; _y--)
 			{
 				if (_y == rY)
 					chunk.blocks[_x][_z][_y] = 2;

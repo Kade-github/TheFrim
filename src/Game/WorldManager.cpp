@@ -226,25 +226,25 @@ void WorldManager::LoadWorld()
 	_generatePool.detach_task([&]() {
 		int x = playerX / 80;
 		int z = playerZ / 80;
-		instance->LoadRegion(x + 80, z);
+		instance->LoadRegion(x + 1, z);
 	});
 
 	_generatePool.detach_task([&]() {
 		int x = playerX / 80;
 		int z = playerZ / 80;
-		instance->LoadRegion(x - 80, z);
+		instance->LoadRegion(x - 1, z);
 	});
 
 	_generatePool.detach_task([&]() {
 		int x = playerX / 80;
 		int z = playerZ / 80;
-		instance->LoadRegion(x, z + 80);
+		instance->LoadRegion(x, z + 1);
 	});
 
 	_generatePool.detach_task([&]() {
 		int x = playerX / 80;
 		int z = playerZ / 80;
-		instance->LoadRegion(x, z - 80);
+		instance->LoadRegion(x, z - 1);
 	});
 }
 

@@ -32,11 +32,11 @@ void Chunk::UpdateBlockFace(Block* b)
 
 	// check blocks in other chunks
 
-	if (frontChunk != NULL && b->position.z == 0)
-		front = frontChunk->DoesBlockExist(b->position.x, b->position.y, 15);
+	if (frontChunk != NULL && b->position.z == 15)
+		front = frontChunk->DoesBlockExist(b->position.x, b->position.y, 0);
 
-	if (backChunk != NULL && b->position.z == 15)
-		back = backChunk->DoesBlockExist(b->position.x, b->position.y, 0);
+	if (backChunk != NULL && b->position.z == 0)
+		back = backChunk->DoesBlockExist(b->position.x, b->position.y, 15);
 
 	if (leftChunk != NULL && b->position.x == 0)
 		left = leftChunk->DoesBlockExist(15, b->position.y, b->position.z);
@@ -134,7 +134,7 @@ bool Chunk::DoesBlockExist(int x, int y, int z)
 	if (_z < 0 || _z > 15)
 		_z = z - position.z;
 	
-	if (_z < 0 || _z > 15 || _x < 0 || _x > 15)
+	if (_z < 0 || _z > 15 || _x < 0 || _x > 15 || y < 0 || y > 255)
 		return false;
 
 	return data.blocks[_x][_z][y] != NULL;
@@ -151,7 +151,7 @@ Block* Chunk::GetBlock(int x, int y, int z)
 	if (_z < 0 || _z > 15)
 		_z = z - position.z;
 
-	if (_z < 0 || _z > 15 || _x < 0 || _x > 15)
+	if (_z < 0 || _z > 15 || _x < 0 || _x > 15 || y < 0 || y > 255)
 		return NULL;
 
 	return blocks[_x][_z][y];
