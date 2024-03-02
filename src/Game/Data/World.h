@@ -57,6 +57,8 @@ namespace Data
 		std::vector<std::string> storedRegions;
 		std::string name;
 
+		int32_t playerX, playerY, playerZ;
+
 		unsigned long seedNum = 0;
 
 		std::string seed;
@@ -64,13 +66,16 @@ namespace Data
 		World()
 		{
 			name = "";
+			playerX = 0;
+			playerY = 128;
+			playerZ = 0;
 		}
 
 		void scanForRegions();
 
 		void parseSeed();
 
-		Region getRegion(int x, int z, int endX, int endZ);
+		Region getRegion(int x, int z);
 
 		Region generateRegion(int x, int z);
 

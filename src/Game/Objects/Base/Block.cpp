@@ -69,10 +69,25 @@ BlockFace Block::CreateBottomFace()
 	return BlockFace(bottomVertices, { 0, 1, 3, 1, 2, 3 });
 }
 
+void Block::Draw(std::vector<VVertex>& verts, std::vector<unsigned int>& inds)
+{
+	for (int i = 0; i < faces.size(); i++)
+	{
+		for (int j = 0; j < faces[i].vertices.size(); j++)
+			verts.push_back(faces[i].vertices[j]);
+
+		for (int j = 0; j < faces[i].indices.size(); j++)
+		{
+			int _i = faces[i].indices[j] + verts.size() - faces[i].vertices.size();
+			inds.push_back(_i);
+		}
+	}
+}
+
 glm::vec4 Block::GetUVVerticallyFlipped(int x, int y)
 {
 	float _x = x / textureWidth;
-	float _y = (y / textureHeight) - 0.01f;
+	float _y = (y / textureHeight);
 	float width = blockWidth / textureWidth;
 	float height = blockHeight / textureHeight;
 

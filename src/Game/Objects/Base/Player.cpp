@@ -93,10 +93,7 @@ glm::vec3 Player::ForwardRay()
 
 	Chunk* chunk = WorldManager::instance->GetChunk(position.x, position.z);
 
-	float rX = (position.x - chunk->position.x);
-	float rZ = (position.z - chunk->position.z);
-
-	int hit = chunk->doesBlockExist(rX, ray.y, rZ);
+	Block* hit = chunk->GetBlock(position.x, position.y, position.z);
 
 	glm::vec3 end = camera->cameraFront * 5.0f;
 
@@ -108,13 +105,10 @@ glm::vec3 Player::ForwardRay()
 
 		chunk = WorldManager::instance->GetChunk(ray.x, ray.z);
 
-		rX = (ray.x - chunk->position.x);
-		rZ = (ray.z - chunk->position.z);
-
-		hit = chunk->doesBlockExist(rX, ray.y, rZ);
-		if (hit >= 0)
+		hit = chunk->GetBlock(ray.x, ray.y, ray.z);
+		if (hit != nullptr)
 		{
-			ray.y = hit;
+			ray.y = hit->position.y;
 			break;
 		}
 
@@ -131,16 +125,6 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 	{
 		glm::vec3 ray = ForwardRay();
 
-		Chunk* chunk = WorldManager::instance->GetChunk(ray.x, ray.z);
-
-		Block* b = chunk->getBlock(ray.x, ray.y, ray.z);
-
-		if (b != NULL)
-			b->changed = true;
-		else
-			return;
-
-		chunk->data->removeBlock(ray.x,ray.y,ray.z);
-		chunk->Reload();
+		// TODO: Add block breaking
 	}
 }

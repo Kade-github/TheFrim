@@ -92,8 +92,13 @@ void Data::World::parseSeed()
 	perlin.reseed(seedNum);
 }
 
-Data::Region Data::World::getRegion(int x, int z, int endX, int endZ)
+Data::Region Data::World::getRegion(int x, int z)
 {
+	int chunkSize = 16;
+
+	int width = (chunkSize * 5);
+	int depth = (chunkSize * 5);
+
 	for (auto& stored : storedRegions)
 	{
 		std::vector<std::string> parts = StringTools::Split(stored, "_");
@@ -106,7 +111,7 @@ Data::Region Data::World::getRegion(int x, int z, int endX, int endZ)
 		int _endX = std::stoi(parts[3]);
 		int _endZ = std::stoi(parts[4]);
 
-		if (x == _x && z == _z && endX == _endX && endZ == _endZ)
+		if (x == _x && z == _z && x + width == _endX && z + depth == _endZ)
 		{
 			zstr::ifstream f(_path + "/" + stored + ".r", std::ios::binary);
 
@@ -144,10 +149,10 @@ Data::Region Data::World::generateRegion(int x, int z)
 	int width = (chunkSize * 5);
 	int depth = (chunkSize * 5);
 
-	r.startX = x;
-	r.startZ = z;
-	r.endX = x + width;
-	r.endZ = z + depth;
+	r.startX = x * width;
+	r.startZ = z * depth;
+	r.endX = r.startX + width;
+	r.endZ = r.startZ + depth;
 
 	for (int _x = x; _x < r.endX; _x += 16)
 	{

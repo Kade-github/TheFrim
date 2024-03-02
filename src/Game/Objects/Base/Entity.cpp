@@ -27,16 +27,13 @@ void Entity::CheckCollision(glm::vec3& motion)
 	{
 		// raycast
 
-		float toX = (motion.x - currentChunk->position.x);
-		float toZ = (motion.z - currentChunk->position.z);
-
-		float pX = (position.x - currentChunk->position.x);
-		float pZ = (position.z - currentChunk->position.z);
+		float toX = motion.x;
+		float toZ = motion.z;
 
 		glm::vec3 ray = position;
 		ray.y = toY;
 
-		bool hit = currentChunk->doesBlockExist(toX, ray.y, toZ) >= 0;
+		Block* hit = currentChunk->GetBlock(ray.x, ray.y, ray.z);
 
 		float progress = 0;
 
@@ -50,9 +47,9 @@ void Entity::CheckCollision(glm::vec3& motion)
 
 			toX = (ray.x - currentChunk->position.x);
 
-			hit = currentChunk->doesBlockExist(toX, ray.y, pZ) >= 0;
+			hit = currentChunk->GetBlock(ray.x, ray.y, position.z);
 
-			if (hit)
+			if (hit != NULL)
 				break;
 
 			progress += 0.05;
@@ -76,9 +73,9 @@ void Entity::CheckCollision(glm::vec3& motion)
 
 			toZ = (ray.z - currentChunk->position.z);
 
-			hit = currentChunk->doesBlockExist(pX, ray.y, toZ) >= 0;
+			hit = currentChunk->GetBlock(position.x, ray.y, ray.z);
 
-			if (hit)
+			if (hit != NULL)
 				break;
 
 			progress += 0.1;
@@ -90,8 +87,6 @@ void Entity::CheckCollision(glm::vec3& motion)
 
 		motion = glm::vec3(_lastX, position.y, _lastZ);
 	}
-
-
 }
 
 void Entity::CheckVerticalCollision(glm::vec3& motion)
@@ -124,12 +119,9 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 		ray.y = toY;
 
-		float toX = (position.x - currentChunk->position.x);
-		float toZ = (position.z - currentChunk->position.z);
+		int y = motion.y;
 
-		int _lastY = currentChunk->doesBlockExist(toX, ray.y, toZ);
-
-		bool hit = _lastY >= 0;
+		Block* hit = currentChunk->GetBlock(ray.x, ray.y, ray.z);
 
 		float progress = 0;
 
@@ -137,32 +129,29 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		{
 			ray.y = rp.y + (diff.y * progress);
 
-			int b = currentChunk->doesBlockExist(toX, ray.y, toZ);
+			hit = currentChunk->GetBlock(ray.x, ray.y, ray.z);
 
-			_lastY = b;
-			hit = b >= 0;
-
-			if (hit)
+			if (hit != NULL)
+			{
+				y = hit->position.y + 3;
 				break;
+			}
 
 			progress += 0.05;
 		}
 
-		if (_lastY >= 0)
+		if (hit != NULL)
 		{
 			if (downVelocity <= 0)
 			{
 				isOnGround = true;
 				downVelocity = 0;
-				motion.y = _lastY + 3;
+				motion.y = y;
 			}
 			else
 			{
-				if (_lastY > position.y)
-				{
-					motion.y = _lastY - 1;
-					downVelocity = 0;
-				}
+				motion.y = y - 4;
+				downVelocity = 0;
 			}
 		}
 	}

@@ -3,51 +3,6 @@
 #include "Blocks/Dirt.h"
 #include "Blocks/Grass.h"
 
-int Chunk::getTopBlock(float x, float z)
-{
-	if (x < 0 || x > 15 || z < 0 || z > 15)
-		return 128;
-
-	for (int y = 255; y > -1; y--)
-	{
-		int _y = doesBlockExist(x, y, z);
-
-		if (_y >= 0)
-			return _y;
-	}
-
-	return 0;
-}
-
-int Chunk::doesBlockExist(float x, float y, float z)
-{
-	if ((int)x < 0 || (int)x > 15 || (int)y < 0 || (int)y > 255 || (int)z < 0 || (int)z > 15)
-		return -1;
-
-	int bType = data->blocks[(int)x][(int)z][(int)y];
-
-	if (bType >= 1)
-		return (int)y;
-	return -1;
-}
-
-Block* Chunk::getBlock(float x, float y, float z)
-{
-	for (auto& b : blocks)
-	{
-		if ((int)b->position.x == (int)x && (int)b->position.y == (int)y && (int)b->position.z == (int)z)
-			return b;
-	}
-	return nullptr;
-}
-
-void Chunk::AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i)
-{
-	vertices.insert(vertices.end(), _v.begin(), _v.end());
-
-	for (int i = 0; i < _i.size(); i++)
-		indices.push_back(_i[i] + vertices.size() - _v.size());
-}
 
 Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 {
@@ -55,50 +10,389 @@ Chunk::Chunk(glm::vec3 pos, Texture* _spr) : GameObject(pos)
 	sheet = _spr;
 }
 
-void Chunk::CheckAdjacent(bool& back, bool& front, bool& left, bool& right, bool& bottom, bool& top, int x, int y, int z)
+void Chunk::UpdateBlockFace(Block* b)
 {
-	if (z + 1 < 16 && data->blocks[x][z + 1][y] >= 1)
-		back = true;
+	// create faces
 
-	if (z - 1 >= 0 && data->blocks[x][z - 1][y] >= 1)
-		front = true;
+	bool front = false;
+	bool back = false;
+	bool left = false;
+	bool right = false;
+	bool top = false;
+	bool bottom = false;
 
-	if (x + 1 < 16 && data->blocks[x + 1][z][y] >= 1)
-		left = true;
+	// check blocks around
 
-	if (x - 1 >= 0 && data->blocks[x - 1][z][y] >= 1)
-		right = true;
+	front = DoesBlockExist(b->position.x, b->position.y, b->position.z - 1);
+	back = DoesBlockExist(b->position.x, b->position.y, b->position.z + 1);
+	left = DoesBlockExist(b->position.x + 1, b->position.y, b->position.z);
+	right = DoesBlockExist(b->position.x - 1, b->position.y, b->position.z);
+	top = DoesBlockExist(b->position.x, b->position.y + 1, b->position.z);
+	bottom = DoesBlockExist(b->position.x, b->position.y - 1, b->position.z);
 
-	if (y - 1 >= 0 && data->blocks[x][z][y - 1] >= 1)
-		bottom = true;
+	// check blocks in other chunks
 
-	if (y + 1 < 256 && data->blocks[x][z][y + 1] >= 1)
-		top = true;
+	if (frontChunk != NULL && b->position.z == 0)
+		front = frontChunk->DoesBlockExist(b->position.x, b->position.y, 15);
 
-	if (z == 0 && !front && forwardC != nullptr && forwardC->data != NULL && forwardC->data->blocks[x][15][y] >= 1)
-		front = true;
-	if (z == 15 && !back && backwardC != nullptr && backwardC->data != NULL && backwardC->data->blocks[x][0][y] >= 1)
-		back = true;
+	if (backChunk != NULL && b->position.z == 15)
+		back = backChunk->DoesBlockExist(b->position.x, b->position.y, 0);
 
-	if (x == 0 && !right && rightC != nullptr && rightC->data != NULL && rightC->data->blocks[15][z][y] >= 1)
-		right = true;
+	if (leftChunk != NULL && b->position.x == 0)
+		left = leftChunk->DoesBlockExist(15, b->position.y, b->position.z);
 
-	if (x == 15 && !left && leftC != nullptr && leftC->data != NULL && leftC->data->blocks[0][z][y] >= 1)
-		left = true;
+	if (rightChunk != NULL && b->position.x == 15)
+		right = rightChunk->DoesBlockExist(0, b->position.y, b->position.z);
+
+	// set texture width and height
+
+	b->textureHeight = sheet->height;
+	b->textureWidth = sheet->width;
+
+	// create faces
+
+	if (!front)
+		b->faces.push_back(b->CreateFrontFace());
+
+	if (!back)
+		b->faces.push_back(b->CreateBackFace());
+
+	if (!left)
+		b->faces.push_back(b->CreateLeftFace());
+
+	if (!right)
+		b->faces.push_back(b->CreateRightFace());
+
+	if (!top)
+		b->faces.push_back(b->CreateTopFace());
+
+	if (!bottom)
+		b->faces.push_back(b->CreateBottomFace());
 }
 
-void Chunk::GenerateMesh(Chunk* _forward, Chunk* _backward, Chunk* _left, Chunk* _right)
+void Chunk::UpdateBlocks(Data::Chunk data)
 {
-	if (isLoaded)
+	this->data = data;
+
+	DeloadBlocks();
+
+	CleanBlocks();
+
+	for (int x = 0; x < 16; x++)
+	{
+		for (int z = 0; z < 16; z++)
+		{
+			for (int y = 0; y < 256; y++)
+			{
+				int type = data.blocks[x][z][y];
+
+				if (type <= 0)
+					continue;
+
+				Block* b = CreateBlock(type, glm::vec3(x, y, z));
+
+				if (b == NULL)
+					continue;
+
+				UpdateBlockFace(b);
+
+				if (b->faces.size() != 0)
+					blocks[x][z][y] = b;
+				else
+					delete b;
+			}
+		}
+	}
+
+	isLoaded = true;
+}
+
+Block* Chunk::CreateBlock(int type, glm::vec3 _pos)
+{
+	Block* b = NULL;
+	switch (type)
+	{
+	default:
+		b = new Dirt(position + _pos);
+		break;
+	case 2:
+		b = new Grass(position + _pos);
+		break;
+	}
+
+	return b;
+}
+
+bool Chunk::DoesBlockExist(int x, int y, int z)
+{
+	int _x = x;
+	int _z = z;
+
+	if (_x < 0 || _x > 15)
+		_x = x - position.x;
+
+	if (_z < 0 || _z > 15)
+		_z = z - position.z;
+	
+	if (_z < 0 || _z > 15 || _x < 0 || _x > 15)
+		return false;
+
+	return data.blocks[_x][_z][y] != NULL;
+}
+
+Block* Chunk::GetBlock(int x, int y, int z)
+{
+	int _x = x;
+	int _z = z;
+
+	if (_x < 0 || _x > 15)
+		_x = x - position.x;
+
+	if (_z < 0 || _z > 15)
+		_z = z - position.z;
+
+	if (_z < 0 || _z > 15 || _x < 0 || _x > 15)
+		return NULL;
+
+	return blocks[_x][_z][y];
+}
+
+void Chunk::DeloadBlocks()
+{
+	if (!isLoaded)
 		return;
 
-	forwardC = _forward;
-	backwardC = _backward;
-	leftC = _left;
-	rightC = _right;
+	for (int x = 0; x < 16; x++)
+	{
+		for (int z = 0; z < 16; z++)
+		{
+			for (int y = 0; y < 256; y++)
+			{
+				Block* b = blocks[x][z][y];
 
-	blocks.clear();
+				if (b != NULL)
+					delete b;
 
+				blocks[x][z][y] = NULL;
+			}
+		}
+	}
+}
+
+void Chunk::RemoveBlock(int x, int y, int z)
+{
+	Block* b = GetBlock(x, y, z);
+
+	if (b == NULL)
+		return;
+
+	blocks[(int)x][(int)z][(int)y] = NULL;
+
+	delete b;
+
+	// get blocks around it
+
+	Block* front = GetBlock(x, y, z - 1);
+	Block* back = GetBlock(x, y, z + 1);
+	Block* left = GetBlock(x - 1, y, z);
+	Block* right = GetBlock(x + 1, y, z);
+	Block* top = GetBlock(x, y + 1, z);
+	Block* bottom = GetBlock(x, y - 1, z);
+
+	// update faces
+
+	if (front != NULL)
+		UpdateBlockFace(front);
+
+	if (back != NULL)
+		UpdateBlockFace(back);
+
+	if (left != NULL)
+		UpdateBlockFace(left);
+
+	if (right != NULL)
+		UpdateBlockFace(right);
+
+	if (top != NULL)
+		UpdateBlockFace(top);
+
+	if (bottom != NULL)
+		UpdateBlockFace(bottom);
+
+	// update faces in other chunks
+
+	if (frontChunk != NULL && z == 0)
+	{
+		Block* f = frontChunk->GetBlock(x, y, 15);
+
+		if (f != NULL)
+		{
+			frontChunk->UpdateBlockFace(f);
+			frontChunk->DeloadMesh();
+			frontChunk->GenerateMesh();
+		}
+	}
+
+	if (backChunk != NULL && z == 15)
+	{
+		Block* f = backChunk->GetBlock(x, y, 0);
+
+		if (f != NULL)
+		{
+			backChunk->UpdateBlockFace(f);
+			backChunk->DeloadMesh();
+			backChunk->GenerateMesh();
+		}
+	}
+
+	if (leftChunk != NULL && x == 0)
+	{
+		Block* f = leftChunk->GetBlock(15, y, z);
+
+		if (f != NULL)
+		{
+			leftChunk->UpdateBlockFace(f);
+			leftChunk->DeloadMesh();
+			leftChunk->GenerateMesh();
+		}
+	}
+
+	if (rightChunk != NULL && x == 15)
+	{
+		Block* f = rightChunk->GetBlock(0, y, z);
+
+		if (f != NULL)
+		{
+			rightChunk->UpdateBlockFace(f);
+			rightChunk->DeloadMesh();
+			rightChunk->GenerateMesh();
+		}
+	}
+
+	// update mesh
+
+	DeloadMesh();
+	GenerateMesh();
+}
+
+void Chunk::PlaceBlock(int x, int y, int z, int type)
+{
+	if (DoesBlockExist(x, y, z))
+		return;
+
+	Block* b = CreateBlock(type, glm::vec3(x, y, z));
+
+	if (b == NULL)
+		return;
+
+	UpdateBlockFace(b);
+
+	if (b->faces.size() != 0)
+		blocks[x][z][y] = b;
+	else
+		delete b;
+
+	// get blocks around it
+
+	Block* front = GetBlock(x, y, z - 1);
+	Block* back = GetBlock(x, y, z + 1);
+	Block* left = GetBlock(x - 1, y, z);
+	Block* right = GetBlock(x + 1, y, z);
+	Block* top = GetBlock(x, y + 1, z);
+	Block* bottom = GetBlock(x, y - 1, z);
+
+	// update faces
+
+	if (front != NULL)
+		UpdateBlockFace(front);
+
+	if (back != NULL)
+		UpdateBlockFace(back);
+
+	if (left != NULL)
+		UpdateBlockFace(left);
+
+	if (right != NULL)
+		UpdateBlockFace(right);
+
+	if (top != NULL)
+		UpdateBlockFace(top);
+
+	if (bottom != NULL)
+		UpdateBlockFace(bottom);
+
+	// update faces in other chunks
+
+	if (frontChunk != NULL && z == 0)
+	{
+		Block* f = frontChunk->GetBlock(x, y, 15);
+
+		if (f != NULL)
+		{
+			frontChunk->UpdateBlockFace(f);
+			frontChunk->DeloadMesh();
+			frontChunk->GenerateMesh();
+		}
+	}
+
+	if (backChunk != NULL && z == 15)
+	{
+		Block* f = backChunk->GetBlock(x, y, 0);
+
+		if (f != NULL)
+		{
+			backChunk->UpdateBlockFace(f);
+			backChunk->DeloadMesh();
+			backChunk->GenerateMesh();
+		}
+	}
+
+	if (leftChunk != NULL && x == 0)
+	{
+		Block* f = leftChunk->GetBlock(15, y, z);
+
+		if (f != NULL)
+		{
+			leftChunk->UpdateBlockFace(f);
+			leftChunk->DeloadMesh();
+			leftChunk->GenerateMesh();
+		}
+	}
+
+	if (rightChunk != NULL && x == 15)
+	{
+		Block* f = rightChunk->GetBlock(0, y, z);
+
+		if (f != NULL)
+		{
+			rightChunk->UpdateBlockFace(f);
+			rightChunk->DeloadMesh();
+			rightChunk->GenerateMesh();
+		}
+	}
+
+	// update mesh
+
+	DeloadMesh();
+	GenerateMesh();
+}
+
+void Chunk::CleanBlocks()
+{
+	for (int x = 0; x < 16; x++)
+	{
+		for (int z = 0; z < 16; z++)
+		{
+			for (int y = 0; y < 256; y++)
+			{
+				blocks[x][z][y] = NULL;
+			}
+		}
+	}
+}
+
+void Chunk::GenerateMesh()
+{
 	vertices.clear();
 	indices.clear();
 
@@ -106,112 +400,33 @@ void Chunk::GenerateMesh(Chunk* _forward, Chunk* _backward, Chunk* _left, Chunk*
 	{
 		for (int z = 0; z < 16; z++)
 		{
-			for (int y = 255; y > -1; y--)
+			for (int y = 0; y < 256; y++)
 			{
-				if (data->blocks[x][z][y] >= 1)
-				{
-					int dB = data->blocks[x][z][y];
+				Block* b = blocks[x][z][y];
 
-					// get adjacent blocks
+				if (b == NULL)
+					continue;
 
-					bool front = false;
-					bool back = false;
-					bool right = false;
-					bool left = false;
-					bool top = false;
-					bool bottom = false;
-
-					CheckAdjacent(back, front, left, right, bottom, top, x, y, z);
-
-					Block* b = nullptr;
-
-					switch (dB)
-					{
-					default:
-						b = new Dirt(position + glm::vec3(x, y, z));
-						break;
-					case 2:
-						b = new Grass(position + glm::vec3(x, y, z));
-						break;
-					}
-
-					if (b == nullptr)
-						continue;
-
-					b->textureHeight = sheet->height;
-					b->textureWidth = sheet->width;
-
-					if (!front)
-					{
-						BlockFace frontFace = b->CreateFrontFace();
-						AddToDraw(frontFace.vertices, frontFace.indices);
-					}
-
-					if (!back)
-					{
-						BlockFace backFace = b->CreateBackFace();
-						AddToDraw(backFace.vertices, backFace.indices);
-					}
-					if (!right)
-					{
-						BlockFace rightFace = b->CreateRightFace();
-						AddToDraw(rightFace.vertices, rightFace.indices);
-					}
-
-					if (!left)
-					{
-						BlockFace leftFace = b->CreateLeftFace();
-						AddToDraw(leftFace.vertices, leftFace.indices);
-					}
-
-					if (!top)
-					{
-						BlockFace topFace = b->CreateTopFace();
-						AddToDraw(topFace.vertices, topFace.indices);
-					}
-
-					if (!bottom)
-					{
-						BlockFace bottomFace = b->CreateBottomFace();
-						AddToDraw(bottomFace.vertices, bottomFace.indices);
-					}
-
-					blocks.push_back(b);
-				}
+				b->Draw(vertices, indices);
 			}
 		}
 	}
 
-
-	isLoaded = true;
-}
-
-void Chunk::UploadMesh()
-{
-	if (rendered)
-		return;
-
-	if (vertices.size() == 0 || indices.size() == 0)
-	{
-		return;
-	}
-
 	if (!generatedVAO)
 	{
-		generatedVAO = true;
 		glGenVertexArrays(1, &VAO);
+		glGenBuffers(1, &VBO);
+		glGenBuffers(1, &EBO);
+		generatedVAO = true;
 	}
 
 	glBindVertexArray(VAO);
 
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VVertex), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VVertex), vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VVertex), (void*)0);
@@ -226,37 +441,26 @@ void Chunk::UploadMesh()
 	rendered = true;
 }
 
-void Chunk::Clean()
+void Chunk::DeloadMesh()
 {
 	if (!rendered)
 		return;
-	glBindVertexArray(VAO);
-	glDeleteBuffers(1, &VBO);
-	glDeleteBuffers(1, &EBO);
-	glBindVertexArray(0);
 
 	rendered = false;
-}
 
+	if (generatedVAO)
+	{
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &EBO);
 
-void Chunk::UnloadMesh()
-{
-	if (!isLoaded)
-		return;
-
-	for (auto& b : blocks)
-		delete b;
-
-	blocks.clear();
-
-	vertices.clear();
-	indices.clear();
-
-	isLoaded = false;
+		generatedVAO = false;
+	}
 }
 
 void Chunk::Create()
 {
+
 }
 
 void Chunk::Draw()
@@ -264,8 +468,6 @@ void Chunk::Draw()
 	if (!rendered)
 		return;
 
-	if (indices.size() == 0)
-		return;
 
 	glBindVertexArray(VAO);
 
@@ -288,130 +490,15 @@ void Chunk::Draw()
 	glBindVertexArray(0);
 }
 
-void Chunk::Reload()
+Block* Chunk::GetTopBlock(int x, int z)
 {
-	if (!isLoaded)
-		return;
-
-	vertices.clear();
-	indices.clear();
-
-	std::vector<Block*> toDelete = {};
-
-	bool checkForAdjChunks = false;
-
-	for (Block* b : blocks)
+	for (int y = 255; y > 0; y--)
 	{
-		int x = (int)(b->position.x - position.x);
-		int y = (int)(b->position.y - position.y);
-		int z = (int)(b->position.z - position.z);
+		Block* b = GetBlock(x, y, z);
 
-		if (b->changed)
-		{
-			int newType = data->blocks[x][z][y];
-			b->changed = false;
-			if (x == 0 || z == 0 || x == 15 || z == 15)
-				checkForAdjChunks = true;
-			if (newType == 0)
-			{
-				toDelete.push_back(b);
-				continue;
-			}
-
-		}
-
-		// get adjacent blocks
-
-		bool front = false;
-		bool back = false;
-		bool right = false;
-		bool left = false;
-		bool top = false;
-		bool bottom = false;
-
-		CheckAdjacent(back, front, left, right, bottom, top, x, y, z);
-
-		if (!front)
-		{
-			BlockFace frontFace = b->CreateFrontFace();
-			AddToDraw(frontFace.vertices, frontFace.indices);
-		}
-
-		if (!back)
-		{
-			BlockFace backFace = b->CreateBackFace();
-			AddToDraw(backFace.vertices, backFace.indices);
-		}
-
-		if (!right)
-		{
-			BlockFace rightFace = b->CreateRightFace();
-			AddToDraw(rightFace.vertices, rightFace.indices);
-		}
-
-		if (!left)
-		{
-			BlockFace leftFace = b->CreateLeftFace();
-			AddToDraw(leftFace.vertices, leftFace.indices);
-		}
-
-		if (!top)
-		{
-			BlockFace topFace = b->CreateTopFace();
-			AddToDraw(topFace.vertices, topFace.indices);
-		}
-
-		if (!bottom)
-		{
-			BlockFace bottomFace = b->CreateBottomFace();
-			AddToDraw(bottomFace.vertices, bottomFace.indices);
-		}
+		if (b != NULL)
+			return b;
 	}
 
-	for (Block* b : toDelete)
-	{
-		blocks.erase(std::remove(blocks.begin(), blocks.end(), b), blocks.end());
-		delete b;
-	}
-
-	if (checkForAdjChunks)
-	{
-		if (forwardC != nullptr && forwardC->isLoaded)
-			forwardC->Reload();
-		if (backwardC != nullptr && backwardC->isLoaded)
-			backwardC->Reload();
-		if (leftC != nullptr && leftC->isLoaded)
-			leftC->Reload();
-		if (rightC != nullptr && rightC->isLoaded)
-			rightC->Reload();
-	}
-
-	if (rendered)
-	{
-		glBindVertexArray(VAO);
-		glDeleteBuffers(1, &VBO);
-		glDeleteBuffers(1, &EBO);
-		glBindVertexArray(0);
-
-		glBindVertexArray(VAO);
-
-		glGenBuffers(1, &VBO);
-		glGenBuffers(1, &EBO);
-
-		glBindBuffer(GL_ARRAY_BUFFER, VBO);
-		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(VVertex), &vertices[0], GL_STATIC_DRAW);
-
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
-
-		// position attribute
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(VVertex), (void*)0);
-		glEnableVertexAttribArray(0);
-
-		// uv attribute
-		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(VVertex), (void*)offsetof(VVertex, uv));
-		glEnableVertexAttribArray(1);
-
-		glBindVertexArray(0);
-	}
+	return NULL;
 }

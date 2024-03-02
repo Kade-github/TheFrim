@@ -47,9 +47,18 @@ void GeneratingWorld::Resize(float _w, float _h)
 void GeneratingWorld::Draw()
 {
 	static bool switched = false;
-	label->text = "Generating World... (" + StringTools::ToTheDecimial(wm->generationProgress * 100, 2) + "%)";
 
-	if (wm->generationProgress >= 1 && !switched)
+	// update regions
+
+	wm->CheckGeneratedRegions();
+
+	int regions = wm->regions.size();
+
+	float progress = (float)regions / 5.0f;
+
+	label->text = "Generating World... (" + StringTools::ToTheDecimial(progress * 100, 2) + "%)";
+
+	if (progress >= 1 && !switched)
 	{
 		wm->SaveWorldNow();
 		switched = true;

@@ -17,46 +17,46 @@ class Chunk : public GameObject
 	bool generatedVAO = false;
 
 	// final vertices and indices
-
+	std::vector<VVertex> vertices = {};
 	std::vector<unsigned int> indices = {};
 
 	float blockWidth = 128;
 	float blockHeight = 128;
 
 public:
-
-	std::vector<VVertex> vertices = {};
-
-	Data::Chunk* data;
-	Chunk* forwardC;
-	Chunk* backwardC;
-	Chunk* leftC;
-	Chunk* rightC;
-
 	Texture* sheet = NULL;
 
 	bool isLoaded = false;
 	bool rendered = false;
 
-	std::vector<Block*> blocks = {};
+	Data::Chunk data;
 
-	void AddToDraw(std::vector<VVertex> _v, std::vector<unsigned int> _i);
+	Chunk* frontChunk = NULL;
+	Chunk* backChunk = NULL;
+	Chunk* leftChunk = NULL;
+	Chunk* rightChunk = NULL;
+
+	Block* blocks[16][16][256];
 
 	Chunk(glm::vec3 pos, Texture* _spr);
 
-	int getTopBlock(float x, float z);
-	int doesBlockExist(float x, float y, float z);
-	Block* getBlock(float x, float y, float z);
+	Block* CreateBlock(int type, glm::vec3 _pos);
 
-	void GenerateMesh(Chunk* _forward, Chunk* _backward, Chunk* _left, Chunk* _right);
+	bool DoesBlockExist(int x, int y, int z);
+	Block* GetBlock(int x, int y, int z);
+	Block* GetTopBlock(int x, int z);
 
-	void CheckAdjacent(bool& back, bool& forward, bool& left, bool& right, bool& bottom, bool& top, int x, int y, int z);
+	void UpdateBlocks(Data::Chunk data);
+	void UpdateBlockFace(Block* b);
 
-	void UploadMesh();
-	void Clean();
-	void UnloadMesh();
+	void RemoveBlock(int x, int y, int z);
+	void PlaceBlock(int x, int y, int z, int type);
 
-	void Reload();
+	void DeloadBlocks();
+	void CleanBlocks();
+
+	void GenerateMesh();
+	void DeloadMesh();
 
 	void Create() override;
 

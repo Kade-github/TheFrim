@@ -14,10 +14,14 @@ public:
 	Player* player;
 	Camera2D* c2d;
 
+	std::thread _generateThread;
+
 	Gameplay(WorldManager* _wm);
 
 	void Create() override;
 	void Draw() override;
+
+	void UpdateChunks();
 
 	void KeyPress(int key) override;
 	void MouseClick(int button, glm::vec2 mPos) override;

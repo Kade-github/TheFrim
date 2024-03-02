@@ -54,6 +54,7 @@ public:
 	glm::vec3 position;
 	BlockType type;
 
+	std::vector<BlockFace> faces = {};
 
 	bool changed = false;
 
@@ -76,6 +77,8 @@ public:
 
 	glm::vec4 GetUV(int x, int y);
 	glm::vec4 GetUVVerticallyFlipped(int x, int y);
+
+	void Draw(std::vector<VVertex>& verts, std::vector<unsigned int>& inds);
 
 };
 
