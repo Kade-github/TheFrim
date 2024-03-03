@@ -32,11 +32,11 @@ void Chunk::UpdateBlockFace(Block* b)
 
 	// check blocks in other chunks
 
-	if (frontChunk != NULL && b->position.z == 15)
-		front = frontChunk->DoesBlockExist(b->position.x, b->position.y, 0);
+	if (frontChunk != NULL && b->position.z == 0)
+		front = frontChunk->DoesBlockExist(b->position.x, b->position.y, 15);
 
-	if (backChunk != NULL && b->position.z == 0)
-		back = backChunk->DoesBlockExist(b->position.x, b->position.y, 15);
+	if (backChunk != NULL && b->position.z == 15)
+		back = backChunk->DoesBlockExist(b->position.x, b->position.y, 0);
 
 	if (leftChunk != NULL && b->position.x == 15)
 		left = leftChunk->DoesBlockExist(0, b->position.y, b->position.z);

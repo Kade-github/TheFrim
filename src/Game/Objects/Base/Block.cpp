@@ -86,10 +86,10 @@ void Block::Draw(std::vector<VVertex>& verts, std::vector<unsigned int>& inds)
 
 glm::vec4 Block::GetUVVerticallyFlipped(int x, int y)
 {
-	float _x = x / textureWidth;
-	float _y = (y / textureHeight);
-	float width = blockWidth / textureWidth;
-	float height = blockHeight / textureHeight;
+	float _x = ((x * 128) + 4) / textureWidth;
+	float _y = ((y * 128) + 4) / textureHeight;
+	float width = (blockWidth - 8) / textureWidth;
+	float height = (blockHeight - 8) / textureHeight;
 
 	return glm::vec4(_x, _y + height, width, -height);
 }
@@ -103,10 +103,10 @@ Block::Block(glm::vec3 _position, BlockType _type)
 
 glm::vec4 Block::GetUV(int x, int y)
 {
-	float _x = x / textureWidth;
-	float _y = y / textureHeight;
-	float width = blockWidth / textureWidth;
-	float height = blockHeight / textureHeight;
+	float _x = ((x * 128) + 4) / textureWidth;
+	float _y = ((y * 128) + 4) / textureHeight;
+	float width = (blockWidth - 8) / textureWidth;
+	float height = (blockHeight - 8) / textureHeight;
 
 	return glm::vec4(_x, _y, width, height);
 	
