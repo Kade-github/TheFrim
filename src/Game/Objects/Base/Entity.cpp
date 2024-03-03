@@ -123,6 +123,14 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 		Block* hit = currentChunk->GetBlock(ray.x, ray.y, ray.z);
 
+		bool hitBlock = false;
+
+		if (hit != NULL)
+		{
+			y = hit->position.y + 3;
+			hitBlock = true;
+		}
+
 		float progress = 0;
 
 		while (progress < 1)
@@ -133,6 +141,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 			if (hit != NULL)
 			{
+				hitBlock = true;
 				y = hit->position.y + 3;
 				break;
 			}
@@ -140,7 +149,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 			progress += 0.05;
 		}
 
-		if (hit != NULL)
+		if (hitBlock)
 		{
 			if (downVelocity <= 0)
 			{

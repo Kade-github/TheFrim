@@ -38,11 +38,11 @@ void Chunk::UpdateBlockFace(Block* b)
 	if (backChunk != NULL && b->position.z == 0)
 		back = backChunk->DoesBlockExist(b->position.x, b->position.y, 15);
 
-	if (leftChunk != NULL && b->position.x == 0)
-		left = leftChunk->DoesBlockExist(15, b->position.y, b->position.z);
+	if (leftChunk != NULL && b->position.x == 15)
+		left = leftChunk->DoesBlockExist(0, b->position.y, b->position.z);
 
-	if (rightChunk != NULL && b->position.x == 15)
-		right = rightChunk->DoesBlockExist(0, b->position.y, b->position.z);
+	if (rightChunk != NULL && b->position.x == 0)
+		right = rightChunk->DoesBlockExist(15, b->position.y, b->position.z);
 
 	// set texture width and height
 
@@ -140,27 +140,33 @@ bool Chunk::DoesBlockExist(int x, int y, int z)
 	return data.blocks[_x][_z][y] != NULL;
 }
 
-Block* Chunk::GetBlock(int x, int y, int z)
+Block* Chunk::GetBlock(float x, float y, float z)
 {
-	int _x = x;
-	int _z = z;
+	float __x = x;
+	float __z = z;
 
-	if (_x < 0 || _x > 15)
-		_x = x - position.x;
+	if (__x < 0 || __x > 15)
+		__x = x - position.x;
 
-	if (_z < 0 || _z > 15)
-		_z = z - position.z;
+	if (__z < 0 || __z > 15)
+		__z = z - position.z;
+
+	int _x = __x;
+	int _z = __z;
 
 	if (_z < 0 || _z > 15 || _x < 0 || _x > 15 || y < 0 || y > 255)
-		return NULL;
+		return nullptr;
 
-	return blocks[_x][_z][y];
+	return blocks[_x][_z][(int)y];
 }
 
 void Chunk::DeloadBlocks()
 {
 	if (!isLoaded)
 		return;
+
+	if (rendered)
+		DeloadMesh();
 
 	for (int x = 0; x < 16; x++)
 	{
@@ -177,6 +183,8 @@ void Chunk::DeloadBlocks()
 			}
 		}
 	}
+
+	isLoaded = false;
 }
 
 void Chunk::RemoveBlock(int x, int y, int z)

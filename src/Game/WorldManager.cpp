@@ -101,6 +101,10 @@ void WorldManager::CreateWorld(std::string _seed, std::string _name)
 		GenerateRegion(-1, 0);
 		GenerateRegion(0, 1);
 		GenerateRegion(0, -1);
+		GenerateRegion(1, 1);
+		GenerateRegion(-1, -1);
+		GenerateRegion(1, -1);
+		GenerateRegion(-1, 1);
 	});
 
 }
@@ -147,7 +151,7 @@ void WorldManager::CreateChunks(Region& r)
 		for (int z = r.startZ; z < r.startZ + depth; z += chunkSize)
 		{
 			Chunk* c = new Chunk(glm::vec3(x, 0, z), texturePack);
-
+			c->CleanBlocks();
 			r.chunks.push_back(c);
 		}
 	}
@@ -219,33 +223,16 @@ void WorldManager::LoadWorld()
 		int x = playerX / 80;
 		int z = playerZ / 80;
 		instance->LoadRegion(x,z);
-	});
-	
-	// load surrounding regions
-
-	_generatePool.detach_task([&]() {
-		int x = playerX / 80;
-		int z = playerZ / 80;
 		instance->LoadRegion(x + 1, z);
-	});
-
-	_generatePool.detach_task([&]() {
-		int x = playerX / 80;
-		int z = playerZ / 80;
 		instance->LoadRegion(x - 1, z);
-	});
-
-	_generatePool.detach_task([&]() {
-		int x = playerX / 80;
-		int z = playerZ / 80;
 		instance->LoadRegion(x, z + 1);
+		instance->LoadRegion(x, z - 1);
+		instance->LoadRegion(x + 1, z + 1);
+		instance->LoadRegion(x - 1, z - 1);
+		instance->LoadRegion(x + 1, z - 1);
+		instance->LoadRegion(x - 1, z + 1);
 	});
 
-	_generatePool.detach_task([&]() {
-		int x = playerX / 80;
-		int z = playerZ / 80;
-		instance->LoadRegion(x, z - 1);
-	});
 }
 
 Region& WorldManager::GetRegion(int x, int z)

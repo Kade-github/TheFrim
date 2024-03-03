@@ -54,7 +54,7 @@ void GeneratingWorld::Draw()
 
 	int regions = wm->regions.size();
 
-	float progress = (float)regions / 5.0f;
+	float progress = (float)regions / 9.0f;
 
 	label->text = "Generating World... (" + StringTools::ToTheDecimial(progress * 100, 2) + "%)";
 

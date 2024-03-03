@@ -43,7 +43,7 @@ public:
 	Block* CreateBlock(int type, glm::vec3 _pos);
 
 	bool DoesBlockExist(int x, int y, int z);
-	Block* GetBlock(int x, int y, int z);
+	Block* GetBlock(float x, float y, float z);
 	Block* GetTopBlock(int x, int z);
 
 	void UpdateBlocks(Data::Chunk data);
