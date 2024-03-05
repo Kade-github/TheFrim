@@ -44,38 +44,56 @@ void Player::Draw()
 
 	yaw += xoffset;
 
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
-		forwardVelocity += speed;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
-		forwardVelocity -= speed;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
-		strafeVelocity -= speed;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
-		strafeVelocity += speed;
-
-	if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
+	if (!freeCam)
 	{
-		downVelocity = jumpStrength;
-		isOnGround = false;
+
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
+			forwardVelocity += speed;
+
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
+			forwardVelocity -= speed;
+
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
+			strafeVelocity -= speed;
+
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
+			strafeVelocity += speed;
+
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
+		{
+			downVelocity = jumpStrength;
+			isOnGround = false;
+		}
+
+		if (forwardVelocity > speed)
+			forwardVelocity = speed;
+
+		if (forwardVelocity < -speed)
+			forwardVelocity = -speed;
+
+		if (strafeVelocity > speed)
+			strafeVelocity = speed;
+
+		if (strafeVelocity < -speed)
+			strafeVelocity = -speed;
+
+
+		Entity::Draw(); // physics
 	}
+	else
+	{
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
+			position += camera->cameraFront;
 
-	if (forwardVelocity > speed)
-		forwardVelocity = speed;
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
+			position -= camera->cameraFront;
 
-	if (forwardVelocity < -speed)
-		forwardVelocity = -speed;
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
+			position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp));
 
-	if (strafeVelocity > speed)
-		strafeVelocity = speed;
-
-	if (strafeVelocity < -speed)
-		strafeVelocity = -speed;
-
-
-	Entity::Draw(); // physics
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
+			position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp));
+	}
 
 	camera->position = position;
 
@@ -87,36 +105,8 @@ void Player::Draw()
 
 glm::vec3 Player::ForwardRay()
 {
-	Camera* camera = Game::instance->GetCamera();
-
-	glm::vec3 ray = position;
-
-	Chunk* chunk = WorldManager::instance->GetChunk(position.x, position.z);
-
-	Block* hit = chunk->GetBlock(position.x, position.y, position.z);
-
-	glm::vec3 end = camera->cameraFront * 5.0f;
-
-	float progress = 0;
-
-	while (progress < 1)
-	{
-		ray = position + (end * progress);
-
-		chunk = WorldManager::instance->GetChunk(ray.x, ray.z);
-
-		hit = chunk->GetBlock(ray.x, ray.y, ray.z);
-		if (hit != nullptr)
-		{
-			ray.y = hit->position.y;
-			break;
-		}
-
-		progress += 0.05;
-	}
-
-	return glm::vec3((int)ray.x, (int)ray.y, (int)ray.z);
-	
+	// TODO: Raycast
+	return glm::vec3(0, 0, 0);
 }
 
 void Player::MouseClick(int button, glm::vec2 mPos)

@@ -141,20 +141,7 @@ bool WorldManager::IsRegionGenerated(int x, int z)
 
 void WorldManager::CreateChunks(Region& r)
 {
-	int chunkSize = 16;
-
-	int width = (chunkSize * 5);
-	int depth = (chunkSize * 5);
-
-	for (int x = r.startX; x < r.startX + width; x += chunkSize)
-	{
-		for (int z = r.startZ; z < r.startZ + depth; z += chunkSize)
-		{
-			Chunk* c = new Chunk(glm::vec3(x, 0, z), texturePack);
-			c->CleanBlocks();
-			r.chunks.push_back(c);
-		}
-	}
+	// TODO: create chunks
 }
 
 void WorldManager::CheckGeneratedRegions()
