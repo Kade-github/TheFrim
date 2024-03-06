@@ -298,6 +298,19 @@ Chunk* WorldManager::GetChunk(int x, int z)
 
 }
 
+Data::Chunk WorldManager::GetChunkData(int x, int z)
+{
+	if (!isRegionLoaded(x, z))
+		return Data::Chunk();
+
+	Region& r = GetRegion(x, z);
+
+	if (r.chunks.size() == 0)
+		return Data::Chunk();
+
+	return r.GetChunkData(x, z);
+}
+
 void WorldManager::SaveWorldNow()
 {
 	Game::instance->log->Write("Saving world...");

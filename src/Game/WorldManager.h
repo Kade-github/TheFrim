@@ -74,6 +74,7 @@ public:
 
 	Region& GetRegion(int x, int z);
 	Chunk* GetChunk(int x, int z);
+	Data::Chunk GetChunkData(int x, int z);
 
 	void GenerateRegion(int x, int z);
 
