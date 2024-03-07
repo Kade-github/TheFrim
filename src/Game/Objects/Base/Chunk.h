@@ -12,7 +12,7 @@
 struct subChunk {
 public:
     int y = -1;
-    Block* blocks[16][16];
+    Block* blocks[16][16] = {nullptr};
 
     // input here has to be between 0-15 for both x and z
     Block* getBlock(int x, int z);
@@ -21,9 +21,13 @@ public:
 class Chunk : public GameObject
 {
 public:
+    Data::Chunk myData;
+
     std::vector<subChunk> subChunks;
 
     subChunk& GetSubChunk(int y);
+
+    Data::Chunk GetChunkData();
 
     int GetBlock(int x, int y, int z);
     bool DoesBlockExist(int x, int y, int z);
@@ -31,7 +35,13 @@ public:
     void ModifySubChunk(int y, Block* to);
 
     void RenderSubChunk();
-    void CreateSubChunk();
+    subChunk CreateSubChunk(int y);
+
+    Block* CreateBlock(int x, int y, int z, int id);
+
+    void DestroySubChunk(int y);
+    void DestroySubChunk(subChunk& c);
+    void DestroySubChunks();
     
     void CreateSubChunks();
 
