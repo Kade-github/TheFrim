@@ -20,7 +20,17 @@ public:
 
 class Chunk : public GameObject
 {
+    unsigned int VAO, VBO, EBO;
+    Texture* txp;
+
+    std::vector<VVertex> vertices;
+    std::vector<unsigned int> indices;
+
+    void CreateFaces(Block* b);
 public:
+
+    Chunk(Texture* _txp, glm::vec3 _pos);
+
     Data::Chunk myData;
 
     std::vector<subChunk> subChunks;
@@ -34,9 +44,10 @@ public:
 
     void ModifySubChunk(int y, Block* to);
 
-    void RenderSubChunk();
-    subChunk CreateSubChunk(int y);
+    void RenderSubChunk(int y);
+    void RenderSubChunks();
 
+    subChunk CreateSubChunk(int y);
     Block* CreateBlock(int x, int y, int z, int id);
 
     void DestroySubChunk(int y);
@@ -44,6 +55,13 @@ public:
     void DestroySubChunks();
     
     void CreateSubChunks();
+
+    void SetBuffer();
+
+    void Init();
+    void Destroy();
+
+    void Unload();
 
     void Draw() override;
 

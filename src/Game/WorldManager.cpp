@@ -255,10 +255,8 @@ void WorldManager::LoadRegion(int x, int z)
 
 bool WorldManager::isRegionLoaded(int x, int z)
 {
-	int chunkSize = 16;
-
-	int width = (chunkSize * 5);
-	int depth = (chunkSize * 5);
+	int width = (CHUNK_SIZE * REGION_SIZE);
+	int depth = (CHUNK_SIZE * REGION_SIZE);
 
 	for (auto& r : regions)
 	{
@@ -290,7 +288,7 @@ Chunk* WorldManager::GetChunk(int x, int z)
 
 	for (auto& c : r.chunks)
 	{
-		if ((int)c->position.x <= x && (int)c->position.z <= z && (int)c->position.x + 16 > x && (int)c->position.z + 16 > z)
+		if ((int)c->position.x <= x && (int)c->position.z <= z && (int)c->position.x + CHUNK_SIZE > x && (int)c->position.z + CHUNK_SIZE > z)
 			return c;
 	}
 

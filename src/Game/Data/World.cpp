@@ -12,8 +12,8 @@ std::mutex m;
 Data::Chunk Data::Region::getChunk(int x, int z)
 {
 	std::lock_guard<std::mutex> lock(m);
-	int realX = (x - startX) / 16;
-	int realZ = (z - startZ) / 16;
+	int realX = (x - startX) / CHUNK_SIZE;
+	int realZ = (z - startZ) / CHUNK_SIZE;
 
 	if (realX < 0 || realX > 4 || realZ < 0 || realZ > 4)
 		return Chunk();
@@ -30,8 +30,8 @@ Data::Chunk Data::Region::getChunk(int x, int z)
 Data::Chunk* Data::Region::getChunkPtr(int x, int z)
 {
 	std::lock_guard<std::mutex> lock(m);
-	int realX = (x - startX) / 16;
-	int realZ = (z - startZ) / 16;
+	int realX = (x - startX) / CHUNK_SIZE;
+	int realZ = (z - startZ) / CHUNK_SIZE;
 
 	if (realX < 0 || realX > 4 || realZ < 0 || realZ > 4)
 		return nullptr;
@@ -49,8 +49,8 @@ void Data::Region::addChunk(Chunk c)
 {
 	std::lock_guard<std::mutex> lock(m);
 
-	int realX = (c.x - startX) / 16;
-	int realZ = (c.z - startZ) / 16;
+	int realX = (c.x - startX) / CHUNK_SIZE;
+	int realZ = (c.z - startZ) / CHUNK_SIZE;
 
 	if (realX < 0 || realX > 4 || realZ < 0 || realZ > 4)
 	{
@@ -94,10 +94,8 @@ void Data::World::parseSeed()
 
 Data::Region Data::World::getRegion(int x, int z)
 {
-	int chunkSize = 16;
-
-	int width = (chunkSize * 5);
-	int depth = (chunkSize * 5);
+	int width = (CHUNK_SIZE * REGION_SIZE);
+	int depth = (CHUNK_SIZE * REGION_SIZE);
 
 	for (auto& stored : storedRegions)
 	{
@@ -127,8 +125,8 @@ Data::Region Data::World::getRegion(int x, int z)
 
 			upd.get().convert(r);
 
-			for (int i = 0; i < 5; i++)
-				for (int j = 0; j < 5; j++)
+			for (int i = 0; i < REGION_SIZE; i++)
+				for (int j = 0; j < REGION_SIZE; j++)
 				{
 					r.chunks[i][j].isGenerated = true;
 				}
@@ -144,19 +142,17 @@ Data::Region Data::World::generateRegion(int x, int z)
 {
 	Region r;
 
-	int chunkSize = 16;
-
-	int width = (chunkSize * 5);
-	int depth = (chunkSize * 5);
+	int width = (CHUNK_SIZE * REGION_SIZE);
+	int depth = (CHUNK_SIZE * REGION_SIZE);
 
 	r.startX = x * width;
 	r.startZ = z * depth;
 	r.endX = r.startX + width;
 	r.endZ = r.startZ + depth;
 
-	for (int _x = r.startX; _x < r.endX; _x += 16)
+	for (int _x = r.startX; _x < r.endX; _x += CHUNK_SIZE)
 	{
-		for (int _z = r.startZ; _z < r.endZ; _z += 16)
+		for (int _z = r.startZ; _z < r.endZ; _z += CHUNK_SIZE)
 		{
 			r.addChunk(r.generateChunk(_x,_z));
 		}
@@ -192,11 +188,11 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 
 	// set everything to 0
 
-	for (int _x = 0; _x < 16; _x++)
+	for (int _x = 0; _x < CHUNK_SIZE; _x++)
 	{
-		for (int _z = 0; _z < 16; _z++)
+		for (int _z = 0; _z < CHUNK_SIZE; _z++)
 		{
-			for (int _y = 0; _y < 256; _y++)
+			for (int _y = 0; _y < CHUNK_HEIGHT; _y++)
 			{
 				chunk.blocks[_x][_z][_y] = 0;
 			}
@@ -205,22 +201,22 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 
 	float scale = 0.002;
 
-	for (int _x = 0; _x < 16; _x++)
+	for (int _x = 0; _x < CHUNK_SIZE; _x++)
 	{
-		for (int _z = 0; _z < 16; _z++)
+		for (int _z = 0; _z < CHUNK_SIZE; _z++)
 		{
 			int worldX = (_x + x);
 			int worldZ = (_z + z);
 
 			const double noise = perlin.normalizedOctave2D(worldX * scale, worldZ * scale, 4, 0.5);
 
-			int rY = 128 + (int)((noise * 100));
+			int rY = (CHUNK_HEIGHT / 2) + (int)((noise * 100));
 
 			if (rY < 0)
 				rY = 0;
 
-			if (rY > 255)
-				rY = 255;
+			if (rY > CHUNK_HEIGHT - 1)
+				rY = CHUNK_HEIGHT - 1;
 
 			for (int _y = rY; _y > -1; _y--)
 			{

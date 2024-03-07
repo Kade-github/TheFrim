@@ -1,6 +1,11 @@
 #ifndef _WORLD_H
 #define _WORLD_H
 
+#define CHUNK_SIZE 16
+#define CHUNK_HEIGHT 256
+
+#define REGION_SIZE 5
+
 #define MSGPACK_NO_BOOST
 #include <msgpack.hpp>
 #include <vector>
@@ -14,7 +19,7 @@ namespace Data
 	struct Chunk
 	{
 		bool isGenerated = false;
-		uint8_t blocks[16][16][256];
+		uint8_t blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_HEIGHT];
 		int32_t x, z;
 
 		void placeBlock(int x, int y, int z, uint8_t block)
