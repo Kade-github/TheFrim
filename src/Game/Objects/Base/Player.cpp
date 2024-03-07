@@ -83,16 +83,16 @@ void Player::Draw()
 	else
 	{
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
-			position += camera->cameraFront;
+			position += camera->cameraFront * 0.25f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
-			position -= camera->cameraFront;
+			position -= camera->cameraFront * 0.25f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
-			position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp));
+			position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.25f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
-			position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp));
+			position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.25f;
 	}
 
 	camera->position = position;
