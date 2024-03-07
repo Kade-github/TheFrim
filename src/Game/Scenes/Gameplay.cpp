@@ -51,7 +51,35 @@ void Gameplay::UpdateChunks()
 
 	for (Region& r : wm->regions)
 	{
-		// TODO:: load chunks
+		for (Chunk* c : r.chunks)
+		{
+			if (c->id < 0)
+				AddObject(c);
+
+			float distance = glm::distance(camera->position, c->position);
+
+			if (distance < 512)
+			{
+				if (!c->IsLoaded())
+				{
+					c->Init(); // when destroyed you gotta reinit
+					c->CreateSubChunks();
+				}
+
+				if (!c->isRendered())
+				{
+					c->RenderSubChunks();
+					c->SetBuffer();
+				}
+			}
+			else
+			{
+				if (c->IsLoaded())
+				{
+					c->Unload();
+				}
+			}
+		}
 	}
 }
 

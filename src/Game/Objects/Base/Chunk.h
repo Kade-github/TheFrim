@@ -29,6 +29,9 @@ class Chunk : public GameObject
     void CreateFaces(Block* b);
 public:
 
+    bool IsLoaded();
+    bool isRendered();
+
     Chunk(Texture* _txp, glm::vec3 _pos);
 
     Data::Chunk myData;

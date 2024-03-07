@@ -4,7 +4,7 @@
 #define CHUNK_SIZE 16
 #define CHUNK_HEIGHT 256
 
-#define REGION_SIZE 5
+#define REGION_SIZE 1
 
 #define MSGPACK_NO_BOOST
 #include <msgpack.hpp>
@@ -39,11 +39,11 @@ namespace Data
 		int32_t startX = 0, startZ = 0;
 		int32_t endX = 0, endZ = 0;
 
-		std::vector<std::vector<Chunk>> chunks = std::vector<std::vector<Chunk>>(5);
+		std::vector<std::vector<Chunk>> chunks = std::vector<std::vector<Chunk>>(REGION_SIZE);
 
 		Region() {
-			for (int i = 0; i < 5; i++)
-				chunks[i] = std::vector<Chunk>(5);
+			for (int i = 0; i < REGION_SIZE; i++)
+				chunks[i] = std::vector<Chunk>(REGION_SIZE);
 		};
 
 		Chunk getChunk(int x, int z);

@@ -26,6 +26,12 @@ int Chunk::GetBlock(int x, int y, int z)
 	if (z > CHUNK_SIZE - 1)
 		_z = z - position.z;
 
+	if (y < 0 || y > CHUNK_HEIGHT - 1)
+		return 0;
+
+	if (x < 0 || x > CHUNK_SIZE - 1 || z < 0 || z > CHUNK_SIZE - 1)
+		return 0;
+
 	return myData.blocks[_x][_z][y];
 }
 
@@ -101,9 +107,9 @@ void Chunk::CreateFaces(Block* b)
 	bool front = false;
 	bool back = false;
 
-	int x = b->position.x - position.x;
+	int x = b->position.x;
 	int y = b->position.y;
-	int z = b->position.z - position.z;
+	int z = b->position.z;
 
 	// in our chunk
 	if (DoesBlockExist(x, y + 1, z))
@@ -173,7 +179,7 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateTopFace();
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + indices.size());
+			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 	}
 
 	if (!bottom)
@@ -181,7 +187,7 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateBottomFace();
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + indices.size());
+			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 	}
 
 	if (!left)
@@ -189,7 +195,7 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateLeftFace();
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + indices.size());
+			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 	}
 
 	if (!right)
@@ -197,7 +203,7 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateRightFace();
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + indices.size());
+			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 	}
 
 	if (!front)
@@ -205,7 +211,7 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateFrontFace();
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + indices.size());
+			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 	}
 
 	if (!back)
@@ -213,16 +219,24 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateBackFace();
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + indices.size());
+			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 	}
+}
+
+bool Chunk::IsLoaded()
+{
+	return subChunks.size() != 0;
+}
+
+bool Chunk::isRendered()
+{
+	return vertices.size() != 0 && indices.size() != 0;
 }
 
 Chunk::Chunk(Texture* _txp, glm::vec3 _pos) : GameObject(_pos)
 {
 	position = _pos;
 	txp = _txp;
-	WorldManager* wm = WorldManager::instance;
-	myData = wm->GetChunkData(position.x, position.z);
 }
 
 subChunk& Chunk::GetSubChunk(int y)
@@ -326,6 +340,9 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 		break;
 	}
 
+	block->textureHeight = txp->height;
+	block->textureWidth = txp->width;
+
 	return block;
 }
 
@@ -360,8 +377,6 @@ void Chunk::DestroySubChunks()
 
 void Chunk::CreateSubChunks()
 {
-	WorldManager* wm = WorldManager::instance;
-
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
 		subChunk sbc = CreateSubChunk(y);
