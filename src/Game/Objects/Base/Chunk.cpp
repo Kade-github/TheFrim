@@ -332,10 +332,10 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 
 	switch (id)
 	{
-	case 1:
+	case 2:
 		block = new Grass(position + glm::vec3(x, y, z));
 		break;
-	case 2:
+	default:
 		block = new Dirt(position + glm::vec3(x, y, z));
 		break;
 	}
