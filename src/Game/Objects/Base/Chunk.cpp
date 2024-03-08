@@ -147,22 +147,22 @@ void Chunk::CreateFaces(Block* b)
 
 	// in adjacent chunks
 
-	if (rX == CHUNK_SIZE - 1)
+	if (rX == 0)
 	{
-		Chunk* leftChunk = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+		Chunk* leftChunk = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 		if (leftChunk != nullptr)
 		{
-			if (leftChunk->DoesBlockExist(0, y, z))
+			if (leftChunk->DoesBlockExist(15, y, z))
 				left = true;
 		}
 	}
 
-	if (rX == 0)
+	if (rX == CHUNK_SIZE - 1)
 	{
-		Chunk* rightChunk = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+		Chunk* rightChunk = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 		if (rightChunk != nullptr)
 		{
-			if (rightChunk->DoesBlockExist(CHUNK_SIZE - 1, y, z))
+			if (rightChunk->DoesBlockExist(0, y, z))
 				right = true;
 		}
 	}
@@ -172,7 +172,7 @@ void Chunk::CreateFaces(Block* b)
 		Chunk* frontChunk = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 		if (frontChunk != nullptr)
 		{
-			if (frontChunk->DoesBlockExist(x, y, CHUNK_SIZE - 1))
+			if (frontChunk->DoesBlockExist(x, y, 15))
 				front = true;
 		}
 	}

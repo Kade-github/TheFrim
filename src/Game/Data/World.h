@@ -4,7 +4,7 @@
 #define CHUNK_SIZE 16
 #define CHUNK_HEIGHT 256
 
-#define REGION_SIZE 1
+#define REGION_SIZE 5
 
 #define MSGPACK_NO_BOOST
 #include <msgpack.hpp>
