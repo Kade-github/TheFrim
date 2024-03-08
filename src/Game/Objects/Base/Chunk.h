@@ -43,6 +43,7 @@ public:
     Data::Chunk GetChunkData();
 
     int GetBlock(int x, int y, int z);
+    Block* GetSubBlock(int x, int y, int z);
     bool DoesBlockExist(int x, int y, int z);
 
     void ModifySubChunk(int y, Block* to);
