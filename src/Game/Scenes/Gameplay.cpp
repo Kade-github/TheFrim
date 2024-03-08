@@ -89,6 +89,18 @@ void Gameplay::KeyPress(int key)
 	if (key == GLFW_KEY_F3)
 		wm->SaveWorldNow();
 
+	if (key == GLFW_KEY_F2)
+	{
+		for (Region& r : wm->regions)
+		{
+			for (Chunk* c : r.chunks)
+			{
+				if (c->IsLoaded())
+					c->Unload();
+			}
+		}
+	}
+
 	if (key == GLFW_KEY_F6)
 		player->freeCam = !player->freeCam;
 

@@ -15,21 +15,34 @@ int Chunk::GetBlock(int x, int y, int z)
 {
 	int _x = x;
 	int _z = z;
+
+	if (_x > position.x + CHUNK_SIZE - 1)
+		return 0;
+
+	if (_z > position.z + CHUNK_SIZE - 1)
+		return 0;
+
+	if (_x < position.x)
+		return 0;
+
+	if (_z < position.z)
+		return 0;
+
 	if (x < 0)
-		_x = position.x - x;
+		_x = std::abs(position.x - x);
 	if (x > CHUNK_SIZE - 1)
-		_x = x - position.x;
+		_x = std::abs(x - position.x);
 
 	if (z < 0)
-		_z = position.z - z;
+		_z = std::abs(position.z - z);
 
 	if (z > CHUNK_SIZE - 1)
-		_z = z - position.z;
+		_z = std::abs(z - position.z);
 
 	if (y < 0 || y > CHUNK_HEIGHT - 1)
 		return 0;
 
-	if (x < 0 || x > CHUNK_SIZE - 1 || z < 0 || z > CHUNK_SIZE - 1)
+	if (_x > CHUNK_SIZE - 1 || _z > CHUNK_SIZE - 1)
 		return 0;
 
 	return myData.blocks[_x][_z][y];
@@ -108,8 +121,10 @@ void Chunk::CreateFaces(Block* b)
 	bool back = false;
 
 	int x = b->position.x;
+	int rX = std::abs(x - position.x);
 	int y = b->position.y;
 	int z = b->position.z;
+	int rZ = std::abs(z - position.z);
 
 	// in our chunk
 	if (DoesBlockExist(x, y + 1, z))
@@ -118,51 +133,51 @@ void Chunk::CreateFaces(Block* b)
 	if (DoesBlockExist(x, y - 1, z))
 		bottom = true;
 
-	if (x >= 0 && DoesBlockExist(x - 1, y, z))
+	if (x <= position.x + CHUNK_SIZE - 1 && DoesBlockExist(x + 1, y, z))
 		left = true;
 
-	if (x <= 15 && DoesBlockExist(x + 1, y, z))
+	if (x >= position.x && DoesBlockExist(x - 1, y, z))
 		right = true;
 
-	if (z >= 0 && DoesBlockExist(x, y, z - 1))
+	if (z >= position.z && DoesBlockExist(x, y, z - 1))
 		front = true;
 
-	if (z <= 15 && DoesBlockExist(x, y, z + 1))
+	if (z <= position.z + CHUNK_SIZE - 1 && DoesBlockExist(x, y, z + 1))
 		back = true;
 
 	// in adjacent chunks
 
-	if (x == 0)
+	if (rX == CHUNK_SIZE - 1)
 	{
-		Chunk* leftChunk = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+		Chunk* leftChunk = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 		if (leftChunk != nullptr)
 		{
-			if (leftChunk->DoesBlockExist(15, y, z))
+			if (leftChunk->DoesBlockExist(0, y, z))
 				left = true;
 		}
 	}
 
-	if (x == CHUNK_SIZE - 1)
+	if (rX == 0)
 	{
-		Chunk* rightChunk = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+		Chunk* rightChunk = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 		if (rightChunk != nullptr)
 		{
-			if (rightChunk->DoesBlockExist(0, y, z))
+			if (rightChunk->DoesBlockExist(CHUNK_SIZE - 1, y, z))
 				right = true;
 		}
 	}
 
-	if (z == 0)
+	if (rZ == 0)
 	{
 		Chunk* frontChunk = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 		if (frontChunk != nullptr)
 		{
-			if (frontChunk->DoesBlockExist(x, y, 15))
+			if (frontChunk->DoesBlockExist(x, y, CHUNK_SIZE - 1))
 				front = true;
 		}
 	}
 
-	if (z == CHUNK_SIZE - 1)
+	if (rZ == CHUNK_SIZE - 1)
 	{
 		Chunk* backChunk = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 		if (backChunk != nullptr)
