@@ -90,7 +90,7 @@ Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 
 void Entity::CheckVerticalCollision(glm::vec3& motion)
 {
-Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
+	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 
 	isOnGround = false;
 
@@ -135,7 +135,6 @@ Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 
 			if (hit)
 			{
-
 				_lastY = (int)(ray.y);
 				break;
 			}

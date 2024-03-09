@@ -293,7 +293,7 @@ Chunk* WorldManager::GetChunk(int x, int z)
 
 	for (auto& c : r.chunks)
 	{
-		if ((int)c->position.x <= x && (int)c->position.z <= z && (int)c->position.x + CHUNK_SIZE > x && (int)c->position.z + CHUNK_SIZE > z)
+		if ((int)c->position.x <= x && (int)c->position.z <= z && (int)c->position.x + CHUNK_SIZE >= x && (int)c->position.z + CHUNK_SIZE >= z)
 			return c;
 	}
 
