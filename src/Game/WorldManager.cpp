@@ -230,7 +230,7 @@ void WorldManager::LoadWorld()
 
 }
 
-Region& WorldManager::GetRegion(int x, int z)
+Region& WorldManager::GetRegion(float x, float z)
 {
 	for (auto& r : regions)
 	{
@@ -261,7 +261,7 @@ void WorldManager::LoadRegion(int x, int z)
 	Game::instance->log->Write("Loaded region " + std::to_string(x) + ", " + std::to_string(z));
 }
 
-bool WorldManager::isRegionLoaded(int x, int z)
+bool WorldManager::isRegionLoaded(float x, float z)
 {
 	for (auto& r : regions)
 	{
@@ -281,7 +281,7 @@ void WorldManager::SaveWorld()
 }
 
 
-Chunk* WorldManager::GetChunk(int x, int z)
+Chunk* WorldManager::GetChunk(float x, float z)
 {
 	if (!isRegionLoaded(x, z))
 		return nullptr;
@@ -291,9 +291,11 @@ Chunk* WorldManager::GetChunk(int x, int z)
 	if (r.chunks.size() == 0)
 		return nullptr;
 
+
+
 	for (auto& c : r.chunks)
 	{
-		if ((int)c->position.x <= x && (int)c->position.z <= z && (int)c->position.x + CHUNK_SIZE >= x && (int)c->position.z + CHUNK_SIZE >= z)
+		if (c->IsInChunk(x, z))
 			return c;
 	}
 
@@ -301,7 +303,7 @@ Chunk* WorldManager::GetChunk(int x, int z)
 
 }
 
-Data::Chunk WorldManager::GetChunkData(int x, int z)
+Data::Chunk WorldManager::GetChunkData(float x, float z)
 {
 	if (!isRegionLoaded(x, z))
 		return Data::Chunk();

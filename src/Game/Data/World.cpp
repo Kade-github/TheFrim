@@ -220,10 +220,12 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 
 			for (int _y = rY; _y > -1; _y--)
 			{
-				if (_y == rY)
+				if (_y == rY) // grass
 					chunk.blocks[_x][_z][_y] = 2;
-				else
+				else if (_y > rY - 5) // dirt
 					chunk.blocks[_x][_z][_y] = 1;
+				else // stone
+					chunk.blocks[_x][_z][_y] = 3;
 			}
 		}
 	}

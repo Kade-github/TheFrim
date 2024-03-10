@@ -1,8 +1,8 @@
 #include "Gameplay.h"
+#include <Objects/3DText.h>
 #include <Game.h>
 #include <imgui.h>
 #include <Helpers/StringTools.h>
-
 
 Gameplay::Gameplay(WorldManager* _wm)
 {
@@ -36,7 +36,7 @@ void Gameplay::Draw()
 {
 	Camera* camera = Game::instance->GetCamera();
 
-	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 32), 24);
+	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) +  ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 
 	c2d->DrawDebugText("Camera Far: " + StringTools::ToTheDecimial(camera->cameraFar, 2), glm::vec2(4, 64), 24);
 

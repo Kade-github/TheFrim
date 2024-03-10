@@ -1,6 +1,5 @@
 #ifndef _CHUNK_H
 #define _CHUNK_H
-
 #include <Objects/GameObject.h>
 #include <OpenGL/Texture.h>
 #include "../../Data/World.h"
@@ -23,7 +22,7 @@ class Chunk : public GameObject
     unsigned int VAO, VBO, EBO;
     Texture* txp;
 
-    std::vector<VVertex> vertices;
+    std::vector<GameObject::VVertex> vertices;
     std::vector<unsigned int> indices;
 
     void CreateFaces(Block* b);
@@ -42,9 +41,11 @@ public:
 
     Data::Chunk GetChunkData();
 
-    int GetBlock(int x, int y, int z);
+    bool IsInChunk(float x, float z);
+
+    int GetBlock(float x, float y, float z);
     Block* GetSubBlock(int x, int y, int z);
-    bool DoesBlockExist(int x, int y, int z);
+    bool DoesBlockExist(float x, float y, float z);
 
     void ModifySubChunk(int y, Block* to);
 

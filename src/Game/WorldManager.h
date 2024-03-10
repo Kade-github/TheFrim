@@ -69,12 +69,12 @@ public:
 	void CheckGeneratedRegions();
 
 	bool IsRegionGenerated(int x, int z);
-	bool isRegionLoaded(int x, int z);
+	bool isRegionLoaded(float x, float z);
 	void LoadRegion(int x, int z);
 
-	Region& GetRegion(int x, int z);
-	Chunk* GetChunk(int x, int z);
-	Data::Chunk GetChunkData(int x, int z);
+	Region& GetRegion(float x, float z);
+	Chunk* GetChunk(float x, float z);
+	Data::Chunk GetChunkData(float x, float z);
 
 	void GenerateRegion(int x, int z);
 

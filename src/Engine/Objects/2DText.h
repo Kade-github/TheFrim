@@ -6,6 +6,8 @@
 
 struct RenderedCharacter
 {
+	float x;
+	float y;
 	float w;
 	float h;
 	glm::vec4 src;
@@ -27,10 +29,12 @@ public:
 	Fnt* font = NULL;
 	int size = 12;
 	float width = 0;
+	float height = 0;
 	bool wrap = false;
 	bool center = false;
+	bool verbose = false;
 
-	Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec4 color, int size = 12);
+	Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec4 color, int size = 12, bool verbose = false);
 
 	void Draw() override;
 };

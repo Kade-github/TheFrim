@@ -48,7 +48,7 @@ Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 		{
 			ray.x = rp.x + (diff.x * progress);
 
-			toX = (ray.x - currentChunk->position.x);
+			toX = ray.x;
 
 			hit = currentChunk->DoesBlockExist(toX, ray.y, pZ);
 
@@ -72,7 +72,7 @@ Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 		{
 			ray.z = rp.z + (diff.z * progress);
 
-			toZ = (ray.z - currentChunk->position.z);
+			toZ = ray.z;
 
 			hit = currentChunk->DoesBlockExist(pX, ray.y, toZ);
 

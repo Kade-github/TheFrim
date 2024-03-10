@@ -9,6 +9,23 @@
 class GameObject
 {
 public:
+	struct VVertex {
+		glm::vec3 position;
+		glm::vec2 uv;
+
+		VVertex(glm::vec3 _position, glm::vec2 _uv)
+		{
+			position = _position;
+			uv = _uv;
+		}
+
+		VVertex()
+		{
+			position = glm::vec3(0, 0, 0);
+			uv = glm::vec2(0, 0);
+		}
+	};
+
 	GameObject(glm::vec3 pos)
 	{
 		position = pos;

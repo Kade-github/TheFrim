@@ -27,6 +27,8 @@ public:
 	Camera2D(glm::vec3 pos);
 
 	void Resize();
+	void ResizeTo();
+	void UpdateFramebuffer();
 
 	void DrawDebugText(std::string text, glm::vec2 pos, int size);
 
@@ -51,6 +53,7 @@ public:
 	}
 
 	void Draw() override;
+	void DrawSprite();
 
 	void Destroy() override;
 };

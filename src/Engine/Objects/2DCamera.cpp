@@ -87,15 +87,18 @@ void Camera2D::Resize()
 
 	_rW = size.x;
 	_rH = size.y;
-	
-	Game::instance->log->Write("Resizing 2D Camera to: " + std::to_string(_rW) + "x" + std::to_string(_rH));
 
+	ResizeTo();
+}
+
+void Camera2D::ResizeTo()
+{
 	vertices.clear();
 
-	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1)};
-	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1)};
-	Vertex2D bl = { glm::vec3{0,_rH,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1)};
-	Vertex2D br = { glm::vec3{_rW,_rH,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1)};
+	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1) };
+	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1) };
+	Vertex2D bl = { glm::vec3{0,_rH,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1) };
+	Vertex2D br = { glm::vec3{_rW,_rH,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1) };
 
 	vertices.push_back(tl);
 	vertices.push_back(tr);
@@ -110,42 +113,8 @@ void Camera2D::Resize()
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 }
 
-void Camera2D::DrawDebugText(std::string text, glm::vec2 pos, int size)
+void Camera2D::UpdateFramebuffer()
 {
-	debugText->text = text;
-	debugText->size = size;
-	debugText->position = glm::vec3(pos, 0);
-	debugText->color = glm::vec4(1, 1, 1, 1);
-	debugText->Draw();
-	dbgDraws.push_back(debugText->draws[0]);
-}
-
-void Camera2D::Draw()
-{
-	if (s == NULL)
-		return;
-
-	static float lT = 0;
-	static int framesDone = 0;
-	static float fps = 0;
-
-	float ct = glfwGetTime();
-
-	if (ct - lT >= 1.0f)
-	{
-		fps = framesDone / (ct - lT);
-		lT = ct;
-		framesDone = 0;
-	}
-	else
-		fps = framesDone / (ct - lT);
-
-	framesDone++;
-
-	std::string format = StringTools::ToTheDecimial(fps, 0);
-
-	DrawDebugText("FPS: " + format, glm::vec2(4, _h - 28), 24);
-
 	Camera* c = Game::instance->GetCamera();
 
 	glm::vec3 realPos = c->position + c->cameraFront;
@@ -163,8 +132,8 @@ void Camera2D::Draw()
 			// check if the texture and shader are already in there
 			for (int k = 0; k < draws.size(); k++)
 			{
-				if (draws[k].textureId == draw.textureId && draws[k].shaderId == draw.shaderId && 
-					draws[k].clipRect.x == draw.clipRect.x && draws[k].clipRect.y == draw.clipRect.y 
+				if (draws[k].textureId == draw.textureId && draws[k].shaderId == draw.shaderId &&
+					draws[k].clipRect.x == draw.clipRect.x && draws[k].clipRect.y == draw.clipRect.y
 					&& draws[k].clipRect.z == draw.clipRect.z && draws[k].clipRect.w == draw.clipRect.w)
 				{
 					for (int l = 0; l < draw.vertices.size(); l++)
@@ -176,7 +145,7 @@ void Camera2D::Draw()
 		}
 	}
 
-	for(int i = 0; i < dbgDraws.size(); i++)
+	for (int i = 0; i < dbgDraws.size(); i++)
 	{
 		Draw2D draw = dbgDraws[i];
 		for (int k = 0; k < draws.size(); k++)
@@ -202,7 +171,7 @@ void Camera2D::Draw()
 	glClearColor(0, 0, 0, 0);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT | GL_STENCIL_BUFFER_BIT);
 
-	glViewport(0,0, _w, _h);
+	glViewport(0, 0, _w, _h);
 
 
 	for (int i = 0; i < draws.size(); i++)
@@ -250,9 +219,53 @@ void Camera2D::Draw()
 	glDisable(GL_SCISSOR_TEST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+}
+
+void Camera2D::DrawDebugText(std::string text, glm::vec2 pos, int size)
+{
+	debugText->text = text;
+	debugText->size = size;
+	debugText->position = glm::vec3(pos, 0);
+	debugText->color = glm::vec4(1, 1, 1, 1);
+	debugText->Draw();
+	dbgDraws.push_back(debugText->draws[0]);
+}
+
+void Camera2D::Draw()
+{
+	if (s == NULL)
+		return;
+
+	static float lT = 0;
+	static int framesDone = 0;
+	static float fps = 0;
+
+	float ct = glfwGetTime();
+
+	if (ct - lT >= 1.0f)
+	{
+		fps = framesDone / (ct - lT);
+		lT = ct;
+		framesDone = 0;
+	}
+	else
+		fps = framesDone / (ct - lT);
+
+	framesDone++;
+
+	std::string format = StringTools::ToTheDecimial(fps, 0);
+
+	DrawDebugText("FPS: " + format, glm::vec2(4, _h - 28), 24);
+
+	UpdateFramebuffer();
 
 	glViewport(0, 0, Game::instance->GetWindowSize().x, Game::instance->GetWindowSize().y);
 
+	DrawSprite();
+}
+
+void Camera2D::DrawSprite()
+{
 	s->Bind();
 
 	if (t != NULL)
@@ -272,7 +285,6 @@ void Camera2D::Draw()
 	glEnable(GL_DEPTH_TEST);
 
 	dbgDraws.clear();
-
 }
 
 void Camera2D::Destroy()

@@ -1,12 +1,13 @@
 #include "2DText.h"
 #include <Game.h>
 
-Text2D::Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec4 color, int size) : GameObject2D(pos)
+Text2D::Text2D(std::string text, std::string font, glm::vec3 pos, glm::vec4 color, int size, bool verbose) : GameObject2D(pos)
 {
 	this->text = text;
 	this->font = Fnt::GetFont(font);
 	this->color = color;
 	this->size = size;
+	this->verbose = verbose;
 	Draw();
 }
 
@@ -28,7 +29,7 @@ void Text2D::Draw()
 
 	float scale = (float)size / (float)font->ogSize;
 
-	float totalHeight = 0;
+	float totalHeight = size;
 
 	Line currentLine;
 	currentLine.w = 0;
@@ -57,11 +58,17 @@ void Text2D::Draw()
 
 
 		float advance = (fAdvance * scale);
+
+		if (verbose)
+			advance = characterWidth;
+
 		if (ch == 32) // space
 		{
 			RenderedCharacter c;
 			c.space = true;
 			c.advance = advance;
+			c.x = p.x;
+			c.y = p.y;
 			p.x += advance;
 
 			currentLine.w += advance;
@@ -84,6 +91,8 @@ void Text2D::Draw()
 		rc.advance = advance;
 		rc.w = characterWidth;
 		rc.h = characterHeight;
+		rc.x = p.x;
+		rc.y = p.y;
 		rc.src = c.src;
 
 		p.x += advance;
@@ -160,6 +169,7 @@ void Text2D::Draw()
 	}
 
 	width = biggestW;
+	height = totalHeight;
 
 	draws = { call };
 }

@@ -1,25 +1,14 @@
 #ifndef _BLOCK_H
 #define _BLOCK_H
 
+#include <Objects/GameObject.h>
 #include <glm/glm.hpp>
 #include <vector>
-
-struct VVertex {
-public:
-	glm::vec3 position;
-	glm::vec2 uv;
-
-	VVertex(glm::vec3 _position, glm::vec2 _uv)
-	{
-		position = _position;
-		uv = _uv;
-	}
-};
 
 class BlockFace {
 public:
 	glm::vec3 sum;
-	std::vector<VVertex> vertices;
+	std::vector<GameObject::VVertex> vertices;
 	std::vector<unsigned int> indices;
 
 	BlockFace()
@@ -29,7 +18,7 @@ public:
 		sum = glm::vec3(0, 0, 0);
 	}
 
-	BlockFace(std::vector<VVertex> _vertices, std::vector<unsigned int> _indices)
+	BlockFace(std::vector<GameObject::VVertex> _vertices, std::vector<unsigned int> _indices)
 	{
 		vertices = _vertices;
 		indices = _indices;
@@ -45,7 +34,17 @@ public:
 enum BlockType
 {
 	DIRT,
-	GRASS
+	GRASS,
+	STONE,
+	COBBLESTONE,
+	SAND,
+	WOOD,
+	WOODENPLANKS,
+	LEAVES,
+	CRAFTINGTABLE,
+	FURNACE,
+	CLAY,
+	GLASS
 };
 
 class Block
@@ -66,7 +65,7 @@ public:
 
 	Block(glm::vec3 _position, BlockType _type);
 
-	std::vector<VVertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
+	std::vector<GameObject::VVertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
 
 	virtual BlockFace CreateFrontFace();
 	virtual BlockFace CreateBackFace();
@@ -78,7 +77,7 @@ public:
 	glm::vec4 GetUV(int x, int y);
 	glm::vec4 GetUVVerticallyFlipped(int x, int y);
 
-	void Draw(std::vector<VVertex>& verts, std::vector<unsigned int>& inds);
+	void Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned int>& inds);
 
 };
 
