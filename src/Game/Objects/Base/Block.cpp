@@ -86,12 +86,13 @@ void Block::Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned i
 
 glm::vec4 Block::GetUVVerticallyFlipped(int x, int y)
 {
-	float _x = ((x * 128)) / textureWidth;
-	float _y = ((y * 128)) / textureHeight;
-	float width = (blockWidth) / textureWidth;
-	float height = (blockHeight) / textureHeight;
+	float srcW = blockWidth / textureWidth;
+	float srcH = blockHeight / textureHeight;
 
-	return glm::vec4(_x, _y + height, width, -height);
+	float _x = x * srcW;
+	float _y = y * srcH;
+
+	return glm::vec4(_x + 0.01f, _y + srcH, srcW - 0.02f, -srcH);
 }
 
 
@@ -103,11 +104,12 @@ Block::Block(glm::vec3 _position, BlockType _type)
 
 glm::vec4 Block::GetUV(int x, int y)
 {
-	float _x = ((x * 128)) / textureWidth;
-	float _y = ((y * 128)) / textureHeight;
-	float width = (blockWidth) / textureWidth;
-	float height = (blockHeight) / textureHeight;
+	float srcW = blockWidth / textureWidth;
+	float srcH = blockHeight / textureHeight;
 
-	return glm::vec4(_x, _y, width, height);
+	float _x = x * srcW;
+	float _y = y * srcH;
+
+	return glm::vec4(_x + 0.01f, _y, srcW - 0.02f, srcH);
 	
 }

@@ -179,11 +179,6 @@ void Chunk::CreateFaces(Block* b)
 	int z = b->position.z;
 	int rZ = std::abs(z - position.z);
 
-	if (x == 3 && z == 16 && y == 169)
-	{
-		std::cout << "here" << std::endl;
-	}
-
 	// in our chunk
 	if (DoesBlockExist(x, y + 1, z))
 		top = false;

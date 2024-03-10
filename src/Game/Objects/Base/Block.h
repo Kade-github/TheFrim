@@ -57,8 +57,8 @@ public:
 
 	bool changed = false;
 
-	float blockWidth = 128;
-	float blockHeight = 128;
+	int blockWidth = 128;
+	int blockHeight = 128;
 
 	float textureWidth = 128;
 	float textureHeight = 128;
