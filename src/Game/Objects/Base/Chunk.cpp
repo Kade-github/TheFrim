@@ -159,6 +159,7 @@ void Chunk::RenderSubChunks()
 	}
 }
 
+// this is made confusingly. I'm sorry.
 void Chunk::CreateFaces(Block* b)
 {
 	if (b == nullptr)
@@ -178,6 +179,11 @@ void Chunk::CreateFaces(Block* b)
 	int z = b->position.z;
 	int rZ = std::abs(z - position.z);
 
+	if (x == 3 && z == 16 && y == 169)
+	{
+		std::cout << "here" << std::endl;
+	}
+
 	// in our chunk
 	if (DoesBlockExist(x, y + 1, z))
 		top = false;
@@ -196,48 +202,6 @@ void Chunk::CreateFaces(Block* b)
 
 	if (DoesBlockExist(x, y, z + 1))
 		back = false;
-
-	// in adjacent chunks
-
-	if (rX == CHUNK_SIZE - 1)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
-		if (c != nullptr)
-		{
-			if (c->DoesBlockExist(0, y, z))
-				left = false;
-		}
-	}
-
-	if (rX == 0)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
-		if (c != nullptr)
-		{
-			if (c->DoesBlockExist(CHUNK_SIZE - 1, y, z))
-				right = false;
-		}
-	}
-
-	if (rZ == 0)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
-		if (c != nullptr)
-		{
-			if (c->DoesBlockExist(x, y, CHUNK_SIZE - 1))
-				front = false;
-		}
-	}
-
-	if (rZ == CHUNK_SIZE - 1)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
-		if (c != nullptr)
-		{
-			if (c->DoesBlockExist(x, y, 0))
-				back = false;
-		}
-	}
 
 	// create faces
 
