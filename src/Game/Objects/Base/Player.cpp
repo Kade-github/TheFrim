@@ -103,18 +103,20 @@ void Player::Draw()
 	camera->SetDirection();
 }
 
-glm::vec3 Player::ForwardRay()
-{
-	// TODO: Raycast
-	return glm::vec3(0, 0, 0);
-}
-
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
+	Camera* camera = Game::instance->GetCamera();
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
 	{
-		glm::vec3 ray = ForwardRay();
+		glm::vec3 ray = position + camera->cameraFront;
+		bool hit = RayTo(ray);
 
-		// TODO: Add block breaking
+		if (hit)
+		{
+			Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
+
+			if (c != nullptr)
+				c->ModifyBlock(ray.x, ray.y, ray.z, 0);
+		}
 	}
 }

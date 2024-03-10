@@ -26,6 +26,7 @@ class Chunk : public GameObject
     std::vector<unsigned int> indices;
 
     void CreateFaces(Block* b);
+    glm::vec3 WorldToChunk(glm::vec3 pos);
 public:
 
     bool IsLoaded();
@@ -47,7 +48,7 @@ public:
     Block* GetSubBlock(int x, int y, int z);
     bool DoesBlockExist(float x, float y, float z);
 
-    void ModifySubChunk(int y, Block* to);
+    void ModifyBlock(int x, int y, int z, int id);
 
     void RenderSubChunk(int y);
     void RenderSubChunks();
