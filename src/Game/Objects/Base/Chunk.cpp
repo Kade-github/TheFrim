@@ -17,6 +17,21 @@ int Chunk::GetBlock(float x, float y, float z)
 	int _x = x;
 	int _z = z;
 
+	int diffX = x - position.x;
+	int diffZ = z - position.z;
+
+	if (diffX < 0)
+		return 0;
+
+	if (diffX >= CHUNK_SIZE)
+		return 0;
+
+	if (diffZ < 0)
+		return 0;
+
+	if (diffZ >= CHUNK_SIZE)
+		return 0;
+
 	if (x < 0)
 		_x = std::abs(x - position.x);
 	if (x >= CHUNK_SIZE)
@@ -184,7 +199,45 @@ void Chunk::CreateFaces(Block* b)
 
 	// in adjacent chunks
 
+	if (rX == CHUNK_SIZE - 1)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+		if (c != nullptr)
+		{
+			if (c->DoesBlockExist(0, y, z))
+				left = false;
+		}
+	}
 
+	if (rX == 0)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+		if (c != nullptr)
+		{
+			if (c->DoesBlockExist(CHUNK_SIZE - 1, y, z))
+				right = false;
+		}
+	}
+
+	if (rZ == 0)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+		if (c != nullptr)
+		{
+			if (c->DoesBlockExist(x, y, CHUNK_SIZE - 1))
+				front = false;
+		}
+	}
+
+	if (rZ == CHUNK_SIZE - 1)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
+		if (c != nullptr)
+		{
+			if (c->DoesBlockExist(x, y, 0))
+				back = false;
+		}
+	}
 
 	// create faces
 
