@@ -84,7 +84,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			
 		}
 
-		motion = glm::vec3(_lastX, motion.y, _lastZ);
+		motion = glm::vec3(_lastX - (diff.x * 0.1f), motion.y, _lastZ - (diff.z * 0.1f));
 	}
 }
 
@@ -224,7 +224,7 @@ void Entity::Draw()
 
 	motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
 
-	CheckCollision(motion, 0.8);
+	CheckCollision(motion, 0);
 
 	CheckCollision(motion, 1.8);
 
