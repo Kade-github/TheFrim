@@ -17,8 +17,8 @@ int Chunk::GetBlock(float x, float y, float z)
 	int _x = x;
 	int _z = z;
 
-	int diffX = _x - position.x;
-	int diffZ = _z - position.z;
+	int diffX = x - position.x;
+	int diffZ = z - position.z;
 
 	if (diffX < 0)
 		return 0;
