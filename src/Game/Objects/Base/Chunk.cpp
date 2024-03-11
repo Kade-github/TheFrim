@@ -17,19 +17,16 @@ int Chunk::GetBlock(float x, float y, float z)
 	int _x = x;
 	int _z = z;
 
-	int diffX = x - position.x;
-	int diffZ = z - position.z;
-
-	if (diffX < 0)
+	if (x < position.x)
 		return 0;
 
-	if (diffX >= CHUNK_SIZE)
+	if (x > position.x + CHUNK_SIZE)
 		return 0;
 
-	if (diffZ < 0)
+	if (z < position.z)
 		return 0;
 
-	if (diffZ >= CHUNK_SIZE)
+	if (z > position.z + CHUNK_SIZE)
 		return 0;
 
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));

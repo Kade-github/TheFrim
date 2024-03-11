@@ -26,7 +26,6 @@ class Chunk : public GameObject
     std::vector<unsigned int> indices;
 
     void CreateFaces(Block* b);
-    glm::vec3 WorldToChunk(glm::vec3 pos);
     // checks current chunk, and if needed; checks chunks around it.
     bool InterchunkDoesBlockExist(float x, float y, float z);
 
@@ -46,6 +45,8 @@ public:
     subChunk& GetSubChunk(int y);
 
     Data::Chunk GetChunkData();
+
+    glm::vec3 WorldToChunk(glm::vec3 pos);
 
     bool IsInChunk(float x, float z);
 

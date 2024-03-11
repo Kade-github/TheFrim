@@ -30,13 +30,22 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 		float toX = motion.x;
 		float toZ = motion.z;
 
+
 		float pX = position.x;
 		float pZ = position.z;
 
 		glm::vec3 ray = position;
 		ray.y = toY;
 
-		bool hit = currentChunk->DoesBlockExist(toX, ray.y, toZ);
+		glm::vec3 _world = currentChunk->WorldToChunk(ray);
+
+		if (_world.x == 16)
+			toX--;
+
+		if (_world.z == 16)
+			toZ--;
+
+		bool hit = false;
 
 		float progress = 0;
 
@@ -81,7 +90,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			progress += 0.1;
 			_lastZ = ray.z;
-			
+
 		}
 
 		motion = glm::vec3(_lastX - (diff.x * 0.1f), motion.y, _lastZ - (diff.z * 0.1f));
@@ -125,15 +134,24 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		float toX = position.x;
 		float toZ = position.z;
 
+		glm::vec3 _world = currentChunk->WorldToChunk(ray);
+
+		if (_world.x == 16)
+			toX--;
+
+		if (_world.z == 16)
+			toZ--;
+
 		int _lastY = -1;
 
-		bool hit = currentChunk->DoesBlockExist(toX, ray.y, toZ);
+		bool hit = false;
 
 		float progress = 0;
 
- 		while (progress < 1)
+		while (progress < 1)
 		{
 			ray.y = rp.y + (diff.y * progress);
+
 
 			hit = currentChunk->DoesBlockExist(toX, ray.y, toZ);
 
@@ -205,7 +223,7 @@ void Entity::Draw()
 	SetDirection();
 
 	// gravity
-	
+
 	downVelocity -= gravity * Game::instance->deltaTime;
 
 	if (downVelocity < -18)
@@ -230,6 +248,14 @@ void Entity::Draw()
 
 	position = motion;
 
-	forwardVelocity *= 0.8;
-	strafeVelocity *= 0.8;
+	if (forwardVelocity != 0)
+		forwardVelocity *= 0.8;
+	if (strafeVelocity != 0)
+		strafeVelocity *= 0.8;
+
+	if (forwardVelocity <= 0.01 && forwardVelocity >= -0.01)
+		forwardVelocity = 0;
+
+	if (strafeVelocity <= 0.01 && strafeVelocity >= -0.01)
+		strafeVelocity = 0;
 }
