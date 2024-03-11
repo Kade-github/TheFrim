@@ -65,11 +65,13 @@ void Gameplay::UpdateChunks()
 					c->Init(); // when destroyed you gotta reinit
 					c->CreateSubChunks();
 				}
-
-				if (!c->isRendered())
+				else
 				{
-					c->RenderSubChunks();
-					c->SetBuffer();
+					if (!c->isRendered())
+					{
+						c->RenderSubChunks();
+						c->SetBuffer();
+					}
 				}
 			}
 			else

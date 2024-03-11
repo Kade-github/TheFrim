@@ -27,6 +27,11 @@ class Chunk : public GameObject
 
     void CreateFaces(Block* b);
     glm::vec3 WorldToChunk(glm::vec3 pos);
+    // checks current chunk, and if needed; checks chunks around it.
+    bool InterchunkDoesBlockExist(float x, float y, float z);
+
+    bool _isLoaded = false;
+    bool _isRendered = false;
 public:
 
     bool IsLoaded();

@@ -17,21 +17,6 @@ int Chunk::GetBlock(float x, float y, float z)
 	int _x = x;
 	int _z = z;
 
-	int diffX = x - position.x;
-	int diffZ = z - position.z;
-
-	if (diffX < 0)
-		return 0;
-
-	if (diffX > CHUNK_SIZE)
-		return 0;
-
-	if (diffZ < 0)
-		return 0;
-
-	if (diffZ > CHUNK_SIZE)
-		return 0;
-
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
 
 	_x = w.x;
@@ -56,21 +41,6 @@ Block* Chunk::GetSubBlock(int x, int y, int z)
 	if (sbc.y <= -1)
 		return nullptr;
 
-	int diffX = x - position.x;
-	int diffZ = z - position.z;
-
-	if (diffX < 0)
-		return nullptr;
-
-	if (diffX > CHUNK_SIZE)
-		return nullptr;
-
-	if (diffZ < 0)
-		return nullptr;
-
-	if (diffZ > CHUNK_SIZE)
-		return nullptr;
-
 	int _x = x;
 	int _z = z;
 
@@ -91,6 +61,66 @@ Block* Chunk::GetSubBlock(int x, int y, int z)
 	return sbc.getBlock(_x, _z);
 }
 
+bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
+{
+	int _x = x;
+	int _z = z;
+
+	int diffX = x - position.x;
+	int diffZ = z - position.z;
+
+	if (diffX < 0)
+	{
+		// right chunk
+
+		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE - 1, position.z);
+
+		if (c != nullptr)
+			return c->DoesBlockExist(c->position.x + CHUNK_SIZE - 1, y, z);
+		else
+			return true;
+	}
+
+	if (diffX >= CHUNK_SIZE)
+	{
+		// left chunk
+
+		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE - 1, position.z);
+
+		if (c != nullptr)
+			return c->DoesBlockExist(c->position.x, y, c->position.z + z);
+		else
+			return true;
+	
+	}
+
+	if (diffZ < 0)
+	{
+		// front chunk
+
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE - 1);
+
+		if (c != nullptr)
+			return c->DoesBlockExist(x, y, c->position.z + CHUNK_SIZE - 1);
+		else
+			return true;
+	}
+
+	if (diffZ >= CHUNK_SIZE)
+	{
+		// back chunk
+
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE - 1);
+
+		if (c != nullptr)
+			return c->DoesBlockExist(x, y, c->position.z);
+		else
+			return true;
+	}
+
+	return GetBlock(x, y, z) > 0;
+}
+
 bool Chunk::DoesBlockExist(float x, float y, float z)
 {
 	return GetBlock(x, y, z) > 0; // if its anything under 0 (thats impossible, uint etc), and if its 0 it's air.
@@ -99,21 +129,6 @@ bool Chunk::DoesBlockExist(float x, float y, float z)
 void Chunk::ModifyBlock(int x, int y, int z, int id)
 {
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
-
-	float diffX = x - position.x;
-	float diffZ = z - position.z;
-
-	if (diffX < 0)
-		return;
-
-	if (diffX > CHUNK_SIZE)
-		return;
-
-	if (diffZ < 0)
-		return;
-
-	if (diffZ > CHUNK_SIZE)
-		return;
 
 	if (w.x > CHUNK_SIZE - 1)
 		return;
@@ -385,6 +400,8 @@ void Chunk::RenderSubChunk(int y)
 			CreateFaces(block);
 		}
 	}
+
+	_isRendered = true;
 }
 
 void Chunk::RenderSubChunks()
@@ -407,14 +424,15 @@ glm::vec3 Chunk::WorldToChunk(glm::vec3 pos)
 	return glm::vec3(std::abs(pos.x - position.x), pos.y, std::abs(pos.z - position.z));
 }
 
+
 bool Chunk::IsLoaded()
 {
-	return subChunks.size() != 0;
+	return _isLoaded;
 }
 
 bool Chunk::isRendered()
 {
-	return vertices.size() != 0 && indices.size() != 0;
+	return _isRendered;
 }
 
 Chunk::Chunk(Texture* _txp, glm::vec3 _pos) : GameObject(_pos)
@@ -504,9 +522,20 @@ subChunk Chunk::CreateSubChunk(int y)
 
 			if (isOccluded)
 			{
-				bool occluded = true;
+				// check top and bottom
 
-				// TODO: check if block is occluded
+				if (!DoesBlockExist(position.x + x, y + 1, position.z + z))
+					isOccluded = false;
+				else if (!DoesBlockExist(position.x + x, y - 1, position.z + z))
+					isOccluded = false;
+				else if (!InterchunkDoesBlockExist(position.x + x - 1, y, position.z + z))
+					isOccluded = false;
+				else if (!InterchunkDoesBlockExist(position.x + x + 1, y, position.z + z))
+					isOccluded = false;
+				else if (!InterchunkDoesBlockExist(position.x + x, y, position.z + z - 1))
+					isOccluded = false;
+				else if (!InterchunkDoesBlockExist(position.x + x, y, position.z + z + 1))
+					isOccluded = false;
 			}
 
 			sbc.blocks[x][z] = CreateBlock(x, y, z, id);
@@ -572,6 +601,8 @@ void Chunk::DestroySubChunks()
 		DestroySubChunk(subChunks[i].y);
 
 	subChunks.clear();
+	_isLoaded = false;
+	_isRendered = false;
 }
 
 void Chunk::CreateSubChunks()
@@ -582,6 +613,7 @@ void Chunk::CreateSubChunks()
 		if (sbc.y > -1)
 			subChunks.push_back(sbc);
 	}
+	_isLoaded = true;
 }
 
 void Chunk::SetBuffer()
@@ -620,6 +652,7 @@ void Chunk::Destroy()
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
+	_isRendered = false;
 }
 
 void Chunk::Unload()

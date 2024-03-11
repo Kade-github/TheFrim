@@ -177,8 +177,6 @@ bool Entity::RayTo(glm::vec3& to)
 
 	glm::vec3 start = position;
 
-	start.y -= 2;
-
 	while (progress < 1)
 	{
 		ray = start + (diff * progress);
