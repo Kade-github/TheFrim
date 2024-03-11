@@ -7,6 +7,8 @@
 class Player : public Entity
 {
 public:
+	float jumpCooldown = 0;
+
 	Player(glm::vec3 pos);
 
 	void Draw() override;

@@ -10,13 +10,13 @@ void Entity::CheckCollision(glm::vec3& motion)
 {
 Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 
-	float toY = motion.y - 2;
+	float toY = motion.y - 1;
 
 	glm::vec3 diff = motion - position;
 
 	glm::vec3 rp = position;
 
-	rp.y -= 2;
+	rp.y -= 1;
 
 	float sum = abs(diff.x) + abs(diff.y) + abs(diff.z);
 
@@ -94,13 +94,17 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 	isOnGround = false;
 
-	float toY = motion.y - 2;
-
-	if (downVelocity > 0)
-		toY = motion.y;
+	float toY = motion.y - 1.8;
 
 	glm::vec3 rp = position;
-	rp.y -= 2;
+	rp.y -= 1.8;
+
+	if (downVelocity > 0)
+	{
+		toY = motion.y;
+		rp.y = position.y;
+	}
+
 
 	glm::vec3 diff = motion - position;
 
@@ -148,13 +152,13 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 			{
 				isOnGround = true;
 				downVelocity = 0;
-				motion.y = _lastY + 3;
+				motion.y = _lastY + 2.8;
 			}
 			else
 			{
 				if (_lastY > position.y)
 				{
-					motion.y = _lastY - 1;
+					motion.y = _lastY - 1.2;
 					downVelocity = 0;
 				}
 			}

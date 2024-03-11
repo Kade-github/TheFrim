@@ -61,8 +61,12 @@ void Player::Draw()
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
 		{
-			downVelocity = jumpStrength;
-			isOnGround = false;
+			if (jumpCooldown < glfwGetTime())
+			{
+				jumpCooldown = glfwGetTime() + 0.15f;
+				downVelocity = jumpStrength;
+				isOnGround = false;
+			}
 		}
 
 		if (forwardVelocity > speed)
@@ -95,7 +99,8 @@ void Player::Draw()
 			position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
 	}
 
-	camera->position = position;
+	camera->position = position - (camera->cameraFront * 0.2f);
+	camera->position.y -= 0.2;
 
 	camera->pitch = p;
 	camera->yaw = yaw;
