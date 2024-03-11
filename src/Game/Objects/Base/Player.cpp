@@ -100,7 +100,7 @@ void Player::Draw()
 	}
 
 	camera->position = position - (camera->cameraFront * 0.2f);
-	camera->position.y -= 0.2;
+	camera->position.y -= 0.15;
 
 	camera->pitch = p;
 	camera->yaw = yaw;

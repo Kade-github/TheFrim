@@ -84,7 +84,7 @@ Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 			
 		}
 
-		motion = glm::vec3(_lastX, position.y, _lastZ);
+		motion = glm::vec3(_lastX, motion.y, _lastZ);
 	}
 }
 
@@ -205,8 +205,7 @@ void Entity::Draw()
 	SetDirection();
 
 	// gravity
-
-	glm::vec3 _to = position;
+	
 	downVelocity -= gravity * Game::instance->deltaTime;
 
 	if (downVelocity < -18)
@@ -215,13 +214,11 @@ void Entity::Draw()
 	if (downVelocity > 18)
 		downVelocity = 18;
 
-	_to.y += downVelocity * Game::instance->deltaTime;
-
-	CheckVerticalCollision(_to);
-
-	position.y = _to.y;
-
 	glm::vec3 motion = position;
+
+	motion.y += downVelocity * Game::instance->deltaTime;
+
+	CheckVerticalCollision(motion);
 
 	motion += front * (forwardVelocity * Game::instance->deltaTime);
 
