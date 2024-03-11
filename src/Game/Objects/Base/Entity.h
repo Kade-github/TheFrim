@@ -24,7 +24,7 @@ public:
 
 	Entity(glm::vec3 pos);
 
-	void CheckCollision(glm::vec3& motion);
+	void CheckCollision(glm::vec3& motion, float down);
 	void CheckVerticalCollision(glm::vec3& motion);
 
 	bool RayTo(glm::vec3& to);

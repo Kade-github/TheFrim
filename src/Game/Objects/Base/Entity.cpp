@@ -6,17 +6,17 @@ Entity::Entity(glm::vec3 pos) : GameObject(pos)
 {
 }
 
-void Entity::CheckCollision(glm::vec3& motion)
+void Entity::CheckCollision(glm::vec3& motion, float down)
 {
-Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
+	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 
-	float toY = motion.y - 1;
+	float toY = motion.y - down;
 
 	glm::vec3 diff = motion - position;
 
 	glm::vec3 rp = position;
 
-	rp.y -= 1;
+	rp.y -= down;
 
 	float sum = abs(diff.x) + abs(diff.y) + abs(diff.z);
 
@@ -224,7 +224,9 @@ void Entity::Draw()
 
 	motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
 
-	CheckCollision(motion);
+	CheckCollision(motion, 0.8);
+
+	CheckCollision(motion, 1.8);
 
 	position = motion;
 
