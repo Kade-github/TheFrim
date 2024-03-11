@@ -201,6 +201,7 @@ bool Entity::RayTo(glm::vec3& to)
 
 	while (progress < 1)
 	{
+		glm::vec3 lastRay = ray;
 		ray = start + (diff * progress);
 
 		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
@@ -208,7 +209,7 @@ bool Entity::RayTo(glm::vec3& to)
 		if (c != nullptr)
 			if (c->DoesBlockExist(ray.x, ray.y, ray.z))
 			{
-				to = ray;
+				to = lastRay;
 				return true;
 			}
 

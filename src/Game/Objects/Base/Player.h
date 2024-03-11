@@ -15,7 +15,6 @@ public:
 
 	bool freeCam = false;
 
-	bool ClosestAirBlock(glm::vec3& pos);
 
 	void MouseClick(int button, glm::vec2 mPos) override;
 };
