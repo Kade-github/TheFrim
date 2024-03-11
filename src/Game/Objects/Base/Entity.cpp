@@ -127,7 +127,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 		float progress = 0;
 
-		while (progress < 1)
+ 		while (progress < 1)
 		{
 			ray.y = rp.y + (diff.y * progress);
 

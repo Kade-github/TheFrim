@@ -50,10 +50,12 @@ public:
     bool IsInChunk(float x, float z);
 
     int GetBlock(float x, float y, float z);
-    Block* GetSubBlock(int x, int y, int z);
+
+    int GetBlockNoCheck(float x, float y, float z);
+
     bool DoesBlockExist(float x, float y, float z);
 
-    void ModifyBlock(int x, int y, int z, int id);
+    void ModifyBlock(float x, float y, float z, int id);
 
     void RenderSubChunk(int y);
     void RenderSubChunks();

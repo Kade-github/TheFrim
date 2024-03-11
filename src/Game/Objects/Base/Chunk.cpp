@@ -17,6 +17,21 @@ int Chunk::GetBlock(float x, float y, float z)
 	int _x = x;
 	int _z = z;
 
+	int diffX = x - position.x;
+	int diffZ = z - position.z;
+
+	if (diffX < 0)
+		return 0;
+
+	if (diffX >= CHUNK_SIZE)
+		return 0;
+
+	if (diffZ < 0)
+		return 0;
+
+	if (diffZ >= CHUNK_SIZE)
+		return 0;
+
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
 
 	_x = w.x;
@@ -27,6 +42,13 @@ int Chunk::GetBlock(float x, float y, float z)
 
 	if (_z > CHUNK_SIZE - 1)
 		return 0;
+
+	if (_x < 0)
+		return 0;
+
+	if (_z < 0)
+		return 0;
+
 
 	if (y < 0 || y > CHUNK_HEIGHT - 1)
 		return 0;
@@ -34,91 +56,96 @@ int Chunk::GetBlock(float x, float y, float z)
 	return myData.blocks[_x][_z][(int)y];
 }
 
-Block* Chunk::GetSubBlock(int x, int y, int z)
-{
-	subChunk& sbc = GetSubChunk(y);
-
-	if (sbc.y <= -1)
-		return nullptr;
-
-	int _x = x;
-	int _z = z;
-
-	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
-
-	_x = w.x;
-	_z = w.z;
-
-	if (_x > CHUNK_SIZE - 1)
-		return nullptr;
-
-	if (_z > CHUNK_SIZE - 1)
-		return nullptr;
-
-	if (y < 0 || y > CHUNK_HEIGHT - 1)
-		return nullptr;
-
-	return sbc.getBlock(_x, _z);
-}
 
 bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 {
 	int _x = x;
 	int _z = z;
 
-	int diffX = x - position.x;
-	int diffZ = z - position.z;
-
-	if (diffX < 0)
+	if (_x < 0)
 	{
 		// right chunk
 
-		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE - 1, position.z);
+		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 
 		if (c != nullptr)
-			return c->DoesBlockExist(c->position.x + CHUNK_SIZE - 1, y, z);
+			return c->GetBlockNoCheck(c->position.x + CHUNK_SIZE - 1, y, z) > 0;
 		else
 			return true;
 	}
 
-	if (diffX >= CHUNK_SIZE)
+	if (_x >= CHUNK_SIZE)
 	{
 		// left chunk
 
-		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE - 1, position.z);
+		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
 		if (c != nullptr)
-			return c->DoesBlockExist(c->position.x, y, c->position.z + z);
+			return c->GetBlockNoCheck(c->position.x, y, z) > 0;
 		else
 			return true;
 	
 	}
 
-	if (diffZ < 0)
+	if (_z < 0)
 	{
 		// front chunk
 
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE - 1);
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 
 		if (c != nullptr)
-			return c->DoesBlockExist(x, y, c->position.z + CHUNK_SIZE - 1);
+			return c->GetBlockNoCheck(x, y, c->position.z + CHUNK_SIZE - 1) > 0;
 		else
 			return true;
 	}
 
-	if (diffZ >= CHUNK_SIZE)
+	if (_z >= CHUNK_SIZE)
 	{
 		// back chunk
 
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE - 1);
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 
 		if (c != nullptr)
-			return c->DoesBlockExist(x, y, c->position.z);
+			return c->GetBlockNoCheck(x, y, c->position.z) > 0;
 		else
 			return true;
 	}
 
-	return GetBlock(x, y, z) > 0;
+	return GetBlockNoCheck(x, y, z) > 0;
+}
+
+int Chunk::GetBlockNoCheck(float x, float y, float z)
+{
+	int _x = x;
+	int _z = z;
+	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
+
+	if (_x < CHUNK_SIZE && _x >= 0)
+		w.x = _x;
+
+	if (_z < CHUNK_SIZE && _z >= 0)
+		w.z = _z;
+
+	_x = w.x;
+	_z = w.z;
+
+	if (_x > CHUNK_SIZE - 1)
+		return 0;
+
+	if (_z > CHUNK_SIZE - 1)
+		return 0;
+
+	if (_x < 0)
+		return 0;
+
+	if (_z < 0)
+		return 0;
+
+
+	if (y < 0 || y > CHUNK_HEIGHT - 1)
+		return 0;
+
+	return myData.blocks[_x][_z][(int)y];
 }
 
 bool Chunk::DoesBlockExist(float x, float y, float z)
@@ -126,9 +153,15 @@ bool Chunk::DoesBlockExist(float x, float y, float z)
 	return GetBlock(x, y, z) > 0; // if its anything under 0 (thats impossible, uint etc), and if its 0 it's air.
 }
 
-void Chunk::ModifyBlock(int x, int y, int z, int id)
+void Chunk::ModifyBlock(float x, float y, float z, int id)
 {
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
+
+	if (x >= 0 && x < CHUNK_SIZE - 1)
+		w.x = x;
+
+	if (z >= 0 && z < CHUNK_SIZE - 1)
+		w.z = z;
 
 	if (w.x > CHUNK_SIZE - 1)
 		return;
@@ -196,7 +229,7 @@ void Chunk::ModifyBlock(int x, int y, int z, int id)
 
 	if (w.x == 0)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
 		if (c != nullptr)
 		{
@@ -220,7 +253,7 @@ void Chunk::ModifyBlock(int x, int y, int z, int id)
 
 	if (w.x == CHUNK_SIZE - 1)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 
 		if (c != nullptr)
 		{
@@ -241,7 +274,7 @@ void Chunk::ModifyBlock(int x, int y, int z, int id)
 
 	if (w.z == 0)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 
 		if (c != nullptr)
 		{
@@ -262,7 +295,7 @@ void Chunk::ModifyBlock(int x, int y, int z, int id)
 
 	if (w.z == CHUNK_SIZE - 1)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 
 		if (c != nullptr)
 		{
@@ -298,10 +331,8 @@ void Chunk::CreateFaces(Block* b)
 	bool back = true;
 
 	int x = b->position.x;
-	int rX = std::abs(x - position.x);
 	int y = b->position.y;
 	int z = b->position.z;
-	int rZ = std::abs(z - position.z);
 
 	// in our chunk
 	if (DoesBlockExist(x, y + 1, z))
@@ -421,7 +452,7 @@ void Chunk::RenderSubChunks()
 
 glm::vec3 Chunk::WorldToChunk(glm::vec3 pos)
 {
-	return glm::vec3(std::abs(pos.x - position.x), pos.y, std::abs(pos.z - position.z));
+	return glm::vec3((int)std::abs(pos.x - position.x), pos.y, (int)std::abs(pos.z - position.z));
 }
 
 
@@ -528,13 +559,13 @@ subChunk Chunk::CreateSubChunk(int y)
 					isOccluded = false;
 				else if (!DoesBlockExist(position.x + x, y - 1, position.z + z))
 					isOccluded = false;
-				else if (!InterchunkDoesBlockExist(position.x + x - 1, y, position.z + z))
+				else if (!InterchunkDoesBlockExist(x - 1, y, z))
 					isOccluded = false;
-				else if (!InterchunkDoesBlockExist(position.x + x + 1, y, position.z + z))
+				else if (!InterchunkDoesBlockExist(x + 1, y, z))
 					isOccluded = false;
-				else if (!InterchunkDoesBlockExist(position.x + x, y, position.z + z - 1))
+				else if (!InterchunkDoesBlockExist(x, y, z - 1))
 					isOccluded = false;
-				else if (!InterchunkDoesBlockExist(position.x + x, y, position.z + z + 1))
+				else if (!InterchunkDoesBlockExist(x, y, z + 1))
 					isOccluded = false;
 			}
 
