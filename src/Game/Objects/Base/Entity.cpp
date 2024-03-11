@@ -244,6 +244,8 @@ void Entity::Draw()
 
 	CheckCollision(motion, 0);
 
+	CheckCollision(motion, 0.8);
+
 	CheckCollision(motion, 1.8);
 
 	position = motion;
