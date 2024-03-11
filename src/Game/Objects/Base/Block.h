@@ -33,18 +33,18 @@ public:
 
 enum BlockType
 {
-	DIRT,
-	GRASS,
-	STONE,
-	COBBLESTONE,
-	SAND,
-	WOOD,
-	WOODENPLANKS,
-	LEAVES,
-	CRAFTINGTABLE,
-	FURNACE,
-	CLAY,
-	GLASS
+	DIRT = 1,
+	GRASS = 2,
+	STONE = 3,
+	COBBLESTONE = 4,
+	SAND = 5,
+	WOOD = 6,
+	WOODENPLANKS = 7,
+	LEAVES = 8,
+	CRAFTINGTABLE = 9,
+	FURNACE = 10,
+	CLAY = 11,
+	GLASS = 12
 };
 
 class Block

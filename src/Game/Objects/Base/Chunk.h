@@ -26,8 +26,6 @@ class Chunk : public GameObject
     std::vector<unsigned int> indices;
 
     void CreateFaces(Block* b);
-    // checks current chunk, and if needed; checks chunks around it.
-    bool InterchunkDoesBlockExist(float x, float y, float z);
 
     bool _isLoaded = false;
     bool _isRendered = false;
@@ -53,6 +51,9 @@ public:
     int GetBlock(float x, float y, float z);
 
     int GetBlockNoCheck(float x, float y, float z);
+
+    // checks current chunk, and if needed; checks chunks around it.
+    bool InterchunkDoesBlockExist(float x, float y, float z);
 
     bool DoesBlockExist(float x, float y, float z);
 

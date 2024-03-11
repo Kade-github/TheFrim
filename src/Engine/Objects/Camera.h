@@ -1,6 +1,10 @@
 #ifndef _CAMERA_H
 #define _CAMERA_H
 
+#include <vector>
+#include "GameObject.h"
+#include "../OpenGL/Texture.h"
+
 #pragma once
 
 #include "../../../Include/glm/gtc/type_ptr.hpp"
@@ -8,11 +12,21 @@
 
 class Camera
 {
+	std::vector<GameObject::VVertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
+	Texture* debug = nullptr;
 public:
+	unsigned int VAO, VBO;
+
+	std::vector<GameObject::VVertex> vertices;
+
 	float width = 1920;
 	float height = 1080;
 
 	float cameraFar = 100.0f;
+
+	Camera();
+
+	~Camera();
 
 	glm::vec3 lightPos = glm::vec3(0.0f, 5.0f, 0.0f);
 	glm::vec3 lightColor = glm::vec3(1.0f, 1.0f, 1.0f);
@@ -25,6 +39,10 @@ public:
 	float pitch = 0;
 
 	float fov = 75.0f;
+
+	void DrawDebugCube(glm::vec3 pos);
+
+	void DebugDraws();
 
 	void LookAt(glm::vec3 target)
 	{

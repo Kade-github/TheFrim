@@ -106,6 +106,45 @@ void Player::Draw()
 	camera->yaw = yaw;
 
 	camera->SetDirection();
+
+}
+
+bool Player::ClosestAirBlock(glm::vec3& pos)
+{
+	Camera* camera = Game::instance->GetCamera();
+
+	glm::vec3 diff = pos - position;
+	glm::vec3 intPos = glm::vec3(floor(pos.x), floor(pos.y), floor(pos.z));
+
+	Chunk* c = WorldManager::instance->GetChunk(intPos.x, intPos.z);
+
+	if (c == nullptr)
+		return false;
+	if (c->DoesBlockExist(intPos.x, intPos.y, intPos.z))
+	{
+		int x = 0;
+		int z = 0;
+
+		glm::vec3 intPosFront = glm::vec3(floor(pos.x - (diff.x * 0.1)), floor(pos.y), floor(pos.z - (diff.z * 0.1)));
+
+		if (!c->DoesBlockExist(intPosFront.x, intPosFront.y, intPosFront.z))
+		{
+			pos = glm::vec3(intPosFront.x, intPosFront.y, intPosFront.z);
+			return true;
+		}
+		else if (!c->DoesBlockExist(intPos.x, intPos.y + 1, intPos.z))
+		{
+			pos = glm::vec3(intPos.x, intPos.y + 1, intPos.z);
+			return true;
+		}
+		else if (!c->DoesBlockExist(intPos.x, intPos.y - 1, intPos.z))
+		{
+			pos = glm::vec3(intPos.x, intPos.y - 1, intPos.z);
+			return true;
+		}
+	}
+
+	return false;
 }
 
 void Player::MouseClick(int button, glm::vec2 mPos)
@@ -122,6 +161,23 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 			if (c != nullptr)
 				c->ModifyBlock(ray.x, ray.y, ray.z, 0);
+		}
+	}
+
+	if (button == GLFW_MOUSE_BUTTON_RIGHT)
+	{
+		if (hit)
+		{
+			if (ClosestAirBlock(ray))
+			{
+				Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
+
+				if (c->DoesBlockExist(ray.x, ray.y, ray.z))
+					return;
+
+				if (c != nullptr)
+					c->ModifyBlock(ray.x, ray.y, ray.z, 3);
+			}
 		}
 	}
 }

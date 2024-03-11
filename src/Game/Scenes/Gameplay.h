@@ -14,6 +14,8 @@ public:
 	Player* player;
 	Camera2D* c2d;
 
+	Sprite2D* crosshair;
+
 	std::thread _generateThread;
 
 	Gameplay(WorldManager* _wm);

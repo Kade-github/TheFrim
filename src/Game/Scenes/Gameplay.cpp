@@ -21,6 +21,11 @@ void Gameplay::Create()
 
 	c2d->order = 1;
 
+	crosshair = new Sprite2D("Assets/Textures/crosshair.png", glm::vec3(c2d->_w / 2, c2d->_h / 2, 0));
+
+	c2d->AddObject(crosshair);
+	crosshair->order = 1;
+
 	Camera* camera = Game::instance->GetCamera();
 
 	player = new Player(glm::vec3(0, 128, 0));
@@ -36,6 +41,8 @@ void Gameplay::Draw()
 {
 	Camera* camera = Game::instance->GetCamera();
 
+	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
+
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) +  ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 
 	c2d->DrawDebugText("Camera Far: " + StringTools::ToTheDecimial(camera->cameraFar, 2), glm::vec2(4, 64), 24);
@@ -43,6 +50,9 @@ void Gameplay::Draw()
 	UpdateChunks();
 
 	Scene::Draw();
+
+	if (camera->vertices.size() != 0)
+		camera->DebugDraws();
 }
 
 void Gameplay::UpdateChunks()

@@ -181,9 +181,12 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	}
 	else
 	{
-		if (sbc.blocks[(int)w.x][(int)w.z] == nullptr)
-			return; // this should never happen
-		delete sbc.blocks[(int)w.x][(int)w.z];
+		if (sbc.blocks[(int)w.x][(int)w.z] != nullptr) // if it exists, delete it if necessary
+		{
+			if (id <= 0)
+				delete sbc.blocks[(int)w.x][(int)w.z];
+		}
+
 		if (id <= 0) // destroyed block
 		{
 			sbc.blocks[(int)w.x][(int)w.z] = nullptr;
