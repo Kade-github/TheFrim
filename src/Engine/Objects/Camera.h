@@ -67,6 +67,7 @@ public:
 	}
 
 	void SetDirection();
+	void SetViewMatrix();
 
 	glm::vec2 WorldToScreen(glm::vec3 worldPos)
 	{

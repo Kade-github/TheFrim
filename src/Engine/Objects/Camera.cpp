@@ -84,6 +84,11 @@ void Camera::SetDirection()
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(direction);
 
+	SetViewMatrix();
+}
+
+void Camera::SetViewMatrix()
+{
 	Game::instance->shader->Bind();
 	Game::instance->shader->SetUniformMat4f("view", &GetViewMatrix()[0][0]);
 	Game::instance->shader->Unbind();

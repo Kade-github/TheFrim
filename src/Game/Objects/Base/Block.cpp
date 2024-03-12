@@ -92,7 +92,7 @@ glm::vec4 Block::GetUVVerticallyFlipped(int x, int y)
 	float _x = x * srcW;
 	float _y = y * srcH;
 
-	return glm::vec4(_x + 0.01f, _y + srcH, srcW - 0.02f, -srcH);
+	return glm::vec4(_x, _y + srcH, srcW, -srcH);
 }
 
 
@@ -110,6 +110,6 @@ glm::vec4 Block::GetUV(int x, int y)
 	float _x = x * srcW;
 	float _y = y * srcH;
 
-	return glm::vec4(_x + 0.01f, _y, srcW - 0.02f, srcH);
+	return glm::vec4(_x, _y, srcW, srcH);
 	
 }

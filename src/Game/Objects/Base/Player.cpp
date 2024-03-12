@@ -99,8 +99,10 @@ void Player::Draw()
 			position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
 	}
 
-	camera->position = position - (camera->cameraFront * 0.2f);
-	camera->position.y -= 0.15;
+	glm::vec3 storedPos = position;
+
+	camera->position = storedPos;
+	camera->position.y -= 0.1;
 
 	camera->pitch = p;
 	camera->yaw = yaw;
@@ -108,7 +110,6 @@ void Player::Draw()
 	camera->SetDirection();
 
 }
-
 
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
@@ -142,8 +143,11 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			if (c->DoesBlockExist(x,y,z))
 				return;
 
+			if ((int)x == (int)position.x && (int)z == (int)position.z && (y == (int)position.y || y == (int)position.y - 1))
+				return;
+
 			if (c != nullptr)
-				c->ModifyBlock(x,y,z, 3);
+				c->ModifyBlock(x,y,z, BlockType::COBBLESTONE);
 		}
 	}
 }

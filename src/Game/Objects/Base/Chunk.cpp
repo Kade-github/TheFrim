@@ -5,6 +5,7 @@
 #include "Blocks/Grass.h"
 #include "Blocks/Dirt.h"
 #include "Blocks/Stone.h"
+#include "Blocks/Cobblestone.h"
 
 
 Block* subChunk::getBlock(int x, int z)
@@ -593,6 +594,9 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 		break;
 	case 3:
 		block = new Stone(position + glm::vec3(x, y, z));
+		break;
+	case 4:
+		block = new Cobblestone(position + glm::vec3(x, y, z));
 		break;
 	default:
 		block = new Dirt(position + glm::vec3(x, y, z));
