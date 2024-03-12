@@ -87,7 +87,7 @@ void Block::Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned i
 glm::vec4 Block::GetUVVerticallyFlipped(int x, int y)
 {
 	float srcW = blockWidth / textureWidth;
-	float srcH = blockHeight / textureHeight;
+	float srcH = blockWidth / textureHeight;
 
 	float _x = x * srcW;
 	float _y = y * srcH;
