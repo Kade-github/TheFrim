@@ -47,7 +47,6 @@ void Camera::DebugDraws()
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
-
 	glBindVertexArray(0);
 
 	debug->Unbind();
