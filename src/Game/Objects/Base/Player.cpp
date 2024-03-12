@@ -113,11 +113,11 @@ void Player::Draw()
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
 	Camera* camera = Game::instance->GetCamera();
-	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
-	bool hit = RayTo(ray);
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
 	{
+		glm::vec3 ray = position + (camera->cameraFront * 5.0f);
+		bool hit = RayTo(ray, true);
 		if (hit)
 		{
 			Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
@@ -129,6 +129,8 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT)
 	{
+		glm::vec3 ray = position + (camera->cameraFront * 5.0f);
+		bool hit = RayTo(ray);
 		if (hit)
 		{
 			float x = ray.x;

@@ -11,7 +11,7 @@ public:
 
 	float gravity = 19.0f;
 	float jumpStrength = 7.8f;
-	float speed = 9.5f;
+	float speed = 14.0f;
 
 	float downVelocity = 0;
 	float forwardVelocity = 0;
@@ -27,7 +27,7 @@ public:
 	void CheckCollision(glm::vec3& motion, float down);
 	void CheckVerticalCollision(glm::vec3& motion);
 
-	bool RayTo(glm::vec3& to);
+	bool RayTo(glm::vec3& to, bool inside = false);
 
 	void SetDirection()
 	{

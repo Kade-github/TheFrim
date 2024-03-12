@@ -55,6 +55,8 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 		while (progress < 1)
 		{
+			glm::vec3 lastRay = ray;
+			_lastX = lastRay.x;
 			ray.x = rp.x + (diff.x * progress);
 
 			toX = ray.x;
@@ -65,7 +67,6 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 				break;
 
 			progress += 0.1;
-			_lastX = ray.x;
 		}
 
 		// second raycast (z axis)
@@ -79,6 +80,8 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 		while (progress < 1)
 		{
+			glm::vec3 lastRay = ray;
+			_lastZ = lastRay.z;
 			ray.z = rp.z + (diff.z * progress);
 
 			toZ = ray.z;
@@ -89,8 +92,6 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 				break;
 
 			progress += 0.1;
-			_lastZ = ray.z;
-
 		}
 
 		motion = glm::vec3(_lastX - (diff.x * 0.1f), motion.y, _lastZ - (diff.z * 0.1f));
@@ -176,7 +177,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 			{
 				if (_lastY > position.y)
 				{
-					motion.y = _lastY - 1.2;
+					motion.y = _lastY - 0.05f;
 					downVelocity = 0;
 				}
 			}
@@ -184,7 +185,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 	}
 }
 
-bool Entity::RayTo(glm::vec3& to)
+bool Entity::RayTo(glm::vec3& to, bool inside)
 {
 	glm::vec3 diff = to - position;
 
@@ -203,7 +204,8 @@ bool Entity::RayTo(glm::vec3& to)
 	{
 		glm::vec3 lastRay = ray;
 		ray = start + (diff * progress);
-
+		if (inside)
+			lastRay = ray;
 		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 		if (c != nullptr)
@@ -243,7 +245,7 @@ void Entity::Draw()
 
 	motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
 
-	CheckCollision(motion, 0);
+	CheckCollision(motion, 0.4);
 
 	CheckCollision(motion, 0.8);
 
