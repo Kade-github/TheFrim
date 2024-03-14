@@ -116,6 +116,7 @@ int main()
 				Game::instance->OnChar(codepoint);
 		});
 
+	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_DEPTH_TEST);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_ONE, GL_ONE_MINUS_SRC_ALPHA);

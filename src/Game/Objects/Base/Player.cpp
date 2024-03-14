@@ -109,6 +109,8 @@ void Player::Draw()
 
 	camera->SetDirection();
 
+
+
 }
 
 void Player::MouseClick(int button, glm::vec2 mPos)
