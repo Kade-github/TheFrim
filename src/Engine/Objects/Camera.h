@@ -13,6 +13,7 @@
 class Camera
 {
 	std::vector<GameObject::VVertex> CreateQuad(glm::vec3 position, glm::vec3 size, float z, glm::vec4 uv);
+	void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
 	Texture* debug = nullptr;
 public:
 	unsigned int VAO, VBO;

@@ -7,6 +7,11 @@
 #include "Blocks/Stone.h"
 #include "Blocks/Cobblestone.h"
 
+void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
+{
+	for(GameObject::VVertex& v : vertices)
+		v.normal = normal;
+}
 
 Block* subChunk::getBlock(int x, int z)
 {
@@ -361,6 +366,7 @@ void Chunk::CreateFaces(Block* b)
 	if (top)
 	{
 		BlockFace f = b->CreateTopFace();
+		ApplyNormal(f.vertices, glm::vec3(0, 1.0f, 0));
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
 			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
@@ -370,6 +376,7 @@ void Chunk::CreateFaces(Block* b)
 	if (bottom)
 	{
 		BlockFace f = b->CreateBottomFace();
+		ApplyNormal(f.vertices, glm::vec3(0, -1.0f, 0));
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
 			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
@@ -379,6 +386,7 @@ void Chunk::CreateFaces(Block* b)
 	if (left)
 	{
 		BlockFace f = b->CreateLeftFace();
+		ApplyNormal(f.vertices, glm::vec3(1.0f, 0, 0));
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
 			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
@@ -388,6 +396,7 @@ void Chunk::CreateFaces(Block* b)
 	if (right)
 	{
 		BlockFace f = b->CreateRightFace();
+		ApplyNormal(f.vertices, glm::vec3(-1.0f, 0, 0));
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
 			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
@@ -397,6 +406,7 @@ void Chunk::CreateFaces(Block* b)
 	if (front)
 	{
 		BlockFace f = b->CreateFrontFace();
+		ApplyNormal(f.vertices, glm::vec3(0, 0, -1.0f));
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
 			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
@@ -406,6 +416,7 @@ void Chunk::CreateFaces(Block* b)
 	if (back)
 	{
 		BlockFace f = b->CreateBackFace();
+		ApplyNormal(f.vertices, glm::vec3(0, 0, 1.0f));
 		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 		for (int i = 0; i < f.indices.size(); i++)
 			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
@@ -554,7 +565,8 @@ subChunk Chunk::CreateSubChunk(int y)
 
 			if (isOccluded)
 			{
-				// check top and bottom
+				// normally an if-else chain like this is looked down upon,
+				// but honestly what would you do huh? exactly :(
 
 				if (!DoesBlockExist(position.x + x, y + 1, position.z + z))
 					isOccluded = false;

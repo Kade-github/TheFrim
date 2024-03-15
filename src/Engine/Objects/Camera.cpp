@@ -43,6 +43,9 @@ void Camera::DebugDraws()
 	glEnableVertexAttribArray(1);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
 
+	glEnableVertexAttribArray(2);
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, normal));
+
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
@@ -56,6 +59,12 @@ void Camera::DebugDraws()
 	vertices.clear();
 }
 
+void Camera::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
+{
+	for(GameObject::VVertex& v : vertices)
+		v.normal = normal;
+}
+
 void Camera::DrawDebugCube(glm::vec3 pos)
 {
 	std::vector<GameObject::VVertex> frontVertices = CreateQuad(pos, glm::vec3(1, 1, 0), 0, glm::vec4(0,0,1.0,1.0));
@@ -64,6 +73,13 @@ void Camera::DrawDebugCube(glm::vec3 pos)
 	std::vector<GameObject::VVertex> rightVertices = CreateQuad(pos, glm::vec3(0, 1, 1), 0, glm::vec4(0, 0, 1.0, 1.0));
 	std::vector<GameObject::VVertex> topVertices = CreateQuad(pos + glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), 1, glm::vec4(0, 0, 1.0, 1.0));
 	std::vector<GameObject::VVertex> bottomVertices = CreateQuad(pos + glm::vec3(0, 0, 1), glm::vec3(1, 0, 0), -1, glm::vec4(0, 0, 1.0, 1.0));
+
+	ApplyNormal(frontVertices, glm::vec3(0,0, -1.0f));
+	ApplyNormal(backVertices, glm::vec3(0, 0, 1.0f));
+	ApplyNormal(leftVertices, glm::vec3(1.0f, 0, 0));
+	ApplyNormal(rightVertices, glm::vec3(-1.0f, 0, 0));
+	ApplyNormal(topVertices, glm::vec3(0, 1.0f, 0));
+	ApplyNormal(bottomVertices, glm::vec3(0, -1.0f, 0));
 
 	vertices.insert(vertices.end(), frontVertices.begin(), frontVertices.end());
 	vertices.insert(vertices.end(), backVertices.begin(), backVertices.end());

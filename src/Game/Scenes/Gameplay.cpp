@@ -43,6 +43,9 @@ void Gameplay::Draw()
 
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
+	Game::instance->shader->Bind();
+	Game::instance->shader->SetUniform3f("lightPos", player->position.x, player->position.y, player->position.z);
+
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) +  ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 
 	c2d->DrawDebugText("Camera Far: " + StringTools::ToTheDecimial(camera->cameraFar, 2), glm::vec2(4, 64), 24);

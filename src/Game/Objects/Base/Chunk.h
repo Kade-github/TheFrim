@@ -27,6 +27,8 @@ class Chunk : public GameObject
 
     void CreateFaces(Block* b);
 
+    void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
+
     bool _isLoaded = false;
     bool _isRendered = false;
 public:

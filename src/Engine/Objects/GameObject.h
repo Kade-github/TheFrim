@@ -12,17 +12,34 @@ public:
 	struct VVertex {
 		glm::vec3 position;
 		glm::vec2 uv;
+		glm::vec3 normal;
+
+		VVertex(glm::vec3 _position, glm::vec2 _uv, glm::vec3 _normal)
+		{
+			position = _position;
+			uv = _uv;
+			normal = _normal;
+		}
 
 		VVertex(glm::vec3 _position, glm::vec2 _uv)
 		{
 			position = _position;
 			uv = _uv;
+			normal = glm::vec3(0,0,0);
+		}
+
+		VVertex(glm::vec3 _position)
+		{
+			position = _position;
+			uv = glm::vec2(0,0);
+			normal = glm::vec3(0,0,0);
 		}
 
 		VVertex()
 		{
 			position = glm::vec3(0, 0, 0);
 			uv = glm::vec2(0, 0);
+			normal = glm::vec3(0,0,0);
 		}
 	};
 
