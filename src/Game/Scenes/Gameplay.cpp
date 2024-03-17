@@ -79,7 +79,7 @@ void Gameplay::QueueLoad(Chunk* c)
 
 		c->RenderSubChunks();
 		c->RenderSubChunksShadow();
-		c->isRendered = false;
+		c->pleaseRender = true;
 		c->isLoaded = true;
 		c->isBeingLoaded = false;
 	});
@@ -96,7 +96,7 @@ void Gameplay::QueueLoadBlocks(Chunk* c)
 	{
 		c->CreateSubChunks();
 		c->RenderSubChunks();
-		c->isRendered = false;
+		c->pleaseRender = true;
 		c->isBeingLoaded = false;
 	});
 }
@@ -115,7 +115,7 @@ void Gameplay::QueueShadow(Chunk* c)
 			std::this_thread::sleep_for(std::chrono::milliseconds(1));
 		}
 		c->RenderSubChunksShadow();
-		c->isRendered = false;
+		c->pleaseRender = true;
 		c->isShadowLoaded = false;
 	});
 }
@@ -150,8 +150,9 @@ void Gameplay::UpdateChunks()
 
 				if (angle < 200 || distance < 32)
 				{
-					if (!c->isRendered)
+					if (!c->isRendered || c->pleaseRender)
 					{
+						c->pleaseRender = false;
 						c->SetBuffer();
 						c->SetShadowBuffer();
 					}

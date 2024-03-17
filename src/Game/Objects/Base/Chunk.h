@@ -40,6 +40,8 @@ public:
     bool isBeingLoaded = false;
     bool isShadowLoaded = false;
 
+    bool pleaseRender = false;
+
     bool isLoaded = false;
     bool isRendered = false;
     Chunk(Texture* _txp, glm::vec3 _pos);
