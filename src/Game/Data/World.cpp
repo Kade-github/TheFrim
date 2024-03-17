@@ -302,7 +302,7 @@ void Data::Region::generateStructures()
 
 						if (c.blocks[_x][_z][_y] == GRASS)
 						{
-							if (rand() % 100 < 5)
+							if (rand() % 100 < 2)
 							{
 								int height = rand() % 5 + 6;
 
@@ -314,17 +314,28 @@ void Data::Region::generateStructures()
 
 								// check if it can be placed
 
-								bool cantPlace = doesBlockExistInRange(c.x + _x, _y, c.z + _z, WOOD, 7);
+								bool cantPlace = doesBlockExistInRange(c.x + _x, _y, c.z + _z, WOOD, 5);
 
 								if (cantPlace)
 									continue;
 
 								// check if we're on the region border
 
-								if (c.x + _x <= startX + 2 || c.x + _x >= endX - 2 || c.z + _z <= startZ + 2 || c.z + _z >= endZ - 2)
-									continue;
+								if (c.x + _x <= startX + 2)
+									_x = 3;
 
-								for (int i = 0; i < height; i++)
+								if (c.x + _x >= endX - 2)
+									_x = CHUNK_SIZE - 3;
+
+								if (c.z + _z <= startZ + 2)
+									_z = 3;
+
+								if (c.z + _z >= endZ - 2)
+									_z = CHUNK_SIZE - 3;
+
+
+
+								for (int i = 1; i < height + 1; i++)
 								{
 									c.placeBlock(_x, _y + i, _z, WOOD);
 								}
