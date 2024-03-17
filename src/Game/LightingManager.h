@@ -11,7 +11,8 @@ struct Light {
 
 struct Sun {
 	float angle;
-	int strength;
+	glm::vec3 color;
+	int strength = 10;
 };
 
 class LightingManager
@@ -30,6 +31,9 @@ public:
 	}
 
 	Sun sun;
+
+	void SunColor();
+	void SunUpdate();
 
 	void ClearLights()
 	{

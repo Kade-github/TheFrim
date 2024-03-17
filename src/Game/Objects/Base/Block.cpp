@@ -89,10 +89,13 @@ glm::vec4 Block::GetUVVerticallyFlipped(int x, int y)
 	float srcW = blockWidth / textureWidth;
 	float srcH = blockWidth / textureHeight;
 
-	float _x = x * srcW;
-	float _y = y * srcH;
+	float w = srcW - 0.01f;
+	float h = srcH - 0.01f;
 
-	return glm::vec4(_x, _y + srcH, srcW, -srcH);
+	float _x = (x * srcW) + 0.005f;
+	float _y = (y * srcH) + 0.005f;
+
+	return glm::vec4(_x, _y + h, w, -h);
 }
 
 
@@ -104,12 +107,5 @@ Block::Block(glm::vec3 _position, BlockType _type)
 
 glm::vec4 Block::GetUV(int x, int y)
 {
-	float srcW = blockWidth / textureWidth;
-	float srcH = blockHeight / textureHeight;
-
-	float _x = x * srcW;
-	float _y = y * srcH;
-
-	return glm::vec4(_x, _y, srcW, srcH);
-	
+	return GetUVVerticallyFlipped(x, y);
 }

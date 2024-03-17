@@ -547,9 +547,9 @@ void Chunk::RenderSubChunkShadow(subChunk& sbc)
 					glm::vec4 shadowUV = glm::vec4();
 					if (light > 7)
 						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWTWENTYFIVE);
-					else if (light > 5)
+					else if (light > 4)
 						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWFIFTY);
-					else if (light > 3)
+					else if (light > 1)
 						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWSEVENTYFIVE);
 					else
 						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWFULL);
@@ -557,8 +557,12 @@ void Chunk::RenderSubChunkShadow(subChunk& sbc)
 					std::vector<GameObject::VVertex> sV = f.vertices;
 
 					// extrude shadow
-					for (GameObject::VVertex& v : sV)
-						v.position += sV[0].normal * 0.005f;
+
+					for (int i = 0; i < sV.size(); i++)
+						sV[i].position += f.vertices[i].normal * 0.005f;
+
+
+					// set uv
 
 					sV[0].uv = shadowUV;
 					sV[1].uv = glm::vec2(shadowUV.x + shadowUV.z, shadowUV.y);
@@ -786,6 +790,10 @@ void Chunk::Draw()
 
 	Shader* s = Game::instance->shader;
 
+	glEnable(GL_CULL_FACE);
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_CULL_FACE);
+
 	glBindVertexArray(VAO); // regular faces
 		txp->Bind();
 		s->Bind();
@@ -794,8 +802,6 @@ void Chunk::Draw()
 
 		s->SetUniformMat4f("model", &model[0][0]);
 
-		glEnable(GL_CULL_FACE);
-		glEnable(GL_DEPTH_CLAMP);
 
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
@@ -803,10 +809,7 @@ void Chunk::Draw()
 
 		txp->Unbind();
 		s->Unbind();
-		glDisable(GL_CULL_FACE);
-		glDisable(GL_DEPTH_CLAMP);
 	glBindVertexArray(SHADOWVAO); // shadow faces
-		glEnable(GL_CULL_FACE);
 		txp->Bind();
 		s->Bind();
 
@@ -817,6 +820,7 @@ void Chunk::Draw()
 		s->Unbind();
 		txp->Unbind();
 	
-		glDisable(GL_CULL_FACE);
 	glBindVertexArray(0);
+
+	glDisable(GL_CULL_FACE);
 }

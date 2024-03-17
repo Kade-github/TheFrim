@@ -3,6 +3,7 @@
 #include <Game.h>
 #include <imgui.h>
 #include <Helpers/StringTools.h>
+#include "../LightingManager.h"
 
 Gameplay::Gameplay(WorldManager* _wm)
 {
@@ -34,16 +35,23 @@ void Gameplay::Create()
 
 	UpdateChunks();
 
+	LightingManager::GetInstance()->sun.angle = 90; // set to noon
+
 	Game::instance->CaptureCursor(true);
 }
 
 void Gameplay::Draw()
 {
+	LightingManager::GetInstance()->SunUpdate();
+	LightingManager::GetInstance()->SunColor();
+
 	Camera* camera = Game::instance->GetCamera();
 
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) +  ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
+
+	c2d->DrawDebugText("Sun: " + StringTools::ToTheDecimial(LightingManager::GetInstance()->sun.angle, 2) + ", Progress: " + StringTools::ToTheDecimial(LightingManager::GetInstance()->sun.angle / 360, 2), glm::vec2(4, 34), 24);
 
 	c2d->DrawDebugText("Camera Far: " + StringTools::ToTheDecimial(camera->cameraFar, 2), glm::vec2(4, 64), 24);
 
