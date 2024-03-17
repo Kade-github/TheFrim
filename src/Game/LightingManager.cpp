@@ -109,7 +109,7 @@ void LightingManager::SunUpdate()
 {
 	static float lastSunStrength = 10;
 
-	sun.angle += Game::instance->deltaTime * 0.45;
+	sun.angle += Game::instance->deltaTime * 0.25;
 
 	if (sun.angle >= 360)
 		sun.angle = 0;
