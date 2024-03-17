@@ -251,7 +251,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			int worldX = (_x + x);
 			int worldZ = (_z + z);
 
-			const double noise = perlin.normalizedOctave2D(worldX * scale, worldZ * scale, 4, 0.5);
+			const double noise = perlin.normalizedOctave2D(worldX * scale, worldZ * scale, 4, 0.8);
 
 			int rY = (CHUNK_HEIGHT / 2) + (int)((noise * 100));
 

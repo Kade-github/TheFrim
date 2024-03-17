@@ -18,6 +18,8 @@ public:
 	bool freeCam = false;
 
 	void MouseClick(int button, glm::vec2 mPos) override;
+
+	void KeyPress(int key) override;
 };
 
 #endif

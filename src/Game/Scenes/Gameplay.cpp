@@ -185,10 +185,10 @@ void Gameplay::UpdateChunks()
 void Gameplay::KeyPress(int key)
 {
 
-	if (key == GLFW_KEY_F3)
+	if (key == GLFW_KEY_F5)
 		wm->SaveWorldNow();
 
-	if (key == GLFW_KEY_F2)
+	if (key == GLFW_KEY_F6)
 	{
 		for (Region& r : wm->regions)
 		{
@@ -203,11 +203,12 @@ void Gameplay::KeyPress(int key)
 		}
 	}
 
+
+	if (key == GLFW_KEY_F7)
+		player->freeCam = !player->freeCam;
+
 	if (key == GLFW_KEY_F10)
 		LightingManager::GetInstance()->sun.angle += 25;
-
-	if (key == GLFW_KEY_F6)
-		player->freeCam = !player->freeCam;
 
 	for (int i = 0; i < objects.size(); i++)
 	{

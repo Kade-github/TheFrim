@@ -216,10 +216,10 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
 
 	if (x >= 0 && x < CHUNK_SIZE - 1)
-		w.x = x;
+		w.x = (int)x;
 
 	if (z >= 0 && z < CHUNK_SIZE - 1)
-		w.z = z;
+		w.z = (int)z;
 
 	if (w.x > CHUNK_SIZE - 1)
 		return;
@@ -303,9 +303,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 				if (s.y > -1)
 					c->subChunks.push_back(s);
-			}
 
-			gp->QueueLoadBlocks(c);
+				gp->QueueLoadBlocks(c);
+			}
 		}
 	}
 
@@ -323,9 +323,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 				if (s.y > -1)
 					c->subChunks.push_back(s);
-			}
 
-			gp->QueueLoadBlocks(c);
+				gp->QueueLoadBlocks(c);
+			}
 		}
 	}
 
@@ -343,9 +343,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 				if (s.y > -1)
 					c->subChunks.push_back(s);
-			}
 
-			gp->QueueLoadBlocks(c);
+				gp->QueueLoadBlocks(c);
+			}
 		}
 	}
 
@@ -363,9 +363,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 				if (s.y > -1)
 					c->subChunks.push_back(s);
-			}
 
-			gp->QueueLoadBlocks(c);
+				gp->QueueLoadBlocks(c);
+			}
 		}
 	}
 
