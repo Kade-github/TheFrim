@@ -99,6 +99,7 @@ bool Texture::SetData(unsigned char* data, const unsigned int _width, const unsi
 
 	glBindTexture(GL_TEXTURE_2D, id);
 	glEnable(GL_TEXTURE_2D);
+	glGenerateMipmap(GL_TEXTURE_2D);
 
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, _width, _height, 0, GL_RGBA, GL_UNSIGNED_BYTE, pixels);
 

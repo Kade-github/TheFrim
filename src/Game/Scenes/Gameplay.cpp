@@ -196,6 +196,9 @@ void Gameplay::KeyPress(int key)
 		}
 	}
 
+	if (key == GLFW_KEY_F10)
+		LightingManager::GetInstance()->sun.angle += 25;
+
 	if (key == GLFW_KEY_F6)
 		player->freeCam = !player->freeCam;
 

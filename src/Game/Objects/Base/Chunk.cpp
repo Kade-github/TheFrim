@@ -598,11 +598,6 @@ void Chunk::RenderSubChunkShadow(subChunk& sbc)
 
 					std::vector<GameObject::VVertex> sV = f.vertices;
 
-					// extrude shadow
-
-					for (int i = 0; i < sV.size(); i++)
-						sV[i].position += f.vertices[i].normal * 0.005f;
-
 
 					// set uv
 
@@ -834,7 +829,6 @@ void Chunk::Draw()
 
 	Shader* s = Game::instance->shader;
 
-	glEnable(GL_CULL_FACE);
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);
 
