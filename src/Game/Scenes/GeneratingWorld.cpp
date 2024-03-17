@@ -33,8 +33,10 @@ void GeneratingWorld::Create()
 
 	label = new Text2D("Generating World... (0%)", "ArialFrim", glm::vec3(0, 0, 0), glm::vec4(1, 1, 1, 1), 62);
 
-	label->position.x = (c2d->_w / 2) - (label->width / 2);
-	label->position.y = (c2d->_h / 2) - 31;
+	label->position.x = (c2d->_w / 2);
+	label->position.y = (c2d->_h / 2);
+
+	label->center = true;
 
 	c2d->AddObject(label);
 }

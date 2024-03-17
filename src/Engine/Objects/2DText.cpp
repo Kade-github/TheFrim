@@ -107,7 +107,7 @@ void Text2D::Draw()
 	float y = position.y;
 
 	if (center)
-		y = position.y - (totalHeight / 2.0f);
+		y = position.y + (totalHeight / 2.0f);
 
 	std::vector<Vertex2D> vertices;
 
