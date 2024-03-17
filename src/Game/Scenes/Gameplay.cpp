@@ -35,6 +35,8 @@ void Gameplay::Create()
 
 	UpdateChunks();
 
+	loadPool.reset(std::thread::hardware_concurrency() * 3.14f);
+
 	LightingManager::GetInstance()->sun.angle = 90; // set to noon
 
 	Game::instance->CaptureCursor(true);
@@ -63,6 +65,61 @@ void Gameplay::Draw()
 		camera->DebugDraws();
 }
 
+void Gameplay::QueueLoad(Chunk* c)
+{
+	if (c->isBeingLoaded)
+		return;
+
+	c->isBeingLoaded = true;
+	c->isLoaded = false;
+
+	loadPool.detach_task([c]()
+	{
+		c->CreateSubChunks();
+
+		c->RenderSubChunks();
+		c->RenderSubChunksShadow();
+		c->isRendered = false;
+		c->isLoaded = true;
+		c->isBeingLoaded = false;
+	});
+}
+
+void Gameplay::QueueLoadBlocks(Chunk* c)
+{
+	if (c->isBeingLoaded)
+		return;
+
+	c->isBeingLoaded = true;
+
+	loadPool.detach_task([c]()
+	{
+		c->CreateSubChunks();
+		c->RenderSubChunks();
+		c->isRendered = false;
+		c->isBeingLoaded = false;
+	});
+}
+
+void Gameplay::QueueShadow(Chunk* c)
+{
+	if (c->isShadowLoaded)
+		return;
+
+	c->isShadowLoaded = true;
+
+	loadPool.detach_task([c]()
+	{
+		while (c->isBeingLoaded)
+		{
+			std::this_thread::sleep_for(std::chrono::milliseconds(1));
+		}
+		c->RenderSubChunksShadow();
+		c->isRendered = false;
+		c->isShadowLoaded = false;
+	});
+}
+
 void Gameplay::UpdateChunks()
 {
 	Camera* camera = Game::instance->GetCamera();
@@ -76,6 +133,7 @@ void Gameplay::UpdateChunks()
 				c->Init();
 				AddObject(c);
 			}
+
 			glm::vec3 fakePos = glm::vec3(c->position.x, camera->position.y, c->position.z);
 
 			float distance = glm::distance(camera->position, fakePos);
@@ -84,25 +142,25 @@ void Gameplay::UpdateChunks()
 			{
 				if (!c->isLoaded)
 				{
-					c->CreateSubChunks();
-
-					c->RenderSubChunks();
-					c->SetBuffer();
-					c->RenderSubChunksShadow();
-					c->SetShadowBuffer();
-
-					c->isLoaded = true;
+					QueueLoad(c);
+					return;
 				}
 
 				float angle = camera->YawAngleTo(fakePos);
 
 				if (angle < 200 || distance < 32)
 				{
+					if (!c->isRendered)
+					{
+						c->SetBuffer();
+						c->SetShadowBuffer();
+					}
 					c->isRendered = true;
 				}
 				else
 				{
-					c->isRendered = false;
+					if (!c->isRendered)
+						c->isRendered = false;
 				}
 			}
 			else

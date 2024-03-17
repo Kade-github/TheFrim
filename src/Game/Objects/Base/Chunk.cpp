@@ -1,6 +1,8 @@
 #include "../../LightingManager.h"
 #include "../../WorldManager.h"
 
+#include "../../Scenes/Gameplay.h"
+
 #include <Game.h>
 
 #include "Blocks/Grass.h"
@@ -202,6 +204,7 @@ bool Chunk::DoesBlockExist(float x, float y, float z)
 
 void Chunk::ModifyBlock(float x, float y, float z, int id)
 {
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
 
 	if (x >= 0 && x < CHUNK_SIZE - 1)
@@ -274,11 +277,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	// check if we need to update other chunks
 
-	RenderSubChunks();
-	SetBuffer();
-
-	RenderSubChunksShadow();
-	SetShadowBuffer();
+	gp->QueueLoadBlocks(this);
 
 	if (w.x == 0)
 	{
@@ -298,12 +297,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 					c->subChunks.push_back(s);
 			}
 
-
-			c->RenderSubChunks();
-			c->SetBuffer();
-
-			c->RenderSubChunksShadow();
-			c->SetShadowBuffer();
+			gp->QueueLoadBlocks(c);
 		}
 	}
 
@@ -323,11 +317,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 					c->subChunks.push_back(s);
 			}
 
-			c->RenderSubChunks();
-			c->SetBuffer();
-
-			c->RenderSubChunksShadow();
-			c->SetShadowBuffer();
+			gp->QueueLoadBlocks(c);
 		}
 	}
 
@@ -347,11 +337,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 					c->subChunks.push_back(s);
 			}
 
-			c->RenderSubChunks();
-			c->SetBuffer();
-
-			c->RenderSubChunksShadow();
-			c->SetShadowBuffer();
+			gp->QueueLoadBlocks(c);
 		}
 	}
 
@@ -371,13 +357,11 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 					c->subChunks.push_back(s);
 			}
 
-			c->RenderSubChunks();
-			c->SetBuffer();
-
-			c->RenderSubChunksShadow();
-			c->SetShadowBuffer();
+			gp->QueueLoadBlocks(c);
 		}
 	}
+
+	LightingManager::GetInstance()->RefreshShadows();
 
 }
 
@@ -757,6 +741,8 @@ void Chunk::DestroySubChunks()
 
 void Chunk::CreateSubChunks()
 {
+	subChunks.clear();
+
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
 		subChunk sbc = CreateSubChunk(y);

@@ -2,6 +2,7 @@
 #include "WorldManager.h"
 #include <glad/glad.h>
 #include <Game.h>
+#include "Scenes/Gameplay.h"
 
 LightingManager* LightingManager::instance = nullptr;
 
@@ -108,7 +109,7 @@ void LightingManager::SunUpdate()
 {
 	static float lastSunStrength = 10;
 
-	sun.angle += Game::instance->deltaTime;
+	sun.angle += Game::instance->deltaTime * 0.45;
 
 	if (sun.angle >= 360)
 		sun.angle = 0;
@@ -122,6 +123,7 @@ void LightingManager::SunUpdate()
 
 void LightingManager::RefreshShadows()
 {
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 	// Get all regions
 
 	for (auto& r : WorldManager::instance->regions)
@@ -132,8 +134,7 @@ void LightingManager::RefreshShadows()
 		{
 			if (c->isLoaded)
 			{
-				c->RenderSubChunksShadow(); // Render their shadows
-				c->SetShadowBuffer();
+				gp->QueueShadow(c);
 			}
 		}
 	}
@@ -178,6 +179,73 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 			level = 0;
 	}
 
+	// get left block
+	Chunk* left = WorldManager::instance->GetChunk(pos.x - 1, pos.z);
+
+	if (left != nullptr)
+	{
+		int highestBlock = left->GetHighestBlock(pos.x - 1, pos.z);
+
+		if (highestBlock > 0 && highestBlock > pos.y)
+		{
+			level -= (int)(((highestBlock - pos.y)) / 2);
+
+			if (level < 0)
+				level = 0;
+		}
+	}
+
+	// get right block
+
+	Chunk* right = WorldManager::instance->GetChunk(pos.x + 1, pos.z);
+
+	if (right != nullptr)
+	{
+		int highestBlock = right->GetHighestBlock(pos.x + 1, pos.z);
+
+		if (highestBlock > 0 && highestBlock > pos.y)
+		{
+			level -= (int)(((highestBlock - pos.y)) / 2);
+
+			if (level < 0)
+				level = 0;
+		}
+	}
+
+	// get front block
+
+	Chunk* front = WorldManager::instance->GetChunk(pos.x, pos.z + 1);
+
+	if (front != nullptr)
+	{
+		int highestBlock = front->GetHighestBlock(pos.x, pos.z + 1);
+
+		if (highestBlock > 0 && highestBlock > pos.y)
+		{
+			level -= (int)(((highestBlock - pos.y)) / 2);
+
+			if (level < 0)
+				level = 0;
+		}
+	}
+
+	// get back block
+
+	Chunk* back = WorldManager::instance->GetChunk(pos.x, pos.z - 1);
+
+	if (back != nullptr)
+	{
+		int highestBlock = back->GetHighestBlock(pos.x, pos.z - 1);
+
+		if (highestBlock > 0 && highestBlock > pos.y)
+		{
+			level -= (int)(((highestBlock - pos.y)) / 2);
+
+			if (level < 0)
+				level = 0;
+		}
+	}
+
 	for (int i = 0; i < lights.size(); i++)
 	{
 		float distance = glm::distance(lights[i].position, pos);
@@ -195,6 +263,8 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 		}
 	}
 
+	if (level < 2)
+		level = 2;
 
 	return level;
 }

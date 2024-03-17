@@ -37,6 +37,9 @@ class Chunk : public GameObject
     int shadowSize = 0;
     int size = 0;
 public:
+    bool isBeingLoaded = false;
+    bool isShadowLoaded = false;
+
     bool isLoaded = false;
     bool isRendered = false;
     Chunk(Texture* _txp, glm::vec3 _pos);

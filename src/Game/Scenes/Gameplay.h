@@ -4,6 +4,7 @@
 #include <Objects/Scene.h>
 #include <Objects/2DCamera.h>
 #include <Objects/2DSprite.h>
+#include <BS_thread_pool.hpp>
 #include "../Objects/Base/Player.h"
 #include "../WorldManager.h"
 
@@ -16,12 +17,16 @@ public:
 
 	Sprite2D* crosshair;
 
-	std::thread _generateThread;
+	BS::thread_pool loadPool;
 
 	Gameplay(WorldManager* _wm);
 
 	void Create() override;
 	void Draw() override;
+
+	void QueueLoad(Chunk* c);
+	void QueueLoadBlocks(Chunk* c);
+	void QueueShadow(Chunk* c);
 
 	void UpdateChunks();
 
