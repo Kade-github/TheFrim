@@ -86,6 +86,12 @@ int Chunk::GetHighestBlock(float x, float z)
 	_x = w.x;
 	_z = w.z;
 
+	if (_x == 16)
+		_x--;
+
+	if (_z == 16)
+		_z--;
+
 	if (_x > CHUNK_SIZE - 1)
 		return 0;
 
@@ -283,7 +289,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	if (w.x == 0)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 
 		if (c != nullptr)
 		{
@@ -305,7 +311,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	if (w.x == CHUNK_SIZE - 1)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
 		if (c != nullptr)
 		{
@@ -325,7 +331,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	if (w.z == 0)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 
 		if (c != nullptr)
 		{
@@ -345,7 +351,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	if (w.z == CHUNK_SIZE - 1)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 
 		if (c != nullptr)
 		{

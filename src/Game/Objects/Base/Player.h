@@ -6,6 +6,8 @@
 
 class Player : public Entity
 {
+	float headBop = 0;
+
 public:
 	float jumpCooldown = 0;
 

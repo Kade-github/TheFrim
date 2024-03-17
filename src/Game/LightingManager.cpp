@@ -132,10 +132,8 @@ void LightingManager::RefreshShadows()
 
 		for (auto& c : r.chunks)
 		{
-			if (c->isLoaded)
-			{
+			if (c->isRendered)
 				gp->QueueShadow(c);
-			}
 		}
 	}
 }

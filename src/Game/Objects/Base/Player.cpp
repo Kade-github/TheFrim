@@ -45,20 +45,38 @@ void Player::Draw()
 
 	yaw += xoffset;
 
+	bool moving = false;
+
 	if (!freeCam)
 	{
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
+		{
 			forwardVelocity += speed;
+			headBop += 10.0f * Game::instance->deltaTime;
+			moving = true;
+		}
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
+		{
 			forwardVelocity -= speed;
+			headBop += 10.0f * Game::instance->deltaTime;
+			moving = true;
+		}
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
+		{
 			strafeVelocity -= speed;
+			headBop += 10.0f * Game::instance->deltaTime;
+			moving = true;
+		}
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
+		{
 			strafeVelocity += speed;
+			headBop += 10.0f * Game::instance->deltaTime;
+			moving = true;
+		}
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
 		{
@@ -104,6 +122,17 @@ void Player::Draw()
 
 	camera->position = storedPos;
 	camera->position.y -= 0.1;
+
+	if (headBop > 0)
+	{
+		if (!moving)
+			headBop -= 20.0f * Game::instance->deltaTime;
+
+		if (headBop > 1.5f)
+			headBop = 1.5f;
+
+		camera->position.y += (sin(glfwGetTime() * 16) * 0.02f) * headBop;
+	}
 
 	camera->pitch = p;
 	camera->yaw = yaw;
