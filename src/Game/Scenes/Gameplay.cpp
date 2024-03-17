@@ -49,6 +49,12 @@ void Gameplay::Draw()
 
 	Camera* camera = Game::instance->GetCamera();
 
+	Game::instance->shader->Bind();
+
+	Game::instance->shader->SetUniform3f("CameraPos", camera->position.x, camera->position.y, camera->position.z);
+	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);
+	Game::instance->shader->SetUniform1f("FogFar", camera->cameraFar);
+
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) +  ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
