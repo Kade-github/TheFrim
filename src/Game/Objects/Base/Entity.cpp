@@ -61,6 +61,8 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			toX = ray.x;
 
+			currentChunk = WorldManager::instance->GetChunk(ray.x, ray.z);
+
 			hit = currentChunk->DoesBlockExist(toX, ray.y, pZ);
 
 			if (hit)
@@ -74,7 +76,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 		progress = 0;
 
 		ray = position;
-		ray.y = toY;
+		ray.y = toY; 
 
 		float _lastZ = motion.z;
 
@@ -86,7 +88,9 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			toZ = ray.z;
 
-			hit = currentChunk->DoesBlockExist(pX, ray.y, toZ);
+			currentChunk = WorldManager::instance->GetChunk(ray.x, ray.z);
+
+			hit = currentChunk->DoesBlockExist(_lastX, ray.y, toZ);
 
 			if (hit)
 				break;
@@ -94,7 +98,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			progress += 0.1;
 		}
 
-		motion = glm::vec3(_lastX - (diff.x * 0.1f), motion.y, _lastZ - (diff.z * 0.1f));
+		motion = glm::vec3(_lastX, motion.y, _lastZ);
 	}
 }
 

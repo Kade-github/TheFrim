@@ -93,18 +93,13 @@ void WorldManager::CreateWorld(std::string _seed, std::string _name)
 
 	// Generate regions
 
-	_generatePool.detach_task([&]() {
-		GenerateRegion(0, 0);
-		GenerateRegion(1, 0);
-		GenerateRegion(-1, 0);
-		GenerateRegion(0, 1);
-		GenerateRegion(0, -1);
-		GenerateRegion(1, 1);
-		GenerateRegion(-1, -1);
-		GenerateRegion(1, -1);
-		GenerateRegion(-1, 1);
-	});
-
+	for(int i = -1; i < 2; i++)
+		for (int j = -1; j < 2; j++)
+		{
+			_generatePool.detach_task([i, j]() {
+				instance->GenerateRegion(i, j);
+			});
+		}
 }
 
 bool WorldManager::IsRegionGenerated(int x, int z)

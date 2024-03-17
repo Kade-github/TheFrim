@@ -11,7 +11,7 @@ public:
 
 	float gravity = 19.0f;
 	float jumpStrength = 7.8f;
-	float speed = 14.0f;
+	float speed = 9.0f;
 
 	float downVelocity = 0;
 	float forwardVelocity = 0;

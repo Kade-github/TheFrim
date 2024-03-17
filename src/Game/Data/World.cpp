@@ -329,14 +329,6 @@ void Data::Region::generateStructures()
 									c.placeBlock(_x, _y + i, _z, WOOD);
 								}
 
-								// tree pattern
-								// 0 0 0 0 0
-								// 0 1 1 1 0
-								// 1 1 1 1 1
-								// 1 1 1 1 1
-								// 0 0 1 0 0
-								// 0 0 1 0 0
-
 								int _rx = c.x + _x;
 								int _rz = c.z + _z;
 
