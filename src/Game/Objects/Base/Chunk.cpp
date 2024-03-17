@@ -1,3 +1,4 @@
+#include "../../LightingManager.h"
 #include "../../WorldManager.h"
 
 #include <Game.h>
@@ -367,19 +368,14 @@ void Chunk::CreateFaces(Block* b)
 	{
 		BlockFace f = b->CreateTopFace();
 		ApplyNormal(f.vertices, glm::vec3(0, 1.0f, 0));
-		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
-		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 		b->faces.push_back(f);
 	}
 
 	if (bottom)
 	{
 		BlockFace f = b->CreateBottomFace();
+
 		ApplyNormal(f.vertices, glm::vec3(0, -1.0f, 0));
-		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
-		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 		b->faces.push_back(f);
 	}
 
@@ -387,9 +383,6 @@ void Chunk::CreateFaces(Block* b)
 	{
 		BlockFace f = b->CreateLeftFace();
 		ApplyNormal(f.vertices, glm::vec3(1.0f, 0, 0));
-		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
-		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 		b->faces.push_back(f);
 	}
 
@@ -397,9 +390,6 @@ void Chunk::CreateFaces(Block* b)
 	{
 		BlockFace f = b->CreateRightFace();
 		ApplyNormal(f.vertices, glm::vec3(-1.0f, 0, 0));
-		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
-		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 		b->faces.push_back(f);
 	}
 
@@ -407,9 +397,6 @@ void Chunk::CreateFaces(Block* b)
 	{
 		BlockFace f = b->CreateFrontFace();
 		ApplyNormal(f.vertices, glm::vec3(0, 0, -1.0f));
-		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
-		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
 		b->faces.push_back(f);
 	}
 
@@ -417,18 +404,12 @@ void Chunk::CreateFaces(Block* b)
 	{
 		BlockFace f = b->CreateBackFace();
 		ApplyNormal(f.vertices, glm::vec3(0, 0, 1.0f));
-		vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
-		for (int i = 0; i < f.indices.size(); i++)
-			indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
-
 		b->faces.push_back(f);
 	}
 }
 
-void Chunk::RenderSubChunk(int y)
+void Chunk::RenderSubChunk(subChunk& sbc)
 {
-	subChunk& sbc = GetSubChunk(y);
-
 	if (sbc.y <= -1)
 		return;
 
@@ -441,10 +422,15 @@ void Chunk::RenderSubChunk(int y)
 				continue;
 
 			CreateFaces(block);
+
+			for (BlockFace f : block->faces)
+			{
+				vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
+				for (int i = 0; i < f.indices.size(); i++)
+					indices.push_back(f.indices[i] + vertices.size() - f.vertices.size());
+			}
 		}
 	}
-
-	_isRendered = true;
 }
 
 void Chunk::RenderSubChunks()
@@ -458,7 +444,7 @@ void Chunk::RenderSubChunks()
 		if (sbc.y <= -1)
 			continue;
 
-		RenderSubChunk(sbc.y);
+		RenderSubChunk(sbc);
 	}
 }
 
@@ -467,16 +453,6 @@ glm::vec3 Chunk::WorldToChunk(glm::vec3 pos)
 	return glm::vec3((int)std::abs(pos.x - position.x), pos.y, (int)std::abs(pos.z - position.z));
 }
 
-
-bool Chunk::IsLoaded()
-{
-	return _isLoaded;
-}
-
-bool Chunk::isRendered()
-{
-	return _isRendered;
-}
 
 Chunk::Chunk(Texture* _txp, glm::vec3 _pos) : GameObject(_pos)
 {
@@ -545,6 +521,73 @@ bool Chunk::IsInChunk(float x, float z)
 	return true;
 }
 
+
+void Chunk::RenderSubChunkShadow(subChunk& sbc)
+{
+	if (sbc.y <= -1)
+		return;
+
+	for (int x = 0; x < CHUNK_SIZE; x++)
+	{
+		for (int z = 0; z < CHUNK_SIZE; z++)
+		{
+			Block* block = sbc.getBlock(x, z);
+			if (block == nullptr)
+				continue;
+
+			for (BlockFace f : block->faces)
+			{
+				// check light
+
+				int light = LightingManager::GetInstance()->GetLightLevel(block->position + f.vertices[0].normal);
+
+				if (light < 10)
+				{
+					// shadow overlay
+					glm::vec4 shadowUV = glm::vec4();
+					if (light > 7)
+						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWTWENTYFIVE);
+					else if (light > 5)
+						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWFIFTY);
+					else if (light > 3)
+						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWSEVENTYFIVE);
+					else
+						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWFULL);
+
+					std::vector<GameObject::VVertex> sV = f.vertices;
+
+					// extrude shadow
+					for (GameObject::VVertex& v : sV)
+						v.position += sV[0].normal * 0.005f;
+
+					sV[0].uv = shadowUV;
+					sV[1].uv = glm::vec2(shadowUV.x + shadowUV.z, shadowUV.y);
+					sV[2].uv = glm::vec2(shadowUV.x, shadowUV.y + shadowUV.w);
+					sV[3].uv = glm::vec2(shadowUV.x + shadowUV.z, shadowUV.y + shadowUV.w);
+
+					shadowVertices.insert(shadowVertices.end(), sV.begin(), sV.end());
+					for (int i = 0; i < f.indices.size(); i++)
+						shadowIndices.push_back(f.indices[i] + shadowVertices.size() - sV.size());
+				}
+			}
+		}
+	}
+}
+
+void Chunk::RenderSubChunksShadow()
+{
+	shadowVertices.clear();
+	shadowIndices.clear();
+
+	for (int i = 0; i < subChunks.size(); i++)
+	{
+		subChunk& sbc = subChunks[i];
+		if (sbc.y <= -1)
+			continue;
+
+		RenderSubChunkShadow(sbc);
+	}
+}
 
 subChunk Chunk::CreateSubChunk(int y)
 {
@@ -648,8 +691,6 @@ void Chunk::DestroySubChunks()
 		DestroySubChunk(subChunks[i].y);
 
 	subChunks.clear();
-	_isLoaded = false;
-	_isRendered = false;
 }
 
 void Chunk::CreateSubChunks()
@@ -660,11 +701,11 @@ void Chunk::CreateSubChunks()
 		if (sbc.y > -1)
 			subChunks.push_back(sbc);
 	}
-	_isLoaded = true;
 }
 
 void Chunk::SetBuffer()
 {
+	// bind first vertex array
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -682,6 +723,33 @@ void Chunk::SetBuffer()
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
+
+	size = indices.size();
+
+}
+
+void Chunk::SetShadowBuffer()
+{
+	// bind shadow vertex array
+	glBindVertexArray(SHADOWVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, SHADOWVBO);
+	glBufferData(GL_ARRAY_BUFFER, shadowVertices.size() * sizeof(GameObject::VVertex), shadowVertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SHADOWEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, shadowIndices.size() * sizeof(unsigned int), shadowIndices.data(), GL_STATIC_DRAW);
+
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// uv attribute
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+
+	shadowSize = shadowIndices.size();
 }
 
 void Chunk::Init()
@@ -689,53 +757,66 @@ void Chunk::Init()
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
+
+	glGenVertexArrays(1, &SHADOWVAO);
+	glGenBuffers(1, &SHADOWVBO);
+	glGenBuffers(1, &SHADOWEBO);
 }
 
 void Chunk::Destroy()
 {
-	vertices.clear();
-	indices.clear();
-
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);
-	_isRendered = false;
+
+	glDeleteVertexArrays(1, &SHADOWVAO);
+	glDeleteBuffers(1, &SHADOWVBO);
+	glDeleteBuffers(1, &SHADOWEBO);
 }
 
 void Chunk::Unload()
 {
 	DestroySubChunks();
-	Destroy();
 }
 
 void Chunk::Draw()
 {
-	glBindVertexArray(VAO);
-
-	// cull faces (default ccw)
-	glEnable(GL_CULL_FACE);
-
-	// bind texture pack
-	txp->Bind();
+	if (!isRendered)
+		return;
 
 	Shader* s = Game::instance->shader;
+
+	glBindVertexArray(VAO); // regular faces
+		txp->Bind();
+		s->Bind();
+
+		glm::mat4 model = glm::mat4(1.0f);
+
+		s->SetUniformMat4f("model", &model[0][0]);
+
+		glEnable(GL_CULL_FACE);
+		glEnable(GL_DEPTH_CLAMP);
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+		glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
+
+		txp->Unbind();
+		s->Unbind();
+		glDisable(GL_CULL_FACE);
+		glDisable(GL_DEPTH_CLAMP);
+	glBindVertexArray(SHADOWVAO); // shadow faces
+		glEnable(GL_CULL_FACE);
+		txp->Bind();
+		s->Bind();
+
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SHADOWEBO);
+
+		glDrawElements(GL_TRIANGLES, shadowSize, GL_UNSIGNED_INT, 0);
+
+		s->Unbind();
+		txp->Unbind();
 	
-	// bind default shader
-	s->Bind();
-
-	glm::mat4 model = glm::mat4(1.0f);
-
-	s->SetUniformMat4f("model", &model[0][0]);
-
-	// draw indices
-	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
-
-	// unbind and clean up everything
-	s->Unbind();
-
-	txp->Unbind();
-
-	glDisable(GL_CULL_FACE);
-
+		glDisable(GL_CULL_FACE);
 	glBindVertexArray(0);
 }

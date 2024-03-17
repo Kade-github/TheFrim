@@ -20,22 +20,25 @@ public:
 class Chunk : public GameObject
 {
     unsigned int VAO, VBO, EBO;
+    unsigned int SHADOWVAO, SHADOWVBO, SHADOWEBO;
     Texture* txp;
 
     std::vector<GameObject::VVertex> vertices;
     std::vector<unsigned int> indices;
 
+    std::vector<GameObject::VVertex> shadowVertices;
+    std::vector<unsigned int> shadowIndices;
+
     void CreateFaces(Block* b);
 
     void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
 
-    bool _isLoaded = false;
-    bool _isRendered = false;
+
+    int shadowSize = 0;
+    int size = 0;
 public:
-
-    bool IsLoaded();
-    bool isRendered();
-
+    bool isLoaded = false;
+    bool isRendered = false;
     Chunk(Texture* _txp, glm::vec3 _pos);
 
     Data::Chunk myData;
@@ -61,8 +64,11 @@ public:
 
     void ModifyBlock(float x, float y, float z, int id);
 
-    void RenderSubChunk(int y);
+    void RenderSubChunk(subChunk& c);
     void RenderSubChunks();
+
+    void RenderSubChunkShadow(subChunk& c);
+    void RenderSubChunksShadow();
 
     subChunk CreateSubChunk(int y);
     Block* CreateBlock(int x, int y, int z, int id);
@@ -74,6 +80,7 @@ public:
     void CreateSubChunks();
 
     void SetBuffer();
+    void SetShadowBuffer();
 
     void Init();
     void Destroy();

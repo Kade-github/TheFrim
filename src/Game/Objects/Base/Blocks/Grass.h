@@ -12,7 +12,7 @@ public:
 
 	BlockFace CreateFrontFace() override
 	{
-		glm::vec4 side = GetUVVerticallyFlipped(0,3);
+		glm::vec4 side = GetUVVerticallyFlipped(BUV_GRASSSIDE);
 
 		std::vector<GameObject::VVertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, side);
 
@@ -21,7 +21,7 @@ public:
 
 	BlockFace CreateBackFace() override
 	{
-		glm::vec4 side = GetUVVerticallyFlipped(0, 3);
+		glm::vec4 side = GetUVVerticallyFlipped(BUV_GRASSSIDE);
 
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
@@ -35,7 +35,7 @@ public:
 
 	BlockFace CreateLeftFace() override
 	{
-		glm::vec4 side = GetUVVerticallyFlipped(0, 3);
+		glm::vec4 side = GetUVVerticallyFlipped(BUV_GRASSSIDE);
 
 		std::vector<GameObject::VVertex> leftVertices = CreateQuad(position + glm::vec3(1, 0, 0), glm::vec3(0, 1, 1), 0, side);
 
@@ -46,7 +46,7 @@ public:
 	{
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
-		glm::vec4 side = GetUVVerticallyFlipped(0, 3);
+		glm::vec4 side = GetUVVerticallyFlipped(BUV_GRASSSIDE);
 
 		std::vector<GameObject::VVertex> rightVertices = CreateQuad(position, glm::vec3(0, 1, 1), 0, side);
 
@@ -58,7 +58,7 @@ public:
 
 	BlockFace CreateTopFace() override
 	{
-		glm::vec4 grass = GetUVVerticallyFlipped(2, 0);
+		glm::vec4 grass = GetUVVerticallyFlipped(BUV_GRASS);
 
 		std::vector<GameObject::VVertex> topVertices = CreateQuad(position + glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), 1, grass);
 
@@ -67,7 +67,7 @@ public:
 
 	BlockFace CreateBottomFace() override
 	{
-		glm::vec4 dirt = GetUVVerticallyFlipped(1,0);
+		glm::vec4 dirt = GetUVVerticallyFlipped(BUV_DIRT);
 
 		std::vector<GameObject::VVertex> bottomVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 0, 0), -1, dirt);
 

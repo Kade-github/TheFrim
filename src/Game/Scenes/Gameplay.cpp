@@ -64,31 +64,45 @@ void Gameplay::UpdateChunks()
 		for (Chunk* c : r.chunks)
 		{
 			if (c->id < 0)
-				AddObject(c);
-
-			float distance = glm::distance(camera->position, c->position);
-
-			if (distance < 512)
 			{
-				if (!c->IsLoaded())
+				c->Init();
+				AddObject(c);
+			}
+			glm::vec3 fakePos = glm::vec3(c->position.x, camera->position.y, c->position.z);
+
+			float distance = glm::distance(camera->position, fakePos);
+
+			if (distance < camera->cameraFar)
+			{
+				if (!c->isLoaded)
 				{
-					c->Init(); // when destroyed you gotta reinit
 					c->CreateSubChunks();
+
+					c->RenderSubChunks();
+					c->SetBuffer();
+					c->RenderSubChunksShadow();
+					c->SetShadowBuffer();
+
+					c->isLoaded = true;
+				}
+
+				float angle = camera->YawAngleTo(fakePos);
+
+				if (angle < 200 || distance < 32)
+				{
+					c->isRendered = true;
 				}
 				else
 				{
-					if (!c->isRendered())
-					{
-						c->RenderSubChunks();
-						c->SetBuffer();
-					}
+					c->isRendered = false;
 				}
 			}
 			else
 			{
-				if (c->IsLoaded())
+				if (c->isLoaded)
 				{
 					c->Unload();
+					c->isLoaded = false;
 				}
 			}
 		}
@@ -107,8 +121,11 @@ void Gameplay::KeyPress(int key)
 		{
 			for (Chunk* c : r.chunks)
 			{
-				if (c->IsLoaded())
+				if (c->isLoaded)
+				{
 					c->Unload();
+					c->isLoaded = false;
+				}
 			}
 		}
 	}

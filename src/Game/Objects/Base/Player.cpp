@@ -1,6 +1,7 @@
 #include "Player.h"
 #include <Game.h>
 #include "../../WorldManager.h"
+#include "../../LightingManager.h"
 
 bool firstMouse = false;
 
@@ -126,7 +127,10 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 			if (c != nullptr)
+			{
 				c->ModifyBlock(ray.x, ray.y, ray.z, 0);
+				LightingManager::GetInstance()->RemoveLight(ray);
+			}
 		}
 	}
 
@@ -149,7 +153,10 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 				return;
 
 			if (c != nullptr)
-				c->ModifyBlock(x,y,z, BlockType::COBBLESTONE);
+			{
+				c->ModifyBlock(x, y, z, BlockType::COBBLESTONE);
+				LightingManager::GetInstance()->AddLight(glm::vec3(x, y, z), 10);
+			}
 		}
 	}
 }

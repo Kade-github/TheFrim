@@ -7,9 +7,12 @@
 
 class BlockFace {
 public:
+	glm::vec3 position;
 	glm::vec3 sum;
 	std::vector<GameObject::VVertex> vertices;
 	std::vector<unsigned int> indices;
+
+	int lightLevel = 0;
 
 	BlockFace()
 	{
@@ -23,6 +26,14 @@ public:
 		vertices = _vertices;
 		indices = _indices;
 		sum = glm::vec3(0, 0, 0);
+	}
+
+	void SetUV(glm::vec4 uv)
+	{
+		vertices[0].uv = uv;
+		vertices[1].uv = glm::vec2(uv.x + uv.z, uv.y);
+		vertices[2].uv = glm::vec2(uv.x, uv.y + uv.w);
+		vertices[3].uv = glm::vec2(uv.x + uv.z, uv.y + uv.w);
 	}
 
 	bool operator==(const BlockFace& other) const
@@ -46,6 +57,16 @@ enum BlockType
 	CLAY = 11,
 	GLASS = 12
 };
+
+#define BUV_SHADOWFULL 0, 3
+#define BUV_SHADOWSEVENTYFIVE 0, 1
+#define BUV_SHADOWFIFTY 1, 0
+#define BUV_SHADOWTWENTYFIVE 0, 0
+#define BUV_DIRT 2, 1
+#define BUV_GRASS 2, 2
+#define BUV_GRASSSIDE 3, 0
+#define BUV_STONE 1, 3
+#define BUV_COBBLESTONE 1, 1
 
 class Block
 {
