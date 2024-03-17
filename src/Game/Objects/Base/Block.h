@@ -67,6 +67,9 @@ enum BlockType
 #define BUV_GRASSSIDE 3, 0
 #define BUV_STONE 1, 3
 #define BUV_COBBLESTONE 1, 1
+#define BUV_WOOD 2, 3
+#define BUV_LEAVES 3, 1
+#define BUV_WOODENPLANKS 3, 3
 
 class Block
 {

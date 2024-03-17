@@ -4,6 +4,7 @@
 #include <Helpers/StringTools.h>
 #include "../../zstr/src/zstr.hpp"
 #include <PerlinNoise.hpp>
+#include "../Objects/Base/Block.h"
 
 siv::PerlinNoise perlin;
 
@@ -60,6 +61,46 @@ void Data::Region::addChunk(Chunk c)
 	chunks[realX][realZ] = c;
 }
 
+void Data::Region::freePlace(int x, int y, int z, int type)
+{
+	Chunk* c = getChunkPtr(x, z);
+
+	if (c == nullptr)
+		return;
+
+	c->placeBlock(x - c->x, y, z - c->z, type);
+}
+
+bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int range)
+{
+	std::lock_guard<std::mutex> lock(m);
+
+	for (int i = 0; i < REGION_SIZE; i++)
+	{
+		for (int j = 0; j < REGION_SIZE; j++)
+		{
+			Chunk& c = chunks[i][j];
+
+			for (int _x = 0; _x < CHUNK_SIZE; _x++)
+			{
+				for (int _z = 0; _z < CHUNK_SIZE; _z++)
+				{
+					for (int _y = 0; _y < CHUNK_HEIGHT; _y++)
+					{
+						if (c.blocks[_x][_z][_y] == type)
+						{
+							if (abs(c.x + _x - x) < range && abs(c.z + _z - z) < range && abs(_y - y) < range)
+								return true;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	return false;
+}
+
 void Data::World::scanForRegions()
 {
 	for (auto& file : std::filesystem::directory_iterator(_path))
@@ -90,6 +131,8 @@ void Data::World::parseSeed()
 	seedNum = _seed;
 
 	perlin.reseed(seedNum);
+
+	srand(seedNum);
 }
 
 Data::Region Data::World::getRegion(int x, int z)
@@ -221,11 +264,11 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			for (int _y = rY; _y > -1; _y--)
 			{
 				if (_y == rY) // grass
-					chunk.blocks[_x][_z][_y] = 2;
+					chunk.blocks[_x][_z][_y] = GRASS;
 				else if (_y > rY - 5) // dirt
-					chunk.blocks[_x][_z][_y] = 1;
+					chunk.blocks[_x][_z][_y] = DIRT;
 				else // stone
-					chunk.blocks[_x][_z][_y] = 3;
+					chunk.blocks[_x][_z][_y] = STONE;
 			}
 		}
 	}
@@ -233,4 +276,99 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 	chunk.isGenerated = true;
 
 	return chunk;
+}
+
+void Data::Region::generateStructures()
+{
+	for (int i = 0; i < REGION_SIZE; i++)
+	{
+		for (int j = 0; j < REGION_SIZE; j++)
+		{
+			Chunk& c = chunks[i][j];
+
+			if (!c.isGenerated)
+				continue;
+
+			for (int _x = 0; _x < CHUNK_SIZE; _x++)
+			{
+				for (int _z = 0; _z < CHUNK_SIZE; _z++)
+				{
+					for (int _y = CHUNK_HEIGHT - 1; _y > -1; _y--)
+					{
+						if (c.blocks[_x][_z][_y] <= 0)
+							continue;
+
+						// trees
+
+						if (c.blocks[_x][_z][_y] == GRASS)
+						{
+							if (rand() % 100 < 5)
+							{
+								int height = rand() % 5 + 6;
+
+								if (height < 4)
+									height = 4;
+
+								if (height > 6)
+									height = 6;
+
+								// check if it can be placed
+
+								bool cantPlace = doesBlockExistInRange(c.x + _x, _y, c.z + _z, WOOD, 7);
+
+								if (cantPlace)
+									continue;
+
+								// check if we're on the region border
+
+								if (c.x + _x <= startX + 2 || c.x + _x >= endX - 2 || c.z + _z <= startZ + 2 || c.z + _z >= endZ - 2)
+									continue;
+
+								for (int i = 0; i < height; i++)
+								{
+									c.placeBlock(_x, _y + i, _z, WOOD);
+								}
+
+								// tree pattern
+								// 0 0 0 0 0
+								// 0 1 1 1 0
+								// 1 1 1 1 1
+								// 1 1 1 1 1
+								// 0 0 1 0 0
+								// 0 0 1 0 0
+
+								int _rx = c.x + _x;
+								int _rz = c.z + _z;
+
+								freePlace(_rx, _y + height, _rz, LEAVES);
+
+								freePlace(_rx, _y + height, _rz + 1, LEAVES);
+								freePlace(_rx, _y + height, _rz - 1, LEAVES);
+								freePlace(_rx + 1, _y + height, _rz, LEAVES);
+								freePlace(_rx - 1, _y + height, _rz, LEAVES);
+								freePlace(_rx + 1, _y + height, _rz + 1, LEAVES);
+								freePlace(_rx - 1, _y + height, _rz - 1, LEAVES);
+								freePlace(_rx + 1, _y + height, _rz - 1, LEAVES);
+								freePlace(_rx - 1, _y + height, _rz + 1, LEAVES);
+
+								for (int g = 1; g < 3; g++)
+								{
+									for (int i = -2; i < 3; i++)
+									{
+										for (int j = -2; j < 3; j++)
+										{
+											if (i == 0 && j == 0)
+												continue;
+
+											freePlace(_rx + i, _y + height - g, _rz + j, LEAVES);
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
 }

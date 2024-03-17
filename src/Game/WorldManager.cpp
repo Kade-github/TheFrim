@@ -24,8 +24,6 @@ WorldManager::WorldManager(std::string name, Texture* _tp, std::string _seed)
 		CreateWorld(_seed, name);
 	else
 		LoadWorld();
-
-	_generatePool.reset(6);
 }
 
 std::vector<Data::World> WorldManager::GetWorlds()
@@ -167,6 +165,8 @@ void WorldManager::CheckGeneratedRegions()
 void WorldManager::GenerateRegion(int x, int z)
 {
 	Data::Region r = _world.generateRegion(x, z);
+
+	r.generateStructures();
 
 	Region reg(r, std::vector<Chunk*>());
 

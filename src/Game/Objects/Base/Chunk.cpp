@@ -9,6 +9,8 @@
 #include "Blocks/Dirt.h"
 #include "Blocks/Stone.h"
 #include "Blocks/Cobblestone.h"
+#include "Blocks/Wood.h"
+#include "Blocks/Leaves.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -685,14 +687,20 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 
 	switch (id)
 	{
-	case 2:
+	case GRASS:
 		block = new Grass(position + glm::vec3(x, y, z));
 		break;
-	case 3:
+	case STONE:
 		block = new Stone(position + glm::vec3(x, y, z));
 		break;
-	case 4:
+	case COBBLESTONE:
 		block = new Cobblestone(position + glm::vec3(x, y, z));
+		break;
+	case WOOD:
+		block = new Wood(position + glm::vec3(x, y, z));
+		break;
+	case LEAVES:
+		block = new Leaves(position + glm::vec3(x, y, z));
 		break;
 	default:
 		block = new Dirt(position + glm::vec3(x, y, z));

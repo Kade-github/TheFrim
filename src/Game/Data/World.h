@@ -50,7 +50,13 @@ namespace Data
 		Chunk* getChunkPtr(int x, int z);
 		void addChunk(Chunk c);
 
+		void freePlace(int x, int y, int z, int type);
+
+		bool doesBlockExistInRange(int x, int y, int z, int type, int range);
+
 		Chunk generateChunk(int x, int z);
+
+		void generateStructures();
 
 		MSGPACK_DEFINE_ARRAY(startX, startZ, endX, endZ, chunks);
 	};
