@@ -60,6 +60,49 @@ int Chunk::GetBlock(float x, float y, float z)
 	return myData.blocks[_x][_z][(int)y];
 }
 
+int Chunk::GetHighestBlock(float x, float z)
+{
+	int _x = x;
+	int _z = z;
+
+	if (x < position.x)
+		return 0;
+
+	if (x > position.x + CHUNK_SIZE)
+		return 0;
+
+	if (z < position.z)
+		return 0;
+
+	if (z > position.z + CHUNK_SIZE)
+		return 0;
+
+	glm::vec3 w = WorldToChunk(glm::vec3(x, 0, z));
+
+	_x = w.x;
+	_z = w.z;
+
+	if (_x > CHUNK_SIZE - 1)
+		return 0;
+
+	if (_z > CHUNK_SIZE - 1)
+		return 0;
+
+	if (_x < 0)
+		return 0;
+
+	if (_z < 0)
+		return 0;
+
+	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
+	{
+		if (myData.blocks[_x][_z][y] > 0)
+			return y;
+	}
+
+	return -1;
+}
+
 
 bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 {
@@ -234,6 +277,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	RenderSubChunks();
 	SetBuffer();
 
+	RenderSubChunksShadow();
+	SetShadowBuffer();
+
 	if (w.x == 0)
 	{
 		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
@@ -255,6 +301,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 			c->RenderSubChunks();
 			c->SetBuffer();
+
+			c->RenderSubChunksShadow();
+			c->SetShadowBuffer();
 		}
 	}
 
@@ -276,6 +325,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 			c->RenderSubChunks();
 			c->SetBuffer();
+
+			c->RenderSubChunksShadow();
+			c->SetShadowBuffer();
 		}
 	}
 
@@ -297,6 +349,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 			c->RenderSubChunks();
 			c->SetBuffer();
+
+			c->RenderSubChunksShadow();
+			c->SetShadowBuffer();
 		}
 	}
 
@@ -318,6 +373,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 			c->RenderSubChunks();
 			c->SetBuffer();
+
+			c->RenderSubChunksShadow();
+			c->SetShadowBuffer();
 		}
 	}
 

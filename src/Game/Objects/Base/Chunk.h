@@ -55,6 +55,8 @@ public:
 
     int GetBlock(float x, float y, float z);
 
+    int GetHighestBlock(float x, float z);
+
     int GetBlockNoCheck(float x, float y, float z);
 
     // checks current chunk, and if needed; checks chunks around it.

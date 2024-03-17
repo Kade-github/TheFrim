@@ -163,6 +163,21 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 {
 	int level = sun.strength;
 
+	Chunk* c = WorldManager::instance->GetChunk(pos.x, pos.z);
+
+	if (c == nullptr)
+		return 0;
+
+	int highestBlock = c->GetHighestBlock(pos.x, pos.z);
+
+	if (highestBlock > 0 && highestBlock > pos.y)
+	{
+		level -= (int)((highestBlock - pos.y));
+
+		if (level < 0)
+			level = 0;
+	}
+
 	for (int i = 0; i < lights.size(); i++)
 	{
 		float distance = glm::distance(lights[i].position, pos);

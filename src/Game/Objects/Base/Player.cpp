@@ -129,7 +129,6 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			if (c != nullptr)
 			{
 				c->ModifyBlock(ray.x, ray.y, ray.z, 0);
-				LightingManager::GetInstance()->RemoveLight(ray);
 			}
 		}
 	}
@@ -155,7 +154,6 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			if (c != nullptr)
 			{
 				c->ModifyBlock(x, y, z, BlockType::COBBLESTONE);
-				LightingManager::GetInstance()->AddLight(glm::vec3(x, y, z), 10);
 			}
 		}
 	}
