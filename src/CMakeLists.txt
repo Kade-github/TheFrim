@@ -58,9 +58,9 @@ miniz.c
 "Game/Scenes/MainMenu.cpp" 
 "Game/Objects/Menu/Bar.h"
 "Game/Objects/Menu/Bar.cpp"
- "Engine/Helpers/Collision2D.h" "Engine/Helpers/Collision2D.cpp" "Game/Scenes/Worlds.h" "Game/Scenes/Worlds.cpp" "Game/Objects/Menu/World.h" "Game/Objects/Menu/World.cpp" "Game/Objects/Menu/InputBar.h" "Game/Objects/Menu/InputBar.cpp" "Game/Scenes/CreateWorld.h" "Game/Scenes/CreateWorld.cpp" "Game/Scenes/GeneratingWorld.h" "Game/Scenes/GeneratingWorld.cpp" "Game/Scenes/Gameplay.h" "Game/Scenes/Gameplay.cpp" "Game/Objects/Base/Player.h" "Game/Objects/Base/Player.cpp" "Game/Objects/Base/Entity.h" "Game/Objects/Base/Entity.cpp" "Engine/Objects/Camera.cpp"  "Engine/Objects/3DText.h" "Engine/Objects/3DText.cpp" "Game/Objects/Base/Blocks/Stone.h" "Engine/Helpers/MathTools.h" "Game/Objects/Base/Blocks/Cobblestone.h" "Game/LightingManager.h" "Game/LightingManager.cpp" "Game/Objects/Base/Blocks/Wood.h" "Game/Objects/Base/Blocks/Leaves.h")
+ "Engine/Helpers/Collision2D.h" "Engine/Helpers/Collision2D.cpp" "Game/Scenes/Worlds.h" "Game/Scenes/Worlds.cpp" "Game/Objects/Menu/World.h" "Game/Objects/Menu/World.cpp" "Game/Objects/Menu/InputBar.h" "Game/Objects/Menu/InputBar.cpp" "Game/Scenes/CreateWorld.h" "Game/Scenes/CreateWorld.cpp" "Game/Scenes/GeneratingWorld.h" "Game/Scenes/GeneratingWorld.cpp" "Game/Scenes/Gameplay.h" "Game/Scenes/Gameplay.cpp" "Game/Objects/Base/Player.h" "Game/Objects/Base/Player.cpp" "Game/Objects/Base/Entity.h" "Game/Objects/Base/Entity.cpp" "Engine/Objects/Camera.cpp"  "Engine/Objects/3DText.h" "Engine/Objects/3DText.cpp" "Game/Objects/Base/Blocks/Stone.h" "Engine/Helpers/MathTools.h" "Game/Objects/Base/Blocks/Cobblestone.h" "Game/LightingManager.h" "Game/LightingManager.cpp" "Game/Objects/Base/Blocks/Wood.h" "Game/Objects/Base/Blocks/Leaves.h" "Game/Data/Structure.h" "Game/Data/Structures/Tree.h")
 
-add_executable(TheFrim ${SOURCE_FILES})
+add_executable(TheFrim ${SOURCE_FILES} "Game/Data/Structures/Tree.cpp")
 
 if (WIN32)
     # /ENTRY:mainCRTStartup keeps the same "main" function instead of requiring "WinMain"

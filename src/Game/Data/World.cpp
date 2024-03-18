@@ -1,4 +1,5 @@
-#include "World.h"
+#include "Structures/Tree.h"
+
 #include <iostream>
 #include <filesystem>
 #include <Helpers/StringTools.h>
@@ -304,69 +305,8 @@ void Data::Region::generateStructures()
 						{
 							if (rand() % 100 < 2)
 							{
-								int height = rand() % 5 + 6;
-
-								if (height < 4)
-									height = 4;
-
-								if (height > 6)
-									height = 6;
-
-								// check if it can be placed
-
-								bool cantPlace = doesBlockExistInRange(c.x + _x, _y, c.z + _z, WOOD, 5);
-
-								if (cantPlace)
-									continue;
-
-								// check if we're on the region border
-
-								if (c.x + _x <= startX + 2)
-									_x = 3;
-
-								if (c.x + _x >= endX - 2)
-									_x = CHUNK_SIZE - 3;
-
-								if (c.z + _z <= startZ + 2)
-									_z = 3;
-
-								if (c.z + _z >= endZ - 2)
-									_z = CHUNK_SIZE - 3;
-
-
-
-								for (int i = 1; i < height + 1; i++)
-								{
-									c.placeBlock(_x, _y + i, _z, WOOD);
-								}
-
-								int _rx = c.x + _x;
-								int _rz = c.z + _z;
-
-								freePlace(_rx, _y + height, _rz, LEAVES);
-
-								freePlace(_rx, _y + height, _rz + 1, LEAVES);
-								freePlace(_rx, _y + height, _rz - 1, LEAVES);
-								freePlace(_rx + 1, _y + height, _rz, LEAVES);
-								freePlace(_rx - 1, _y + height, _rz, LEAVES);
-								freePlace(_rx + 1, _y + height, _rz + 1, LEAVES);
-								freePlace(_rx - 1, _y + height, _rz - 1, LEAVES);
-								freePlace(_rx + 1, _y + height, _rz - 1, LEAVES);
-								freePlace(_rx - 1, _y + height, _rz + 1, LEAVES);
-
-								for (int g = 1; g < 3; g++)
-								{
-									for (int i = -2; i < 3; i++)
-									{
-										for (int j = -2; j < 3; j++)
-										{
-											if (i == 0 && j == 0)
-												continue;
-
-											freePlace(_rx + i, _y + height - g, _rz + j, LEAVES);
-										}
-									}
-								}
+								Data::Tree t;
+								t.Create(_x,_z,_y, c, this);
 							}
 						}
 					}
