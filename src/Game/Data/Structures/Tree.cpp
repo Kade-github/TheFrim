@@ -3,74 +3,42 @@
 
 using namespace Data;
 
-void Tree::Create(int _x, int _z, int _y, Chunk& c, Region* r)
+void Tree::CreateVariations()
 {
-	int height = rand() % 5 + 6;
+	Blueprint v1;
 
-	if (height < 4)
-		height = 4;
+	v1.negXWidth = 3;
+	v1.xWidth = 3;
+	v1.negZWidth = 3;
+	v1.zWidth = 3;
 
-	if (height > 6)
-		height = 6;
+	v1.blocks.push_back(BlueprintBlock(LEAVES, 0, 6, 0));
+	for(int y = 5; y > -1; y--) // stem
+		v1.blocks.push_back(BlueprintBlock(WOOD, 0, y, 0));
 
-	int variationType = variation % 3;
-
-	// check if it can be placed
-
-	bool cantPlace = r->doesBlockExistInRange(c.x + _x, _y, c.z + _z, WOOD, 5);
-
-	if (cantPlace)
-		return;
-
-	int offset = 1 * variationType;
-
-	if (c.x + _x <= r->startX + 2)
-		_x = 3;
-
-	if (c.x + _x >= r->endX - 2)
-		_x = CHUNK_SIZE - 3;
-
-	if (c.z + _z <= r->startZ + 2)
-		_z = 3;
-
-	if (c.z + _z >= r->endZ - 2)
-		_z = CHUNK_SIZE - 3;
-
-	for (int i = 1; i < height + 1; i++)
+	// 3x3 at top
+	for(int x = -1; x < 2; x++)
 	{
-		c.placeBlock(_x, _y + i, _z, WOOD);
+		for(int z = -1; z < 2; z++)
+		{
+			if (x == 0 && z == 0) // dont replace stem
+				continue;
+			
+			v1.blocks.push_back(BlueprintBlock(LEAVES, x, 5, z));
+		}
 	}
 
-	int _rx = c.x + _x;
-	int _rz = c.z + _z;
-
-	r->freePlace(_rx, _y + height, _rz, LEAVES);
-
-	r->freePlace(_rx, _y + height, _rz + 1, LEAVES);
-	r->freePlace(_rx, _y + height, _rz - 1, LEAVES);
-	r->freePlace(_rx + 1, _y + height, _rz, LEAVES);
-	r->freePlace(_rx - 1, _y + height, _rz, LEAVES);
-	r->freePlace(_rx + 1, _y + height, _rz + 1, LEAVES);
-	r->freePlace(_rx - 1, _y + height, _rz - 1, LEAVES);
-	r->freePlace(_rx + 1, _y + height, _rz - 1, LEAVES);
-	r->freePlace(_rx - 1, _y + height, _rz + 1, LEAVES);
-
-	for (int g = 1; g < 3; g++)
+	// 4x4 from 4-2
+	for(int x = -2; x < 3; x++)
 	{
-		for (int i = -2; i < 3; i++)
+		for (int z = -2; z < 3; z++)
 		{
-			for (int j = -2; j < 3; j++)
+			for(int y = 4; y > 1; y++)
 			{
-				if (i == 0 && j == 0)
-					continue;
-
-				r->freePlace(_rx + i, _y + height - g, _rz + j, LEAVES);
+				v1.blocks.push_back(BlueprintBlock(LEAVES, x, y, z));
 			}
 		}
 	}
-}
 
-void Tree::GenerateVariation()
-{
-	variation = rand() % 100;
+	variations.push_back(v1);
 }

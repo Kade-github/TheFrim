@@ -281,6 +281,8 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 
 void Data::Region::generateStructures()
 {
+	static Data::Tree struct_tree = Data::Tree();
+
 	for (int i = 0; i < REGION_SIZE; i++)
 	{
 		for (int j = 0; j < REGION_SIZE; j++)
@@ -305,8 +307,7 @@ void Data::Region::generateStructures()
 						{
 							if (rand() % 100 < 2)
 							{
-								Data::Tree t;
-								t.Create(_x,_z,_y, c, this);
+								struct_tree.Create(_x,_z,_y, c, this);
 							}
 						}
 					}

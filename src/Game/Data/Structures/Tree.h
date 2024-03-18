@@ -7,8 +7,11 @@ namespace Data
 {
 	class Tree : public Structure {
 	public:
-		void Create(int x, int z, int y, Chunk& c, Region* r) override;
-		void GenerateVariation() override;
+		Tree()
+		{
+			CreateVariations();
+		}
+		void CreateVariations() override;
 	};
 }
 
