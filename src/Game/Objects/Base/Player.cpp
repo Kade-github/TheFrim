@@ -35,7 +35,7 @@ void Player::Draw()
 	xoffset *= sensitivity;
 	yoffset *= sensitivity;
 
-	Camera* camera = Game::instance->GetCamera();
+	Camera *camera = Game::instance->GetCamera();
 
 	float p = camera->pitch + yoffset;
 	if (p >= 89.0f)
@@ -80,12 +80,8 @@ void Player::Draw()
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
 		{
-			if (jumpCooldown < glfwGetTime())
-			{
-				jumpCooldown = glfwGetTime() + 0.15f;
-				downVelocity = jumpStrength;
-				isOnGround = false;
-			}
+			downVelocity = jumpStrength;
+			isOnGround = false;
 		}
 
 		if (forwardVelocity > speed)
@@ -99,7 +95,6 @@ void Player::Draw()
 
 		if (strafeVelocity < -speed)
 			strafeVelocity = -speed;
-
 
 		Entity::Draw(); // physics
 	}
@@ -125,27 +120,24 @@ void Player::Draw()
 
 	if (headBop > 0)
 	{
-		if (!moving)
+		if (!moving || !isOnGround)
 			headBop -= 20.0f * Game::instance->deltaTime;
 
-		if (headBop > 1.5f)
-			headBop = 1.5f;
+		if (headBop > 1.25f)
+			headBop = 1.25f;
 
-		camera->position.y += (sin(glfwGetTime() * 16) * 0.02f) * headBop;
+		camera->position.y += (sin(glfwGetTime() * 16) * 0.05f) * headBop;
 	}
 
 	camera->pitch = p;
 	camera->yaw = yaw;
 
 	camera->SetDirection();
-
-
-
 }
 
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
-	Camera* camera = Game::instance->GetCamera();
+	Camera *camera = Game::instance->GetCamera();
 
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
 	{
@@ -153,7 +145,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 		bool hit = RayTo(ray, true);
 		if (hit)
 		{
-			Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
+			Chunk *c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 			if (c != nullptr)
 			{
@@ -172,9 +164,9 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			int y = (int)ray.y;
 			float z = ray.z;
 
-			Chunk* c = WorldManager::instance->GetChunk(x, z);
+			Chunk *c = WorldManager::instance->GetChunk(x, z);
 
-			if (c->DoesBlockExist(x,y,z))
+			if (c->DoesBlockExist(x, y, z))
 				return;
 
 			if ((int)x == (int)position.x && (int)z == (int)position.z && (y == (int)position.y || y == (int)position.y - 1))

@@ -12,10 +12,10 @@ uniform vec3 FogColor;
 
 float getFogFactor(float d)
 {
-    const float FogMin = 0;
+    const float FogMin = 0.0;
 
-    if (d>=FogFar) return 1;
-    if (d<=FogMin) return 0;
+    if (d>=FogFar) return 1.0;
+    if (d<=FogMin) return 0.0;
 
     return 1 - (FogFar - d) / (FogFar - FogMin);
 }
