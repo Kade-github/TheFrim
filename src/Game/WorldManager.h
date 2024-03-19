@@ -42,12 +42,12 @@ public:
 
 class WorldManager
 {
-	BS::thread_pool _generatePool;
 	std::string _path;
 
 	Data::World _world;
 	std::vector<Region> _generatedRegions;
 public:
+	BS::thread_pool _generatePool;
 	static WorldManager* instance;
 
 	std::vector<Region> regions;

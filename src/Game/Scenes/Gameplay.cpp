@@ -59,7 +59,7 @@ void Gameplay::Draw()
 
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
-	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) +  ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
+	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 
 	c2d->DrawDebugText("Sun: " + StringTools::ToTheDecimial(LightingManager::GetInstance()->sun.angle, 2) + ", Progress: " + StringTools::ToTheDecimial(LightingManager::GetInstance()->sun.angle / 360, 2), glm::vec2(4, 34), 24);
 
@@ -82,15 +82,15 @@ void Gameplay::QueueLoad(Chunk* c)
 	c->isLoaded = false;
 
 	loadPool.detach_task([c]()
-	{
-		c->CreateSubChunks();
+		{
+			c->CreateSubChunks();
 
-		c->RenderSubChunks();
-		c->RenderSubChunksShadow();
-		c->pleaseRender = true;
-		c->isLoaded = true;
-		c->isBeingLoaded = false;
-	});
+			c->RenderSubChunks();
+			c->RenderSubChunksShadow();
+			c->pleaseRender = true;
+			c->isLoaded = true;
+			c->isBeingLoaded = false;
+		});
 }
 
 void Gameplay::QueueLoadBlocks(Chunk* c)
@@ -101,12 +101,12 @@ void Gameplay::QueueLoadBlocks(Chunk* c)
 	c->isBeingLoaded = true;
 
 	loadPool.detach_task([c]()
-	{
-		c->CreateSubChunks();
-		c->RenderSubChunks();
-		c->pleaseRender = true;
-		c->isBeingLoaded = false;
-	});
+		{
+			c->CreateSubChunks();
+			c->RenderSubChunks();
+			c->pleaseRender = true;
+			c->isBeingLoaded = false;
+		});
 }
 
 void Gameplay::QueueShadow(Chunk* c)
@@ -117,23 +117,38 @@ void Gameplay::QueueShadow(Chunk* c)
 	c->isShadowLoaded = true;
 
 	loadPool.detach_task([c]()
-	{
-		while (c->isBeingLoaded)
 		{
-			std::this_thread::sleep_for(std::chrono::milliseconds(1));
-		}
-		c->RenderSubChunksShadow();
-		c->pleaseRender = true;
-		c->isShadowLoaded = false;
-	});
+			while (c->isBeingLoaded)
+			{
+				std::this_thread::sleep_for(std::chrono::milliseconds(1));
+			}
+			c->RenderSubChunksShadow();
+			c->pleaseRender = true;
+			c->isShadowLoaded = false;
+		});
 }
 
 void Gameplay::UpdateChunks()
 {
 	Camera* camera = Game::instance->GetCamera();
 
+	wm->CheckGeneratedRegions();
+
+	static std::vector<glm::vec2> toLoadedRegion = {};
+
 	for (Region& r : wm->regions)
 	{
+		// if the startx and startz is equal to a toLoadedRegion value, then remove it from the vector
+
+		for (int i = 0; i < toLoadedRegion.size(); i++)
+		{
+			if (r.startX == toLoadedRegion[i].x && r.startZ == toLoadedRegion[i].y)
+			{
+				toLoadedRegion.erase(toLoadedRegion.begin() + i);
+				break;
+			}
+		}
+
 		for (Chunk* c : r.chunks)
 		{
 			if (c->id < 0)
@@ -181,6 +196,206 @@ void Gameplay::UpdateChunks()
 				}
 			}
 		}
+
+		int amount = (CHUNK_SIZE * REGION_SIZE);
+
+		glm::vec3 fakePosR = glm::vec3(r.startX + amount, camera->position.y, r.startZ);
+
+		float distanceR = glm::distance(camera->position, glm::vec3(fakePosR.x, fakePosR.y, camera->position.z));
+
+		if (distanceR < camera->cameraFar / 2 && !wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		{
+			bool no = false;
+
+			for (int i = 0; i < toLoadedRegion.size(); i++)
+			{
+				if (fakePosR.x == toLoadedRegion[i].x && fakePosR.z == toLoadedRegion[i].y)
+				{
+					no = true;
+					break;
+				}
+			}
+			if (!no)
+			{
+				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
+				wm->_generatePool.detach_task([this, r, amount]()
+					{
+						wm->GenerateRegion((r.startX + amount) / amount, r.startZ / amount);
+					});
+			}
+		}
+		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		{
+			// deload
+
+			Game::instance->log->Write("Deloaded region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
+			for (int i = 0; i < wm->regions.size(); i++)
+			{
+				if (wm->regions[i].startX == fakePosR.x && wm->regions[i].startZ == fakePosR.z)
+				{
+					for (Chunk* c : wm->regions[i].chunks)
+					{
+						if (c->isLoaded)
+						{
+							c->Unload();
+							c->isLoaded = false;
+						}
+					}
+					wm->regions.erase(wm->regions.begin() + i);
+					break;
+				}
+			}
+		}
+
+		fakePosR = glm::vec3(r.startX, camera->position.y, r.startZ + amount);
+
+		distanceR = glm::distance(camera->position, glm::vec3(camera->position.x, fakePosR.y, fakePosR.z));
+
+		if (distanceR < camera->cameraFar / 2 && !wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		{
+			bool no = false;
+
+			for (int i = 0; i < toLoadedRegion.size(); i++)
+			{
+				if (fakePosR.x == toLoadedRegion[i].x && fakePosR.z == toLoadedRegion[i].y)
+				{
+					no = true;
+					break;
+				}
+			}
+			if (!no)
+			{
+				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
+				wm->_generatePool.detach_task([this, r, amount]()
+					{
+						wm->GenerateRegion(r.startX / amount, (r.startZ + amount) / amount);
+					});
+			}
+		}
+		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		{
+			// deload
+
+			Game::instance->log->Write("Deloaded region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
+			for (int i = 0; i < wm->regions.size(); i++)
+			{
+				if (wm->regions[i].startX == fakePosR.x && wm->regions[i].startZ == fakePosR.z)
+				{
+					for (Chunk* c : wm->regions[i].chunks)
+					{
+						if (c->isLoaded)
+						{
+							c->Unload();
+							c->isLoaded = false;
+						}
+					}
+					wm->regions.erase(wm->regions.begin() + i);
+					break;
+				}
+			}
+		}
+
+		fakePosR = glm::vec3(r.startX - amount, camera->position.y, r.startZ);
+
+		distanceR = glm::distance(camera->position, glm::vec3(fakePosR.x, fakePosR.y, camera->position.z));
+
+		if (distanceR < camera->cameraFar / 2 && !wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		{
+			bool no = false;
+
+			for (int i = 0; i < toLoadedRegion.size(); i++)
+			{
+				if (fakePosR.x == toLoadedRegion[i].x && fakePosR.z == toLoadedRegion[i].y)
+				{
+					no = true;
+					break;
+				}
+			}
+			if (!no)
+			{
+				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
+				wm->_generatePool.detach_task([this, r, amount]()
+					{
+						wm->GenerateRegion((r.startX - amount) / amount, r.startZ / amount);
+					});
+			}
+		}
+		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		{
+			// deload
+
+			Game::instance->log->Write("Deloaded region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
+			for (int i = 0; i < wm->regions.size(); i++)
+			{
+				if (wm->regions[i].startX == fakePosR.x && wm->regions[i].startZ == fakePosR.z)
+				{
+					for (Chunk* c : wm->regions[i].chunks)
+					{
+						if (c->isLoaded)
+						{
+							c->Unload();
+							c->isLoaded = false;
+						}
+					}
+					wm->regions.erase(wm->regions.begin() + i);
+					break;
+				}
+			}
+		}
+
+		fakePosR = glm::vec3(r.startX, camera->position.y, r.startZ - amount);
+
+		distanceR = glm::distance(camera->position, glm::vec3(camera->position.x, fakePosR.y, fakePosR.z));
+
+		if (distanceR < camera->cameraFar / 2 && !wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		{
+			bool no = false;
+
+			for (int i = 0; i < toLoadedRegion.size(); i++)
+			{
+				if (fakePosR.x == toLoadedRegion[i].x && fakePosR.z == toLoadedRegion[i].y)
+				{
+					no = true;
+					break;
+				}
+			}
+			if (!no)
+			{
+				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
+				wm->_generatePool.detach_task([this, r, amount]()
+					{
+						wm->GenerateRegion(r.startX / amount, (r.startZ - amount) / amount);
+					});
+			}
+		}
+		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		{
+			// deload
+
+			Game::instance->log->Write("Deloaded region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
+			for (int i = 0; i < wm->regions.size(); i++)
+			{
+				if (wm->regions[i].startX == fakePosR.x && wm->regions[i].startZ == fakePosR.z)
+				{
+					for (Chunk* c : wm->regions[i].chunks)
+					{
+						if (c->isLoaded)
+						{
+							c->Unload();
+							c->isLoaded = false;
+						}
+						RemoveObject(c);
+					}
+					wm->regions.erase(wm->regions.begin() + i);
+					break;
+				}
+			}
+		}
+
 	}
 }
 
