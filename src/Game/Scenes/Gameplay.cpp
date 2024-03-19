@@ -51,9 +51,11 @@ void Gameplay::Draw()
 
 	Game::instance->shader->Bind();
 
+	int fog = camera->cameraFar / 2;
+
 	Game::instance->shader->SetUniform3f("CameraPos", camera->position.x, camera->position.y, camera->position.z);
 	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);
-	Game::instance->shader->SetUniform1f("FogFar", camera->cameraFar);
+	Game::instance->shader->SetUniform1f("FogFar", fog);
 
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
