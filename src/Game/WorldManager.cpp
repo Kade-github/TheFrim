@@ -256,6 +256,11 @@ void WorldManager::LoadRegion(int x, int z)
 	Game::instance->log->Write("Loaded region " + std::to_string(x) + ", " + std::to_string(z));
 }
 
+void WorldManager::SaveRegion(int x, int z)
+{
+	_world.saveRegion(GetRegion(x, z).data);
+}
+
 bool WorldManager::isRegionLoaded(float x, float z)
 {
 	for (auto& r : regions)

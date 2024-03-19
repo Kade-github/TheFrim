@@ -72,6 +72,8 @@ public:
 	bool isRegionLoaded(float x, float z);
 	void LoadRegion(int x, int z);
 
+	void SaveRegion(int x, int z);
+
 	Region& GetRegion(float x, float z);
 	Chunk* GetChunk(float x, float z);
 	Data::Chunk GetChunkData(float x, float z);

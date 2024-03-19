@@ -242,6 +242,7 @@ void Gameplay::UpdateChunks()
 							c->isLoaded = false;
 						}
 					}
+					wm->SaveRegion(fakePosR.x, fakePosR.z);
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
 				}
@@ -292,6 +293,7 @@ void Gameplay::UpdateChunks()
 							c->isLoaded = false;
 						}
 					}
+					wm->SaveRegion(fakePosR.x, fakePosR.z);
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
 				}
@@ -342,6 +344,7 @@ void Gameplay::UpdateChunks()
 							c->isLoaded = false;
 						}
 					}
+					wm->SaveRegion(fakePosR.x - amount, fakePosR.z);
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
 				}
@@ -393,6 +396,8 @@ void Gameplay::UpdateChunks()
 						}
 						RemoveObject(c);
 					}
+					wm->SaveRegion(fakePosR.x, fakePosR.z - amount);
+
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
 				}
