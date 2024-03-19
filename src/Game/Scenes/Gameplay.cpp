@@ -246,6 +246,7 @@ void Gameplay::UpdateChunks()
 					break;
 				}
 			}
+			break;
 		}
 
 		fakePosR = glm::vec3(r.startX, camera->position.y, r.startZ + amount);
@@ -295,6 +296,7 @@ void Gameplay::UpdateChunks()
 					break;
 				}
 			}
+			break;
 		}
 
 		fakePosR = glm::vec3(r.startX, camera->position.y, r.startZ);
@@ -307,7 +309,7 @@ void Gameplay::UpdateChunks()
 
 			for (int i = 0; i < toLoadedRegion.size(); i++)
 			{
-				if (fakePosR.x == toLoadedRegion[i].x && fakePosR.z == toLoadedRegion[i].y)
+				if (fakePosR.x - amount == toLoadedRegion[i].x && fakePosR.z == toLoadedRegion[i].y)
 				{
 					no = true;
 					break;
@@ -315,7 +317,7 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
-				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
+				toLoadedRegion.push_back(glm::vec2(fakePosR.x - amount, fakePosR.z));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
 						wm->GenerateRegion((r.startX - amount) / amount, r.startZ / amount);
@@ -330,7 +332,7 @@ void Gameplay::UpdateChunks()
 
 			for (int i = 0; i < wm->regions.size(); i++)
 			{
-				if (wm->regions[i].startX == fakePosR.x && wm->regions[i].startZ == fakePosR.z)
+				if (wm->regions[i].startX == fakePosR.x - amount && wm->regions[i].startZ == fakePosR.z)
 				{
 					for (Chunk* c : wm->regions[i].chunks)
 					{
@@ -344,6 +346,7 @@ void Gameplay::UpdateChunks()
 					break;
 				}
 			}
+			break;
 		}
 
 		fakePosR = glm::vec3(r.startX, camera->position.y, r.startZ);
@@ -356,7 +359,7 @@ void Gameplay::UpdateChunks()
 
 			for (int i = 0; i < toLoadedRegion.size(); i++)
 			{
-				if (fakePosR.x == toLoadedRegion[i].x && fakePosR.z == toLoadedRegion[i].y)
+				if (fakePosR.x == toLoadedRegion[i].x && fakePosR.z - amount == toLoadedRegion[i].y)
 				{
 					no = true;
 					break;
@@ -364,7 +367,7 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
-				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
+				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z - amount));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
 						wm->GenerateRegion(r.startX / amount, (r.startZ - amount) / amount);
@@ -379,7 +382,7 @@ void Gameplay::UpdateChunks()
 
 			for (int i = 0; i < wm->regions.size(); i++)
 			{
-				if (wm->regions[i].startX == fakePosR.x && wm->regions[i].startZ == fakePosR.z)
+				if (wm->regions[i].startX == fakePosR.x && wm->regions[i].startZ == fakePosR.z - amount)
 				{
 					for (Chunk* c : wm->regions[i].chunks)
 					{
@@ -394,6 +397,7 @@ void Gameplay::UpdateChunks()
 					break;
 				}
 			}
+			break;
 		}
 
 	}
