@@ -305,9 +305,12 @@ void Data::Region::generateStructures()
 
 						if (c.blocks[_x][_z][_y] == GRASS)
 						{
+							int _rx = c.x + _x;
+							int _rz = c.z + _z;
+
 							if (rand() % 100 < 2)
 							{
-								struct_tree.Create(_x,_z,_y, c, this);
+								struct_tree.Create(_rx,_rz,_y + 1, c, this);
 							}
 						}
 					}

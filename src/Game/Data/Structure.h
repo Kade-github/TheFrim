@@ -31,6 +31,8 @@ public:
 
 	virtual void GenerateVariation() {
 		variation = rand() % 100;
+		if (variation <= 0)
+			variation = 0;
 	};
 	
 	virtual void CreateVariations() {};
@@ -41,7 +43,7 @@ public:
 		if (variations.size() == 0)
 			return;
 
-		if (variation > variations.size())
+		if (variation > variations.size() - 1)
 			variation = variations.size() - 1;
 
 		Blueprint& b = variations[variation];
