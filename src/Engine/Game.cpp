@@ -39,6 +39,9 @@ void Game::CCreateWindow(int width, int height)
 
 void Game::CreateRenderer()
 {
+	audioManager = new AudioManager();
+	log->Write("Audio manager created...");
+
 	shader = new Shader();
 	shader->LoadShader("Assets/Shaders/vert.glsl", "Assets/Shaders/frag.glsl");
 

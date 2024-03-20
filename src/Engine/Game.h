@@ -7,6 +7,7 @@
 #include "Objects/Scene.h"
 #include "../../Include/glad/glad.h"
 #include "../../Include/glfw/glfw3.h"
+#include "Audio/AudioManager.h"
 
 #include "Objects/Camera.h"
 #include "OpenGL/Shader.h"
@@ -34,6 +35,8 @@ class Game
 
 public:
 	static Game* instance;
+
+	AudioManager* audioManager;
 
 	std::vector<Event> events;
 
