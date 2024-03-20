@@ -4,7 +4,7 @@ A Story focused 3D-Voxel (minecraft clone) game completely written from *scratch
 
 # Building
 
-The game can be build with **Cmake** the main CMakeLists.txt is in the `src/` directory.
+The game can be build with **Cmake**, the main CMakeLists.txt is in the `src/` directory.
 
 The project is **cross-compatible** with Linux and Windows; I personally used clang-16 on std::C++20
 
@@ -30,3 +30,7 @@ cp ../Assets build/Assets -r
 [Assimp](https://github.com/assimp/assimp)
 
 [BS::Thread_Pool](https://github.com/bshoshany/thread-pool)
+
+The Bass Audio Library is used under an individual that doesn't make money from this project, thus the individual doesn't require a commercial license. (as stated on the un4seen website, located below)
+
+[BASS Audio Library](https://www.un4seen.com/)

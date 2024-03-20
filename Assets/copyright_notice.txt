@@ -12,6 +12,10 @@
 
 [BS::Thread_Pool](https://github.com/bshoshany/thread-pool)
 
+The Bass Audio Library is used under an individual that doesn't make money from this project, thus the individual doesn't require a commercial license. (as stated on the un4seen website, located below)
+
+[BASS Audio Library](https://www.un4seen.com/)
+
 Open Asset Import Library (assimp)
 
 Copyright (c) 2006-2021, assimp team
