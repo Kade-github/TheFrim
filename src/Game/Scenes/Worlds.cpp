@@ -1,6 +1,7 @@
 #include "Worlds.h"
 #include "MainMenu.h"
 #include "CreateWorld.h"
+#include "LoadingWorld.h"
 #include <Helpers/Collision2D.h>
 
 void Worlds::Create()
@@ -22,7 +23,7 @@ void Worlds::Create()
 
 	c2d->AddObject(background);
 
-	Sprite2D* deepBackground = new Sprite2D("Assets/Textures/WorldSelect/deep_background.png", glm::vec3(0, 0, 0));
+	deepBackground = new Sprite2D("Assets/Textures/WorldSelect/deep_background.png", glm::vec3(0, 0, 0));
 	deepBackground->Resize(deepBackground->width * 1.5, deepBackground->height * 1.5);
 
 	deepBackground->position.x = (c2d->_w / 2 ) - deepBackground->width / 2;
@@ -45,6 +46,8 @@ void Worlds::Create()
 	goBack->position.y = 50;
 
 	c2d->AddObject(goBack);
+
+	CreateWorldObjects();
 }
 
 void Worlds::Resize(float _w, float _h)
@@ -54,12 +57,69 @@ void Worlds::Resize(float _w, float _h)
 
 void Worlds::CreateWorldObjects()
 {
-	// TODO: Create world objects
+	for (auto w : worldObjects)
+	{
+		c2d->RemoveObject(w);
+		delete w;
+	}
+
+	for (int i = 0; i < worlds.size(); i++)
+	{
+		Data::World w = worlds[i];
+
+		World* world = new World(glm::vec3(0, 0, 0));
+
+		world->width *= 1.45;
+		world->height *= 1.45;
+
+		world->SetName(w.name);
+		world->SetSeed(w.seed);
+
+		world->position.x = deepBackground->position.x + (deepBackground->width / 2) - (world->width / 2);
+		world->position.y = deepBackground->position.y + deepBackground->height - (world->height + 42) - (world->height * i);
+
+		world->SetSelectCallback([&, i]() {
+			LoadWorld(worlds[i]);
+		});
+
+		world->SetDeleteCallback([&, world, i]() {
+			if (!deleteWorld)
+			{
+				deleteWorld = true;
+				// give warning
+
+				world->SetDeleteText("Really?");
+			}
+			else
+			{
+				DeleteWorld(worlds[i]);
+				deleteWorld = false;
+			}
+		});
+
+		c2d->AddObject(world);
+
+		worldObjects.push_back(world);
+	}
+}
+
+void Worlds::LoadWorld(Data::World w)
+{
+	Game::instance->SwitchScene(new LoadingWorld(w.name));
+}
+
+void Worlds::DeleteWorld(Data::World w)
+{
+	WorldManager::instance->DeleteWorld(w);
+	worlds = WorldManager::GetWorlds();
+	CreateWorldObjects();
+
+	justDeleted = true;
 }
 
 void Worlds::Draw()
 {
-	// TODO: position world objects
+
 
 	Scene::Draw();
 }
@@ -70,4 +130,23 @@ void Worlds::MouseClick(int button, glm::vec2 mPos)
 		Game::instance->SwitchScene(new CreateWorld());
 	else if (Collision2D::PointInRect(mPos, goBack->position, glm::vec2(goBack->width, goBack->height)))
 		Game::instance->SwitchScene(new MainMenu());
+
+	// propagate mouse click
+
+	bool clicked = !deleteWorld;
+
+	for (auto o : c2d->objects)
+	{
+		o->MouseClick(button, mPos);
+		if (justDeleted)
+			break;
+	}
+
+	if (!clicked && deleteWorld) // if it was already true, than that means they didn't click on delete world again)
+	{
+		for (auto w : worldObjects)
+			w->SetDeleteText("Delete");
+
+		deleteWorld = false;
+	}
 }

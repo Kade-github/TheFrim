@@ -1,11 +1,23 @@
 #include "2DSprite.h"
 
+Sprite2D::Sprite2D(glm::vec3 _pos) : GameObject2D(_pos)
+{
+	position = _pos;
+	t = NULL;
+	width = 0;
+	height = 0;
+
+	draws = {};
+}
+
 Sprite2D::Sprite2D(std::string texture, glm::vec3 _pos) : GameObject2D(_pos)
 {
 	t = Texture::createWithImage(texture);
 
 	width = t->width;
 	height = t->height;
+
+	draws = {};
 }
 
 void Sprite2D::Destroy()
@@ -38,5 +50,5 @@ void Sprite2D::Draw()
 	vertices.push_back(tr);
 	vertices.push_back(br);
 
-	draws = { { t, s, vertices, clip }};
+	draws = { { t, s, vertices, clip } };
 }

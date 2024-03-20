@@ -29,7 +29,7 @@ void Gameplay::Create()
 
 	Camera* camera = Game::instance->GetCamera();
 
-	player = new Player(glm::vec3(0, 128, 0));
+	player = new Player(wm->GetPlayerPosition());
 
 	AddObject(player);
 
@@ -452,6 +452,8 @@ void Gameplay::MouseClick(int button, glm::vec2 mPos)
 
 void Gameplay::Destroy()
 {
+	wm->SetPlayerPosition(player->position);
+
 	wm->SaveWorldNow();
 	delete wm;
 }

@@ -78,6 +78,9 @@ public:
 	Chunk* GetChunk(float x, float z);
 	Data::Chunk GetChunkData(float x, float z);
 
+	glm::vec3 GetPlayerPosition();
+	void SetPlayerPosition(glm::vec3 pos);
+
 	void GenerateRegion(int x, int z);
 
 	void CreateWorld(std::string _seed, std::string _name);
@@ -85,6 +88,8 @@ public:
 	void LoadWorld();
 	void SaveWorld();
 	void SaveWorldNow();
+
+	void DeleteWorld(Data::World w);
 
 };
 

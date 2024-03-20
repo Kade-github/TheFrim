@@ -68,7 +68,7 @@ namespace Data
 		std::vector<std::string> storedRegions;
 		std::string name;
 
-		int32_t playerX, playerY, playerZ;
+		float playerX, playerY, playerZ;
 
 		unsigned long seedNum = 0;
 
@@ -92,7 +92,7 @@ namespace Data
 
 		void saveRegion(Region r);
 
-		MSGPACK_DEFINE_ARRAY(name, seed);
+		MSGPACK_DEFINE_ARRAY(name, seed, playerX, playerY, playerZ);
 
 	};
 };

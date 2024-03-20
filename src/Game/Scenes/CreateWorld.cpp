@@ -4,6 +4,8 @@
 #include "Worlds.h"
 #include <Helpers/Collision2D.h>
 
+#include <filesystem>
+
 void CreateWorld::Create()
 {
 	c2d = new Camera2D(glm::vec3(0, 0, 0));
@@ -104,7 +106,14 @@ void CreateWorld::MouseClick(int button, glm::vec2 mPos)
 	if (Collision2D::PointInRect(mPos, createWorld->position, glm::vec2(createWorld->width, createWorld->height)))
 	{
 		if (name->text.length() > 0)
+		{
+			// check if the world already exists
+
+			if (std::filesystem::exists("worlds/" + name->text))
+				return;
+
 			Game::instance->SwitchScene(new GeneratingWorld(name->text, seed->text));
+		}
 	}
 
 	if (Collision2D::PointInRect(mPos, goBack->position, glm::vec2(goBack->width, goBack->height)))

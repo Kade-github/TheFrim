@@ -23,7 +23,7 @@ WorldManager::WorldManager(std::string name, Texture* _tp, std::string _seed)
 	if (!std::filesystem::exists(_path))
 		CreateWorld(_seed, name);
 	else
-		LoadWorld();
+		LoadWorldFile();
 }
 
 std::vector<Data::World> WorldManager::GetWorlds()
@@ -209,9 +209,9 @@ void WorldManager::LoadWorld()
 	int playerZ = _world.playerZ;
 
 	// initial
-	_generatePool.detach_task([&]() {
-		int x = playerX / 80;
-		int z = playerZ / 80;
+	_generatePool.detach_task([&, playerX, playerZ]() {
+		int x = playerX / (CHUNK_SIZE * REGION_SIZE);
+		int z = playerZ / (CHUNK_SIZE * REGION_SIZE);
 		instance->LoadRegion(x,z);
 		instance->LoadRegion(x + 1, z);
 		instance->LoadRegion(x - 1, z);
@@ -316,6 +316,18 @@ Data::Chunk WorldManager::GetChunkData(float x, float z)
 	return r.GetChunkData(x, z);
 }
 
+glm::vec3 WorldManager::GetPlayerPosition()
+{
+	return glm::vec3(_world.playerX, _world.playerY, _world.playerZ);
+}
+
+void WorldManager::SetPlayerPosition(glm::vec3 pos)
+{
+	_world.playerX = pos.x;
+	_world.playerY = pos.y;
+	_world.playerZ = pos.z;
+}
+
 void WorldManager::SaveWorldNow()
 {
 	Game::instance->log->Write("Saving world...");
@@ -332,4 +344,9 @@ void WorldManager::SaveWorldNow()
 		_world.saveRegion(r.data);
 	}
 	Game::instance->log->Write("World saved to " + _path);
+}
+
+void WorldManager::DeleteWorld(Data::World w)
+{
+	std::filesystem::remove_all("worlds/" + w.name);
 }
