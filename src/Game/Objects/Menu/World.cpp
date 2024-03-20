@@ -35,6 +35,8 @@ void World::SetSeed(std::string _seed)
 
 void World::Draw()
 {
+	worldThumbnail->clip = clip;
+
 	worldThumbnail->position = position + glm::vec3(2, 2, 0);
 	worldThumbnail->Draw();
 
@@ -42,8 +44,12 @@ void World::Draw()
 
 	draws = { worldThumbnail->draws[0], draws[0] };
 
+	label_name->clip = clip;
+
 	label_name->position = position + glm::vec3(162,64,0);
 	label_name->Draw();
+
+	label_seed->clip = clip;
 
 	label_seed->position = position + glm::vec3(162, 16, 0);
 	label_seed->Draw();
@@ -51,11 +57,15 @@ void World::Draw()
 	draws.push_back(label_name->draws[0]);
 	draws.push_back(label_seed->draws[0]);
 
+	selectWorld->clip = clip;
+
 	selectWorld->position = position + glm::vec3(width - (((selectWorld->width * 2) + 42) + 52), (height / 2) - (selectWorld->height / 2), 0);
 	selectWorld->Draw();
 
 	draws.push_back(selectWorld->draws[0]);
 	draws.push_back(selectWorld->draws[1]);
+
+	deleteWorld->clip = clip;
 
 	deleteWorld->position = position + glm::vec3(width - ((deleteWorld->width + 16) + 52), (height / 2) - (deleteWorld->height / 2), 0);
 	deleteWorld->Draw();

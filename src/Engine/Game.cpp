@@ -96,6 +96,8 @@ void Game::Render()
 				currentScene->KeyRelease(e.var1);
 			else if (e.type == 4)
 				currentScene->OnChar(e.var1);
+			else if (e.type == 5)
+				currentScene->OnScroll(e.pos.x, e.pos.y);
 		}
 
 		events.clear();

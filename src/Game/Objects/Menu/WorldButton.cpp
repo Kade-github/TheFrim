@@ -44,6 +44,8 @@ void WorldButton::Draw()
 
 	Sprite2D::Draw();
 
+	_text->clip = clip;
+
 	_text->position = position + glm::vec3((width / 2) - (_text->width / 2), (height / 2) - (_text->height / 2), 0);
 	_text->position -= glm::vec3(6, 6, 0);
 	_text->Draw();

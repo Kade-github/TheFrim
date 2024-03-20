@@ -36,6 +36,7 @@ public:
 	virtual void KeyPress(int key) {};
 	virtual void KeyRelease(int key) {};
 	virtual void OnChar(unsigned int c) {};
+	virtual void OnScroll(double x, double y) {};
 
 	void AddObject(GameObject* object)
 	{

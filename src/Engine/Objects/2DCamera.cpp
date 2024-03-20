@@ -10,6 +10,8 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 	_w = 1920;
 	_h = 1080;
 
+	def = Texture::createWithImage("Assets/Textures/Pixel.png");
+
 	glGenFramebuffers(1, &fb);
 	glBindFramebuffer(GL_FRAMEBUFFER, fb);
 
@@ -187,6 +189,8 @@ void Camera2D::UpdateFramebuffer()
 
 		if (draw.textureId != NULL)
 			draw.textureId->Bind();
+		else
+			def->Bind();
 
 		if (draw.clipRect.x != -1)
 		{
@@ -209,6 +213,8 @@ void Camera2D::UpdateFramebuffer()
 
 		if (draw.textureId != NULL)
 			draw.textureId->Unbind();
+		else
+			def->Unbind();
 
 		if (draw.shaderId != NULL)
 			draw.shaderId->Unbind();
@@ -310,4 +316,9 @@ void Camera2D::Destroy()
 
 		delete object;
 	}
+
+	objects.clear();
+
+	delete def;
+
 }

@@ -47,6 +47,10 @@ void Worlds::Create()
 
 	c2d->AddObject(goBack);
 
+	scrollBar = new Rectangle2D(glm::vec3(0, 0, 0), glm::vec2(20, 100), glm::vec4(0.125f, 0.125f, 0.125f, 0));
+
+	c2d->AddObject(scrollBar);
+
 	CreateWorldObjects();
 }
 
@@ -63,11 +67,15 @@ void Worlds::CreateWorldObjects()
 		delete w;
 	}
 
+	canScroll = true;
+
 	for (int i = 0; i < worlds.size(); i++)
 	{
 		Data::World w = worlds[i];
 
 		World* world = new World(glm::vec3(0, 0, 0));
+
+		world->clip	= glm::vec4(deepBackground->position.x + 10, deepBackground->position.y - 60, deepBackground->width - 20, deepBackground->height);
 
 		world->width *= 1.45;
 		world->height *= 1.45;
@@ -76,7 +84,10 @@ void Worlds::CreateWorldObjects()
 		world->SetSeed(w.seed);
 
 		world->position.x = deepBackground->position.x + (deepBackground->width / 2) - (world->width / 2);
-		world->position.y = deepBackground->position.y + deepBackground->height - (world->height + 42) - (world->height * i);
+		world->position.y = deepBackground->position.y + deepBackground->height - (world->height + 64) - ((world->height + 24) * i);
+
+		if (world->position.y > deepBackground->position.y || world->position.y < deepBackground->position.y)
+			canScroll = true;
 
 		world->SetSelectCallback([&, i]() {
 			LoadWorld(worlds[i]);
@@ -101,6 +112,16 @@ void Worlds::CreateWorldObjects()
 
 		worldObjects.push_back(world);
 	}
+
+	if (canScroll)
+	{
+		scrollModifier = 0;
+		scrollBar->position.x = deepBackground->position.x + deepBackground->width - 60;
+		scrollBar->height = deepBackground->height / worlds.size();
+		scrollBar->position.y = deepBackground->position.y + (deepBackground->height - (scrollBar->height + 32));
+
+		scrollBar->color.w = 0.75;
+	}
 }
 
 void Worlds::LoadWorld(Data::World w)
@@ -119,6 +140,13 @@ void Worlds::DeleteWorld(Data::World w)
 
 void Worlds::Draw()
 {
+	for (int i = 0; i < worldObjects.size(); i++)
+	{
+		World* w = worldObjects[i];
+
+		w->position.y = deepBackground->position.y + deepBackground->height - (w->height + 64) - ((w->height + 24) * i);
+		w->position.y *= 1 + (scrollModifier / 100);
+	}
 
 
 	Scene::Draw();
@@ -149,4 +177,18 @@ void Worlds::MouseClick(int button, glm::vec2 mPos)
 
 		deleteWorld = false;
 	}
+}
+
+void Worlds::OnScroll(double x, double y)
+{
+	if (!canScroll)
+		return;
+
+	scrollModifier -= y;
+
+	if (scrollModifier < 0)
+		scrollModifier = 0;
+
+	if (scrollModifier > 100)
+		scrollModifier = 100;
 }

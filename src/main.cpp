@@ -110,6 +110,14 @@ int main()
 			}
 		});
 
+	glfwSetScrollCallback(game.GetWindow(), [](GLFWwindow* window, double xoffset, double yoffset)
+		{
+			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)
+			{
+				Game::instance->OnScroll(xoffset, yoffset);
+			}
+		});
+
 	glfwSetCharCallback(game.GetWindow(), [](GLFWwindow* window, unsigned int codepoint)
 		{
 			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)

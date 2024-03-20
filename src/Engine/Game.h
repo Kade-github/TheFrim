@@ -103,6 +103,14 @@ public:
 		events.push_back(e);
 	};
 
+	void OnScroll(double x, double y) {
+		Event e;
+		e.type = 5;
+		e.pos = glm::vec2(x, y);
+		std::lock_guard<std::mutex> lock(eventMtx);
+		events.push_back(e);
+	}
+
 	void SetWindowSize(int width, int height) 
 	{ 
 		_width = width; 

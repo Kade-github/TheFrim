@@ -16,6 +16,7 @@ public:
 	unsigned int fb;
 
 	Texture* t = NULL;
+	Texture* def = NULL;
 	Shader* s = NULL;
 
 	Text2D* debugText = NULL;
@@ -25,7 +26,7 @@ public:
 	std::vector<Vertex2D> vertices = {};
 
 	Camera2D(glm::vec3 pos);
-
+	
 	void Resize();
 	void ResizeTo();
 	void UpdateFramebuffer();
