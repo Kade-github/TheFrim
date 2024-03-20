@@ -59,6 +59,29 @@ void Worlds::Resize(float _w, float _h)
 	c2d->Resize();
 }
 
+void Worlds::SetScroll()
+{
+	if (worldObjects.size() == 0)
+		return;
+
+	scrollBar->height = (deepBackground->height * ((worlds.size() * (worldObjects[0]->height)) / deepBackground->height)) - 64;
+
+	float inital = deepBackground->position.y + deepBackground->height - (scrollBar->height + 32);
+
+	scrollBar->position.y = inital;
+
+	scrollBar->position.y -= scrollBar->height * (scrollModifier / 100);
+
+	if (scrollBar->position.y < deepBackground->position.y + 32)
+	{
+		scrollBar->position.y = deepBackground->position.y + 32;
+		scrollModifier = _lastScroll;
+	}
+	else
+		_lastScroll = scrollModifier;
+	
+}
+
 void Worlds::CreateWorldObjects()
 {
 	for (auto w : worldObjects)
@@ -67,7 +90,7 @@ void Worlds::CreateWorldObjects()
 		delete w;
 	}
 
-	canScroll = true;
+	canScroll = false;
 
 	for (int i = 0; i < worlds.size(); i++)
 	{
@@ -116,12 +139,13 @@ void Worlds::CreateWorldObjects()
 	if (canScroll)
 	{
 		scrollModifier = 0;
+		_lastScroll = 0.0f;
 		scrollBar->position.x = deepBackground->position.x + deepBackground->width - 60;
-		scrollBar->height = deepBackground->height / worlds.size();
-		scrollBar->position.y = deepBackground->position.y + (deepBackground->height - (scrollBar->height + 32));
-
+		SetScroll();
 		scrollBar->color.w = 0.75;
 	}
+	else
+		scrollBar->color.w = 0;
 }
 
 void Worlds::LoadWorld(Data::World w)
@@ -184,11 +208,13 @@ void Worlds::OnScroll(double x, double y)
 	if (!canScroll)
 		return;
 
-	scrollModifier -= y;
+	scrollModifier -= y * 6.0f;
 
 	if (scrollModifier < 0)
 		scrollModifier = 0;
 
 	if (scrollModifier > 100)
 		scrollModifier = 100;
+
+	SetScroll();
 }

@@ -10,6 +10,7 @@
 
 class Worlds : public Scene
 {
+	float _lastScroll = 0.0f;
 public:
 
 	float scrollModifier = 0;
@@ -35,6 +36,8 @@ public:
 
 	void LoadWorld(Data::World w);
 	void DeleteWorld(Data::World w);
+
+	void SetScroll();
 
 	void Draw() override;
 	void MouseClick(int button, glm::vec2 mPos) override;
