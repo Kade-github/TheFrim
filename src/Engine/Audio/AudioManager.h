@@ -23,6 +23,9 @@ public:
 		
 		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, BASS_STREAM_PRESCAN | BASS_SAMPLE_FLOAT);
 
+		if (BASS_ErrorGetCode() != 0)
+			id = -1;
+
 		if (IsLoaded())
 			length = BASS_ChannelBytes2Seconds(id, BASS_ChannelGetLength(id, BASS_POS_BYTE));
 	}

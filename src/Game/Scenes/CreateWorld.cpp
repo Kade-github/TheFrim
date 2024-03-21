@@ -4,6 +4,8 @@
 #include "Worlds.h"
 #include <Helpers/Collision2D.h>
 
+#include "../MusicManager.h"
+
 #include <filesystem>
 
 void CreateWorld::Create()
@@ -88,6 +90,8 @@ void CreateWorld::Resize(float _w, float _h)
 
 void CreateWorld::Draw()
 {
+	MusicManager::GetInstance()->Update();
+
 	Scene::Draw();
 }
 
@@ -111,6 +115,8 @@ void CreateWorld::MouseClick(int button, glm::vec2 mPos)
 
 			if (std::filesystem::exists("worlds/" + name->text))
 				return;
+
+			MusicManager::GetInstance()->FadeOut(4);
 
 			Game::instance->SwitchScene(new GeneratingWorld(name->text, seed->text));
 		}

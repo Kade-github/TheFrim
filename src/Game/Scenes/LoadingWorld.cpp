@@ -4,6 +4,8 @@
 #include <Objects/2DSprite.h>
 #include <Helpers/StringTools.h>
 
+#include "../MusicManager.h"
+
 LoadingWorld::LoadingWorld(std::string name)
 {
 	_name = name;
@@ -52,6 +54,8 @@ void LoadingWorld::Draw()
 	// update regions
 
 	wm->CheckGeneratedRegions();
+
+	MusicManager::GetInstance()->Update();
 
 	int regions = wm->regions.size();
 

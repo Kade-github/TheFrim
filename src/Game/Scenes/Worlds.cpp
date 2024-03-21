@@ -2,6 +2,7 @@
 #include "MainMenu.h"
 #include "CreateWorld.h"
 #include "LoadingWorld.h"
+#include "../MusicManager.h"
 #include <Helpers/Collision2D.h>
 
 void Worlds::Create()
@@ -113,6 +114,7 @@ void Worlds::CreateWorldObjects()
 			canScroll = true;
 
 		world->SetSelectCallback([&, i]() {
+			MusicManager::GetInstance()->FadeOut(4);
 			LoadWorld(worlds[i]);
 		});
 
@@ -164,6 +166,8 @@ void Worlds::DeleteWorld(Data::World w)
 
 void Worlds::Draw()
 {
+	MusicManager::GetInstance()->Update();
+
 	for (int i = 0; i < worldObjects.size(); i++)
 	{
 		World* w = worldObjects[i];

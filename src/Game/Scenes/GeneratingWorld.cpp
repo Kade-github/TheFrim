@@ -3,6 +3,7 @@
 #include <Game.h>
 #include <Helpers/StringTools.h>
 #include <Objects/2DSprite.h>
+#include "../MusicManager.h"
 
 GeneratingWorld::GeneratingWorld(std::string name, std::string seed)
 {
@@ -53,6 +54,8 @@ void GeneratingWorld::Draw()
 	// update regions
 
 	wm->CheckGeneratedRegions();
+
+	MusicManager::GetInstance()->Update();
 
 	int regions = wm->regions.size();
 

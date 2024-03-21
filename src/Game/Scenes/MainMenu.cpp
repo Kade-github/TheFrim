@@ -2,6 +2,7 @@
 #include "Worlds.h"
 #include <cmath>
 #include <Helpers/Collision2D.h>
+#include "../MusicManager.h"
 
 void MainMenu::Create()
 {
@@ -47,12 +48,17 @@ void MainMenu::Create()
 	exit->position.y = c2d->_h - 650;
 
 	c2d->AddObject(exit);
+
+	MusicManager::GetInstance()->GenerateTrackList();
+	MusicManager::GetInstance()->PlayMusic("thefrim", 4);
 }
 
 void MainMenu::Draw()
 {
 	if (std::floor(fakeIndex) != selectedIndex)
 		fakeIndex = std::lerp(fakeIndex, selectedIndex, 0.1f);
+
+	MusicManager::GetInstance()->Update();
 
 	glm::vec2 mPos = Game::instance->GetCursorPos();
 
@@ -114,6 +120,7 @@ void MainMenu::Draw()
 			exit->selected = false;
 		}
 	}
+
 
 	Scene::Draw();
 }

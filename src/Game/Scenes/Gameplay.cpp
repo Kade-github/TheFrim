@@ -4,6 +4,7 @@
 #include <imgui.h>
 #include <Helpers/StringTools.h>
 #include "../LightingManager.h"
+#include "../MusicManager.h"
 
 Gameplay::Gameplay(WorldManager* _wm)
 {
@@ -66,6 +67,8 @@ void Gameplay::Draw()
 	c2d->DrawDebugText("Camera Far: " + StringTools::ToTheDecimial(camera->cameraFar, 2), glm::vec2(4, 64), 24);
 
 	UpdateChunks();
+
+	MusicManager::GetInstance()->Update();
 
 	Scene::Draw();
 

@@ -33,3 +33,5 @@ imgui.ini
 worlds/*
 build/*
 .vscode/*
+bass.dll
+bass_fx.dll
