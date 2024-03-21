@@ -7,7 +7,7 @@ class MusicManager
 {
 	float _fadeTime = 0.0f;
 	float _fadeDuration = 0.0f;
-
+	float _startVolume = 0.0f;
 	float _nextTrack = 0.0f;
 
 	bool _isPlaying = false;

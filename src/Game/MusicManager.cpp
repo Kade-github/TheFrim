@@ -39,7 +39,7 @@ void MusicManager::GenerateTrackList()
 
 	for (int i = 0; i < trackList.size(); i++)
 	{
-		int j = rand() % trackList.size();
+		int j = std::rand() % trackList.size();
 
 		std::string temp = trackList[i];
 		trackList[i] = trackList[j];
@@ -58,6 +58,8 @@ void MusicManager::PlayMusic(std::string path)
 	currentSong = rPath;
 
 	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong);
+
+	c.SetReverb(0.5f, 0.5f);
 
 	c.Play();
 
@@ -78,6 +80,8 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong);
 
 	c.SetVolume(0);
+
+	c.SetReverb(0.5f, 0.5f);
 
 	c.Play();
 
@@ -102,6 +106,7 @@ void MusicManager::FadeOut(float duration)
 
 	_fadeTime = glfwGetTime();
 	_fadeDuration = -duration;
+	_startVolume = c.volume;
 
 }
 
@@ -126,6 +131,9 @@ bool MusicManager::IsPlaying()
 
 void MusicManager::Update()
 {
+	if (glfwGetTime() > _nextTrack)
+		PlayNext();
+
 	if (Game::instance->audioManager->channels.size() == 0)
 		return;
 
@@ -154,11 +162,13 @@ void MusicManager::Update()
 			t = 1;
 
 			FreeMusic();
+
+			return;
 		}
 
 		Channel& c = Game::instance->audioManager->GetChannel(currentSong);
 
-		c.SetVolume(1 - t);
+		c.SetVolume(_startVolume - t);
 	}
 
 	// if the song stopped
@@ -167,8 +177,4 @@ void MusicManager::Update()
 	{
 		FreeMusic();
 	}
-
-
-	if (glfwGetTime() > _nextTrack)
-		PlayNext();
 }

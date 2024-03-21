@@ -38,6 +38,8 @@ void Gameplay::Create()
 
 	loadPool.reset(std::thread::hardware_concurrency() * 3.14f);
 
+	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
+
 	LightingManager::GetInstance()->sun.angle = 90; // set to noon
 
 	Game::instance->CaptureCursor(true);
@@ -329,7 +331,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x - amount, fakePosR.z))
 		{
 			// deload
 
@@ -380,7 +382,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z - amount))
 		{
 			// deload
 
@@ -435,6 +437,9 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_F7)
 		player->freeCam = !player->freeCam;
+
+	if (key == GLFW_KEY_F8)
+		MusicManager::GetInstance()->PlayNext();
 
 	if (key == GLFW_KEY_F10)
 		LightingManager::GetInstance()->sun.angle += 25;
