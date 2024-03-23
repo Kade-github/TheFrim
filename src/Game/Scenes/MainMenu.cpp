@@ -130,9 +130,13 @@ void MainMenu::MouseClick(int button, glm::vec2 mPos)
 	if (button == GLFW_MOUSE_BUTTON_LEFT)
 	{
 		if (selectWorld->selected)
+		{
+			MusicManager::GetInstance()->PlaySFX("select");
 			Game::instance->SwitchScene(new Worlds());
+		}
 		else if (settings->selected)
 		{
+			MusicManager::GetInstance()->PlaySFX("select");
 		}
 		else if (exit->selected)
 			glfwSetWindowShouldClose(Game::instance->GetWindow(), true);

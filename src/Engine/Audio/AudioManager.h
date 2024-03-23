@@ -9,25 +9,47 @@
 
 class Channel {
 	std::string _path;
+	bool _autoFree = false;
 public:
+	static void EndSync(HSYNC handle, DWORD channel, DWORD data, void* user)
+	{
+		Channel* c = (Channel*)user;
+
+		if (c->_autoFree)
+			c->isFreed = true;
+
+		c->isPlaying = false;
+	}
+
 	std::string name;
 	unsigned long id = -1;
+
+	bool isFreed = false;
 
 	bool isPlaying = false;
 	float volume = 1.0f;
 	float length = 0.0f;
 
-	Channel(std::string path, std::string _name) {
+	Channel(std::string path, std::string _name, bool autoFree = false) {
 		_path = path;
 		name = _name;
+
+		_autoFree = autoFree;
 		
-		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, BASS_STREAM_PRESCAN | BASS_SAMPLE_FLOAT);
+		auto flags = BASS_STREAM_PRESCAN | BASS_SAMPLE_FLOAT;
+
+		if (autoFree)
+			flags |= BASS_STREAM_AUTOFREE;
+
+		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, flags);
 
 		if (BASS_ErrorGetCode() != 0)
 			id = -1;
 
 		if (IsLoaded())
 			length = BASS_ChannelBytes2Seconds(id, BASS_ChannelGetLength(id, BASS_POS_BYTE));
+
+		BASS_ChannelSetSync(id, BASS_SYNC_END, 0, Channel::EndSync, this);
 	}
 
 	bool IsLoaded()
@@ -162,9 +184,9 @@ public:
 		BASS_Free();
 	}
 
-	Channel& CreateChannel(std::string path, std::string name)
+	Channel& CreateChannel(std::string path, std::string name, bool autoFree = false)
 	{
-		Channel c = Channel(path, name);
+		Channel c = Channel(path, name, autoFree);
 
 		if (c.IsLoaded())
 			channels.push_back(c);
@@ -178,6 +200,11 @@ public:
 		{
 			if (channels[i] == c)
 			{
+				if (channels[i].isFreed)
+				{
+					channels.erase(channels.begin() + i);
+					break;
+				}
 				channels[i].Free();
 				channels.erase(channels.begin() + i);
 				break;
@@ -187,13 +214,25 @@ public:
 
 	Channel& GetChannel(unsigned long id)
 	{
+		static Channel c("", "", false);
+
+		c.isFreed = true;
+		c.id = -1;
+
 		for (int i = 0; i < channels.size(); i++)
 		{
 			if (channels[i].id == id)
+			{
+				if (channels[i].isFreed)
+				{
+					channels.erase(channels.begin() + i);
+					break;
+				}
 				return channels[i];
+			}
 		}
 
-		return channels[0];
+		return c;
 	}
 
 	Channel& GetChannel(std::string name)

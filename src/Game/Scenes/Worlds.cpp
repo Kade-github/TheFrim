@@ -115,6 +115,7 @@ void Worlds::CreateWorldObjects()
 
 		world->SetSelectCallback([&, i]() {
 			MusicManager::GetInstance()->FadeOut(4);
+			MusicManager::GetInstance()->PlaySFX("select");
 			LoadWorld(worlds[i]);
 		});
 
@@ -123,11 +124,12 @@ void Worlds::CreateWorldObjects()
 			{
 				deleteWorld = true;
 				// give warning
-
+				MusicManager::GetInstance()->PlaySFX("select");
 				world->SetDeleteText("Really?");
 			}
 			else
 			{
+				MusicManager::GetInstance()->PlaySFX("select");
 				DeleteWorld(worlds[i]);
 				deleteWorld = false;
 			}
@@ -183,9 +185,15 @@ void Worlds::Draw()
 void Worlds::MouseClick(int button, glm::vec2 mPos)
 {
 	if (Collision2D::PointInRect(mPos, createWorld->position, glm::vec2(createWorld->width, createWorld->height)))
+	{
+		MusicManager::GetInstance()->PlaySFX("select");
 		Game::instance->SwitchScene(new CreateWorld());
+	}
 	else if (Collision2D::PointInRect(mPos, goBack->position, glm::vec2(goBack->width, goBack->height)))
+	{
+		MusicManager::GetInstance()->PlaySFX("select");
 		Game::instance->SwitchScene(new MainMenu());
+	}
 
 	// propagate mouse click
 

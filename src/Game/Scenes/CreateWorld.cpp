@@ -117,13 +117,16 @@ void CreateWorld::MouseClick(int button, glm::vec2 mPos)
 				return;
 
 			MusicManager::GetInstance()->FadeOut(4);
-
+			MusicManager::GetInstance()->PlaySFX("select");
 			Game::instance->SwitchScene(new GeneratingWorld(name->text, seed->text));
 		}
 	}
 
 	if (Collision2D::PointInRect(mPos, goBack->position, glm::vec2(goBack->width, goBack->height)))
+	{
+		MusicManager::GetInstance()->PlaySFX("select");
 		Game::instance->SwitchScene(new Worlds());
+	}
 }
 
 void CreateWorld::OnChar(unsigned int c)

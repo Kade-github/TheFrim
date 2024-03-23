@@ -47,6 +47,13 @@ void MusicManager::GenerateTrackList()
 	}
 }
 
+bool MusicManager::ChannelIsPlaying(std::string name)
+{
+	Channel& c = Game::instance->audioManager->GetChannel(name);
+
+	return c.isPlaying;
+}
+
 void MusicManager::PlayMusic(std::string path)
 {
 	std::string rPath = "Assets/Music/tracks/" + path + ".mp3";
@@ -57,7 +64,7 @@ void MusicManager::PlayMusic(std::string path)
 
 	currentSong = rPath;
 
-	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong);
+	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
 
 	c.SetReverb(0.5f, 0.5f);
 
@@ -77,7 +84,7 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	currentSong = rPath;
 
-	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong);
+	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
 
 	c.SetVolume(0);
 
@@ -95,6 +102,15 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 	_nextTrack = glfwGetTime() + c.length + 240;
 
 	_nextTrack += rand() % 400; // 6-10 minutes
+}
+
+void MusicManager::PlaySFX(std::string path, std::string customName)
+{
+	std::string rPath = "Assets/Sfx/" + path + ".ogg";
+
+	Channel& c = Game::instance->audioManager->CreateChannel(rPath, customName, true);
+
+	c.Play();
 }
 
 void MusicManager::FadeOut(float duration)
@@ -169,12 +185,5 @@ void MusicManager::Update()
 		Channel& c = Game::instance->audioManager->GetChannel(currentSong);
 
 		c.SetVolume(_startVolume - t);
-	}
-
-	// if the song stopped
-
-	if (!BASS_ChannelIsActive(Game::instance->audioManager->GetChannel(currentSong).id))
-	{
-		FreeMusic();
 	}
 }

@@ -1,9 +1,26 @@
 #include "Entity.h"
 #include <Game.h>
 #include "../../WorldManager.h"
+#include "../../MusicManager.h"
 
 Entity::Entity(glm::vec3 pos) : GameObject(pos)
 {
+}
+
+void Entity::Footstep()
+{
+	Chunk* currentChunk = WorldManager::instance->GetChunk(position.x, position.z);
+
+	if (currentChunk != NULL)
+	{
+		if (currentChunk->DoesBlockExist(position.x, position.y - 1, position.z))
+		{
+			if (!MusicManager::GetInstance()->ChannelIsPlaying("sfx"))
+			{
+				MusicManager::GetInstance()->PlaySFX("grass_sfx");
+			}
+		}
+	}
 }
 
 void Entity::CheckCollision(glm::vec3& motion, float down)
@@ -256,6 +273,11 @@ void Entity::Draw()
 	CheckCollision(motion, 1.8);
 
 	position = motion;
+
+	// footstep
+
+	if (isOnGround && (forwardVelocity != 0 || strafeVelocity != 0))
+		Footstep();
 
 	if (forwardVelocity != 0)
 		forwardVelocity *= 0.8;

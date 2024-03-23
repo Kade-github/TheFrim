@@ -27,8 +27,12 @@ public:
 
 	void GenerateTrackList();
 
+	bool ChannelIsPlaying(std::string name);
+
 	void PlayMusic(std::string path);
 	void PlayMusic(std::string path, float fadeDuration);
+
+	void PlaySFX(std::string path, std::string customName = "sfx");
 
 	void FadeOut(float duration);
 

@@ -24,6 +24,8 @@ public:
 
 	Entity(glm::vec3 pos);
 
+	void Footstep();
+
 	void CheckCollision(glm::vec3& motion, float down);
 	void CheckVerticalCollision(glm::vec3& motion);
 
