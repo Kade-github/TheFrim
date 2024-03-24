@@ -125,6 +125,7 @@ void Player::Draw()
 
 	if (headBop > 0)
 	{
+		static bool footstepped = false;
 		if (!moving || !isOnGround)
 			headBop -= 20.0f * Game::instance->deltaTime;
 
@@ -135,8 +136,16 @@ void Player::Draw()
 
 		camera->position.y += s;
 
-		if (s < 0)
+		Game::instance->log->Write(std::to_string(s));
+
+		if (s < -0.03 && !footstepped)
+		{
 			Footstep();
+			footstepped = true;
+		}
+
+		if (s > 0.03)
+			footstepped = false;
 	}
 
 	camera->pitch = p;

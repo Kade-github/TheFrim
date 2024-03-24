@@ -9,46 +9,38 @@ Entity::Entity(glm::vec3 pos) : GameObject(pos)
 
 void Entity::Footstep()
 {
-	if (glfwGetTime() - _lastFootstep < 0.4)
-		return;
-
-	_lastFootstep = glfwGetTime();
-
 	Chunk* c = WorldManager::instance->GetChunk(position.x, position.z);
 
-	if (!MusicManager::GetInstance()->ChannelIsPlaying("walk"))
+	float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
+
+	// get block under player
+
+	int y = (int)position.y - 2;
+
+	if (c->DoesBlockExist(position.x, y, position.z))
 	{
-		float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
+		subChunk& sb = c->GetSubChunk(y);
 
-		// get block under player
+		if (sb.y < 0)
+			return;
 
-		int y = (int)position.y - 2;
+		glm::vec3 _world = c->WorldToChunk(position);
 
-		if (c->DoesBlockExist(position.x, y, position.z))
+		Block* b = sb.getBlock(_world.x, _world.z);
+
+		if (b != nullptr)
 		{
-			subChunk& sb = c->GetSubChunk(y);
-
-			if (sb.y < 0)
-				return;
-
-			glm::vec3 _world = c->WorldToChunk(position);
-
-			Block* b = sb.getBlock(_world.x, _world.z);
-
-			if (b != nullptr)
+			switch (b->soundType)
 			{
-				switch (b->soundType)
-				{
-					case SoundType::S_GRASS:
-						MusicManager::GetInstance()->PlaySFX("grass_sfx", pitch, "walk");
-						break;
-					case SoundType::S_STONE:
-						MusicManager::GetInstance()->PlaySFX("stone_sfx", pitch, "walk");
-						break;
-					case SoundType::S_WOOD:
-						MusicManager::GetInstance()->PlaySFX("wood_sfx", pitch, "walk");
-						break;
-				}
+			case SoundType::S_GRASS:
+				MusicManager::GetInstance()->PlaySFX("grass_sfx", pitch, "walk");
+				break;
+			case SoundType::S_STONE:
+				MusicManager::GetInstance()->PlaySFX("stone_sfx", pitch, "walk");
+				break;
+			case SoundType::S_WOOD:
+				MusicManager::GetInstance()->PlaySFX("wood_sfx", pitch, "walk");
+				break;
 			}
 		}
 	}
