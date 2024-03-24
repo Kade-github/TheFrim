@@ -51,7 +51,7 @@ bool MusicManager::ChannelIsPlaying(std::string name)
 {
 	Channel& c = Game::instance->audioManager->GetChannel(name);
 
-	return c.isPlaying;
+	return c.IsPlaying();
 }
 
 void MusicManager::PlayMusic(std::string path)
@@ -88,8 +88,6 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	c.SetVolume(0);
 
-	c.SetReverb(0.5f, 0.5f);
-
 	c.Play();
 
 	_fadeTime = glfwGetTime();
@@ -108,7 +106,20 @@ void MusicManager::PlaySFX(std::string path, std::string customName)
 {
 	std::string rPath = "Assets/Sfx/" + path + ".ogg";
 
-	Channel& c = Game::instance->audioManager->CreateChannel(rPath, customName, true);
+	Channel& c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);
+
+	c.Play();
+}
+
+void MusicManager::PlaySFX(std::string path, float pitch, std::string customName)
+{
+	std::string rPath = "Assets/Sfx/" + path + ".ogg";
+
+	Channel& c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);
+
+	c.CreateFX();
+
+	c.SetPitch(pitch);
 
 	c.Play();
 }

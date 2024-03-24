@@ -8,6 +8,8 @@ class Wood : public Block
 public:
 	Wood(glm::vec3 _position) : Block(_position, BlockType::WOOD) {
 		position = _position;
+
+		soundType = SoundType::S_WOOD;
 	}
 
 	BlockFace CreateFrontFace() override

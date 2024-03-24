@@ -9,15 +9,46 @@ Entity::Entity(glm::vec3 pos) : GameObject(pos)
 
 void Entity::Footstep()
 {
-	Chunk* currentChunk = WorldManager::instance->GetChunk(position.x, position.z);
+	if (glfwGetTime() - _lastFootstep < 0.4)
+		return;
 
-	if (currentChunk != NULL)
+	_lastFootstep = glfwGetTime();
+
+	Chunk* c = WorldManager::instance->GetChunk(position.x, position.z);
+
+	if (!MusicManager::GetInstance()->ChannelIsPlaying("walk"))
 	{
-		if (currentChunk->DoesBlockExist(position.x, position.y - 1, position.z))
+		float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
+
+		// get block under player
+
+		int y = (int)position.y - 2;
+
+		if (c->DoesBlockExist(position.x, y, position.z))
 		{
-			if (!MusicManager::GetInstance()->ChannelIsPlaying("sfx"))
+			subChunk& sb = c->GetSubChunk(y);
+
+			if (sb.y < 0)
+				return;
+
+			glm::vec3 _world = c->WorldToChunk(position);
+
+			Block* b = sb.getBlock(_world.x, _world.z);
+
+			if (b != nullptr)
 			{
-				MusicManager::GetInstance()->PlaySFX("grass_sfx");
+				switch (b->soundType)
+				{
+					case SoundType::S_GRASS:
+						MusicManager::GetInstance()->PlaySFX("grass_sfx", pitch, "walk");
+						break;
+					case SoundType::S_STONE:
+						MusicManager::GetInstance()->PlaySFX("stone_sfx", pitch, "walk");
+						break;
+					case SoundType::S_WOOD:
+						MusicManager::GetInstance()->PlaySFX("wood_sfx", pitch, "walk");
+						break;
+				}
 			}
 		}
 	}
@@ -123,6 +154,8 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 {
 	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
 
+	bool wasOnGround = isOnGround;
+
 	isOnGround = false;
 
 	float toY = motion.y - 1.8;
@@ -190,6 +223,9 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		{
 			if (downVelocity <= 0)
 			{
+				if (!wasOnGround)
+					Footstep();
+
 				isOnGround = true;
 				downVelocity = 0;
 				motion.y = _lastY + 2.8;
@@ -256,6 +292,8 @@ void Entity::Draw()
 	if (downVelocity > 18)
 		downVelocity = 18;
 
+	glm::vec3 preMotion = position;
+
 	glm::vec3 motion = position;
 
 	motion.y += downVelocity * Game::instance->deltaTime;
@@ -273,11 +311,6 @@ void Entity::Draw()
 	CheckCollision(motion, 1.8);
 
 	position = motion;
-
-	// footstep
-
-	if (isOnGround && (forwardVelocity != 0 || strafeVelocity != 0))
-		Footstep();
 
 	if (forwardVelocity != 0)
 		forwardVelocity *= 0.8;

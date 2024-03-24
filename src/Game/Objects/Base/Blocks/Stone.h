@@ -8,6 +8,7 @@ class Stone : public Block
 public:
 	Stone(glm::vec3 _position) : Block(_position, BlockType::STONE) {
 		position = _position;
+		soundType = SoundType::S_STONE;
 	}
 
 	BlockFace CreateFrontFace() override

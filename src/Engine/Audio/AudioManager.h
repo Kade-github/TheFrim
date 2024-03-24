@@ -4,44 +4,45 @@
 #include <bass.h>
 #include <bass_fx.h>
 
+#include <iostream>
+
 #include <string>
 #include <vector>
 
 class Channel {
 	std::string _path;
-	bool _autoFree = false;
-public:
-	static void EndSync(HSYNC handle, DWORD channel, DWORD data, void* user)
+
+	void CheckError()
 	{
-		Channel* c = (Channel*)user;
-
-		if (c->_autoFree)
-			c->isFreed = true;
-
-		c->isPlaying = false;
+		if (BASS_ErrorGetCode() != 0)
+			std::cout << "BASS Error: " << BASS_ErrorGetCode() << std::endl;
 	}
+
+public:
+	bool autoFree = false;
+	static void EndSync(HSYNC handle, DWORD channel, DWORD data, void* user);
 
 	std::string name;
 	unsigned long id = -1;
+	unsigned long decode = -1;
 
 	bool isFreed = false;
 
-	bool isPlaying = false;
 	float volume = 1.0f;
 	float length = 0.0f;
+	float pitch = 1.0f;
 
 	Channel(std::string path, std::string _name, bool autoFree = false) {
 		_path = path;
 		name = _name;
 
-		_autoFree = autoFree;
+		this->autoFree = autoFree;
 		
 		auto flags = BASS_STREAM_PRESCAN | BASS_SAMPLE_FLOAT;
 
-		if (autoFree)
-			flags |= BASS_STREAM_AUTOFREE;
-
 		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, flags);
+
+		decode = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, BASS_STREAM_DECODE | BASS_SAMPLE_FLOAT);
 
 		if (BASS_ErrorGetCode() != 0)
 			id = -1;
@@ -57,13 +58,22 @@ public:
 		return id != -1;
 	}
 
+	bool IsPlaying()
+	{
+		if (!IsLoaded())
+			return false;
+
+		return BASS_ChannelIsActive(id) == BASS_ACTIVE_PLAYING;
+	
+	}
+
 	void Play(bool restart = false)
 	{
 		if (!IsLoaded())
 			return;
 
 		BASS_ChannelPlay(id, restart);
-		isPlaying = true;
+		CheckError();
 	}
 
 	void Stop()
@@ -72,7 +82,7 @@ public:
 			return;
 
 		BASS_ChannelStop(id);
-		isPlaying = false;
+		CheckError();
 	}
 
 	void Pause()
@@ -81,7 +91,7 @@ public:
 			return;
 
 		BASS_ChannelPause(id);
-		isPlaying = false;
+		CheckError();
 	}
 
 	void SetVolume(float vol)
@@ -98,6 +108,9 @@ public:
 			v = 1;
 
 		BASS_ChannelSetAttribute(id, BASS_ATTRIB_VOL, v);
+
+		CheckError();
+
 		volume = vol;
 	}
 
@@ -106,7 +119,9 @@ public:
 		if (!IsLoaded())
 			return;
 
-		id = BASS_FX_TempoCreate(id, BASS_FX_FREESOURCE);
+		id = BASS_FX_TempoCreate(decode, BASS_FX_FREESOURCE);
+
+		CheckError();
 	}
 
 	void SetReverb(float mix, float time)
@@ -122,6 +137,8 @@ public:
 		reverb.fHighFreqRTRatio = 0.001f;
 
 		BASS_FXSetParameters(id, &reverb);
+
+		CheckError();
 	}
 
 	void Set3DReverb(float mix, float time)
@@ -145,7 +162,25 @@ public:
 		reverb.flHFReference = 5000.0f;
 
 		BASS_FXSetParameters(id, &reverb);
+
+		CheckError();
 	}
+
+	void SetPitch(float p)
+	{
+		if (!IsLoaded())
+			return;
+
+		float sample;
+		BASS_ChannelGetAttribute(id, BASS_ATTRIB_FREQ, &sample);
+
+		BASS_ChannelSetAttribute(id, BASS_ATTRIB_FREQ, sample * p);
+
+		CheckError();
+
+		pitch = p;
+	}
+
 
 	void Free()
 	{
@@ -153,6 +188,8 @@ public:
 		{
 			BASS_ChannelStop(id);
 			BASS_StreamFree(id);
+
+
 		}
 
 		id = -1;
@@ -223,9 +260,9 @@ public:
 		{
 			if (channels[i].id == id)
 			{
-				if (channels[i].isFreed)
+				if (channels[i].autoFree && !channels[i].IsPlaying())
 				{
-					channels.erase(channels.begin() + i);
+					RemoveChannel(channels[i]);
 					break;
 				}
 				return channels[i];
@@ -237,13 +274,25 @@ public:
 
 	Channel& GetChannel(std::string name)
 	{
+		static Channel c("", "", false);
+
+		c.isFreed = true;
+		c.id = -1;
+
 		for (int i = 0; i < channels.size(); i++)
 		{
 			if (channels[i].name == name)
+			{
+				if (channels[i].autoFree && !channels[i].IsPlaying())
+				{
+					RemoveChannel(channels[i]);
+					break;
+				}
 				return channels[i];
+			}
 		}
 
-		return channels[0];
+		return c;
 	}
 };
 

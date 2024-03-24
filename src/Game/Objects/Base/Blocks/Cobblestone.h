@@ -8,6 +8,8 @@ class Cobblestone : public Block
 public:
 	Cobblestone(glm::vec3 _position) : Block(_position, BlockType::COBBLESTONE) {
 		position = _position;
+
+		soundType = SoundType::S_STONE;
 	}
 
 	BlockFace CreateFrontFace() override

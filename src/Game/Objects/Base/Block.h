@@ -58,6 +58,12 @@ enum BlockType
 	GLASS = 12
 };
 
+enum SoundType {
+	S_GRASS = 0,
+	S_STONE = 1,
+	S_WOOD = 2,
+};
+
 #define BUV_SHADOWFULL 0, 3
 #define BUV_SHADOWSEVENTYFIVE 0, 1
 #define BUV_SHADOWFIFTY 1, 0
@@ -78,6 +84,8 @@ public:
 	BlockType type;
 
 	std::vector<BlockFace> faces = {};
+
+	SoundType soundType = SoundType::S_GRASS;
 
 	bool changed = false;
 

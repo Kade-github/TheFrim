@@ -80,6 +80,11 @@ void Player::Draw()
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
 		{
+			if (glfwGetTime() - jumpCooldown < 0.15)
+				return;
+			
+			jumpCooldown = glfwGetTime();
+
 			downVelocity = jumpStrength;
 			isOnGround = false;
 		}
@@ -126,7 +131,12 @@ void Player::Draw()
 		if (headBop > 1.25f)
 			headBop = 1.25f;
 
-		camera->position.y += (sin(glfwGetTime() * 16) * 0.05f) * headBop;
+		float s = (sin(glfwGetTime() * 16) * 0.05f) * headBop;
+
+		camera->position.y += s;
+
+		if (s < 0)
+			Footstep();
 	}
 
 	camera->pitch = p;
