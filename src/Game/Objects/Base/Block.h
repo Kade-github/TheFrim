@@ -64,24 +64,34 @@ enum SoundType {
 	S_WOOD = 2,
 };
 
-#define BUV_SHADOWFULL 0, 3
+#define BUV_SHADOWFULL 0, 4
 #define BUV_SHADOWSEVENTYFIVE 0, 1
 #define BUV_SHADOWFIFTY 1, 0
 #define BUV_SHADOWTWENTYFIVE 0, 0
-#define BUV_DIRT 2, 1
-#define BUV_GRASS 2, 2
-#define BUV_GRASSSIDE 3, 0
-#define BUV_STONE 1, 3
-#define BUV_COBBLESTONE 1, 1
-#define BUV_WOOD 2, 3
-#define BUV_LEAVES 3, 1
-#define BUV_WOODENPLANKS 3, 3
+#define BUV_BREAK0 1, 1
+#define BUV_BREAK1 2, 0
+#define BUV_BREAK2 2, 1
+#define BUV_BREAK3 0, 2
+#define BUV_DIRT 3, 0
+#define BUV_GRASS 0, 3
+#define BUV_GRASSSIDE 1, 3
+#define BUV_STONE 4, 1
+#define BUV_COBBLESTONE 1, 2
+#define BUV_WOOD 4, 2
+#define BUV_LEAVES 2, 3
+#define BUV_WOODENPLANKS 4, 3
 
 class Block
 {
+	int GetBreakTexture();
+	glm::vec4 GetBreakUV();
+
 public:
 	glm::vec3 position;
 	BlockType type;
+
+	float breakProgress = 0;
+	float toughness = 0;
 
 	std::vector<BlockFace> faces = {};
 
@@ -105,6 +115,13 @@ public:
 	virtual BlockFace CreateRightFace();
 	virtual BlockFace CreateTopFace();
 	virtual BlockFace CreateBottomFace();
+
+	BlockFace BreakFrontFace();
+	BlockFace BreakBackFace();
+	BlockFace BreakLeftFace();
+	BlockFace BreakRightFace();
+	BlockFace BreakTopFace();
+	BlockFace BreakBottomFace();
 
 	glm::vec4 GetUV(int x, int y);
 	glm::vec4 GetUVVerticallyFlipped(int x, int y);

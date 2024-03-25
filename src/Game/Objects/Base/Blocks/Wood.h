@@ -10,6 +10,7 @@ public:
 		position = _position;
 
 		soundType = SoundType::S_WOOD;
+		toughness = 0.15f;
 	}
 
 	BlockFace CreateFrontFace() override

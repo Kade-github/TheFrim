@@ -136,8 +136,6 @@ void Player::Draw()
 
 		camera->position.y += s;
 
-		Game::instance->log->Write(std::to_string(s));
-
 		if (s < -0.03 && !footstepped)
 		{
 			Footstep();
