@@ -417,6 +417,7 @@ void Chunk::CreateFaces(Block* b)
 	if (top)
 	{
 		BlockFace f = b->CreateTopFace();
+		f.type = 0;
 		ApplyNormal(f.vertices, glm::vec3(0, 1.0f, 0));
 		b->faces.push_back(f);
 	}
@@ -424,6 +425,7 @@ void Chunk::CreateFaces(Block* b)
 	if (bottom)
 	{
 		BlockFace f = b->CreateBottomFace();
+		f.type = 1;
 
 		ApplyNormal(f.vertices, glm::vec3(0, -1.0f, 0));
 		b->faces.push_back(f);
@@ -432,6 +434,7 @@ void Chunk::CreateFaces(Block* b)
 	if (left)
 	{
 		BlockFace f = b->CreateLeftFace();
+		f.type = 2;
 		ApplyNormal(f.vertices, glm::vec3(1.0f, 0, 0));
 		b->faces.push_back(f);
 	}
@@ -439,6 +442,7 @@ void Chunk::CreateFaces(Block* b)
 	if (right)
 	{
 		BlockFace f = b->CreateRightFace();
+		f.type = 3;
 		ApplyNormal(f.vertices, glm::vec3(-1.0f, 0, 0));
 		b->faces.push_back(f);
 	}
@@ -446,6 +450,7 @@ void Chunk::CreateFaces(Block* b)
 	if (front)
 	{
 		BlockFace f = b->CreateFrontFace();
+		f.type = 4;
 		ApplyNormal(f.vertices, glm::vec3(0, 0, -1.0f));
 		b->faces.push_back(f);
 	}
@@ -453,6 +458,7 @@ void Chunk::CreateFaces(Block* b)
 	if (back)
 	{
 		BlockFace f = b->CreateBackFace();
+		f.type = 5;
 		ApplyNormal(f.vertices, glm::vec3(0, 0, 1.0f));
 		b->faces.push_back(f);
 	}

@@ -34,6 +34,8 @@ void Gameplay::Create()
 
 	AddObject(player);
 
+	player->order = 2;
+
 	UpdateChunks();
 
 	loadPool.reset(std::thread::hardware_concurrency() * 3.14f);

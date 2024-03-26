@@ -11,7 +11,7 @@ public:
 	glm::vec3 sum;
 	std::vector<GameObject::VVertex> vertices;
 	std::vector<unsigned int> indices;
-
+	int type = 0;
 	int lightLevel = 0;
 
 	BlockFace()
@@ -91,7 +91,7 @@ public:
 	BlockType type;
 
 	float breakProgress = 0;
-	float toughness = 0;
+	float toughness = 1;
 
 	std::vector<BlockFace> faces = {};
 
