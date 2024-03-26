@@ -10,7 +10,7 @@ public:
 		position = _position;
 
 		soundType = SoundType::S_STONE;
-		toughness = 0.65f;
+		toughness = 0.1f;
 	}
 
 	BlockFace CreateFrontFace() override

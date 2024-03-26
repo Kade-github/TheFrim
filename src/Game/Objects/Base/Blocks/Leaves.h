@@ -8,6 +8,7 @@ class Leaves : public Block
 public:
 	Leaves(glm::vec3 _position) : Block(_position, BlockType::LEAVES) {
 		position = _position;
+		toughness = 1.8f;
 	}
 
 	BlockFace CreateFrontFace() override

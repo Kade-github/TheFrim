@@ -16,7 +16,7 @@ class Player : public Entity
 	Block* selectedBlock = nullptr;
 	BlockFace selectedFace;
 
-	void DrawBlockBreak(BlockFace& f);
+	void DrawBlockBreak(BlockFace f);
 
 	void SetBreakBuffer();
 

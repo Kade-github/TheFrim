@@ -7,7 +7,7 @@ bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
 
-void Player::DrawBlockBreak(BlockFace& f)
+void Player::DrawBlockBreak(BlockFace f)
 {
 	vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
 
@@ -51,6 +51,9 @@ void Player::RenderBreak()
 	glm::mat4 model = glm::mat4(1.0f);
 
 	shader->SetUniformMat4f("model", &model[0][0]);
+
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_CULL_FACE);
 
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -220,28 +223,6 @@ void Player::Draw()
 			glm::vec3 _world = c->WorldToChunk(ray);
 
 			selectedBlock = sb.getBlock(_world.x, _world.z);
-
-			if (selectedBlock != nullptr) // get the closest face to the ray intersection
-			{
-				float lastDist = 1000;
-				for (int i = 0; i < selectedBlock->faces.size(); i++)
-				{
-					BlockFace& f = selectedBlock->faces[i];
-
-					if (f.vertices.size() == 0)
-						continue;
-
-					glm::vec3 middle = (f.vertices[0].position + f.vertices[1].position + f.vertices[2].position + f.vertices[3].position) / 4.0f;
-
-					float dist = glm::distance(middle, ray);
-
-					if (dist < lastDist)
-					{
-						selectedFace = f;
-						lastDist = dist;
-					}
-				}
-			}
 		}
 	}
 
@@ -250,7 +231,7 @@ void Player::Draw()
 
 	if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 	{
-		selectedBlock->breakProgress += (0.25f * Game::instance->deltaTime) * selectedBlock->toughness;
+		selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * selectedBlock->toughness;
 
 		if (selectedBlock->breakProgress >= 1)
 		{
@@ -266,34 +247,27 @@ void Player::Draw()
 			}
 		}
 
-		// get the block face being broken
+		std::vector<BlockFace> faces = {};
 
-		BlockFace b;
+		faces.push_back(selectedBlock->BreakTopFace());
+		faces.push_back(selectedBlock->BreakBottomFace());
+		faces.push_back(selectedBlock->BreakLeftFace());
+		faces.push_back(selectedBlock->BreakRightFace());
+		faces.push_back(selectedBlock->BreakFrontFace());
+		faces.push_back(selectedBlock->BreakBackFace());
 
-		switch (selectedFace.type)
+		for (int i = 0; i < faces.size(); i++)
 		{
-		case 0: // top
-			b = selectedBlock->BreakTopFace();
-			break;
-		case 1: // bottom
-			b = selectedBlock->BreakBottomFace();
-			break;
-		case 2: // left
-			b = selectedBlock->BreakLeftFace();
-			break;
-		case 3: // right
-			b = selectedBlock->BreakRightFace();
-			break;
-		case 4: // front
-			b = selectedBlock->BreakFrontFace();
-			break;
-		case 5: // back
-			b = selectedBlock->BreakBackFace();
-			break;
+			BlockFace f = faces[i];
+
+			DrawBlockBreak(f);
 		}
 
-		DrawBlockBreak(b);
 		RenderBreak();
+	}
+	else if (selectedBlock != nullptr)
+	{
+		selectedBlock->breakProgress = 0;
 	}
 }
 

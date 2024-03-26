@@ -8,7 +8,7 @@ class Grass : public Block
 public:
 	Grass(glm::vec3 _position) : Block(_position, BlockType::GRASS) {
 		position = _position;
-		toughness = 0.8;
+		toughness = 1.1f;
 	}
 
 	BlockFace CreateFrontFace() override

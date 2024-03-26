@@ -8,7 +8,7 @@ class Dirt : public Block
 public:
 	Dirt(glm::vec3 _position) : Block(_position, BlockType::DIRT) {
 		position = _position;
-		toughness = 0.8;
+		toughness = 1.1f;
 	}
 
 	BlockFace CreateFrontFace() override
