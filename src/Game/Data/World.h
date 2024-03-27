@@ -6,8 +6,8 @@
 
 #define REGION_SIZE 5
 
-#define MSGPACK_NO_BOOST
-#include <msgpack.hpp>
+#include "Player.h"
+
 #include <vector>
 #include <string>
 #include <mutex>
@@ -68,7 +68,7 @@ namespace Data
 		std::vector<std::string> storedRegions;
 		std::string name;
 
-		float playerX, playerY, playerZ;
+		Player p;
 
 		unsigned long seedNum = 0;
 
@@ -92,7 +92,7 @@ namespace Data
 
 		void saveRegion(Region r);
 
-		MSGPACK_DEFINE_ARRAY(name, seed, playerX, playerY, playerZ);
+		MSGPACK_DEFINE_ARRAY(name, seed);
 
 	};
 };

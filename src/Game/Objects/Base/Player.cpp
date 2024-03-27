@@ -310,7 +310,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 			if (c != nullptr)
 			{
-				c->ModifyBlock(x, y, z, BlockType::COBBLESTONE);
+				// place block
 			}
 		}
 	}

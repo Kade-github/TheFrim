@@ -25,6 +25,8 @@ class Player : public Entity
 	void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
 
 public:
+	Data::Player playerData;
+
 	float jumpCooldown = 0;
 
 	Player(glm::vec3 pos);
