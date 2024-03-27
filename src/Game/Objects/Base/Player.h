@@ -22,6 +22,8 @@ class Player : public Entity
 
 	void RenderBreak();
 
+	void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
+
 public:
 	float jumpCooldown = 0;
 

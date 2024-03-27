@@ -7,6 +7,12 @@ bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
 
+void Player::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
+{
+	for (GameObject::VVertex& v : vertices)
+		v.normal = normal;
+}
+
 void Player::DrawBlockBreak(BlockFace f)
 {
 	vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
@@ -250,15 +256,24 @@ void Player::Draw()
 		std::vector<BlockFace> faces = {};
 
 		faces.push_back(selectedBlock->BreakTopFace());
+		ApplyNormal(faces[0].vertices, glm::vec3(0, 1, 0));
 		faces.push_back(selectedBlock->BreakBottomFace());
+		ApplyNormal(faces[1].vertices, glm::vec3(0, -1, 0));
 		faces.push_back(selectedBlock->BreakLeftFace());
+		ApplyNormal(faces[2].vertices, glm::vec3(1, 0, 0));
 		faces.push_back(selectedBlock->BreakRightFace());
+		ApplyNormal(faces[3].vertices, glm::vec3(-1, 0, 0));
 		faces.push_back(selectedBlock->BreakFrontFace());
+		ApplyNormal(faces[4].vertices, glm::vec3(0, 0, -1));
 		faces.push_back(selectedBlock->BreakBackFace());
+		ApplyNormal(faces[5].vertices, glm::vec3(0, 0, 1));
 
 		for (int i = 0; i < faces.size(); i++)
 		{
 			BlockFace f = faces[i];
+
+			for(int j = 0; j < f.vertices.size(); j++)
+				f.vertices[j].position += f.vertices[j].normal * 0.01f;
 
 			DrawBlockBreak(f);
 		}
