@@ -68,25 +68,26 @@ namespace Data
 	};
 
 	struct InventoryItem {
-		ItemType type = ITEM_NULL;
-		uint8_t count = 1;
+		int type = ITEM_NULL;
+		int count = 1;
 
 		std::vector<NBT> nbt = {};
 
 		InventoryItem() {}
 
-		InventoryItem(ItemType type, uint8_t count)
+		InventoryItem(int type, int count)
 			: type(type), count(count) {}
 
 		NBT& GetNBT(std::string key)
 		{
+			static NBT n {"", ""};
 			for (auto& n : nbt)
 			{
 				if (n.key == key)
 					return n;
 			}
 
-			return { "", "" };
+			return n;
 		}
 
 		NBT FindNBT(std::string key)
@@ -105,7 +106,7 @@ namespace Data
 
 	struct Player
 	{
-		float x, y, z;
+		float x = 0, y = 180, z = 0;
 		float pitch, yaw;
 
 		uint8_t selectedSlot = 0;
@@ -124,9 +125,9 @@ namespace Data
 			inventory[x][y] = item;
 		}
 
-		void SetInventoryItem(int x, int y, ItemType type, int count)
+		void SetInventoryItem(int x, int y, int type, int count)
 		{
-			inventory[x][y] = { type, count };
+			inventory[x][y] = { (int)type, count };
 		}
 
 		MSGPACK_DEFINE_ARRAY(x, y, z, pitch, yaw, selectedSlot, health, inventory);

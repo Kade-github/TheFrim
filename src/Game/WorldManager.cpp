@@ -205,8 +205,8 @@ void WorldManager::LoadWorldFile()
 
 void WorldManager::LoadWorld()
 {
-	int playerX = _world.playerX;
-	int playerZ = _world.playerZ;
+	int playerX = _world.p.x;
+	int playerZ = _world.p.z;
 
 	// initial
 	_generatePool.detach_task([&, playerX, playerZ]() {
@@ -318,14 +318,14 @@ Data::Chunk WorldManager::GetChunkData(float x, float z)
 
 glm::vec3 WorldManager::GetPlayerPosition()
 {
-	return glm::vec3(_world.playerX, _world.playerY, _world.playerZ);
+	return glm::vec3(_world.p.x, _world.p.y, _world.p.z);
 }
 
 void WorldManager::SetPlayerPosition(glm::vec3 pos)
 {
-	_world.playerX = pos.x;
-	_world.playerY = pos.y;
-	_world.playerZ = pos.z;
+	_world.p.x = pos.x;
+	_world.p.y = pos.y;
+	_world.p.z = pos.z;
 }
 
 void WorldManager::SaveWorldNow()

@@ -77,9 +77,6 @@ namespace Data
 		World()
 		{
 			name = "";
-			playerX = 0;
-			playerY = 128;
-			playerZ = 0;
 		}
 
 		void scanForRegions();
