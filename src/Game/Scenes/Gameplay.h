@@ -2,20 +2,18 @@
 #define _GAMEPLAY_H
 
 #include <Objects/Scene.h>
-#include <Objects/2DCamera.h>
 #include <Objects/2DSprite.h>
 #include <BS_thread_pool.hpp>
-#include "../Objects/Base/Player.h"
+#include "../Objects/Base/Hud.h"
 #include "../WorldManager.h"
 
 class Gameplay : public Scene
 {
 public:
 	WorldManager* wm;
+	Hud* hud;
 	Player* player;
 	Camera2D* c2d;
-
-	Sprite2D* crosshair;
 
 	BS::thread_pool loadPool;
 

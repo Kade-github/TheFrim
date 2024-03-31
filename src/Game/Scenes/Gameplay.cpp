@@ -23,11 +23,6 @@ void Gameplay::Create()
 
 	c2d->order = 1;
 
-	crosshair = new Sprite2D("Assets/Textures/crosshair.png", glm::vec3(c2d->_w / 2, c2d->_h / 2, 0));
-
-	c2d->AddObject(crosshair);
-	crosshair->order = 1;
-
 	Camera* camera = Game::instance->GetCamera();
 
 	player = new Player(wm->GetPlayerPosition());
@@ -35,6 +30,12 @@ void Gameplay::Create()
 	AddObject(player);
 
 	player->order = 2;
+
+	hud = new Hud(glm::vec3(0, 0, 0), player, c2d);
+
+	AddObject(hud);
+
+	hud->order = 3;
 
 	UpdateChunks();
 
@@ -61,8 +62,6 @@ void Gameplay::Draw()
 	Game::instance->shader->SetUniform3f("CameraPos", camera->position.x, camera->position.y, camera->position.z);
 	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);
 	Game::instance->shader->SetUniform1f("FogFar", fog);
-
-	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 
