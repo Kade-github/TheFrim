@@ -91,6 +91,8 @@ void Worlds::CreateWorldObjects()
 		delete w;
 	}
 
+	worldObjects.clear();
+
 	canScroll = false;
 
 	for (int i = 0; i < worlds.size(); i++)
@@ -149,7 +151,11 @@ void Worlds::CreateWorldObjects()
 		scrollBar->color.w = 0.75;
 	}
 	else
+	{
+		scrollModifier = 0;
+		_lastScroll = 0.0f;
 		scrollBar->color.w = 0;
+	}
 }
 
 void Worlds::LoadWorld(Data::World w)
