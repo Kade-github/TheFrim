@@ -13,6 +13,8 @@ private:
 	Camera2D* c2d;
 	Texture* h;
 
+	glm::vec4 GetHudSrc(float x, float y);
+
 public:
 	Sprite2D* crosshair;
 

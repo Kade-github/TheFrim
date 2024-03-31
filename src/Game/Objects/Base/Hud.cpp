@@ -1,11 +1,46 @@
 #include "Hud.h"
 
+glm::vec4 Hud::GetHudSrc(float x, float y)
+{
+	return glm::vec4((x * 128.0f) / h->width, (y * 128.0f) / h->height, 128.0f / h->width, 128.0f / h->height);
+}
+
 void Hud::UpdateHotbar()
 {
 }
 
 void Hud::UpdateHearts()
 {
+	for (auto h : hearts)
+	{
+		c2d->RemoveObject(h);
+		delete h;
+	}
+
+	hearts.clear();
+
+	float hpProgress = player->playerData.health;
+
+	for (int i = 0; i < 10; i++)
+	{
+		Sprite2D* s = new Sprite2D(h, glm::vec3(0, 0, 0));
+
+		s->width = 72;
+		s->height = 72;
+
+		s->position = glm::vec3(((c2d->_w - 162) / 2) - (i * (s->width / 2)), s->height + 72, 0);
+		
+		if (hpProgress <= (float)i + 0.5f) // half heart
+			s->src = GetHudSrc(0, 2);
+		if (hpProgress < i) // empty heart
+			s->src = GetHudSrc(0, 3);
+		else // full heart
+			s->src = GetHudSrc(0, 4);
+
+		s->order = 1;
+		hearts.push_back(s);
+		c2d->AddObject(s);
+	}
 }
 
 void Hud::UpdateArmor()
@@ -29,11 +64,20 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	for (int i = 0; i < 9; i++)
 	{
 		Sprite2D* s = new Sprite2D(h, glm::vec3(0, 0, 0));
-		s->position = glm::vec3((c2d->_w / 2) - (s->width * 4) + (i * s->width), c2d->_h - s->height, 0);
+
+		s->width = 96;
+		s->height = 96;
+
+		s->position = glm::vec3((c2d->_w / 2) - (s->width * 4) + (i * s->width), s->height - 64, 0);
+		s->src = GetHudSrc(0, 1);
 		s->order = 1;
 		hotbar.push_back(s);
 		c2d->AddObject(s);
 	}
+
+	UpdateHotbar();
+	UpdateHearts();
+	UpdateArmor();
 }
 
 Hud::~Hud()

@@ -107,6 +107,9 @@ public:
 		if (vol >= 1)
 			v = 1;
 
+		if (vol >= 0.1f)
+			vol = sqrt(vol);
+
 		BASS_ChannelSetAttribute(id, BASS_ATTRIB_VOL, v);
 
 		CheckError();

@@ -55,17 +55,22 @@ void Sprite2D::Draw()
 	Vertex2D bl = { position + glm::vec3{0, height, 0}, glm::vec2{0,1}, color };
 	Vertex2D br = { position + glm::vec3{width, height, 0}, glm::vec2{1,1}, color };
 
-	tl.u = src.x / t->width;
-	tl.v = src.y / t->height;
+	float rX = t->width * src.x;
+	float rY = t->height * src.y;
+	float rW = t->width * src.z;
+	float rH = t->height * src.w;
 
-	tr.u = (src.x + src.z) / t->width;
-	tr.v = src.y / t->height;
+	tl.u = rX / t->width;
+	tl.v = rY / t->height;
 
-	bl.u = src.x / t->width;
-	bl.v = (src.y + src.w) / t->height;
+	tr.u = (rX + rW) / t->width;
+	tr.v = rY / t->height;
 
-	br.u = (src.x + src.z) / t->width;
-	br.v = (src.y + src.w) / t->height;
+	bl.u = rX / t->width;
+	bl.v = (rY + rH) / t->height;
+
+	br.u = (rX + rW) / t->width;
+	br.v = (rY + rH) / t->height;
 
 	vertices.push_back(tl);
 	vertices.push_back(tr);

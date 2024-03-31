@@ -1,6 +1,5 @@
-#include "Player.h"
+#include "../../Scenes/Gameplay.h"
 #include <Game.h>
-#include "../../WorldManager.h"
 #include "../../LightingManager.h"
 
 bool firstMouse = false;
@@ -318,11 +317,30 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 void Player::KeyPress(int key)
 {
-	if (key == GLFW_KEY_F2) // place light
+	if (key == GLFW_KEY_F1) // place light
 		LightingManager::GetInstance()->AddLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z), 12);
 
-	if (key == GLFW_KEY_F3) // remove light
+	if (key == GLFW_KEY_F2) // remove light
 		LightingManager::GetInstance()->RemoveLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z));
+
+	if (key == GLFW_KEY_F3) // hurt
+	{
+		// Get current scene
+		Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+		playerData.health -= 0.5f;
+
+		scene->hud->UpdateHearts();
+
+	}
+
+	if (key == GLFW_KEY_F9) // heal
+	{
+		// Get current scene
+		Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+		playerData.health += 0.5f;
+
+		scene->hud->UpdateHearts();
+	}
 }
 
 Player::~Player()
