@@ -13,6 +13,8 @@ private:
 	Camera2D* c2d;
 	Texture* h;
 
+	float _heartUpdate = 0;
+
 	glm::vec4 GetHudSrc(float x, float y);
 
 public:

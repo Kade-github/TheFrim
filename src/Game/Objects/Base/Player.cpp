@@ -1,5 +1,6 @@
 #include "../../Scenes/Gameplay.h"
 #include <Game.h>
+#include <glm/gtx/rotate_vector.hpp>
 #include "../../LightingManager.h"
 
 bool firstMouse = false;
@@ -10,6 +11,31 @@ void Player::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 n
 {
 	for (GameObject::VVertex& v : vertices)
 		v.normal = normal;
+}
+
+void Player::Hurt(float damage)
+{
+	playerData.health -= damage;
+
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	scene->hud->UpdateHearts();
+
+	CameraShake(0.5f);
+}
+
+void Player::Heal(float amount)
+{
+	playerData.health += amount;
+
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	scene->hud->UpdateHearts();
+}
+
+void Player::CameraShake(float amount)
+{
+	_shake = amount;
 }
 
 void Player::DrawBlockBreak(BlockFace f)
@@ -210,10 +236,19 @@ void Player::Draw()
 			footstepped = false;
 	}
 
+
 	camera->pitch = p;
 	camera->yaw = yaw;
 
 	camera->SetDirection();
+
+	if (_shake > 0)
+	{
+		_shake -= 0.1f * Game::instance->deltaTime;
+		camera->position.x += ((rand() % 100) / 100.0f) * _shake;
+		camera->position.y += ((rand() % 100) / 100.0f) * _shake;
+		camera->position.z += ((rand() % 100) / 100.0f) * _shake;
+	}
 
 	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
 	bool hit = RayTo(ray, true);
@@ -323,23 +358,14 @@ void Player::KeyPress(int key)
 	if (key == GLFW_KEY_F2) // remove light
 		LightingManager::GetInstance()->RemoveLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z));
 
-	if (key == GLFW_KEY_F3) // hurt
+	if (key == GLFW_KEY_F8) // hurt
 	{
-		// Get current scene
-		Gameplay* scene = (Gameplay*)Game::instance->currentScene;
-		playerData.health -= 0.5f;
-
-		scene->hud->UpdateHearts();
-
+		Hurt(0.5f);
 	}
 
 	if (key == GLFW_KEY_F9) // heal
 	{
-		// Get current scene
-		Gameplay* scene = (Gameplay*)Game::instance->currentScene;
-		playerData.health += 0.5f;
-
-		scene->hud->UpdateHearts();
+		Heal(0.5f);
 	}
 }
 

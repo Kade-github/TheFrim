@@ -12,6 +12,7 @@ class Player : public Entity
 	std::vector<unsigned int> indices;
 
 	float headBop = 0;
+	float _shake = 0;
 
 	Block* selectedBlock = nullptr;
 	BlockFace selectedFace;
@@ -28,6 +29,11 @@ public:
 	Data::Player playerData;
 
 	float jumpCooldown = 0;
+
+	void CameraShake(float amount);
+
+	void Hurt(float damage);
+	void Heal(float amount);
 
 	Player(glm::vec3 pos);
 	~Player();

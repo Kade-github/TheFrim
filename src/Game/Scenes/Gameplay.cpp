@@ -439,7 +439,7 @@ void Gameplay::KeyPress(int key)
 	if (key == GLFW_KEY_F7)
 		player->freeCam = !player->freeCam;
 
-	if (key == GLFW_KEY_F8)
+	if (key == GLFW_KEY_F3)
 		MusicManager::GetInstance()->PlayNext();
 
 	if (key == GLFW_KEY_F10)

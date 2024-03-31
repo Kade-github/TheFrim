@@ -1,4 +1,5 @@
 #include "Hud.h"
+#include <Game.h>
 
 glm::vec4 Hud::GetHudSrc(float x, float y)
 {
@@ -29,10 +30,12 @@ void Hud::UpdateHearts()
 		s->height = 72;
 
 		s->position = glm::vec3(((c2d->_w - 162) / 2) - (i * (s->width / 2)), s->height + 72, 0);
+
+		float rI = 9.0f - (float)i;
 		
-		if (hpProgress <= (float)i + 0.5f) // half heart
+		if (hpProgress <= rI + 0.5f && hpProgress >= rI + 0.1f) // half heart
 			s->src = GetHudSrc(0, 2);
-		if (hpProgress < i) // empty heart
+		else if (hpProgress <= rI) // empty heart
 			s->src = GetHudSrc(0, 3);
 		else // full heart
 			s->src = GetHudSrc(0, 4);
@@ -41,6 +44,8 @@ void Hud::UpdateHearts()
 		hearts.push_back(s);
 		c2d->AddObject(s);
 	}
+
+	_heartUpdate = glfwGetTime();
 }
 
 void Hud::UpdateArmor()
@@ -89,4 +94,16 @@ Hud::~Hud()
 void Hud::Draw()
 {
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
+
+	// heartupdate tween
+
+	if (_heartUpdate + 0.5f > glfwGetTime())
+	{
+		float progress = ((_heartUpdate + 0.5f) - glfwGetTime()) / 0.5f;
+		for (auto h : hearts)
+		{
+			h->color.w = std::lerp(1.0f, 0.45f, progress);
+		}
+		
+	}
 }
