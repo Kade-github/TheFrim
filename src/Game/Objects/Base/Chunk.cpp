@@ -11,6 +11,8 @@
 #include "Blocks/Cobblestone.h"
 #include "Blocks/Wood.h"
 #include "Blocks/Leaves.h"
+#include "Blocks/Sand.h"
+#include "Blocks/Water.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -713,6 +715,12 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 		break;
 	case LEAVES:
 		block = new Leaves(position + glm::vec3(x, y, z));
+		break;
+	case SAND:
+		block = new Sand(position + glm::vec3(x, y, z));
+		break;
+	case WATER:
+		block = new Water(position + glm::vec3(x, y, z));
 		break;
 	default:
 		block = new Dirt(position + glm::vec3(x, y, z));
