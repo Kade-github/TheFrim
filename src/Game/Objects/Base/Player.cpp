@@ -21,7 +21,7 @@ void Player::Hurt(float damage)
 
 	scene->hud->UpdateHearts();
 
-	CameraShake(0.5f);
+	CameraShake(0.4f);
 }
 
 void Player::Heal(float amount)
@@ -240,15 +240,16 @@ void Player::Draw()
 	camera->pitch = p;
 	camera->yaw = yaw;
 
-	camera->SetDirection();
-
 	if (_shake > 0)
 	{
-		_shake -= 0.1f * Game::instance->deltaTime;
+		_shake -= 1.75f * Game::instance->deltaTime;
 		camera->position.x += ((rand() % 100) / 100.0f) * _shake;
 		camera->position.y += ((rand() % 100) / 100.0f) * _shake;
 		camera->position.z += ((rand() % 100) / 100.0f) * _shake;
 	}
+
+	camera->SetDirection();
+
 
 	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
 	bool hit = RayTo(ray, true);
