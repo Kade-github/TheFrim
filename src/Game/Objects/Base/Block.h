@@ -55,31 +55,40 @@ enum BlockType
 	CRAFTINGTABLE = 9,
 	FURNACE = 10,
 	CLAY = 11,
-	GLASS = 12
+	GLASS = 12,
+	WATER = 13,
 };
 
 enum SoundType {
 	S_GRASS = 0,
 	S_STONE = 1,
 	S_WOOD = 2,
+	S_WATER = 3,
+	S_SAND = 4,
+	S_GLASS = 5
 };
 
-#define BUV_SHADOWFULL 0, 4
-#define BUV_SHADOWSEVENTYFIVE 0, 1
-#define BUV_SHADOWFIFTY 1, 0
+#define BUV_SHADOWFULL 2, 4
+#define BUV_SHADOWSEVENTYFIVE 0, 2
+#define BUV_SHADOWFIFTY 0, 1
 #define BUV_SHADOWTWENTYFIVE 0, 0
-#define BUV_BREAK0 1, 1
-#define BUV_BREAK1 2, 0
-#define BUV_BREAK2 2, 1
-#define BUV_BREAK3 0, 2
-#define BUV_DIRT 3, 0
-#define BUV_GRASS 0, 3
-#define BUV_GRASSSIDE 1, 3
-#define BUV_STONE 4, 1
-#define BUV_COBBLESTONE 1, 2
-#define BUV_WOOD 4, 2
-#define BUV_LEAVES 2, 3
-#define BUV_WOODENPLANKS 4, 3
+#define BUV_BREAK0 0, 3
+#define BUV_BREAK1 0, 4
+#define BUV_BREAK2 0, 5
+#define BUV_BREAK3 1, 0
+#define BUV_DIRT 1, 3
+#define BUV_GRASS 2, 0
+#define BUV_GRASSSIDE 2, 1
+#define BUV_STONE 2, 5
+#define BUV_COBBLESTONE 1, 1
+#define BUV_WOOD 3, 1
+#define BUV_LEAVES 2, 2
+#define BUV_WOODENPLANKS 3, 2
+#define BUV_CRAFTINGTABLE 3, 2
+#define BUV_CRAFTINGTABLE_TOP 1, 2
+#define BUV_WATER 3, 0
+#define BUV_SAND 2, 3
+#define BUV_GLASS 1, 5
 
 class Block
 {
@@ -89,6 +98,8 @@ class Block
 public:
 	glm::vec3 position;
 	BlockType type;
+
+	bool transparent = false;
 
 	float breakProgress = 0;
 	float toughness = 1;
