@@ -6,8 +6,36 @@ glm::vec4 Hud::GetHudSrc(float x, float y)
 	return glm::vec4((x * 128.0f) / h->width, (y * 128.0f) / h->height, 128.0f / h->width, 128.0f / h->height);
 }
 
+void Hud::SetSelected(int s)
+{
+	selected = s;
+	UpdateHotbar();
+}
+
 void Hud::UpdateHotbar()
 {
+	for (auto h : hotbar)
+	{
+		Sprite2D* s = h;
+		s->src = GetHudSrc(0, 1);
+	}
+
+	Sprite2D* s = hotbar[selected];
+
+	s->src = GetHudSrc(0, 0);
+
+	// hotbar items
+
+	for (auto h : hotbarItems)
+	{
+		c2d->RemoveObject(h);
+		delete h;
+	}
+
+	hotbarItems.clear();
+
+
+
 }
 
 void Hud::UpdateHearts()

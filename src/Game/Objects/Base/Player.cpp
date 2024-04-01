@@ -21,7 +21,7 @@ void Player::Hurt(float damage)
 
 	scene->hud->UpdateHearts();
 
-	CameraShake(0.4f);
+	CameraShake(0.25f);
 }
 
 void Player::Heal(float amount)
@@ -249,7 +249,6 @@ void Player::Draw()
 	}
 
 	camera->SetDirection();
-
 
 	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
 	bool hit = RayTo(ray, true);

@@ -18,12 +18,17 @@ private:
 	glm::vec4 GetHudSrc(float x, float y);
 
 public:
+
+	int selected = 0;
+
 	Sprite2D* crosshair;
 
 	std::vector<Sprite2D*> hotbar;
 	std::vector<Sprite2D*> hotbarItems;
 	std::vector<Sprite2D*> hearts;
 	std::vector<Sprite2D*> armor;
+
+	void SetSelected(int s);
 
 	void UpdateHotbar();
 	void UpdateHearts();
