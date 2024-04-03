@@ -14,8 +14,6 @@ public:
 	Sprite2D(std::string texture, glm::vec3 _pos);
 	Sprite2D(Texture* t, glm::vec3 _pos);
 
-	void Destroy() override;
-
 	void Resize(float _w, float _h);
 
 	void Draw() override;

@@ -30,6 +30,8 @@ void LoadingWorld::Create()
 
 	Texture* t = Texture::createWithImage("Assets/Textures/sheet.png");
 
+	t->dontDelete = true;
+
 	wm = new WorldManager(_name, t, "");
 
 	label = new Text2D("Loading World... (0%)", "ArialFrim", glm::vec3(0, 0, 0), glm::vec4(1, 1, 1, 1), 62);

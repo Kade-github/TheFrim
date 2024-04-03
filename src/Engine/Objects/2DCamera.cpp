@@ -11,6 +11,7 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 	_h = 1080;
 
 	def = Texture::createWithImage("Assets/Textures/Pixel.png");
+	def->dontDelete = true;
 
 	glGenFramebuffers(1, &fb);
 	glBindFramebuffer(GL_FRAMEBUFFER, fb);
@@ -318,7 +319,5 @@ void Camera2D::Destroy()
 	}
 
 	objects.clear();
-
-	delete def;
 
 }

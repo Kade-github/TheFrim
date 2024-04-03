@@ -65,6 +65,8 @@ public:
 	void SetScene(Scene* s);
 	void SwitchScene(Scene* s);
 
+	void CreateScene();
+
 	void Render();
 
 	void Destroy();

@@ -115,6 +115,7 @@ Camera::Camera()
 	glGenBuffers(1, &VBO);
 
 	debug = Texture::createWithImage("Assets/Textures/SelectionCube.png");
+	debug->dontDelete = true;
 }
 
 Camera::~Camera()

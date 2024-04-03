@@ -31,11 +31,6 @@ Sprite2D::Sprite2D(Texture* t, glm::vec3 _pos) : GameObject2D(_pos)
 	_noDelete = true;
 }
 
-void Sprite2D::Destroy()
-{
-	if (!_noDelete)
-		delete t;
-}
 
 void Sprite2D::Resize(float _w, float _h)
 {

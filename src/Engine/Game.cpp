@@ -1,5 +1,7 @@
 #include "Game.h"
 
+#include "TextureCache.h"
+
 Game* Game::instance = nullptr;
 
 float lastFrame = 0.0f; // Time of last frame
@@ -69,15 +71,22 @@ void Game::SetScene(Scene* s)
 	}
 	currentScene = s;
 
-	currentScene->Create();
-	currentScene->isCreated = true;
-	currentScene->Resize(_width, _height);
+	CreateScene();
 }
 
 void Game::SwitchScene(Scene* s)
 {
 	toScene = s;
 	switchScene = true;
+}
+
+void Game::CreateScene()
+{
+	TextureCache::Clear();
+
+	currentScene->Create();
+	currentScene->isCreated = true;
+	currentScene->Resize(_width, _height);
 }
 
 void Game::Render()
@@ -123,9 +132,7 @@ void Game::Render()
 			delete currentScene;
 		}
 		currentScene = toScene;
-		currentScene->Create();
-		currentScene->isCreated = true;
-		currentScene->Resize(_width, _height);
+		CreateScene();
 		toScene = nullptr;
 		switchScene = false;
 		swappedScenes = true;

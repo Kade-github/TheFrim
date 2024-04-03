@@ -1,30 +1,10 @@
-#include "Texture.h"
+#include "../TextureCache.h"
 #include <glad/glad.h>
 #include "../stbi.h"
 
 Texture* Texture::createWithImage(std::string filePath, bool flipped)
 {
-	Texture* t = NULL;
-
-	if (flipped)
-		t = stbi_h::stbi_load_file(filePath);
-	else
-		t = stbi_h::stbi_load_file_non_flipped(filePath);
-
-	t->fromSTBI = true;
-
-	if (stbi_h::get_error())
-	{
-		unsigned char c[] = { 0, 0, 0, 255 };
-		delete t;
-		Texture* tt = new Texture(c, 1, 1);
-		tt->fromSTBI = false;
-		return tt;
-	}
-
-	t->path = filePath;
-
-	return t;
+	return TextureCache::GetTexture(filePath, flipped);
 }
 
 Texture* Texture::loadTextureFromData(char* data, size_t outLength)

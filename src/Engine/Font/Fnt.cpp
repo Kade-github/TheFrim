@@ -35,6 +35,7 @@ Fnt::Fnt(std::string font)
 		std::string page = pages.first_child().attribute("file").as_string();
 		std::string path = "Assets/Fonts/" + page;
 		_texture = Texture::createWithImage(path, false);
+		_texture->dontDelete = true;
 	}
 	else
 	{
