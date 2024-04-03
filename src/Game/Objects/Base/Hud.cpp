@@ -1,11 +1,6 @@
 #include "Hud.h"
 #include <Game.h>
 
-glm::vec4 Hud::GetHudSrc(float x, float y)
-{
-	return glm::vec4((x * 128.0f) / h->width, (y * 128.0f) / h->height, 128.0f / h->width, 128.0f / h->height);
-}
-
 void Hud::SetSelected(int s)
 {
 	selected = s;
@@ -17,12 +12,12 @@ void Hud::UpdateHotbar()
 	for (auto h : hotbar)
 	{
 		Sprite2D* s = h;
-		s->src = GetHudSrc(0, 1);
+		s->src = this->h->spriteSheet.GetUV("hud_slot");
 	}
 
 	Sprite2D* s = hotbar[selected];
 
-	s->src = GetHudSrc(0, 0);
+	s->src = h->spriteSheet.GetUV("hud_slot_selected");
 
 	// hotbar items
 
@@ -34,6 +29,24 @@ void Hud::UpdateHotbar()
 
 	hotbarItems.clear();
 
+	int y = PLAYER_INVENTORY_HEIGHT - 1; // bottom row
+
+	for (int x = 0; x < PLAYER_INVENTORY_WIDTH; x++)
+	{
+		Data::InventoryItem& item = player->playerData.inventory[x][y];
+
+		if (item.type == Data::ItemType::ITEM_NULL)
+			continue;
+
+		Sprite2D* s = new Sprite2D(i, glm::vec3(0, 0, 0));
+
+		s->width = 64;
+		s->height = 64;
+
+
+
+
+	}
 
 
 }
@@ -50,7 +63,7 @@ void Hud::UpdateHearts()
 
 	float hpProgress = player->playerData.health;
 
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < (int)(PLAYER_MAX_HEALTH); i++)
 	{
 		Sprite2D* s = new Sprite2D(h, glm::vec3(0, 0, 0));
 
@@ -62,11 +75,11 @@ void Hud::UpdateHearts()
 		float rI = 9.0f - (float)i;
 		
 		if (hpProgress <= rI + 0.5f && hpProgress >= rI + 0.1f) // half heart
-			s->src = GetHudSrc(0, 2);
+			s->src = h->spriteSheet.GetUV("hud_heart_half");
 		else if (hpProgress <= rI) // empty heart
-			s->src = GetHudSrc(0, 3);
+			s->src = h->spriteSheet.GetUV("hud_heart_empty");
 		else // full heart
-			s->src = GetHudSrc(0, 4);
+			s->src = h->spriteSheet.GetUV("hud_heart");
 
 		s->order = 1;
 		hearts.push_back(s);
@@ -86,6 +99,9 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	c2d = _c2d;
 
 	h = Texture::createWithImage("Assets/Textures/hud.png");
+	h->spriteSheet.Load("Assets/Textures/hud.xml", h->width, h->height);
+	i = Texture::createWithImage("Assets/Textures/items.png");
+	i->spriteSheet.Load("Assets/Textures/items.xml", i->width, i->height);
 
 	crosshair = new Sprite2D("Assets/Textures/crosshair.png", glm::vec3(c2d->_w / 2, c2d->_h / 2, 0));
 
@@ -102,7 +118,7 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 		s->height = 96;
 
 		s->position = glm::vec3((c2d->_w / 2) - (s->width * 4) + (i * s->width), s->height - 64, 0);
-		s->src = GetHudSrc(0, 1);
+		s->src = h->spriteSheet.GetUV("hud_slot");
 		s->order = 1;
 		hotbar.push_back(s);
 		c2d->AddObject(s);

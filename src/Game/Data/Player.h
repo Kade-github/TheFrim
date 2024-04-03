@@ -6,6 +6,11 @@
 #define MSGPACK_NO_BOOST
 #include <msgpack.hpp>
 
+#define PLAYER_MAX_HEALTH 10.0f
+
+#define PLAYER_INVENTORY_WIDTH 9
+#define PLAYER_INVENTORY_HEIGHT 4
+
 namespace Data
 {
 	enum ItemType // so basically, block type is a uint8_t, max of 255. thus we can partition it into blocks and items.
@@ -111,9 +116,9 @@ namespace Data
 
 		uint8_t selectedSlot = 0;
 
-		float health = 10.0f;
+		float health = PLAYER_MAX_HEALTH;
 
-		InventoryItem inventory[9][4] = {};
+		InventoryItem inventory[PLAYER_INVENTORY_WIDTH][PLAYER_INVENTORY_HEIGHT] = {};
 
 		InventoryItem& GetInventoryItem(int x, int y)
 		{

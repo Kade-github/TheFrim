@@ -136,19 +136,6 @@ void Block::Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned i
 	}
 }
 
-glm::vec4 Block::GetUVVerticallyFlipped(int x, int y)
-{
-	float srcW = blockWidth / textureWidth;
-	float srcH = blockWidth / textureHeight;
-
-	float w = srcW - 0.016f;
-	float h = srcH - 0.016f;
-
-	float _x = (x * srcW) + 0.008f;
-	float _y = (y * srcH) + 0.008f;
-
-	return glm::vec4(_x, _y + h, w, -h);
-}
 
 
 int Block::GetBreakTexture()
@@ -168,13 +155,13 @@ glm::vec4 Block::GetBreakUV()
 	switch (GetBreakTexture())
 	{
 	case 0:
-		return GetUVVerticallyFlipped(BUV_BREAK0);
+		return t->spriteSheet.GetUVFlip("break_0");
 	case 1:
-		return GetUVVerticallyFlipped(BUV_BREAK1);
+		return t->spriteSheet.GetUVFlip("break_1");
 	case 2:
-		return GetUVVerticallyFlipped(BUV_BREAK2);
+		return t->spriteSheet.GetUVFlip("break_2");
 	case 3:
-		return GetUVVerticallyFlipped(BUV_BREAK3);
+		return t->spriteSheet.GetUVFlip("break_3");
 	}
 
 	return glm::vec4();
@@ -184,9 +171,4 @@ Block::Block(glm::vec3 _position, BlockType _type)
 {
 	position = _position;
 	type = _type;
-}
-
-glm::vec4 Block::GetUV(int x, int y)
-{
-	return GetUVVerticallyFlipped(x, y);
 }

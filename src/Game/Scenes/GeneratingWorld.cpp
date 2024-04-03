@@ -30,6 +30,8 @@ void GeneratingWorld::Create()
 
 	Texture* t = Texture::createWithImage("Assets/Textures/block.png");
 
+	t->spriteSheet.Load("Assets/Textures/block.xml", t->width, t->height);
+
 	t->dontDelete = true;
 
 	wm = new WorldManager(_name, t, _seed);

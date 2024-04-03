@@ -5,6 +5,8 @@
 #include <glm/glm.hpp>
 #include <vector>
 
+#include <OpenGL/Texture.h>
+
 class BlockFace {
 public:
 	glm::vec3 position;
@@ -68,28 +70,6 @@ enum SoundType {
 	S_GLASS = 5
 };
 
-#define BUV_SHADOWFULL 2, 4
-#define BUV_SHADOWSEVENTYFIVE 0, 2
-#define BUV_SHADOWFIFTY 0, 1
-#define BUV_SHADOWTWENTYFIVE 0, 0
-#define BUV_BREAK0 0, 3
-#define BUV_BREAK1 0, 4
-#define BUV_BREAK2 0, 5
-#define BUV_BREAK3 1, 0
-#define BUV_DIRT 1, 3
-#define BUV_GRASS 2, 0
-#define BUV_GRASSSIDE 2, 1
-#define BUV_STONE 2, 5
-#define BUV_COBBLESTONE 1, 1
-#define BUV_WOOD 3, 1
-#define BUV_LEAVES 2, 2
-#define BUV_WOODENPLANKS 3, 2
-#define BUV_CRAFTINGTABLE 3, 2
-#define BUV_CRAFTINGTABLE_TOP 1, 2
-#define BUV_WATER 3, 0
-#define BUV_SAND 2, 3
-#define BUV_GLASS 1, 5
-
 class Block
 {
 	int GetBreakTexture();
@@ -113,8 +93,7 @@ public:
 	int blockWidth = 128;
 	int blockHeight = 128;
 
-	float textureWidth = 128;
-	float textureHeight = 128;
+	Texture* t;
 
 	Block(glm::vec3 _position, BlockType _type);
 
@@ -134,8 +113,6 @@ public:
 	BlockFace BreakTopFace();
 	BlockFace BreakBottomFace();
 
-	glm::vec4 GetUV(int x, int y);
-	glm::vec4 GetUVVerticallyFlipped(int x, int y);
 
 	void Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned int>& inds);
 

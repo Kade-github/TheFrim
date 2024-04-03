@@ -28,7 +28,9 @@ void LoadingWorld::Create()
 
 	c2d->AddObject(background);
 
-	Texture* t = Texture::createWithImage("Assets/Textures/blocks.png");
+	Texture* t = Texture::createWithImage("Assets/Textures/block.png");
+
+	t->spriteSheet.Load("Assets/Textures/block.xml", t->width, t->height);
 
 	t->dontDelete = true;
 

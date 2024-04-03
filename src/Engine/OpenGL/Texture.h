@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <string>
+#include "../External/Spritesheet.h"
 #include "../../../Include/glm/vec4.hpp"
 
 struct texData
@@ -25,6 +26,10 @@ public:
 
 	std::string path;
 	std::string type;
+
+	// Spritesheet
+
+	SpriteSheet spriteSheet;
 
 	//Constructors and destructor
 

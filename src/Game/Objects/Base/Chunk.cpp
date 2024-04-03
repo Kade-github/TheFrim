@@ -258,8 +258,6 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		else
 		{
 			sbc.blocks[(int)w.x][(int)w.z] = CreateBlock(w.x, w.y, w.z, id);
-			sbc.blocks[(int)w.x][(int)w.z]->textureHeight = txp->height;
-			sbc.blocks[(int)w.x][(int)w.z]->textureWidth = txp->width;
 
 			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
 		}
@@ -604,13 +602,13 @@ void Chunk::RenderSubChunkShadow(subChunk& sbc)
 					// shadow overlay
 					glm::vec4 shadowUV = glm::vec4();
 					if (light > 7)
-						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWTWENTYFIVE);
+						shadowUV = block->t->spriteSheet.GetUVFlip("Shadow25");
 					else if (light > 4)
-						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWFIFTY);
+						shadowUV = block->t->spriteSheet.GetUVFlip("Shadow50");
 					else if (light > 1)
-						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWSEVENTYFIVE);
+						shadowUV = block->t->spriteSheet.GetUVFlip("Shadow75");
 					else
-						shadowUV = block->GetUVVerticallyFlipped(BUV_SHADOWFULL);
+						shadowUV = block->t->spriteSheet.GetUVFlip("Shadow");
 
 					std::vector<GameObject::VVertex> sV = f.vertices;
 
@@ -727,8 +725,7 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 		break;
 	}
 
-	block->textureHeight = txp->height;
-	block->textureWidth = txp->width;
+	block->t = txp;
 
 	return block;
 }

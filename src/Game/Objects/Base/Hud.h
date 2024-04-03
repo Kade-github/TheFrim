@@ -12,10 +12,9 @@ private:
 	Player* player;
 	Camera2D* c2d;
 	Texture* h;
+	Texture* i;
 
 	float _heartUpdate = 0;
-
-	glm::vec4 GetHudSrc(float x, float y);
 
 public:
 
