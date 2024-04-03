@@ -13,7 +13,7 @@ public:
 
 	BlockFace CreateFrontFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUV("grassSide");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("grassSide");
 
 		std::vector<GameObject::VVertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, side);
 
@@ -22,7 +22,7 @@ public:
 
 	BlockFace CreateBackFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUV("grassSide");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("grassSide");
 
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
@@ -36,7 +36,7 @@ public:
 
 	BlockFace CreateLeftFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUV("grassSide");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("grassSide");
 
 		std::vector<GameObject::VVertex> leftVertices = CreateQuad(position + glm::vec3(1, 0, 0), glm::vec3(0, 1, 1), 0, side);
 
@@ -47,7 +47,7 @@ public:
 	{
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
-		glm::vec4 side = t->spriteSheet.GetUV("grassSide");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("grassSide");
 
 		std::vector<GameObject::VVertex> rightVertices = CreateQuad(position, glm::vec3(0, 1, 1), 0, side);
 

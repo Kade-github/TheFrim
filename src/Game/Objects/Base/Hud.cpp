@@ -75,11 +75,11 @@ void Hud::UpdateHearts()
 		float rI = 9.0f - (float)i;
 		
 		if (hpProgress <= rI + 0.5f && hpProgress >= rI + 0.1f) // half heart
-			s->src = h->spriteSheet.GetUV("hud_heart_half");
+			s->src = h->spriteSheet.GetUVFlip("hud_heart_half");
 		else if (hpProgress <= rI) // empty heart
-			s->src = h->spriteSheet.GetUV("hud_heart_empty");
+			s->src = h->spriteSheet.GetUVFlip("hud_heart_empty");
 		else // full heart
-			s->src = h->spriteSheet.GetUV("hud_heart");
+			s->src = h->spriteSheet.GetUVFlip("hud_heart");
 
 		s->order = 1;
 		hearts.push_back(s);
@@ -98,9 +98,9 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	player = _p;
 	c2d = _c2d;
 
-	h = Texture::createWithImage("Assets/Textures/hud.png");
+	h = Texture::createWithImage("Assets/Textures/hud.png", false);
 	h->spriteSheet.Load("Assets/Textures/hud.xml", h->width, h->height);
-	i = Texture::createWithImage("Assets/Textures/items.png");
+	i = Texture::createWithImage("Assets/Textures/items.png", false);
 	i->spriteSheet.Load("Assets/Textures/items.xml", i->width, i->height);
 
 	crosshair = new Sprite2D("Assets/Textures/crosshair.png", glm::vec3(c2d->_w / 2, c2d->_h / 2, 0));
