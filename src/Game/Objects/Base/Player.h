@@ -35,6 +35,8 @@ public:
 	void Hurt(float damage);
 	void Heal(float amount);
 
+	void SetItem(Data::InventoryItem item, int x, int y);
+
 	Player(glm::vec3 pos);
 	~Player();
 	void Draw() override;

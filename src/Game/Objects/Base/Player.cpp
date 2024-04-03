@@ -38,6 +38,15 @@ void Player::CameraShake(float amount)
 	_shake = amount;
 }
 
+void Player::SetItem(Data::InventoryItem item, int x, int y)
+{
+	playerData.SetInventoryItem(x, y, item);
+
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	scene->hud->UpdateHotbar();
+}
+
 void Player::DrawBlockBreak(BlockFace f)
 {
 	vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
@@ -358,14 +367,13 @@ void Player::KeyPress(int key)
 	if (key == GLFW_KEY_F2) // remove light
 		LightingManager::GetInstance()->RemoveLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z));
 
-	if (key == GLFW_KEY_F8) // hurt
+	if (key == GLFW_KEY_F8)
 	{
-		Hurt(0.5f);
-	}
+		// give item
 
-	if (key == GLFW_KEY_F9) // heal
-	{
-		Heal(0.5f);
+		Data::InventoryItem item = { Data::ItemType::ITEM_DIAMOND_SWORD, 1 };
+		
+		SetItem(item, 0, 3);
 	}
 }
 

@@ -417,6 +417,9 @@ void Gameplay::UpdateChunks()
 void Gameplay::KeyPress(int key)
 {
 
+	if (key == GLFW_KEY_F3)
+		MusicManager::GetInstance()->PlayNext();
+
 	if (key == GLFW_KEY_F5)
 		wm->SaveWorldNow();
 
@@ -438,9 +441,6 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_F7)
 		player->freeCam = !player->freeCam;
-
-	if (key == GLFW_KEY_F3)
-		MusicManager::GetInstance()->PlayNext();
 
 	if (key == GLFW_KEY_F10)
 		LightingManager::GetInstance()->sun.angle += 25;

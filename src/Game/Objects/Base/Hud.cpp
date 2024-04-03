@@ -40,10 +40,15 @@ void Hud::UpdateHotbar()
 
 		Sprite2D* s = new Sprite2D(i, glm::vec3(0, 0, 0));
 
-		s->width = 64;
-		s->height = 64;
+		s->width = 96;
+		s->height = 96;
 
+		s->position = glm::vec3((c2d->_w / 2) - (s->width * 4) + (x * s->width), s->height - 64, 0);
 
+		s->src = i->spriteSheet.GetUVFlip(item.tag);
+		s->order = 1;
+		hotbarItems.push_back(s);
+		c2d->AddObject(s);
 
 
 	}
