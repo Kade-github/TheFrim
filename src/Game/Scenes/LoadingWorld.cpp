@@ -28,7 +28,7 @@ void LoadingWorld::Create()
 
 	c2d->AddObject(background);
 
-	Texture* t = Texture::createWithImage("Assets/Textures/sheet.png");
+	Texture* t = Texture::createWithImage("Assets/Textures/blocks.png");
 
 	t->dontDelete = true;
 
