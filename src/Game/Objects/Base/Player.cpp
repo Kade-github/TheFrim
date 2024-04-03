@@ -47,6 +47,29 @@ void Player::SetItem(Data::InventoryItem item, int x, int y)
 	scene->hud->UpdateHotbar();
 }
 
+void Player::OnScroll(double x, double y)
+{
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	if (y > 0)
+	{
+		int n = scene->hud->selected - 1;
+		if (n < 0)
+			scene->hud->SetSelected(8);
+		else
+			scene->hud->SetSelected(n);
+	}
+	else
+	{
+		int n = scene->hud->selected + 1;
+		if (n > 8)
+			scene->hud->SetSelected(0);
+		else
+			scene->hud->SetSelected(n);
+	}
+
+}
+
 void Player::DrawBlockBreak(BlockFace f)
 {
 	vertices.insert(vertices.end(), f.vertices.begin(), f.vertices.end());
@@ -315,7 +338,7 @@ void Player::Draw()
 		{
 			BlockFace f = faces[i];
 
-			for(int j = 0; j < f.vertices.size(); j++)
+			for (int j = 0; j < f.vertices.size(); j++)
 				f.vertices[j].position += f.vertices[j].normal * 0.01f;
 
 			DrawBlockBreak(f);
@@ -361,6 +384,8 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 void Player::KeyPress(int key)
 {
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
 	if (key == GLFW_KEY_F1) // place light
 		LightingManager::GetInstance()->AddLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z), 12);
 
@@ -372,9 +397,43 @@ void Player::KeyPress(int key)
 		// give item
 
 		Data::InventoryItem item = { Data::ItemType::ITEM_DIAMOND_SWORD, 1 };
-		
+
 		SetItem(item, 0, 3);
 	}
+
+	// select hotbar
+
+	switch (key)
+	{
+	case GLFW_KEY_1:
+		scene->hud->SetSelected(0);
+		break;
+	case GLFW_KEY_2:
+		scene->hud->SetSelected(1);
+		break;
+	case GLFW_KEY_3:
+		scene->hud->SetSelected(2);
+		break;
+	case GLFW_KEY_4:
+		scene->hud->SetSelected(3);
+		break;
+	case GLFW_KEY_5:
+		scene->hud->SetSelected(4);
+		break;
+	case GLFW_KEY_6:
+		scene->hud->SetSelected(5);
+		break;
+	case GLFW_KEY_7:
+		scene->hud->SetSelected(6);
+		break;
+	case GLFW_KEY_8:
+		scene->hud->SetSelected(7);
+		break;
+	case GLFW_KEY_9:
+		scene->hud->SetSelected(8);
+		break;
+	}
+
 }
 
 Player::~Player()

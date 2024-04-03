@@ -45,6 +45,8 @@ public:
 
 	void MouseClick(int button, glm::vec2 mPos) override;
 
+	void OnScroll(double x, double y) override;
+
 	void KeyPress(int key) override;
 };
 

@@ -459,6 +459,14 @@ void Gameplay::MouseClick(int button, glm::vec2 mPos)
 	}
 }
 
+void Gameplay::OnScroll(double x, double y)
+{
+for (int i = 0; i < objects.size(); i++)
+	{
+		objects[i]->OnScroll(x, y);
+	}
+}
+
 void Gameplay::Destroy()
 {
 	wm->SetPlayerPosition(player->position);

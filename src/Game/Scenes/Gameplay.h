@@ -30,6 +30,7 @@ public:
 
 	void KeyPress(int key) override;
 	void MouseClick(int button, glm::vec2 mPos) override;
+	void OnScroll(double x, double y) override;
 
 	void Destroy() override;
 };
