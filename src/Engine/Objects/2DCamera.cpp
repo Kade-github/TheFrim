@@ -51,8 +51,10 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 	glGenBuffers(1, &s_vbo);
 
-	_rW = _w;
-	_rH = _h;
+	glm::vec2 size = Game::instance->GetWindowSize();
+
+	_rW = size.x;
+	_rH = size.y;
 
 	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1)};
 	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1)};
@@ -80,7 +82,6 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
-
 
 }
 
