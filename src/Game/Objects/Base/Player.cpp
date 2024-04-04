@@ -296,7 +296,11 @@ void Player::Draw()
 
 			selectedBlock = sb.getBlock(_world.x, _world.z);
 		}
+		else
+			selectedBlock = nullptr;
 	}
+	else
+		selectedBlock = nullptr;
 
 	vertices.clear();
 	indices.clear();
