@@ -10,7 +10,6 @@ class Text3D : public GameObject
 	Camera2D* _camera = nullptr;
 
 	unsigned int VAO, VBO;
-	Texture* txp;
 
 	std::vector<GameObject::VVertex> vertices;
 	Text2D* _textRenderer = nullptr;

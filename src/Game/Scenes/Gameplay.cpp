@@ -1,10 +1,13 @@
 #include "Gameplay.h"
 #include <Objects/3DText.h>
+#include <Objects/3DSprite.h>
 #include <Game.h>
 #include <imgui.h>
 #include <Helpers/StringTools.h>
 #include "../LightingManager.h"
 #include "../MusicManager.h"
+
+Sprite3D* _testSprite;
 
 Gameplay::Gameplay(WorldManager* _wm)
 {
@@ -45,6 +48,11 @@ void Gameplay::Create()
 
 	LightingManager::GetInstance()->sun.angle = 90; // set to noon
 
+	_testSprite = new Sprite3D("Assets/Textures/hand.png", glm::vec3(0, 0, 0));
+
+
+	AddObject(_testSprite);
+
 	Game::instance->CaptureCursor(true);
 }
 
@@ -72,6 +80,8 @@ void Gameplay::Draw()
 	UpdateChunks();
 
 	MusicManager::GetInstance()->Update();
+
+	_testSprite->position = player->position + camera->cameraFront * 2.0f;
 
 	Scene::Draw();
 

@@ -10,7 +10,6 @@ Text3D::Text3D(std::string text, std::string font, glm::vec3 pos, glm::vec4 colo
 
 	_camera->AddObject(_textRenderer);
 
-	txp = _textRenderer->font->GetTexture();
 
 	// init stuff
 
