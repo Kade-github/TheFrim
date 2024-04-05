@@ -86,7 +86,6 @@ void Game::CreateScene()
 
 	currentScene->Create();
 	currentScene->isCreated = true;
-	currentScene->Resize(_width, _height);
 }
 
 void Game::Render()

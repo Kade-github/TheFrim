@@ -10,6 +10,9 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 	_w = 1920;
 	_h = 1080;
 
+	_rW = 1920;
+	_rH = 1080;
+
 	def = Texture::createWithImage("Assets/Textures/Pixel.png");
 	def->dontDelete = true;
 
@@ -51,29 +54,12 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 	glGenBuffers(1, &s_vbo);
 
-	glm::vec2 size = Game::instance->GetWindowSize();
-
-	_rW = size.x;
-	_rH = size.y;
-
-	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1)};
-	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1)};
-	Vertex2D bl = { glm::vec3{0,_rH,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1)};
-	Vertex2D br = { glm::vec3{_rW,_rH,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1)};
-
-	vertices.push_back(tl);
-	vertices.push_back(tr);
-	vertices.push_back(bl);
-	vertices.push_back(bl);
-	vertices.push_back(tr);
-	vertices.push_back(br);
 
 	glEnableVertexAttribArray(0);
 	glEnableVertexAttribArray(1);
 	glEnableVertexAttribArray(2);
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex2D), vertices.data(), GL_STATIC_DRAW);
 
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)0);
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex2D), (void*)offsetof(Vertex2D, u));
@@ -82,6 +68,23 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
+
+	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1) };
+	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1) };
+	Vertex2D bl = { glm::vec3{0,_rH,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1) };
+	Vertex2D br = { glm::vec3{_rW,_rH,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1) };
+
+	vertices.push_back(tl);
+	vertices.push_back(tr);
+	vertices.push_back(bl);
+	vertices.push_back(bl);
+	vertices.push_back(tr);
+	vertices.push_back(br);
+
+	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex2D), vertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 }
 
@@ -186,7 +189,6 @@ void Camera2D::UpdateFramebuffer()
 		else
 		{
 			draw.shaderId->Bind();
-			draw.shaderId->SetUniformMat4f("projection", &projection[0][0]);
 		}
 
 		if (draw.textureId != NULL)
@@ -267,7 +269,7 @@ void Camera2D::Draw()
 
 	UpdateFramebuffer();
 
-	glViewport(0, 0, Game::instance->GetWindowSize().x, Game::instance->GetWindowSize().y);
+	glViewport(0, 0, _rW, _rH);
 
 	DrawSprite();
 }
@@ -278,6 +280,9 @@ void Camera2D::DrawSprite()
 
 	if (t != NULL)
 		t->Bind();
+
+	glm::mat4 projection = glm::ortho(0.0f, _w, _h, 0.0f);
+	s->SetUniformMat4f("projection", &projection[0][0]);
 
 	glBindVertexArray(s_vao);
 
