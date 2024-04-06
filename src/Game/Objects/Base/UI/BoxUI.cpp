@@ -96,6 +96,8 @@ void BoxUI::SetBox()
 		}
 	}
 
+	renderWidth = width * 128;
+	renderHeight = height * 128;
 }
 
 void BoxUI::AddFront(Sprite2D* s, int x, int y)

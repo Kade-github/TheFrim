@@ -66,6 +66,7 @@ void Hud::UpdateHotbar()
 
 	}
 
+	inv->UpdateInventory();
 
 	SetSelected(selected);
 }
@@ -158,6 +159,10 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	}
 
 	inv = new Inventory(glm::vec3(0,0,0), player);
+
+	inv->position = glm::vec3((c2d->_w / 2) - (inv->renderWidth / 2), c2d->_h - inv->renderHeight, 0);
+
+	inv->SetBox();
 
 	c2d->AddObject(inv);
 

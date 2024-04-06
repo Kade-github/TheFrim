@@ -12,6 +12,8 @@ class BoxUI : public GameObject2D
 public:
 	Texture* t;
 	int width, height;
+	float renderWidth = 0;
+	float renderHeight = 0;
 
 	BoxUI(glm::vec3 _pos, int _w, int _h);
 	~BoxUI();

@@ -5,6 +5,8 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 6)
 {
 	player = _player;
 	order = 100;
+
+
 }
 
 void Inventory::UpdateInventory()
@@ -22,7 +24,7 @@ void Inventory::UpdateInventory()
 				continue;
 
 			int rX = x + 1;
-			int rY = y + 1;
+			int rY = PLAYER_INVENTORY_HEIGHT - y;
 
 			ItemUI* s = new ItemUI(item.tag, glm::vec3(0, 0, 0), i, item.count);
 

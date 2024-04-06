@@ -8,6 +8,7 @@ class Inventory : public BoxUI
 {
 	Player* player;
 public:
+
 	bool shown = false;
 
 	Inventory(glm::vec3 _pos, Player* _player);

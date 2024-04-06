@@ -6,7 +6,7 @@
 
 class ItemUI : public Sprite2D
 {
-	Text2D* countText;
+	Text2D* countText = nullptr;
 public:
 	int count;
 	std::string tag;
