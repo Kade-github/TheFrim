@@ -461,6 +461,14 @@ void Gameplay::MouseClick(int button, glm::vec2 mPos)
 	}
 }
 
+void Gameplay::MouseRelease(int button, glm::vec2 mPos)
+{
+	for (int i = 0; i < objects.size(); i++)
+	{
+		objects[i]->MouseRelease(button, mPos);
+	}
+}
+
 void Gameplay::OnScroll(double x, double y)
 {
 for (int i = 0; i < objects.size(); i++)
