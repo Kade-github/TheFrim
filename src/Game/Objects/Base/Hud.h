@@ -3,7 +3,7 @@
 
 #include <Objects/GameObject.h>
 #include <Objects/2DCamera.h>
-#include <Objects/2DSprite.h>
+#include "UI/ItemUI.h"
 #include "Player.h"
 
 class Hud : public GameObject
@@ -26,7 +26,7 @@ public:
 	Sprite2D* crosshair;
 
 	std::vector<Sprite2D*> hotbar;
-	std::vector<Sprite2D*> hotbarItems;
+	std::vector<ItemUI*> hotbarItems;
 	std::vector<Sprite2D*> hearts;
 	std::vector<Sprite2D*> armor;
 
