@@ -3,14 +3,7 @@
 
 Sprite3D::Sprite3D(std::string path, glm::vec3 pos) : GameObject(pos)
 {
-	_spriteRenderer = new Sprite2D(path, glm::vec3(0, 0, 0));
-
-	_camera = new Camera2D(glm::vec3(0, 0, 0));
-	_camera->s = new Shader();
-	_camera->s->LoadShader("Assets/Shaders/vert2d.glsl", "Assets/Shaders/frag2d.glsl");
-
-	_camera->AddObject(_spriteRenderer);
-
+	t = Texture::createWithImage(path, false);
 	// init stuff
 
 	glGenVertexArrays(1, &VAO);
@@ -30,32 +23,22 @@ void Sprite3D::Draw()
 
 	Game::instance->shader->SetUniformMat4f("model", &model[0][0]);
 
-	_camera->t->Bind();
+	t->Bind();
 
 	glDisable(GL_CULL_FACE);
-
 	glBindVertexArray(VAO);
 
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
 	glBindVertexArray(0);
 
-	_camera->t->Unbind();
+	t->Unbind();
 
 	Game::instance->shader->Unbind();
 }
 
 void Sprite3D::UpdateSprite()
 {
-	_camera->_rW = _spriteRenderer->width;
-	_camera->_rH = _spriteRenderer->height;
-	_camera->_w = _spriteRenderer->width;
-	_camera->_h = _spriteRenderer->height;
-
-	_camera->ResizeTo();
-
-	_camera->UpdateFramebuffer();
-
 	vertices.clear();
 
 	vertices.push_back({ glm::vec3(-width / 2, -height / 2, 0), glm::vec2(0, 0) });
@@ -65,6 +48,7 @@ void Sprite3D::UpdateSprite()
 	vertices.push_back({ glm::vec3(-width / 2, -height / 2, 0), glm::vec2(0, 0) });
 	vertices.push_back({ glm::vec3(width / 2, height / 2, 0), glm::vec2(1, 1) });
 	vertices.push_back({ glm::vec3(-width / 2, height / 2, 0), glm::vec2(0, 1) });
+
 
 	glBindVertexArray(VAO);
 
@@ -83,4 +67,6 @@ void Sprite3D::UpdateSprite()
 
 void Sprite3D::Destroy()
 {
+	glDeleteVertexArrays(1, &VAO);
+	glDeleteBuffers(1, &VBO);
 }

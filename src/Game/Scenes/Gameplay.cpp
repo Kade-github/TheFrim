@@ -7,8 +7,6 @@
 #include "../LightingManager.h"
 #include "../MusicManager.h"
 
-Sprite3D* _testSprite;
-
 Gameplay::Gameplay(WorldManager* _wm)
 {
 	wm = _wm;
@@ -48,11 +46,6 @@ void Gameplay::Create()
 
 	LightingManager::GetInstance()->sun.angle = 90; // set to noon
 
-	_testSprite = new Sprite3D("Assets/Textures/hand.png", glm::vec3(0, 0, 0));
-
-
-	AddObject(_testSprite);
-
 	Game::instance->CaptureCursor(true);
 }
 
@@ -81,7 +74,6 @@ void Gameplay::Draw()
 
 	MusicManager::GetInstance()->Update();
 
-	_testSprite->position = player->position + camera->cameraFront * 2.0f;
 
 	Scene::Draw();
 

@@ -7,13 +7,11 @@
 
 class Sprite3D : public GameObject
 {
-	Camera2D* _camera = nullptr;
-
 	unsigned int VAO, VBO;
 
 	std::vector<GameObject::VVertex> vertices;
-	Sprite2D* _spriteRenderer = nullptr;
 public:
+	Texture* t;
 	float width = 1;
 	float height = 1;
 	Sprite3D(std::string path, glm::vec3 pos);
