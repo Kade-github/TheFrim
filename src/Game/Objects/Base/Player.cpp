@@ -411,30 +411,39 @@ void Player::KeyPress(int key)
 	{
 	case GLFW_KEY_1:
 		scene->hud->SetSelected(0);
+		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_2:
 		scene->hud->SetSelected(1);
+		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_3:
 		scene->hud->SetSelected(2);
+		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_4:
 		scene->hud->SetSelected(3);
+		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_5:
 		scene->hud->SetSelected(4);
+		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_6:
 		scene->hud->SetSelected(5);
+		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_7:
 		scene->hud->SetSelected(6);
+		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_8:
 		scene->hud->SetSelected(7);
+		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_9:
 		scene->hud->SetSelected(8);
+		scene->hud->UpdateHotbar();
 		break;
 	}
 

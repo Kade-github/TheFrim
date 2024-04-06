@@ -4,7 +4,21 @@
 void Hud::SetSelected(int s)
 {
 	selected = s;
-	UpdateHotbar();
+
+	Data::InventoryItem& item = player->playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1];
+
+	if (item.type != Data::ItemType::ITEM_NULL)
+	{
+		hand->src = i->spriteSheet.GetUVFlip(item.tag);
+		hand->position.y = -(hand->height / 6);
+		hand->flipHorizontal = true;
+	}
+	else
+	{
+		hand->src = i->spriteSheet.GetUVFlip("hand");
+		hand->position.y = 0;
+		hand->flipHorizontal = false;
+	}
 }
 
 void Hud::UpdateHotbar()
@@ -54,6 +68,7 @@ void Hud::UpdateHotbar()
 	}
 
 
+	SetSelected(selected);
 }
 
 void Hud::UpdateHearts()
@@ -108,10 +123,12 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	i = Texture::createWithImage("Assets/Textures/items.png", false);
 	i->spriteSheet.Load("Assets/Textures/items.xml", i->width, i->height);
 
-	hand = new Sprite2D("Assets/Textures/hand.png", glm::vec3(0, 0, 0));
+	hand = new Sprite2D(i, glm::vec3(0, 0, 0));
 
 	hand->width = 512;
 	hand->height = 512;
+
+	hand->src = i->spriteSheet.GetUVFlip("hand");
 
 	hand->position.x = c2d->_w - hand->width;
 
@@ -123,6 +140,7 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	// create hand
 
 	c2d->AddObject(hand);
+	hand->order = -1;
 
 	// create hotbar (9)
 

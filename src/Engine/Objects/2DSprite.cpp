@@ -50,6 +50,17 @@ void Sprite2D::Draw()
 	Vertex2D bl = { position + glm::vec3{0, height, 0}, glm::vec2{0,1}, color };
 	Vertex2D br = { position + glm::vec3{width, height, 0}, glm::vec2{1,1}, color };
 
+	if (flipHorizontal)
+	{
+		Vertex2D temp = tl;
+		tl = tr;
+		tr = temp;
+
+		temp = bl;
+		bl = br;
+		br = temp;
+	}
+
 	float rX = t->width * src.x;
 	float rY = t->height * src.y;
 	float rW = t->width * src.z;

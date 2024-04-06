@@ -9,6 +9,8 @@ class Sprite2D : public GameObject2D
 public:
 	glm::vec4 src = glm::vec4(0,0,1,1);
 
+	bool flipHorizontal = false;
+
 	float width, height;
 	Sprite2D(glm::vec3 _pos);
 	Sprite2D(std::string texture, glm::vec3 _pos);
