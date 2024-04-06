@@ -33,6 +33,7 @@ public:
 
 	virtual void MouseMove(float x, float y) {};
 	virtual void MouseClick(int button, glm::vec2 mPos) {};
+	virtual void MouseRelease(int button, glm::vec2 mPos) {};
 	virtual void KeyPress(int key) {};
 	virtual void KeyRelease(int key) {};
 	virtual void OnChar(unsigned int c) {};

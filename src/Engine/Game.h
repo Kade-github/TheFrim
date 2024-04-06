@@ -114,7 +114,16 @@ public:
 		e.pos = glm::vec2(x, y);
 		std::lock_guard<std::mutex> lock(eventMtx);
 		events.push_back(e);
-	}
+	};
+
+	void MouseRelease(int button, glm::vec2 mPos) {
+		Event e;
+		e.type = 6;
+		e.pos = mPos;
+		e.var1 = button;
+		std::lock_guard<std::mutex> lock(eventMtx);
+		events.push_back(e);
+	};
 
 	void SetWindowSize(int width, int height) 
 	{ 

@@ -107,10 +107,16 @@ int main()
 		{
 			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)
 			{
-				if (action != GLFW_PRESS)
-					return;
-				glm::vec2 mPos = Game::instance->GetCursorPos();
-				Game::instance->MouseClick(button, mPos);
+				if (action == GLFW_PRESS)
+				{
+					glm::vec2 mPos = Game::instance->GetCursorPos();
+					Game::instance->MouseClick(button, mPos);
+				}
+				else
+				{
+					glm::vec2 mPos = Game::instance->GetCursorPos();
+					Game::instance->MouseRelease(button, mPos);
+				}
 			}
 		});
 

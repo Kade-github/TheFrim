@@ -97,18 +97,30 @@ void Game::Render()
 		std::lock_guard<std::mutex> lock(eventMtx);
 		for (auto& e : events)
 		{
-			if (e.type == 0)
-				currentScene->MouseMove(e.pos.x, e.pos.y);
-			else if (e.type == 1)
-				currentScene->MouseClick(e.var1, e.pos);
-			else if (e.type == 2)
-				currentScene->KeyPress(e.var1);
-			else if (e.type == 3)
-				currentScene->KeyRelease(e.var1);
-			else if (e.type == 4)
-				currentScene->OnChar(e.var1);
-			else if (e.type == 5)
-				currentScene->OnScroll(e.pos.x, e.pos.y);
+			switch (e.type)
+			{
+				case 0:
+					currentScene->MouseMove(e.pos.x, e.pos.y);
+					break;
+				case 1:
+					currentScene->MouseClick(e.var1, e.pos);
+					break;
+				case 2:
+					currentScene->KeyPress(e.var1);
+					break;
+				case 3:
+					currentScene->KeyRelease(e.var1);
+					break;
+				case 4:
+					currentScene->OnChar(e.var1);
+					break;
+				case 5:
+					currentScene->OnScroll(e.pos.x, e.pos.y);
+					break;
+				case 6:
+					currentScene->MouseRelease(e.var1, e.pos);
+					break;
+			}
 		}
 
 		events.clear();
