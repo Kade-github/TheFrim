@@ -108,10 +108,21 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	i = Texture::createWithImage("Assets/Textures/items.png", false);
 	i->spriteSheet.Load("Assets/Textures/items.xml", i->width, i->height);
 
+	hand = new Sprite2D("Assets/Textures/hand.png", glm::vec3(0, 0, 0));
+
+	hand->width = 512;
+	hand->height = 512;
+
+	hand->position.x = c2d->_w - hand->width;
+
 	crosshair = new Sprite2D("Assets/Textures/crosshair.png", glm::vec3(c2d->_w / 2, c2d->_h / 2, 0));
 
 	c2d->AddObject(crosshair);
 	crosshair->order = 1;
+
+	// create hand
+
+	c2d->AddObject(hand);
 
 	// create hotbar (9)
 

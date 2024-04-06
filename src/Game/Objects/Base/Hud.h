@@ -11,6 +11,9 @@ class Hud : public GameObject
 private:
 	Player* player;
 	Camera2D* c2d;
+
+	Sprite2D* hand;
+
 	Texture* h;
 	Texture* i;
 
