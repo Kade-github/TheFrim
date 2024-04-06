@@ -11,6 +11,8 @@ class Player : public Entity
 	std::vector<VVertex> vertices;
 	std::vector<unsigned int> indices;
 
+	bool _inInventory = false;
+
 	float headBop = 0;
 	float _shake = 0;
 

@@ -4,6 +4,7 @@
 #include <Objects/GameObject.h>
 #include <Objects/2DCamera.h>
 #include "UI/ItemUI.h"
+#include "UI/Inventory.h"
 #include "Player.h"
 
 class Hud : public GameObject
@@ -20,6 +21,7 @@ private:
 	float _heartUpdate = 0;
 
 public:
+	Inventory* inv;
 
 	int selected = 0;
 

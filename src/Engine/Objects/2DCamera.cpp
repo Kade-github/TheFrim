@@ -258,6 +258,16 @@ void Camera2D::MouseMove(float x, float y)
 	}
 }
 
+void Camera2D::KeyPress(int key)
+{
+	for (int i = 0; i < objects.size(); i++)
+	{
+		GameObject2D* object = objects[i];
+		object->KeyPress(key);
+	}
+
+}
+
 void Camera2D::DrawDebugText(std::string text, glm::vec2 pos, int size)
 {
 	debugText->text = text;

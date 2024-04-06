@@ -34,6 +34,7 @@ public:
 	void MouseClick(int button, glm::vec2 pos) override;
 	void MouseRelease(int button, glm::vec2 pos) override;
 	void MouseMove(float x, float y) override;
+	void KeyPress(int key) override;
 
 
 	void DrawDebugText(std::string text, glm::vec2 pos, int size);

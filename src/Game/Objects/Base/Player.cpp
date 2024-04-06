@@ -139,97 +139,102 @@ Player::Player(glm::vec3 pos) : Entity(pos)
 
 void Player::Draw()
 {
-	glm::vec2 mousePos = Game::instance->GetCursorPos(false);
+	Camera* camera = Game::instance->GetCamera();
+	float p = camera->pitch;
 
-	float x = mousePos.x;
-	float y = mousePos.y;
-
-	if (firstMouse)
+	if (!_inInventory)
 	{
+		glm::vec2 mousePos = Game::instance->GetCursorPos(false);
+
+		float x = mousePos.x;
+		float y = mousePos.y;
+
+		if (firstMouse)
+		{
+			lastX = x;
+			lastY = y;
+			firstMouse = false;
+		}
+
+		float xoffset = x - lastX;
+		float yoffset = lastY - y; // reversed since y-coordinates go from bottom to top
+
 		lastX = x;
 		lastY = y;
-		firstMouse = false;
+
+		const float sensitivity = 0.1f;
+		xoffset *= sensitivity;
+		yoffset *= sensitivity;
+		p += yoffset;
+		if (p >= 89.0f)
+			p = 89.0f;
+		else if (p <= -89.0f)
+			p = -89.0f;
+
+		yaw += xoffset;
 	}
-
-	float xoffset = x - lastX;
-	float yoffset = lastY - y; // reversed since y-coordinates go from bottom to top
-
-	lastX = x;
-	lastY = y;
-
-	const float sensitivity = 0.1f;
-	xoffset *= sensitivity;
-	yoffset *= sensitivity;
-
-	Camera* camera = Game::instance->GetCamera();
-
-	float p = camera->pitch + yoffset;
-	if (p >= 89.0f)
-		p = 89.0f;
-	else if (p <= -89.0f)
-		p = -89.0f;
-
-	yaw += xoffset;
 
 	bool moving = false;
 
 	if (!freeCam)
 	{
-
-		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
+		if (!_inInventory)
 		{
-			forwardVelocity += speed;
-			headBop += 10.0f * Game::instance->deltaTime;
-			moving = true;
+			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
+			{
+				forwardVelocity += speed;
+				headBop += 10.0f * Game::instance->deltaTime;
+				moving = true;
+			}
+
+			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
+			{
+				forwardVelocity -= speed;
+				headBop += 10.0f * Game::instance->deltaTime;
+				moving = true;
+			}
+
+			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
+			{
+				strafeVelocity -= speed;
+				headBop += 10.0f * Game::instance->deltaTime;
+				moving = true;
+			}
+
+			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
+			{
+				strafeVelocity += speed;
+				headBop += 10.0f * Game::instance->deltaTime;
+				moving = true;
+			}
+
+			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
+			{
+				if (glfwGetTime() - jumpCooldown < 0.15)
+					return;
+
+				jumpCooldown = glfwGetTime();
+
+				downVelocity = jumpStrength;
+				isOnGround = false;
+			}
+
+			if (forwardVelocity > speed)
+				forwardVelocity = speed;
+
+			if (forwardVelocity < -speed)
+				forwardVelocity = -speed;
+
+			if (strafeVelocity > speed)
+				strafeVelocity = speed;
+
+			if (strafeVelocity < -speed)
+				strafeVelocity = -speed;
 		}
-
-		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
-		{
-			forwardVelocity -= speed;
-			headBop += 10.0f * Game::instance->deltaTime;
-			moving = true;
-		}
-
-		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
-		{
-			strafeVelocity -= speed;
-			headBop += 10.0f * Game::instance->deltaTime;
-			moving = true;
-		}
-
-		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
-		{
-			strafeVelocity += speed;
-			headBop += 10.0f * Game::instance->deltaTime;
-			moving = true;
-		}
-
-		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
-		{
-			if (glfwGetTime() - jumpCooldown < 0.15)
-				return;
-
-			jumpCooldown = glfwGetTime();
-
-			downVelocity = jumpStrength;
-			isOnGround = false;
-		}
-
-		if (forwardVelocity > speed)
-			forwardVelocity = speed;
-
-		if (forwardVelocity < -speed)
-			forwardVelocity = -speed;
-
-		if (strafeVelocity > speed)
-			strafeVelocity = speed;
-
-		if (strafeVelocity < -speed)
-			strafeVelocity = -speed;
 
 		Entity::Draw(); // physics
 	}
-	else
+	else if (!_inInventory)
 	{
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
 			position += camera->cameraFront * 0.05f;
@@ -448,6 +453,12 @@ void Player::KeyPress(int key)
 	case GLFW_KEY_9:
 		scene->hud->SetSelected(8);
 		scene->hud->UpdateHotbar();
+		break;
+	case GLFW_KEY_E:
+		scene->hud->inv->shown = !scene->hud->inv->shown;
+		_inInventory = !_inInventory;
+		if (!_inInventory)
+			firstMouse = true;
 		break;
 	}
 

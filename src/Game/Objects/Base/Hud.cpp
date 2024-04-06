@@ -157,6 +157,10 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 		c2d->AddObject(s);
 	}
 
+	inv = new Inventory(glm::vec3(0,0,0), player);
+
+	c2d->AddObject(inv);
+
 	UpdateHotbar();
 	UpdateHearts();
 	UpdateArmor();
