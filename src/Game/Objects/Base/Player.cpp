@@ -58,6 +58,8 @@ void Player::OnScroll(double x, double y)
 			scene->hud->SetSelected(8);
 		else
 			scene->hud->SetSelected(n);
+
+		scene->hud->UpdateHotbar();
 	}
 	else
 	{
@@ -66,6 +68,8 @@ void Player::OnScroll(double x, double y)
 			scene->hud->SetSelected(0);
 		else
 			scene->hud->SetSelected(n);
+
+		scene->hud->UpdateHotbar();
 	}
 
 }
