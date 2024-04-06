@@ -31,6 +31,11 @@ public:
 	void ResizeTo();
 	void UpdateFramebuffer();
 
+	void MouseClick(int button, glm::vec2 pos) override;
+	void MouseRelease(int button, glm::vec2 pos) override;
+	void MouseMove(float x, float y) override;
+
+
 	void DrawDebugText(std::string text, glm::vec2 pos, int size);
 
 	void AddObject(GameObject2D* object)

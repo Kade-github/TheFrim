@@ -231,6 +231,33 @@ void Camera2D::UpdateFramebuffer()
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
 }
 
+void Camera2D::MouseClick(int button, glm::vec2 pos)
+{
+	for (int i = 0; i < objects.size(); i++)
+	{
+		GameObject2D* object = objects[i];
+		object->MouseClick(button, pos);
+	}
+}
+
+void Camera2D::MouseRelease(int button, glm::vec2 pos)
+{
+	for (int i = 0; i < objects.size(); i++)
+	{
+		GameObject2D* object = objects[i];
+		object->MouseRelease(button, pos);
+	}
+}
+
+void Camera2D::MouseMove(float x, float y)
+{
+	for (int i = 0; i < objects.size(); i++)
+	{
+		GameObject2D* object = objects[i];
+		object->MouseMove(x, y);
+	}
+}
+
 void Camera2D::DrawDebugText(std::string text, glm::vec2 pos, int size)
 {
 	debugText->text = text;
