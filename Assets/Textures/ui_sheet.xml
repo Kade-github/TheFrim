@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<TextureAtlas imagePath="ui_sheet.png" width="384" height="384" scale="1" format="RGBA8888">
+  <sprite n="bottom" x="0" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="corner_bottomleft" x="128" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="corner_bottomright" x="0" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="corner_topleft" x="128" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="corner_topright" x="256" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="left" x="256" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="right" x="0" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="top" x="128" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
+</TextureAtlas>
