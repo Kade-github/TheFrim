@@ -86,14 +86,6 @@ int main()
 							Game::instance->isFullscreen = true;
 						}
 						break;
-					case GLFW_KEY_F1:
-						Game::instance->lockedCursor = !Game::instance->lockedCursor;
-
-						if (Game::instance->lockedCursor)
-							glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-						else
-							glfwSetInputMode(window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-						break;
 					}
 
 					Game::instance->KeyPress(key);
@@ -141,6 +133,7 @@ int main()
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 	glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+	game.lockedCursor = false;
 
 
 	glfwMakeContextCurrent(NULL);
@@ -174,7 +167,16 @@ int main()
 	{
 		if (glfwWindowShouldClose(game.GetWindow()))
 			running = false;
-		glfwWaitEvents();
+		if (game.needsUpdate)
+		{
+			if (game.lockedCursor)
+				glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
+			else
+				glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+			game.needsUpdate = false;
+		}
+		glfwPollEvents();
 	}
 
 	Game::instance->log->Write("Shutting down...");

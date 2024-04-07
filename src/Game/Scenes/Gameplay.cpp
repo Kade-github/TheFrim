@@ -14,6 +14,8 @@ Gameplay::Gameplay(WorldManager* _wm)
 
 void Gameplay::Create()
 {
+	Game::instance->SetLockedCursor(true);
+
 	c2d = new Camera2D(glm::vec3(0, 0, 0));
 
 	c2d->s = new Shader();
@@ -45,8 +47,6 @@ void Gameplay::Create()
 	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
 
 	LightingManager::GetInstance()->sun.angle = 90; // set to noon
-
-	Game::instance->CaptureCursor(true);
 }
 
 void Gameplay::Draw()

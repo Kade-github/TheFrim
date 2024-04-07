@@ -20,6 +20,13 @@ public:
 
 	void SetBox();
 
+	Sprite2D* GetFront(glm::vec2 _closestPos);
+	Sprite2D* GetSlot(glm::vec2 _closestPos);
+
+	std::vector<Sprite2D*> GetFront() { return front; }
+	std::vector<Sprite2D*> GetSlots() { return slots; }
+	std::vector<Sprite2D*> GetBack() { return back; }
+
 	void AddFront(Sprite2D* s, int x, int y);
 	void RemoveFront(Sprite2D* s);
 

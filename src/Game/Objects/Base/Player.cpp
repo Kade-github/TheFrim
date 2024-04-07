@@ -314,59 +314,65 @@ void Player::Draw()
 	vertices.clear();
 	indices.clear();
 
-	if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+	if (!_inInventory)
 	{
-		selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * selectedBlock->toughness;
+		if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * selectedBlock->toughness;
 
-		if (selectedBlock->breakProgress >= 1)
+			if (selectedBlock->breakProgress >= 1)
+			{
+				selectedBlock->breakProgress = 0;
+
+				glm::vec3 _world = selectedBlock->position;
+
+				Chunk* c = WorldManager::instance->GetChunk(_world.x, _world.z);
+
+				if (c != nullptr)
+				{
+					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
+				}
+			}
+
+			std::vector<BlockFace> faces = {};
+
+			faces.push_back(selectedBlock->BreakTopFace());
+			ApplyNormal(faces[0].vertices, glm::vec3(0, 1, 0));
+			faces.push_back(selectedBlock->BreakBottomFace());
+			ApplyNormal(faces[1].vertices, glm::vec3(0, -1, 0));
+			faces.push_back(selectedBlock->BreakLeftFace());
+			ApplyNormal(faces[2].vertices, glm::vec3(1, 0, 0));
+			faces.push_back(selectedBlock->BreakRightFace());
+			ApplyNormal(faces[3].vertices, glm::vec3(-1, 0, 0));
+			faces.push_back(selectedBlock->BreakFrontFace());
+			ApplyNormal(faces[4].vertices, glm::vec3(0, 0, -1));
+			faces.push_back(selectedBlock->BreakBackFace());
+			ApplyNormal(faces[5].vertices, glm::vec3(0, 0, 1));
+
+			for (int i = 0; i < faces.size(); i++)
+			{
+				BlockFace f = faces[i];
+
+				for (int j = 0; j < f.vertices.size(); j++)
+					f.vertices[j].position += f.vertices[j].normal * 0.01f;
+
+				DrawBlockBreak(f);
+			}
+
+			RenderBreak();
+		}
+		else if (selectedBlock != nullptr)
 		{
 			selectedBlock->breakProgress = 0;
-
-			glm::vec3 _world = selectedBlock->position;
-
-			Chunk* c = WorldManager::instance->GetChunk(_world.x, _world.z);
-
-			if (c != nullptr)
-			{
-				c->ModifyBlock(_world.x, _world.y, _world.z, 0);
-			}
 		}
-
-		std::vector<BlockFace> faces = {};
-
-		faces.push_back(selectedBlock->BreakTopFace());
-		ApplyNormal(faces[0].vertices, glm::vec3(0, 1, 0));
-		faces.push_back(selectedBlock->BreakBottomFace());
-		ApplyNormal(faces[1].vertices, glm::vec3(0, -1, 0));
-		faces.push_back(selectedBlock->BreakLeftFace());
-		ApplyNormal(faces[2].vertices, glm::vec3(1, 0, 0));
-		faces.push_back(selectedBlock->BreakRightFace());
-		ApplyNormal(faces[3].vertices, glm::vec3(-1, 0, 0));
-		faces.push_back(selectedBlock->BreakFrontFace());
-		ApplyNormal(faces[4].vertices, glm::vec3(0, 0, -1));
-		faces.push_back(selectedBlock->BreakBackFace());
-		ApplyNormal(faces[5].vertices, glm::vec3(0, 0, 1));
-
-		for (int i = 0; i < faces.size(); i++)
-		{
-			BlockFace f = faces[i];
-
-			for (int j = 0; j < f.vertices.size(); j++)
-				f.vertices[j].position += f.vertices[j].normal * 0.01f;
-
-			DrawBlockBreak(f);
-		}
-
-		RenderBreak();
-	}
-	else if (selectedBlock != nullptr)
-	{
-		selectedBlock->breakProgress = 0;
 	}
 }
 
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
+	if (_inInventory)
+		return;
+
 	Camera* camera = Game::instance->GetCamera();
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT)
@@ -455,8 +461,8 @@ void Player::KeyPress(int key)
 		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_E:
-		scene->hud->inv->shown = !scene->hud->inv->shown;
 		_inInventory = !_inInventory;
+		scene->hud->InventoryShown(_inInventory);
 		if (!_inInventory)
 			firstMouse = true;
 		break;

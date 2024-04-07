@@ -3,6 +3,8 @@
 
 #pragma once
 
+#include <string>
+
 #include "../../../Include/glm/gtc/type_ptr.hpp"
 #include "../../../Include/glm/gtc/matrix_transform.hpp"
 
@@ -49,6 +51,8 @@ public:
 	}
 
 	bool visible = true;
+
+	std::string tag_id = "object";
 
 	int order = 0;
 	int id = -1;

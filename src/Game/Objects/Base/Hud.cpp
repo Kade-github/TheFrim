@@ -1,6 +1,14 @@
 #include "Hud.h"
 #include <Game.h>
 
+void Hud::InventoryShown(bool s)
+{
+	Game::instance->SetLockedCursor(!s);
+
+	inv->shown = s;
+	inv->UpdateInventory();
+}
+
 void Hud::SetSelected(int s)
 {
 	selected = s;

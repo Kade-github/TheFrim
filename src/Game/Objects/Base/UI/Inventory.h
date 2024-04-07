@@ -7,6 +7,10 @@
 class Inventory : public BoxUI
 {
 	Player* player;
+	bool _dragging = false;
+	glm::vec2 _startDrag;
+	Sprite2D* _draggingItem = nullptr;
+
 public:
 
 	bool shown = false;

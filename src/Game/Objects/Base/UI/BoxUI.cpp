@@ -88,6 +88,7 @@ void BoxUI::SetBox()
 				slot->height = 128;
 
 				slot->src = t->spriteSheet.GetUVFlip("box_slot");
+				slot->tag_id = std::to_string(x) + "," + std::to_string(y);
 
 				slot->position = position + glm::vec3(slot->width * x, slot->height * y, 0);
 
@@ -98,6 +99,38 @@ void BoxUI::SetBox()
 
 	renderWidth = width * 128;
 	renderHeight = height * 128;
+}
+
+Sprite2D* BoxUI::GetFront(glm::vec2 _closestPos)
+{
+	// check if the mouse is inside the box
+
+	Sprite2D* sp = nullptr;
+
+	for (Sprite2D* s : front)
+	{
+		if (_closestPos.x >= s->position.x && _closestPos.x <= s->position.x + s->width &&
+			_closestPos.y >= s->position.y && _closestPos.y <= s->position.y + s->height)
+			sp = s;
+	}
+
+	return sp;
+}
+
+Sprite2D* BoxUI::GetSlot(glm::vec2 _closestPos)
+{
+	// check if the mouse is inside the box
+
+	Sprite2D* sp = nullptr;
+
+	for (Sprite2D* s : slots)
+	{
+		if (_closestPos.x >= s->position.x && _closestPos.x <= s->position.x + s->width &&
+			_closestPos.y >= s->position.y && _closestPos.y <= s->position.y + s->height)
+			sp = s;
+	}
+
+	return sp;
 }
 
 void BoxUI::AddFront(Sprite2D* s, int x, int y)

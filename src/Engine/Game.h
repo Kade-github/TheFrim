@@ -28,8 +28,8 @@ class Game
 	int _width = 0;
 	int _height = 0;
 
-	float _cursorX = 0;
-	float _cursorY = 0;
+	double _cursorX = 0;
+	double _cursorY = 0;
 
 	Camera* _camera = NULL;
 
@@ -51,6 +51,7 @@ public:
 
 	bool isFullscreen = false;
 	bool lockedCursor = true;
+	bool needsUpdate = false;
 	bool switchScene = false;
 
 	Scene* currentScene;
@@ -61,6 +62,8 @@ public:
 	void CCreateWindow(int width, int height);
 
 	void CreateRenderer();
+
+	void SetLockedCursor(bool locked) { lockedCursor = locked; needsUpdate = true; }
 
 	void SetScene(Scene* s);
 	void SwitchScene(Scene* s);
@@ -151,14 +154,6 @@ public:
 		glViewport(0, 0, _width, _height);
 	}
 
-	void CaptureCursor(bool capture)
-	{
-		if (capture)
-			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_DISABLED);
-		else
-			glfwSetInputMode(_window, GLFW_CURSOR, GLFW_CURSOR_NORMAL);
-	}
-
 	GLFWwindow* GetWindow() { return _window; }
 
 	Camera* GetCamera() { return _camera; }
@@ -166,6 +161,9 @@ public:
 	glm::vec2 GetWindowSize() { return glm::vec2(_width, _height); }
 
 	glm::vec2 GetCursorPos(bool invert = true) { 
+
+		glfwGetCursorPos(_window, &_cursorX, &_cursorY);
+
 		float y = _cursorY;
 
 		if (invert) // invert y axis

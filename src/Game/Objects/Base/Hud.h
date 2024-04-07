@@ -32,6 +32,8 @@ public:
 	std::vector<Sprite2D*> hearts;
 	std::vector<Sprite2D*> armor;
 
+	void InventoryShown(bool s);
+
 	void SetSelected(int s);
 
 	void UpdateHotbar();
