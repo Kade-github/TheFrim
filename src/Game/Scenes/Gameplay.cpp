@@ -16,6 +16,8 @@ void Gameplay::Create()
 {
 	Game::instance->SetLockedCursor(true);
 
+	dim = new DroppedItemManager();
+
 	c2d = new Camera2D(glm::vec3(0, 0, 0));
 
 	c2d->s = new Shader();
@@ -74,8 +76,9 @@ void Gameplay::Draw()
 
 	MusicManager::GetInstance()->Update();
 
-
 	Scene::Draw();
+
+	dim->Update(); // these use delayed 
 
 	if (camera->vertices.size() != 0)
 		camera->DebugDraws();
@@ -483,4 +486,5 @@ void Gameplay::Destroy()
 
 	wm->SaveWorldNow();
 	delete wm;
+	delete dim;
 }

@@ -46,6 +46,22 @@ void Entity::Footstep()
 	}
 }
 
+void Entity::Launch(glm::vec3 direction, float force)
+{
+	downVelocity += force;
+
+	forwardVelocity += direction.x * force;
+	strafeVelocity += direction.z * force;
+}
+
+void Entity::Launch(glm::vec3 direction, float force, float upForce)
+{
+	forwardVelocity += direction.x * force;
+	strafeVelocity += direction.z * force;
+
+	downVelocity += upForce;
+}
+
 void Entity::CheckCollision(glm::vec3& motion, float down)
 {
 	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
@@ -152,8 +168,14 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 	float toY = motion.y - 1.8;
 
+	if (!isCreature)
+		toY = motion.y;
+
 	glm::vec3 rp = position;
 	rp.y -= 1.8;
+
+	if (!isCreature)
+		rp.y = position.y;
 
 	if (downVelocity > 0)
 	{
@@ -215,12 +237,14 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		{
 			if (downVelocity <= 0)
 			{
-				if (!wasOnGround)
+				if (!wasOnGround && isCreature)
 					Footstep();
 
 				isOnGround = true;
 				downVelocity = 0;
 				motion.y = _lastY + 2.8;
+				if (!isCreature)
+					motion.y = _lastY + 1;
 			}
 			else
 			{
@@ -296,18 +320,35 @@ void Entity::Draw()
 
 	motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
 
-	CheckCollision(motion, 0.4);
+	if (isCreature)
+	{
+		CheckCollision(motion, 0.4);
 
-	CheckCollision(motion, 0.8);
+		CheckCollision(motion, 0.8);
 
-	CheckCollision(motion, 1.8);
+		CheckCollision(motion, 1.8);
+	}
+	else
+	{
+		CheckCollision(motion, 0);
+	}
 
 	position = motion;
 
-	if (forwardVelocity != 0)
-		forwardVelocity *= 0.8;
-	if (strafeVelocity != 0)
-		strafeVelocity *= 0.8;
+	if (isCreature)
+	{
+		if (forwardVelocity != 0)
+			forwardVelocity *= 0.8;
+		if (strafeVelocity != 0)
+			strafeVelocity *= 0.8;
+	}
+	else
+	{
+		if (forwardVelocity != 0)
+			forwardVelocity *= 0.95;
+		if (strafeVelocity != 0)
+			strafeVelocity *= 0.95;
+	}
 
 	if (forwardVelocity <= 0.01 && forwardVelocity >= -0.01)
 		forwardVelocity = 0;

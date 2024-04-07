@@ -75,6 +75,8 @@ namespace Data
 	struct InventoryItem {
 		std::string tag;
 
+        bool stackable = true;
+
 		int type = ITEM_NULL;
 		int count = 1;
 
@@ -131,63 +133,83 @@ namespace Data
                 tag = "item_stick";
                 break;
             case ITEM_WOODEN_PICKAXE:
+                stackable = false;
                 tag = "item_wooden_pickaxe";
                 break;
             case ITEM_WOODEN_SHOVEL:
+                stackable = false;
                 tag = "item_wooden_shovel";
                 break;
             case ITEM_WOODEN_AXE:
+                stackable = false;
                 tag = "item_wooden_axe";
                 break;
             case ITEM_WOODEN_SWORD:
+                stackable = false;
                 tag = "item_wooden_sword";
                 break;
             case ITEM_STONE_PICKAXE:
+                stackable = false;
                 tag = "item_stone_pickaxe";
                 break;
             case ITEM_STONE_SHOVEL:
+                stackable = false;
                 tag = "item_stone_shovel";
                 break;
             case ITEM_STONE_AXE:
+                stackable = false;
                 tag = "item_stone_axe";
                 break;
             case ITEM_STONE_SWORD:
+                stackable = false;
                 tag = "item_stone_sword";
                 break;
             case ITEM_IRON_PICKAXE:
+                stackable = false;
                 tag = "item_iron_pickaxe";
                 break;
             case ITEM_IRON_SHOVEL:
+                stackable = false;
                 tag = "item_iron_shovel";
                 break;
             case ITEM_IRON_AXE:
+                stackable = false;
                 tag = "item_iron_axe";
                 break;
             case ITEM_IRON_SWORD:
+                stackable = false;
                 tag = "item_iron_sword";
                 break;
             case ITEM_GOLD_PICKAXE:
+                stackable = false;
                 tag = "item_gold_pickaxe";
                 break;
             case ITEM_GOLD_SHOVEL:
+                stackable = false;
                 tag = "item_gold_shovel";
                 break;
             case ITEM_GOLD_AXE:
+                stackable = false;
                 tag = "item_gold_axe";
                 break;
             case ITEM_GOLD_SWORD:
+                stackable = false;
                 tag = "item_gold_sword";
                 break;
             case ITEM_DIAMOND_PICKAXE:
+                stackable = false;
                 tag = "item_diamond_pickaxe";
                 break;
             case ITEM_DIAMOND_SHOVEL:
+                stackable = false;
                 tag = "item_diamond_shovel";
                 break;
             case ITEM_DIAMOND_AXE:
+                stackable = false;
                 tag = "item_diamond_axe";
                 break;
             case ITEM_DIAMOND_SWORD:
+                stackable = false;
                 tag = "item_diamond_sword";
                 break;
             case ITEM_APPLE:
@@ -206,6 +228,7 @@ namespace Data
                 tag = "item_diamond";
                 break;
             default:
+                stackable = false;
                 tag = "item_null";
                 break;
             }
@@ -270,6 +293,51 @@ namespace Data
 		void SetInventoryItem(int x, int y, int type, int count)
 		{
 			inventory[x][y] = { (int)type, count };
+		}
+
+        void GiveItem(InventoryItem item)
+        {
+            // find if it's in the inventory
+            if (item.stackable)
+                for (int y = 0; y < PLAYER_INVENTORY_HEIGHT - 1; y++)
+                {
+                    for (int x = 0; x < PLAYER_INVENTORY_WIDTH - 1; x++)
+                    {
+					    InventoryItem& i = inventory[x][y];
+
+                        if (i.type == item.type)
+                        {
+                            if (i.count < 64)
+                            {
+                                i.count += item.count;
+                                return;
+                            }
+                            else
+                            {
+                                float diff = i.count + item.count - 64;
+
+                                i.count = 64;
+                                item.count = diff;
+                            }
+                        }
+				    }
+			    }
+
+            // find first empty slot
+
+            for (int y = PLAYER_INVENTORY_HEIGHT - 1; y >= 0; y--)
+            {
+                for (int x = 0; x < PLAYER_INVENTORY_WIDTH - 1; x++)
+                {
+					InventoryItem& i = inventory[x][y];
+
+                    if (i.type == ITEM_NULL)
+                    {
+						i = item;
+						return;
+					}
+				}
+			}
 		}
 
 		MSGPACK_DEFINE_ARRAY(x, y, z, pitch, yaw, selectedSlot, health, inventory);

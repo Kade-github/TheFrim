@@ -30,6 +30,7 @@ public:
 	}
 
 	std::vector<GameObject*> objects = {};
+	std::vector<GameObject*> delayedObjects = {};
 
 	virtual void MouseMove(float x, float y) {};
 	virtual void MouseClick(int button, glm::vec2 mPos) {};
@@ -38,6 +39,11 @@ public:
 	virtual void KeyRelease(int key) {};
 	virtual void OnChar(unsigned int c) {};
 	virtual void OnScroll(double x, double y) {};
+
+	void DelayedAddObject(GameObject* object)
+	{
+		delayedObjects.push_back(object);
+	}
 
 	void AddObject(GameObject* object)
 	{
@@ -80,6 +86,13 @@ public:
 		{
 			objects[i]->Draw();
 		}
+
+		for (int i = 0; i < delayedObjects.size(); i++)
+		{
+			AddObject(delayedObjects[i]);
+		}
+
+		delayedObjects.clear();
 	}
 };
 

@@ -6,10 +6,12 @@
 #include <BS_thread_pool.hpp>
 #include "../Objects/Base/Hud.h"
 #include "../WorldManager.h"
+#include "../DroppedItemManager.h"
 
 class Gameplay : public Scene
 {
 public:
+	DroppedItemManager* dim;
 	WorldManager* wm;
 	Hud* hud;
 	Player* player;

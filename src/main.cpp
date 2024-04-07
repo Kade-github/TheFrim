@@ -59,9 +59,6 @@ int main()
 
 	glfwSetKeyCallback(game.GetWindow(), [](GLFWwindow* window, int key, int scancode, int action, int mods)
 		{
-			if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
-				glfwSetWindowShouldClose(window, GLFW_TRUE);
-
 			if (Game::instance->currentScene != nullptr && Game::instance->currentScene->isCreated)
 			{
 				if (action == GLFW_PRESS)
@@ -176,7 +173,7 @@ int main()
 
 			game.needsUpdate = false;
 		}
-		glfwPollEvents();
+		glfwWaitEventsTimeout(0.01);
 	}
 
 	Game::instance->log->Write("Shutting down...");

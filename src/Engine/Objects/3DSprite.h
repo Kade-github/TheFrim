@@ -11,10 +11,12 @@ class Sprite3D : public GameObject
 
 	std::vector<GameObject::VVertex> vertices;
 public:
+	glm::vec4 src = glm::vec4(0, 0, 1, 1);
 	Texture* t;
 	float width = 1;
 	float height = 1;
 	Sprite3D(std::string path, glm::vec3 pos);
+	Sprite3D(Texture* _t, glm::vec3 pos);
 
 	void Draw() override;
 

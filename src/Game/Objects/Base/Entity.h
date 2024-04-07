@@ -9,6 +9,8 @@ public:
 	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+	bool isCreature = true;
+
 	float gravity = 19.0f;
 	float jumpStrength = 7.8f;
 	float speed = 9.0f;
@@ -25,6 +27,9 @@ public:
 	Entity(glm::vec3 pos);
 
 	void Footstep();
+
+	void Launch(glm::vec3 direction, float force);
+	void Launch(glm::vec3 direction, float force, float upForce);
 
 	void CheckCollision(glm::vec3& motion, float down);
 	void CheckVerticalCollision(glm::vec3& motion);

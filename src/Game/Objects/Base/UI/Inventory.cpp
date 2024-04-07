@@ -81,9 +81,38 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 				end.y = PLAYER_INVENTORY_HEIGHT - end.y;
 
 				Data::InventoryItem startItem = player->playerData.inventory[(int)start.x][(int)start.y];
+				Data::InventoryItem endItem = player->playerData.inventory[(int)end.x][(int)end.y];
 
-				player->playerData.inventory[(int)start.x][(int)start.y] = player->playerData.inventory[(int)end.x][(int)end.y];
-				player->playerData.inventory[(int)end.x][(int)end.y] = startItem;
+				if (startItem.type != endItem.type)
+				{
+					player->playerData.inventory[(int)start.x][(int)start.y] = endItem;
+					player->playerData.inventory[(int)end.x][(int)end.y] = startItem;
+				}
+				else
+				{
+					if (startItem.type != Data::ItemType::ITEM_NULL)
+					{
+						int total = startItem.count + endItem.count;
+
+						if (total > 64)
+						{
+							int diff = total - 64;
+
+							player->playerData.inventory[(int)start.x][(int)start.y].count = diff;
+							player->playerData.inventory[(int)end.x][(int)end.y].count = 64;
+						}
+						else
+						{
+							player->playerData.inventory[(int)start.x][(int)start.y] = {};
+							player->playerData.inventory[(int)end.x][(int)end.y].count = total;
+						}
+					}
+					else
+					{
+						player->playerData.inventory[(int)start.x][(int)start.y] = endItem;
+						player->playerData.inventory[(int)end.x][(int)end.y] = startItem;
+					}
+				}
 			}
 
 			UpdateInventory();
@@ -92,6 +121,7 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 
 			gp->hud->UpdateHotbar();
 		}
+
 		_dragging = false;
 	}
 }

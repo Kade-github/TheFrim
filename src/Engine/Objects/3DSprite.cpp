@@ -12,6 +12,17 @@ Sprite3D::Sprite3D(std::string path, glm::vec3 pos) : GameObject(pos)
 	UpdateSprite();
 }
 
+Sprite3D::Sprite3D(Texture* _t, glm::vec3 pos) : GameObject(pos)
+{
+	t = _t;
+	// init stuff
+
+	glGenVertexArrays(1, &VAO);
+	glGenBuffers(1, &VBO);
+
+	UpdateSprite();
+}
+
 void Sprite3D::Draw()
 {
 	glm::mat4 model = glm::mat4(1.0f);
@@ -41,14 +52,35 @@ void Sprite3D::UpdateSprite()
 {
 	vertices.clear();
 
-	vertices.push_back({ glm::vec3(-width / 2, -height / 2, 0), glm::vec2(0, 0) });
-	vertices.push_back({ glm::vec3(width / 2, -height / 2, 0), glm::vec2(1, 0) });
-	vertices.push_back({ glm::vec3(width / 2, height / 2, 0), glm::vec2(1, 1) });
 
-	vertices.push_back({ glm::vec3(-width / 2, -height / 2, 0), glm::vec2(0, 0) });
-	vertices.push_back({ glm::vec3(width / 2, height / 2, 0), glm::vec2(1, 1) });
-	vertices.push_back({ glm::vec3(-width / 2, height / 2, 0), glm::vec2(0, 1) });
+	glm::vec3 _tl = glm::vec3(-width / 2, 0, 0);
+	glm::vec3 _tr = glm::vec3(width / 2, 0, 0);
+	glm::vec3 _br = glm::vec3(width / 2, height, 0);
+	glm::vec3 _bl = glm::vec3(-width / 2, height, 0);
 
+	VVertex tl, tr, br, bl;
+
+	tl.position = _tl;
+	tr.position = _tr;
+	br.position = _br;
+	bl.position = _bl;
+
+	float rX = t->width * src.x;
+	float rY = t->height * src.y;
+	float rW = t->width * src.z;
+	float rH = t->height * src.w;
+	
+	tl.uv = glm::vec2(rX / t->width, rY / t->height);
+	tr.uv = glm::vec2((rX + rW) / t->width, rY / t->height);
+	bl.uv = glm::vec2(rX / t->width, (rY + rH) / t->height);
+	br.uv = glm::vec2((rX + rW) / t->width, (rY + rH) / t->height);
+
+	vertices.push_back(tl);
+	vertices.push_back(tr);
+	vertices.push_back(bl);
+	vertices.push_back(bl);
+	vertices.push_back(tr);
+	vertices.push_back(br);
 
 	glBindVertexArray(VAO);
 

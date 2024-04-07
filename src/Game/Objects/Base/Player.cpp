@@ -1,5 +1,6 @@
 #include "../../Scenes/Gameplay.h"
 #include <Game.h>
+#include "DroppedItem.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include "../../LightingManager.h"
 
@@ -413,11 +414,13 @@ void Player::KeyPress(int key)
 
 	if (key == GLFW_KEY_F8)
 	{
-		// give item
+		// create item
 
-		Data::InventoryItem item = { Data::ItemType::ITEM_DIAMOND_SWORD, 1 };
+		Camera* c = Game::instance->GetCamera();
 
-		SetItem(item, 0, 3);
+		Data::InventoryItem i = Data::InventoryItem(Data::ITEM_DIAMOND_SWORD, 1);
+
+		scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, i, false);
 	}
 
 	// select hotbar
@@ -461,10 +464,19 @@ void Player::KeyPress(int key)
 		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_E:
-		_inInventory = !_inInventory;
-		scene->hud->InventoryShown(_inInventory);
 		if (!_inInventory)
+		{
+			_inInventory = true;
+			scene->hud->InventoryShown(true);
+		}
+		break;
+	case GLFW_KEY_ESCAPE:
+		if (_inInventory)
+		{
+			_inInventory = false;
 			firstMouse = true;
+			scene->hud->InventoryShown(false);
+		}
 		break;
 	}
 
