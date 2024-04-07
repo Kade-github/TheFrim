@@ -79,7 +79,7 @@ void DroppedItemManager::Update()
 
 		float distance = glm::distance(player->position - glm::vec3(0,1.8,0), item->position);
 
-		if (distance <= 1.0f && time >= 0.5f) // pickup range
+		if (distance <= 1.0f && time >= 0.5f && (int)item->position.y == (int)(player->position.y - 1)) // pickup range
 		{
 			Data::InventoryItem it = item->item;
 
@@ -105,13 +105,12 @@ void DroppedItemManager::Update()
 					{
 						int diff = (item->item.count + item2->item.count) - 64;
 
-						item->item.count = diff;
-						item2->item.count = 64;
+						item2->item.count = diff;
+						item->item.count = 64;
 					}
 					else
 					{
-						item2->item.count += item->item.count;
-						item->item = {};
+						item->item.count += item2->item.count;
 					}
 
 					RemoveItem(item2);
