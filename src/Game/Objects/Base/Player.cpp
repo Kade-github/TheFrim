@@ -472,13 +472,14 @@ void Player::KeyPress(int key)
 		{
 			if (item.count == 1)
 			{
-				scene->dim->SpawnItem(position + c->cameraFront, item);
+				scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
 				playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = {};
 			}
 			else
 			{
 				item.count--;
 				playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = item;
+				item.count = 1;
 				scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
 			}
 
