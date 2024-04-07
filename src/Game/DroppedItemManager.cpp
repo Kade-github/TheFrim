@@ -99,7 +99,7 @@ void DroppedItemManager::Update()
 
 				DroppedItem* item2 = items[i2];
 
-				if (item->item.type == item2->item.type && glm::distance(item->position, item2->position) <= 1.0f)
+				if (item->item.type == item2->item.type && glm::distance(item->position, item2->position) <= 0.5f)
 				{
 					if (item->item.count + item2->item.count > 64)
 					{
