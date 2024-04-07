@@ -12,6 +12,7 @@ class TextureCache
 
 public:
 	static Texture* GetTexture(const std::string& path, bool flipped = false);
+	static Texture* GetTexture(const std::string& path, std::string extra, bool flipped = false);
 	static void AddTexture(const std::string& path, Texture* texture);
 	static void RemoveTexture(const std::string& path);
 	static void Clear();

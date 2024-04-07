@@ -7,12 +7,11 @@
 
 class DroppedItem : public Entity
 {
-	bool _stackable = true;
 public:
 	Data::InventoryItem item;
 	float lifeTime = 0;
 	Sprite3D* sprite;
-	DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i, bool stackable = true);
+	DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i);
 
 
 	void Draw() override;

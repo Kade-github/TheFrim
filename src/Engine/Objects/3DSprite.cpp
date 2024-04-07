@@ -72,8 +72,8 @@ void Sprite3D::UpdateSprite()
 	
 	tl.uv = glm::vec2(rX / t->width, rY / t->height);
 	tr.uv = glm::vec2((rX + rW) / t->width, rY / t->height);
-	bl.uv = glm::vec2(rX / t->width, (rY + rH) / t->height);
 	br.uv = glm::vec2((rX + rW) / t->width, (rY + rH) / t->height);
+	bl.uv = glm::vec2(rX / t->width, (rY + rH) / t->height);
 
 	vertices.push_back(tl);
 	vertices.push_back(tr);

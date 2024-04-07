@@ -1,7 +1,7 @@
 #include "DroppedItem.h"
 #include <Game.h>
 
-DroppedItem::DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i, bool stackable) : Entity(_pos)
+DroppedItem::DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i) : Entity(_pos)
 {
 	sprite = new Sprite3D(t, _pos);
 	sprite->width = 0.5f;
@@ -9,17 +9,11 @@ DroppedItem::DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i, bool
 
 	isCreature = false;
 
-	_stackable = stackable;
-
 	rotateAxis = glm::vec3(0, 1, 0);
 
 	item = i;
 
-	sprite->src = t->spriteSheet.GetUV(item.tag);
-
-	// go up one
-
-	sprite->src.y += sprite->src.w;
+	sprite->src = t->spriteSheet.GetUVFlip(item.tag);
 
 	sprite->UpdateSprite();
 

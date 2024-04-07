@@ -48,6 +48,7 @@ public:
 	}
 
 	static Texture* createWithImage(std::string filePath, bool flipped = true);
+	static Texture* createWithImageExtra(std::string filePath, std::string extra, bool flipped = true);
 
 	static Texture* loadTextureFromData(char* data, size_t outLength);
 	static Texture* loadTextureFromData(unsigned char* data, int w, int h);

@@ -45,6 +45,20 @@ Texture* TextureCache::GetTexture(const std::string& path, bool flipped)
 	
 }
 
+Texture* TextureCache::GetTexture(const std::string& path, std::string extra, bool flipped)
+{
+	if (m_textures.find(path + extra) == m_textures.end())
+	{
+		Texture* t = loadTexture(path, flipped);
+		AddTexture(path + extra, t);
+		return t;
+	}
+	else
+	{
+		return m_textures[path + extra];
+	}
+}
+
 void TextureCache::AddTexture(const std::string& path, Texture* texture)
 {
 	m_textures[path] = texture;

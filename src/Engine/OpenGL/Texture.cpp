@@ -7,6 +7,11 @@ Texture* Texture::createWithImage(std::string filePath, bool flipped)
 	return TextureCache::GetTexture(filePath, flipped);
 }
 
+Texture* Texture::createWithImageExtra(std::string filePath, std::string extra, bool flipped)
+{
+	return TextureCache::GetTexture(filePath, extra, flipped);
+}
+
 Texture* Texture::loadTextureFromData(char* data, size_t outLength)
 {
 	return stbi_h::stbi_load_memory(data, outLength);

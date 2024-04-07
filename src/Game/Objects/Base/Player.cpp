@@ -331,6 +331,14 @@ void Player::Draw()
 
 				if (c != nullptr)
 				{
+					// for now make it so it drops, later make it so it only drops if it's broken with the right tool
+
+					Data::InventoryItem item = { selectedBlock->type, 1 };
+
+					Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+					scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5,0.5,0.5), item);
+
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
 				}
 			}
@@ -405,23 +413,15 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 void Player::KeyPress(int key)
 {
 	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+	Camera* c = Game::instance->GetCamera();
+	Data::InventoryItem item;
+	int selected = 0;
 
 	if (key == GLFW_KEY_F1) // place light
 		LightingManager::GetInstance()->AddLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z), 12);
 
 	if (key == GLFW_KEY_F2) // remove light
 		LightingManager::GetInstance()->RemoveLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z));
-
-	if (key == GLFW_KEY_F8)
-	{
-		// create item
-
-		Camera* c = Game::instance->GetCamera();
-
-		Data::InventoryItem i = Data::InventoryItem(Data::ITEM_DIAMOND_SWORD, 1);
-
-		scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, i, false);
-	}
 
 	// select hotbar
 
@@ -462,6 +462,28 @@ void Player::KeyPress(int key)
 	case GLFW_KEY_9:
 		scene->hud->SetSelected(8);
 		scene->hud->UpdateHotbar();
+		break;
+	case GLFW_KEY_Q:
+		selected = scene->hud->selected;
+
+		item = playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1];
+
+		if (item.type != Data::ITEM_NULL)
+		{
+			if (item.count == 1)
+			{
+				scene->dim->SpawnItem(position + c->cameraFront, item);
+				playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = {};
+			}
+			else
+			{
+				item.count--;
+				playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = item;
+				scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
+			}
+
+			scene->hud->UpdateHotbar();
+		}
 		break;
 	case GLFW_KEY_E:
 		if (!_inInventory)

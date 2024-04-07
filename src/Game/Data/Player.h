@@ -299,11 +299,14 @@ namespace Data
         {
             // find if it's in the inventory
             if (item.stackable)
-                for (int y = 0; y < PLAYER_INVENTORY_HEIGHT - 1; y++)
+                for (int y = 0; y < PLAYER_INVENTORY_HEIGHT; y++)
                 {
-                    for (int x = 0; x < PLAYER_INVENTORY_WIDTH - 1; x++)
+                    for (int x = 0; x < PLAYER_INVENTORY_WIDTH; x++)
                     {
 					    InventoryItem& i = inventory[x][y];
+
+                        if (i.type == ITEM_NULL)
+                            continue;
 
                         if (i.type == item.type)
                         {
@@ -327,7 +330,7 @@ namespace Data
 
             for (int y = PLAYER_INVENTORY_HEIGHT - 1; y >= 0; y--)
             {
-                for (int x = 0; x < PLAYER_INVENTORY_WIDTH - 1; x++)
+                for (int x = 0; x < PLAYER_INVENTORY_WIDTH; x++)
                 {
 					InventoryItem& i = inventory[x][y];
 

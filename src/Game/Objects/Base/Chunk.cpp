@@ -223,6 +223,12 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	if (z >= 0 && z < CHUNK_SIZE - 1)
 		w.z = (int)z;
 
+	if (w.x == 16)
+		w.x--;
+
+	if (w.z == 16)
+		w.z--;
+
 	if (w.x > CHUNK_SIZE - 1)
 		return;
 

@@ -109,8 +109,8 @@ Sprite2D* BoxUI::GetFront(glm::vec2 _closestPos)
 
 	for (Sprite2D* s : front)
 	{
-		if (_closestPos.x >= s->position.x && _closestPos.x <= s->position.x + s->width &&
-			_closestPos.y >= s->position.y && _closestPos.y <= s->position.y + s->height)
+		if (_closestPos.x >= s->position.x - 64 && _closestPos.x <= (s->position.x - 64) + (s->width + 128) &&
+			_closestPos.y >= s->position.y - 64 && _closestPos.y <= (s->position.y - 64) + (s->height + 128))
 			sp = s;
 	}
 
@@ -137,10 +137,10 @@ void BoxUI::AddFront(Sprite2D* s, int x, int y)
 {
 	front.push_back(s);
 
-	s->width = 128;
-	s->height = 128;
+	s->width = 64;
+	s->height = 64;
 
-	s->position = position + glm::vec3(s->width * x, s->height * y, 0);
+	s->position = position + glm::vec3((128 * x) + 32, (128 * y) + 32, 0);
 }
 
 void BoxUI::RemoveFront(Sprite2D* s)
@@ -190,6 +190,7 @@ void BoxUI::Draw()
 		Sprite2D* s = front[i];
 
 		s->Draw();
-		draws.push_back(s->draws[0]);
+		for(Draw2D d : s->draws)
+			draws.push_back(d);
 	}
 }

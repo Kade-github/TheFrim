@@ -12,22 +12,24 @@ DroppedItemManager::~DroppedItemManager()
 	items.clear();
 }
 
-void DroppedItemManager::SpawnItem(glm::vec3 pos, glm::vec3 front, Data::InventoryItem i, bool stackable)
+void DroppedItemManager::SpawnItem(glm::vec3 pos, glm::vec3 front, Data::InventoryItem i)
 {
-	Texture* t = Texture::createWithImage("Assets/Textures/items.png", false); // grab from cache
+	Texture* t = Texture::createWithImageExtra("Assets/Textures/items.png", "nonFlipped"); // grab from cache
+	t->spriteSheet.Load("Assets/Textures/items.xml", t->width, t->height);
 
-	DroppedItem* item = new DroppedItem(pos, t, i, stackable);
+	DroppedItem* item = new DroppedItem(pos, t, i);
 
 	item->Launch(front, 20.0f, 0.0f);
 
 	AddItem(item);
 }
 
-void DroppedItemManager::SpawnItem(glm::vec3 pos, Data::InventoryItem i, bool stackable)
+void DroppedItemManager::SpawnItem(glm::vec3 pos, Data::InventoryItem i)
 {
-	Texture* t = Texture::createWithImage("Assets/Textures/items.png", false); // grab from cache
+	Texture* t = Texture::createWithImageExtra("Assets/Textures/items.png", "nonFlipped"); // grab from cache
+	t->spriteSheet.Load("Assets/Textures/items.xml", t->width, t->height);
 
-	DroppedItem* item = new DroppedItem(pos, t, i, stackable);
+	DroppedItem* item = new DroppedItem(pos, t, i);
 
 	AddItem(item);
 }
@@ -67,7 +69,9 @@ void DroppedItemManager::Update()
 	{
 		DroppedItem* item = items[i];
 
-		if (glfwGetTime() - item->lifeTime > 240) // expire after 4 minutes
+		float time = glfwGetTime() - item->lifeTime;
+
+		if (time > 240.0f) // expire after 4 minutes
 		{
 			RemoveItem(item);
 			break;
@@ -75,11 +79,11 @@ void DroppedItemManager::Update()
 
 		float distance = glm::distance(player->position - glm::vec3(0,1.8,0), item->position);
 
-		if (distance <= 1.0f) // pickup range
+		if (distance <= 1.0f && time >= 0.5f) // pickup range
 		{
-			Data::InventoryItem i = item->item;
+			Data::InventoryItem it = item->item;
 
-			player->playerData.GiveItem(i);
+			player->playerData.GiveItem(it);
 
 			g->hud->UpdateHotbar();
 			
