@@ -76,6 +76,7 @@ namespace Data
 		std::string tag;
 
         bool stackable = true;
+        bool placeable = false;
 
 		int type = ITEM_NULL;
 		int count = 1;
@@ -86,48 +87,63 @@ namespace Data
             {
             case ITEM_DIRT:
                 tag = "item_dirt";
+                placeable = true;
                 break;
             case ITEM_GRASS:
                 tag = "item_grass";
+                placeable = true;
                 break;
             case ITEM_STONE:
                 tag = "item_stone";
+                placeable = true;
                 break;
             case ITEM_COBBLESTONE:
                 tag = "item_cobblestone";
+                placeable = true;
                 break;
             case ITEM_SAND:
                 tag = "item_sand";
+                placeable = true;
                 break;
             case ITEM_WOOD:
                 tag = "item_wood";
+                placeable = true;
                 break;
             case ITEM_WOODENPLANKS:
                 tag = "item_wooden_planks";
+                placeable = true;
                 break;
             case ITEM_LEAVES:
                 tag = "item_leaves";
+                placeable = true;
                 break;
             case ITEM_CRAFTINGTABLE:
                 tag = "item_crafting_table";
+                placeable = true;
                 break;
             case ITEM_FURNACE:
                 tag = "item_furnace";
+                placeable = true;
                 break;
             case ITEM_CLAY:
                 tag = "item_clay";
+                placeable = true;
                 break;
             case ITEM_GLASS:
                 tag = "item_glass";
+                placeable = true;
                 break;
             case ITEM_IRON_ORE:
                 tag = "item_iron_ore";
+                placeable = true;
                 break;
             case ITEM_GOLD_ORE:
                 tag = "item_gold_ore";
+                placeable = true;
                 break;
             case ITEM_DIAMOND_ORE:
                 tag = "item_diamond_ore";
+                placeable = true;
                 break;
             case ITEM_STICK:
                 tag = "item_stick";
