@@ -49,6 +49,7 @@ public:
 	float mouseXP = 1.0f;
 	float mouseYP = 1.0f;
 
+	bool vsync = true;
 	bool isFullscreen = false;
 	bool lockedCursor = true;
 	bool needsUpdate = false;
@@ -64,6 +65,8 @@ public:
 	void CreateRenderer();
 
 	void SetLockedCursor(bool locked) { lockedCursor = locked; needsUpdate = true; }
+	void SetVsync(bool v) { vsync = v; needsUpdate = true; }
+	void SetFullscreen(bool f) { isFullscreen = f; needsUpdate = true; }
 
 	void SetScene(Scene* s);
 	void SwitchScene(Scene* s);

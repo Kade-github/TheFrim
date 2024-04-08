@@ -35,3 +35,5 @@ build/*
 .vscode/*
 bass.dll
 bass_fx.dll
+
+settings.dat

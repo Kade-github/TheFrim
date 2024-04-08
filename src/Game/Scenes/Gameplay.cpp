@@ -6,6 +6,7 @@
 #include <Helpers/StringTools.h>
 #include "../LightingManager.h"
 #include "../MusicManager.h"
+#include "../Data/Settings.h"
 
 Gameplay::Gameplay(WorldManager* _wm)
 {
@@ -29,6 +30,9 @@ void Gameplay::Create()
 	c2d->order = 1;
 
 	Camera* camera = Game::instance->GetCamera();
+
+	camera->fov = Settings::instance->fov;
+	camera->cameraFar = 100.0f * Settings::instance->renderDistance;
 
 	player = new Player(wm->GetPlayerPosition());
 
@@ -79,7 +83,7 @@ void Gameplay::Draw()
 
 	Game::instance->shader->Bind();
 
-	int fog = camera->cameraFar / 2;
+	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
 
 	Game::instance->shader->SetUniform3f("CameraPos", camera->position.x, camera->position.y, camera->position.z);
 	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);

@@ -5,9 +5,13 @@
 #include <External/imgui_impl_glfw.h>
 #include <External/imgui_impl_opengl3.h>
 
+#include "Game/Data/Settings.h"
+
 int main()
 {
-	Game game("The Frim", "0.0.2");
+	Game game("The Frim", "0.0.3");
+
+	Settings::instance->Load();
 
 	if (!glfwInit())
 	{
@@ -160,6 +164,10 @@ int main()
 
 	renderThread.detach();
 
+	game.needsUpdate = true;
+	game.isFullscreen = Settings::instance->fullscreen;
+	game.vsync = Settings::instance->vsync;
+
 	while (running)
 	{
 		if (glfwWindowShouldClose(game.GetWindow()))
@@ -170,6 +178,27 @@ int main()
 				glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_DISABLED);
 			else
 				glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+			if (game.isFullscreen)
+			{
+				GLFWmonitor* monitor = glfwGetPrimaryMonitor();
+				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
+				glfwSetWindowMonitor(game.GetWindow(), monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
+
+				game.GetCamera()->width = mode->width;
+				game.GetCamera()->height = mode->height;
+			}
+			else
+			{
+				glfwSetWindowMonitor(game.GetWindow(), NULL, 40, 40, 1920, 1080, 0);
+				game.GetCamera()->width = 1920;
+				game.GetCamera()->height = 1080;
+			}
+
+			if (game.vsync)
+				glfwSwapInterval(1);
+			else
+				glfwSwapInterval(0);
 
 			game.needsUpdate = false;
 		}
@@ -182,6 +211,8 @@ int main()
 	{
 		std::this_thread::sleep_for(std::chrono::milliseconds(10));
 	}
+
+	Settings::instance->Save();
 
 	game.Destroy();
 
