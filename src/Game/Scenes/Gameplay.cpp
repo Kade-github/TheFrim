@@ -48,7 +48,7 @@ void Gameplay::Create()
 
 	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
 
-	MusicManager::GetInstance()->nextTrack = 45.0f;
+	MusicManager::GetInstance()->nextTrack = 45.0f; // start at 45 seconds
 
 	LightingManager::GetInstance()->sun.angle = 90; // set to noon
 }
@@ -259,7 +259,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		else if (distanceR > camera->cameraFar && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
 		{
 			// deload
 
@@ -310,7 +310,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		else if (distanceR > camera->cameraFar && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
 		{
 			// deload
 
@@ -361,7 +361,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x - amount, fakePosR.z))
+		else if (distanceR > camera->cameraFar && wm->isRegionLoaded(fakePosR.x - amount, fakePosR.z))
 		{
 			// deload
 
@@ -412,7 +412,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar * 2 && wm->isRegionLoaded(fakePosR.x, fakePosR.z - amount))
+		else if (distanceR > camera->cameraFar && wm->isRegionLoaded(fakePosR.x, fakePosR.z - amount))
 		{
 			// deload
 

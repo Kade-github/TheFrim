@@ -800,6 +800,9 @@ void Chunk::SetBuffer()
 
 	size = indices.size();
 
+	vertices.clear();
+	indices.clear();
+
 }
 
 void Chunk::SetShadowBuffer()
@@ -824,6 +827,9 @@ void Chunk::SetShadowBuffer()
 	glBindVertexArray(0);
 
 	shadowSize = shadowIndices.size();
+
+	vertices.clear();
+	shadowIndices.clear();
 }
 
 void Chunk::Init()
