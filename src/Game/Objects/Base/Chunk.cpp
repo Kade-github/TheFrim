@@ -88,12 +88,6 @@ int Chunk::GetHighestBlock(float x, float z)
 	_x = w.x;
 	_z = w.z;
 
-	if (_x == 16)
-		_x--;
-
-	if (_z == 16)
-		_z--;
-
 	if (_x > CHUNK_SIZE - 1)
 		return 0;
 
@@ -222,12 +216,6 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	if (z >= 0 && z < CHUNK_SIZE - 1)
 		w.z = (int)z;
-
-	if (w.x == 16)
-		w.x--;
-
-	if (w.z == 16)
-		w.z--;
 
 	if (w.x > CHUNK_SIZE - 1)
 		return;
@@ -574,10 +562,10 @@ Data::Chunk Chunk::GetChunkData()
 
 bool Chunk::IsInChunk(float x, float z)
 {
-	if (x < position.x || x > position.x + CHUNK_SIZE)
+	if (x < position.x || x >= position.x + CHUNK_SIZE)
 		return false;
 
-	if (z < position.z || z > position.z + CHUNK_SIZE)
+	if (z < position.z || z >= position.z + CHUNK_SIZE)
 		return false;
 
 	return true;
@@ -800,9 +788,6 @@ void Chunk::SetBuffer()
 
 	size = indices.size();
 
-	vertices.clear();
-	indices.clear();
-
 }
 
 void Chunk::SetShadowBuffer()
@@ -828,8 +813,6 @@ void Chunk::SetShadowBuffer()
 
 	shadowSize = shadowIndices.size();
 
-	vertices.clear();
-	shadowIndices.clear();
 }
 
 void Chunk::Init()

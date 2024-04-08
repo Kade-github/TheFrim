@@ -119,7 +119,8 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			currentChunk = WorldManager::instance->GetChunk(ray.x, ray.z);
 
-			hit = currentChunk->DoesBlockExist(toX, ray.y, pZ);
+			if (currentChunk != nullptr)
+				hit = currentChunk->DoesBlockExist(toX, ray.y, pZ);
 
 			if (hit)
 				break;
@@ -146,7 +147,8 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			currentChunk = WorldManager::instance->GetChunk(ray.x, ray.z);
 
-			hit = currentChunk->DoesBlockExist(_lastX, ray.y, toZ);
+			if (currentChunk != nullptr)
+				hit = currentChunk->DoesBlockExist(_lastX, ray.y, toZ);
 
 			if (hit)
 				break;
