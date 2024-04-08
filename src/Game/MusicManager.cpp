@@ -47,6 +47,26 @@ void MusicManager::GenerateTrackList()
 	}
 }
 
+void MusicManager::GenerateAmbientTrackList()
+{
+	trackList.clear();
+
+	trackList.push_back("ambientocclusion");
+	trackList.push_back("imsotired");
+	trackList.push_back("somethinglurks");
+
+	// shuffle
+
+	for (int i = 0; i < trackList.size(); i++)
+	{
+		int j = std::rand() % trackList.size();
+
+		std::string temp = trackList[i];
+		trackList[i] = trackList[j];
+		trackList[j] = temp;
+	}
+}
+
 bool MusicManager::ChannelIsPlaying(std::string name)
 {
 	Channel& c = Game::instance->audioManager->GetChannel(name);
@@ -77,6 +97,10 @@ void MusicManager::PlayMusic(std::string path)
 void MusicManager::PlayMusic(std::string path, float fadeDuration)
 {
 	std::string rPath = "Assets/Music/tracks/" + path + ".mp3";
+
+	if (ambient)
+		rPath = "Assets/Music/amb/" + path + ".mp3";
+
 	if (currentSong == rPath)
 		return;
 
@@ -95,11 +119,13 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	// set next time by random
 
-	int min = 240; // 4 minutes
+	int min = 120; // 2 minutes
 
-	_nextTrack = glfwGetTime() + c.length + 240;
+	nextTrack = glfwGetTime() + c.length + min;
 
-	_nextTrack += rand() % 400; // 6-10 minutes
+	nextTrack += rand() % min; // add random time
+
+	// total: 2-4 minutes
 }
 
 void MusicManager::PlaySFX(std::string path, std::string customName)
@@ -140,7 +166,12 @@ void MusicManager::FadeOut(float duration)
 void MusicManager::PlayNext()
 {
 	if (trackList.size() == 0)
-		GenerateTrackList();
+	{
+		if (ambient)
+			GenerateAmbientTrackList();
+		else
+			GenerateTrackList();
+	}
 
 	if (trackList.size() == 0)
 		return;
@@ -158,7 +189,7 @@ bool MusicManager::IsPlaying()
 
 void MusicManager::Update()
 {
-	if (glfwGetTime() > _nextTrack)
+	if (glfwGetTime() > nextTrack)
 		PlayNext();
 
 	if (Game::instance->audioManager->channels.size() == 0)

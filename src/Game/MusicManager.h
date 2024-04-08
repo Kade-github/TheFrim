@@ -8,24 +8,27 @@ class MusicManager
 	float _fadeTime = 0.0f;
 	float _fadeDuration = 0.0f;
 	float _startVolume = 0.0f;
-	float _nextTrack = 0.0f;
-
 	bool _isPlaying = false;
 
 	std::vector<std::string> trackList;
 
 public:
+	float nextTrack = 0.0f;
+
 	static MusicManager* GetInstance()
 	{
 		static MusicManager instance;
 		return &instance;
 	}
 
+	bool ambient = false;
+
 	std::string currentSong = "";
 
 	void FreeMusic();
 
 	void GenerateTrackList();
+	void GenerateAmbientTrackList();
 
 	bool ChannelIsPlaying(std::string name);
 

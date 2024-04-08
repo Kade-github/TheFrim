@@ -48,6 +48,8 @@ void Gameplay::Create()
 
 	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
 
+	MusicManager::GetInstance()->nextTrack = 45.0f;
+
 	LightingManager::GetInstance()->sun.angle = 90; // set to noon
 }
 
@@ -55,6 +57,23 @@ void Gameplay::Draw()
 {
 	LightingManager::GetInstance()->SunUpdate();
 	LightingManager::GetInstance()->SunColor();
+
+	if (LightingManager::GetInstance()->sun.angle >= 180) // night time
+	{
+		if (!MusicManager::GetInstance()->ambient)
+		{
+			MusicManager::GetInstance()->ambient = true;
+			MusicManager::GetInstance()->GenerateAmbientTrackList();
+		}
+	}
+	else
+	{
+		if (MusicManager::GetInstance()->ambient)
+		{
+			MusicManager::GetInstance()->ambient = false;
+			MusicManager::GetInstance()->GenerateTrackList();
+		}
+	}
 
 	Camera* camera = Game::instance->GetCamera();
 
@@ -71,6 +90,11 @@ void Gameplay::Draw()
 	c2d->DrawDebugText("Sun: " + StringTools::ToTheDecimial(LightingManager::GetInstance()->sun.angle, 2) + ", Progress: " + StringTools::ToTheDecimial(LightingManager::GetInstance()->sun.angle / 360, 2), glm::vec2(4, 34), 24);
 
 	c2d->DrawDebugText("Camera Far: " + StringTools::ToTheDecimial(camera->cameraFar, 2), glm::vec2(4, 64), 24);
+
+	c2d->DrawDebugText("Regions: " + std::to_string(wm->regions.size()), glm::vec2(4, 94), 24);
+
+	c2d->DrawDebugText("Music Manager: " + std::to_string(glfwGetTime()) + "/" + std::to_string(MusicManager::GetInstance()->nextTrack), glm::vec2(4, 124), 24);
+
 
 	UpdateChunks();
 
