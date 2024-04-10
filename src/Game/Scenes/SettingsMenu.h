@@ -12,6 +12,11 @@ public:
 
 	Sprite2D* background;
 
+	Bar* vsync;
+	Bar* fullscreen;
+
+	Bar* back;
+
 	void Create() override;
 
 	void Draw() override;

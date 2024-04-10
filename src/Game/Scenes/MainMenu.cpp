@@ -1,5 +1,6 @@
 #include "MainMenu.h"
 #include "Worlds.h"
+#include "SettingsMenu.h"
 #include <cmath>
 #include <Helpers/Collision2D.h>
 #include "../MusicManager.h"
@@ -137,6 +138,7 @@ void MainMenu::MouseClick(int button, glm::vec2 mPos)
 		else if (settings->selected)
 		{
 			MusicManager::GetInstance()->PlaySFX("select");
+			Game::instance->SwitchScene(new SettingsMenu());
 		}
 		else if (exit->selected)
 			glfwSetWindowShouldClose(Game::instance->GetWindow(), true);

@@ -65,7 +65,13 @@ public:
 	void CreateRenderer();
 
 	void SetLockedCursor(bool locked) { lockedCursor = locked; needsUpdate = true; }
-	void SetVsync(bool v) { vsync = v; needsUpdate = true; }
+	void SetVsync(bool v) { 
+		vsync = v; 			
+		if (vsync)
+			glfwSwapInterval(1);
+		else
+			glfwSwapInterval(0);
+	}
 	void SetFullscreen(bool f) { isFullscreen = f; needsUpdate = true; }
 
 	void SetScene(Scene* s);

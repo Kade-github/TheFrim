@@ -6,6 +6,11 @@ Bar::Bar(glm::vec3 _pos, std::string text) : Sprite2D("Assets/Textures/MainMenu/
 
 }
 
+void Bar::SetText(std::string text)
+{
+    label->text = text;
+}
+
 void Bar::Draw()
 {
     label->size = 62 * (height / t->height);

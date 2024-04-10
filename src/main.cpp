@@ -195,11 +195,6 @@ int main()
 				game.GetCamera()->height = 1080;
 			}
 
-			if (game.vsync)
-				glfwSwapInterval(1);
-			else
-				glfwSwapInterval(0);
-
 			game.needsUpdate = false;
 		}
 		glfwWaitEventsTimeout(0.01);
