@@ -2,10 +2,13 @@
 #define _ENTITY_H_
 
 #include <Objects/GameObject.h>
+#include <Objects/3DSprite.h>
 
 class Entity : public GameObject
 {
 public:
+	Sprite3D* shadow;
+	
 	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 

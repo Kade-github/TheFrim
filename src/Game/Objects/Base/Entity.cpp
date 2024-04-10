@@ -5,6 +5,7 @@
 
 Entity::Entity(glm::vec3 pos) : GameObject(pos)
 {
+	shadow = new Sprite3D("Assets/Textures/entity_shadow.png", glm::vec3(0,0,0));
 }
 
 void Entity::Footstep()
@@ -336,6 +337,8 @@ void Entity::Draw()
 	}
 
 	position = motion;
+	shadow->position = position;
+	shadow->angle = 180;
 
 	if (isCreature)
 	{
@@ -357,4 +360,6 @@ void Entity::Draw()
 
 	if (strafeVelocity <= 0.01 && strafeVelocity >= -0.01)
 		strafeVelocity = 0;
+
+	shadow->Draw();
 }

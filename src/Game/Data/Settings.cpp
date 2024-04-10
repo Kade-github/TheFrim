@@ -1,10 +1,14 @@
 #include "Settings.h"
 #include <fstream>
+#include <filesystem>
 
 Settings* Settings::instance = new Settings();
 
 void Settings::Load()
 {
+	if (!std::filesystem::exists("settings.dat"))
+		return;
+		
 	// msgpack load from "settings.dat"
 
 	std::ifstream file("settings.dat", std::ios::binary);
