@@ -248,6 +248,8 @@ void Player::Draw()
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 			position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
+
+		shadow->Draw();
 	}
 
 	glm::vec3 storedPos = position;

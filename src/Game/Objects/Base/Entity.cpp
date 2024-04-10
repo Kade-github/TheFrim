@@ -5,7 +5,11 @@
 
 Entity::Entity(glm::vec3 pos) : GameObject(pos)
 {
-	shadow = new Sprite3D("Assets/Textures/entity_shadow.png", glm::vec3(0,0,0));
+	Texture* t = Texture::createWithImage("Assets/Textures/entity_shadow.png");
+
+	shadow = new Sprite3D(t, glm::vec3(0,0,0));
+	shadow->t->spriteSheet.Load("Assets/Textures/entity_shadow.xml", shadow->t->width, shadow->t->height);
+	shadow->rotateAxis = glm::vec3(1, 0, 0);
 }
 
 void Entity::Footstep()
@@ -337,8 +341,40 @@ void Entity::Draw()
 	}
 
 	position = motion;
-	shadow->position = position;
-	shadow->angle = 180;
+	if (isCreature)
+		shadow->position = position - glm::vec3(0, 1.7, 0.5);
+	else
+		shadow->position = position - glm::vec3(0, 0.5, 0.5);
+
+	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
+
+	bool drawShadow = true;
+
+	if (currentChunk != nullptr)
+	{
+		int topBlock = currentChunk->GetHighestBlock(motion.x, motion.z);
+
+		float diff = topBlock - position.y;
+
+		shadow->position.y = topBlock + 1.05;
+
+		if (diff > -6)
+		{
+			if (diff < -4 && diff > -6)
+				shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_25");
+			else if (diff < -2 && diff > -4)
+				shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_50");
+			else if (diff <= 0 && diff > -2)
+				shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_100");
+
+			shadow->UpdateSprite();
+		}
+		else
+			drawShadow = false;
+	}
+
+	shadow->angle = 90;
+
 
 	if (isCreature)
 	{
@@ -361,5 +397,6 @@ void Entity::Draw()
 	if (strafeVelocity <= 0.01 && strafeVelocity >= -0.01)
 		strafeVelocity = 0;
 
-	shadow->Draw();
+	if (drawShadow)
+		shadow->Draw();
 }
