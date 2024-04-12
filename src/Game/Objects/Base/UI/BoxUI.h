@@ -4,12 +4,20 @@
 #include <Objects/2DGameObject.h>
 #include <Objects/2DSprite.h>
 
+struct BoxSlot
+{
+	int id = 0;
+	float x = 0, y = 0;
+	Sprite2D* slot = nullptr;
+	Sprite2D* front = nullptr;
+};
+
 class BoxUI : public GameObject2D
 {
 	std::vector<Sprite2D*> back;
-	std::vector<Sprite2D*> slots;
-	std::vector<Sprite2D*> front;
 public:
+	std::vector<BoxSlot> boxSlots;
+
 	Texture* t;
 	int width, height;
 	float renderWidth = 0;
@@ -20,17 +28,14 @@ public:
 
 	void SetBox();
 
-	Sprite2D* GetFront(glm::vec2 _closestPos);
-	Sprite2D* GetSlot(glm::vec2 _closestPos);
+	void ClearFronts();
 
-	std::vector<Sprite2D*> GetFront() { return front; }
-	std::vector<Sprite2D*> GetSlots() { return slots; }
-	std::vector<Sprite2D*> GetBack() { return back; }
+	void AddSlot(float x, float y, int id);
+	void AddFront(Sprite2D* s, int id);
 
-	void AddFront(Sprite2D* s, int x, int y);
-	void RemoveFront(Sprite2D* s);
+	BoxSlot& GetSlot(glm::vec2 pos);
 
-	void ClearFront();
+	Sprite2D* GetFront(glm::vec2 pos);
 
 	void Draw() override;
 };

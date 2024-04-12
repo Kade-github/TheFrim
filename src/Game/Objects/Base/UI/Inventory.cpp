@@ -4,19 +4,53 @@
 #include <Game.h>
 #include "../../../Scenes/Gameplay.h"
 
-Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 6)
+Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 {
 	player = _player;
 	order = 100;
 
+	int i = 0;
+
+	for (int y = 0; y < PLAYER_INVENTORY_HEIGHT; y++)
+	{
+		for (int x = 0; x < PLAYER_INVENTORY_WIDTH; x++)
+		{
+			AddSlot(x + 1, PLAYER_INVENTORY_HEIGHT - y, i);
+			i++;
+		}
+	}
+
+	// armor
+
+	for (int y = 2; y < 5; y++)
+	{
+		AddSlot(2, PLAYER_INVENTORY_HEIGHT + y, i);
+		i++;
+	}
+
+	// crafting
+
+	for (int y = 1; y < 3; y++)
+	{
+		for (int x = 1; x < 3; x++)
+		{
+			AddSlot(x + 4, PLAYER_INVENTORY_HEIGHT + y + 1.5, i);
+			i++;
+		}
+	}
+
+	// output
+
+	AddSlot(8, PLAYER_INVENTORY_HEIGHT + 3, i);
 
 }
 
 void Inventory::UpdateInventory()
 {
-	ClearFront();
+	ClearFronts();
 
 	Texture* i = Texture::createWithImage("Assets/Textures/items.png", false); // grab from cache
+	int ind = 0;
 	for (int y = 0; y < PLAYER_INVENTORY_HEIGHT; y++)
 	{
 		for (int x = 0; x < PLAYER_INVENTORY_WIDTH; x++)
@@ -31,7 +65,8 @@ void Inventory::UpdateInventory()
 
 			ItemUI* s = new ItemUI(item.tag, glm::vec3(0, 0, 0), i, item.count);
 
-			AddFront(s, rX, rY);
+			AddFront(s, ind);
+			ind++;
 		}
 	}
 }
@@ -60,8 +95,10 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 	{
 		if (_dragging)
 		{
-			Sprite2D* slot = GetSlot(pos);
-			Sprite2D* startSlot = GetSlot(_startDrag);
+			BoxSlot& s = GetSlot(pos);
+			BoxSlot& sSlot = GetSlot(_startDrag);
+			Sprite2D* slot = s.slot;
+			Sprite2D* startSlot = sSlot.slot;
 
 			if (slot != nullptr && startSlot != nullptr)
 			{
@@ -137,19 +174,20 @@ void Inventory::Draw()
 
 	// selection
 
-	Sprite2D* selectedSlot = GetSlot(mouse);
+	BoxSlot& s = GetSlot(mouse);
 
-	for (Sprite2D* s : GetSlots())
-		s->src = t->spriteSheet.GetUVFlip("box_slot");
+	Sprite2D* selectedSlot = s.slot;
+
+	for (BoxSlot& _s : boxSlots)
+	{
+		_s.slot->src = t->spriteSheet.GetUVFlip("box_slot");
+	}
 
 	if (selectedSlot != nullptr)
 		selectedSlot->src = t->spriteSheet.GetUVFlip("box_slot_selected");
 
 	if (_dragging)
-	{
 		_draggingItem->position = glm::vec3(mouse.x - _draggingItem->width / 2, mouse.y - _draggingItem->height / 2, 0);
-	}
-
 
 	BoxUI::Draw();
 }

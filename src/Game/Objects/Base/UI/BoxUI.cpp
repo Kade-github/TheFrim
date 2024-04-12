@@ -31,16 +31,6 @@ void BoxUI::SetBox()
 
 	back.clear();
 
-	for (int i = 0; i < slots.size(); i++)
-		delete slots[i];
-
-	slots.clear();
-
-	for (int i = 0; i < front.size(); i++)
-		delete front[i];
-
-	front.clear();
-
 	for (int y = 0; y < height; y++)
 	{
 		for (int x = 0; x < width; x++)
@@ -80,20 +70,6 @@ void BoxUI::SetBox()
 
 			back.push_back(s);
 
-			if (tag == "space")
-			{
-				Sprite2D* slot = new Sprite2D(t, glm::vec3(0, 0, 0));
-
-				slot->width = 64;
-				slot->height = 64;
-
-				slot->src = t->spriteSheet.GetUVFlip("box_slot");
-				slot->tag_id = std::to_string(x) + "," + std::to_string(y);
-
-				slot->position = position + glm::vec3(slot->width * x, slot->height * y, 0);
-
-				slots.push_back(slot);
-			}
 		}
 	}
 
@@ -101,67 +77,67 @@ void BoxUI::SetBox()
 	renderHeight = height * 64;
 }
 
-Sprite2D* BoxUI::GetFront(glm::vec2 _closestPos)
+void BoxUI::ClearFronts()
 {
-	// check if the mouse is inside the box
-
-	Sprite2D* sp = nullptr;
-
-	for (Sprite2D* s : front)
+	for (int i = 0; i < boxSlots.size(); i++)
 	{
-		if (_closestPos.x >= s->position.x - 32 && _closestPos.x <= (s->position.x - 32) + (s->width + 64) &&
-			_closestPos.y >= s->position.y - 32 && _closestPos.y <= (s->position.y - 32) + (s->height + 64))
-			sp = s;
+		delete boxSlots[i].front;
+		boxSlots[i].front = nullptr;
 	}
-
-	return sp;
 }
 
-Sprite2D* BoxUI::GetSlot(glm::vec2 _closestPos)
+void BoxUI::AddSlot(float x, float y, int id)
 {
-	// check if the mouse is inside the box
+	BoxSlot slot;
+	slot.x = x;
+	slot.y = y;
+	slot.id = id;
 
-	Sprite2D* sp = nullptr;
-
-	for (Sprite2D* s : slots)
-	{
-		if (_closestPos.x >= s->position.x && _closestPos.x <= s->position.x + s->width &&
-			_closestPos.y >= s->position.y && _closestPos.y <= s->position.y + s->height)
-			sp = s;
-	}
-
-	return sp;
-}
-
-void BoxUI::AddFront(Sprite2D* s, int x, int y)
-{
-	front.push_back(s);
-
+	Sprite2D* s = new Sprite2D(t, glm::vec3(0, 0, 0));
 	s->width = 64;
 	s->height = 64;
 
-	s->position = position + glm::vec3((64 * x) + 16, (64 * y) + 16, 0);
+	s->src = t->spriteSheet.GetUVFlip("box_slot");
+
+	slot.slot = s;
+
+	boxSlots.push_back(slot);
 }
 
-void BoxUI::RemoveFront(Sprite2D* s)
+void BoxUI::AddFront(Sprite2D* s, int id)
 {
-	for (int i = 0; i < front.size(); i++)
+	for (int i = 0; i < boxSlots.size(); i++)
 	{
-		if (front[i]->id == s->id)
+		if (boxSlots[i].id == id)
 		{
-			delete front[i];
-			front.erase(front.begin() + i);
-			break;
+			boxSlots[i].front = s;
+			boxSlots[i].front->width = 32;
+			boxSlots[i].front->height = 32;
+			return;
 		}
 	}
 }
 
-void BoxUI::ClearFront()
+BoxSlot& BoxUI::GetSlot(glm::vec2 pos)
 {
-	for(Sprite2D* s : front)
-		delete s;
+	for (int i = 0; i < boxSlots.size(); i++)
+	{
+		Sprite2D* s = boxSlots[i].slot;
 
-	front.clear();
+		glm::vec3 p = position + glm::vec3(s->width * boxSlots[i].x, s->height * boxSlots[i].y, 0);
+
+		if (pos.x >= p.x && pos.x <= p.x + s->width && pos.y >= p.y && pos.y <= p.y + s->height)
+			return boxSlots[i];
+	}
+
+	return boxSlots[0];
+}
+
+Sprite2D* BoxUI::GetFront(glm::vec2 pos)
+{
+	BoxSlot& slot = GetSlot(pos);
+
+	return slot.front;
 }
 
 void BoxUI::Draw()
@@ -177,20 +153,21 @@ void BoxUI::Draw()
 		draws.push_back(s->draws[0]);
 	}
 
-	for (int i = 0; i < slots.size(); i++)
+	for (int i = 0; i < boxSlots.size(); i++)
 	{
-		Sprite2D* s = slots[i];
+		Sprite2D* s = boxSlots[i].slot;
 
+		s->position = position + glm::vec3(s->width * boxSlots[i].x, s->height * boxSlots[i].y, 0);
 		s->Draw();
 		draws.push_back(s->draws[0]);
-	}
 
-	for (int i = 0; i < front.size(); i++)
-	{
-		Sprite2D* s = front[i];
-
-		s->Draw();
-		for(Draw2D d : s->draws)
-			draws.push_back(d);
+		Sprite2D* f = boxSlots[i].front;
+		if (f != nullptr)
+		{
+			f->position = position + glm::vec3(s->width * boxSlots[i].x, s->height * boxSlots[i].y, 0);
+			f->position += glm::vec3(16, 16, 0);
+			f->Draw();
+			draws.push_back(f->draws[0]);
+		}
 	}
 }
