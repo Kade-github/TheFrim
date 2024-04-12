@@ -27,7 +27,7 @@ void Gameplay::Create()
 
 	AddObject(c2d);
 
-	c2d->order = 1;
+	c2d->order = 3;
 
 	Camera* camera = Game::instance->GetCamera();
 
@@ -44,7 +44,7 @@ void Gameplay::Create()
 
 	AddObject(hud);
 
-	hud->order = 3;
+	hud->order = 1000;
 
 	UpdateChunks();
 

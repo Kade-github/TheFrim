@@ -1,14 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="ui_sheet.png" width="512" height="384" scale="1" format="RGBA8888">
-  <sprite n="bottom" x="0" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="box_slot" x="128" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="box_slot_selected" x="0" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="corner_bottomleft" x="128" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="corner_bottomright" x="256" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="corner_topleft" x="256" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="corner_topright" x="0" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="left" x="128" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="right" x="256" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="space" x="384" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="top" x="384" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="ui_sheet.png" width="256" height="192" scale="1" format="RGBA8888">
+  <sprite n="bottom" x="0" y="0" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="box_slot" x="64" y="0" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="box_slot_selected" x="0" y="64" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="corner_bottomleft" x="64" y="64" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="corner_bottomright" x="128" y="0" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="corner_topleft" x="128" y="64" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="corner_topright" x="0" y="128" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="left" x="64" y="128" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="right" x="128" y="128" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="space" x="192" y="0" w="64" h="64" pX="0.5" pY="0.5"/>
+  <sprite n="top" x="192" y="64" w="64" h="64" pX="0.5" pY="0.5"/>
 </TextureAtlas>

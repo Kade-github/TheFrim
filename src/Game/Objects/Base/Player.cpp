@@ -127,6 +127,9 @@ void Player::RenderBreak()
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
 
+	glDisable(GL_DEPTH_CLAMP);
+	glDisable(GL_CULL_FACE);
+
 	wm->texturePack->Unbind();
 	shader->Unbind();
 }

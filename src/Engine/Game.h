@@ -41,6 +41,7 @@ public:
 	std::vector<Event> events;
 
 	Shader* shader;
+	Shader* noFogShader;
 
 	Logging* log;
 	bool swappedScenes = false;
@@ -159,6 +160,12 @@ public:
 		shader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
 
 		shader->Unbind();
+
+		noFogShader->Bind();
+
+		noFogShader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
+
+		noFogShader->Unbind();
 
 		glViewport(0, 0, _width, _height);
 	}

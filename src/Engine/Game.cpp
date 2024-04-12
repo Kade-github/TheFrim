@@ -49,10 +49,15 @@ void Game::CreateRenderer()
 
 	shader->Bind();
 
+	noFogShader = new Shader();
+	noFogShader->LoadShader("Assets/Shaders/vert.glsl", "Assets/Shaders/frag_nofog.glsl");
 
 	glm::mat4 model = glm::mat4(1.0f);
 
 	shader->SetUniformMat4f("model", &model[0][0]);
+
+	noFogShader->Bind();
+	noFogShader->SetUniformMat4f("model", &model[0][0]);
 
 
 	log->Write("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));

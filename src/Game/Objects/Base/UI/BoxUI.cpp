@@ -73,8 +73,8 @@ void BoxUI::SetBox()
 
 
 			Sprite2D* s = new Sprite2D(t, glm::vec3(0, 0, 0));
-			s->width = 128;
-			s->height = 128;
+			s->width = 64;
+			s->height = 64;
 
 			s->src = t->spriteSheet.GetUVFlip(tag);
 
@@ -84,8 +84,8 @@ void BoxUI::SetBox()
 			{
 				Sprite2D* slot = new Sprite2D(t, glm::vec3(0, 0, 0));
 
-				slot->width = 128;
-				slot->height = 128;
+				slot->width = 64;
+				slot->height = 64;
 
 				slot->src = t->spriteSheet.GetUVFlip("box_slot");
 				slot->tag_id = std::to_string(x) + "," + std::to_string(y);
@@ -97,8 +97,8 @@ void BoxUI::SetBox()
 		}
 	}
 
-	renderWidth = width * 128;
-	renderHeight = height * 128;
+	renderWidth = width * 64;
+	renderHeight = height * 64;
 }
 
 Sprite2D* BoxUI::GetFront(glm::vec2 _closestPos)
@@ -109,8 +109,8 @@ Sprite2D* BoxUI::GetFront(glm::vec2 _closestPos)
 
 	for (Sprite2D* s : front)
 	{
-		if (_closestPos.x >= s->position.x - 64 && _closestPos.x <= (s->position.x - 64) + (s->width + 128) &&
-			_closestPos.y >= s->position.y - 64 && _closestPos.y <= (s->position.y - 64) + (s->height + 128))
+		if (_closestPos.x >= s->position.x - 32 && _closestPos.x <= (s->position.x - 32) + (s->width + 64) &&
+			_closestPos.y >= s->position.y - 32 && _closestPos.y <= (s->position.y - 32) + (s->height + 64))
 			sp = s;
 	}
 
@@ -140,7 +140,7 @@ void BoxUI::AddFront(Sprite2D* s, int x, int y)
 	s->width = 64;
 	s->height = 64;
 
-	s->position = position + glm::vec3((128 * x) + 32, (128 * y) + 32, 0);
+	s->position = position + glm::vec3((64 * x) + 16, (64 * y) + 16, 0);
 }
 
 void BoxUI::RemoveFront(Sprite2D* s)
