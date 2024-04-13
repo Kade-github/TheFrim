@@ -241,6 +241,9 @@ void Inventory::Close()
 		output = {};
 	}
 
+	_dragging = false;
+	_draggingItem = nullptr;
+
 	gp->hud->UpdateHotbar();
 }
 
@@ -250,6 +253,9 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to)
 	BoxSlot& sSlot = GetSlot(from); // from
 	Sprite2D* slot = s.slot;
 	Sprite2D* startSlot = sSlot.slot;
+
+	if (s.x == sSlot.x && s.y == sSlot.y)
+		return false;
 
 	_dragging = false;
 
@@ -332,22 +338,17 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 
 	if (button == 0)
 	{
-		_draggingItem = GetFront(pos);
-
-		if (_draggingItem != nullptr)
+		if (!_dragging)
 		{
-			_dragging = true;
-			_startDrag = pos;
+			_draggingItem = GetFront(pos);
+
+			if (_draggingItem != nullptr)
+			{
+				_dragging = true;
+				_startDrag = pos;
+			}
 		}
-
-	}
-}
-
-void Inventory::MouseRelease(int button, glm::vec2 pos)
-{
-	if (button == 0)
-	{
-		if (_dragging)
+		else
 		{
 			glm::vec3 from = glm::vec3(_startDrag.x, _startDrag.y, 0);
 			glm::vec3 to = glm::vec3(pos.x, pos.y, 0);
@@ -364,11 +365,17 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
 			gp->hud->UpdateHotbar();
+
+			_dragging = false;
+			_draggingItem = nullptr;
 		}
 
-		_dragging = false;
-		_draggingItem = nullptr;
 	}
+}
+
+void Inventory::MouseRelease(int button, glm::vec2 pos)
+{
+
 }
 
 void Inventory::Draw()
@@ -395,7 +402,7 @@ void Inventory::Draw()
 		selectedSlot->src = t->spriteSheet.GetUVFlip("box_slot_selected");
 
 	if (_dragging)
-		_draggingItem->position = glm::vec3(mouse.x - _draggingItem->width / 2, mouse.y - _draggingItem->height / 2, 0);
+		_draggingItem->position = glm::vec3(mouse.x - _draggingItem->width, mouse.y - _draggingItem->height, 0);
 
 	BoxUI::Draw();
 }
