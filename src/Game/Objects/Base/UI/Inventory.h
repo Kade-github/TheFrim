@@ -2,6 +2,7 @@
 #define _INVENTORY_H
 
 #include "BoxUI.h"
+#include "ItemUI.h"
 #include "../Player.h"
 
 class Inventory : public BoxUI
@@ -9,18 +10,21 @@ class Inventory : public BoxUI
 	Player* player;
 	bool _dragging = false;
 	glm::vec2 _startDrag;
-	Sprite2D* _draggingItem = nullptr;
+	int _draggingSlot = -1;
+	ItemUI* _draggingItem = nullptr;
 
 public:
 
 	Data::InventoryItem crafting[4]; 
 	Data::InventoryItem output;
 
+	Data::InventoryItem stored;
+
 	bool shown = false;
 
 	Inventory(glm::vec3 _pos, Player* _player);
 
-	void UpdateInventory();
+	void UpdateInventory(bool dontRemoveDrag = false);
 
 	void ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2);
 
@@ -28,7 +32,7 @@ public:
 
 	void Close();
 
-	bool SwitchItem(glm::vec3 from, glm::vec3 to);
+	bool SwitchItem(glm::vec3 from, glm::vec3 to, bool one = false);
 
 	void MouseClick(int button, glm::vec2 pos) override;
 	void MouseRelease(int button, glm::vec2 pos) override;
