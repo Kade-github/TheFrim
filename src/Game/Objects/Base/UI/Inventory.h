@@ -13,11 +13,18 @@ class Inventory : public BoxUI
 
 public:
 
+	Data::InventoryItem crafting[4]; 
+	Data::InventoryItem output;
+
 	bool shown = false;
 
 	Inventory(glm::vec3 _pos, Player* _player);
 
 	void UpdateInventory();
+
+	void ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2);
+
+	bool SwitchItem(glm::vec3 from, glm::vec3 to);
 
 	void MouseClick(int button, glm::vec2 pos) override;
 	void MouseRelease(int button, glm::vec2 pos) override;

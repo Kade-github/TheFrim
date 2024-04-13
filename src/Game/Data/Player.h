@@ -76,13 +76,24 @@ namespace Data
 		std::string tag;
 
         bool stackable = true;
+        bool equipable = false;
         bool placeable = false;
+
+        int armor = 0;
+        int armorSlot = 0;
 
 		int type = ITEM_NULL;
 		int count = 1;
 
         void SetTag()
         {
+            stackable = true;
+            equipable = false;
+            placeable = false;
+
+            armor = 0;
+            armorSlot = 0;
+
             switch (type)
             {
             case ITEM_DIRT:
@@ -282,7 +293,7 @@ namespace Data
 			return { "", "" };
 		}
 
-		MSGPACK_DEFINE_ARRAY(type, count, nbt);
+        MSGPACK_DEFINE_ARRAY(type, count, nbt);
 	};
 
 	struct Player
@@ -295,6 +306,8 @@ namespace Data
 		float health = PLAYER_MAX_HEALTH;
 
 		InventoryItem inventory[PLAYER_INVENTORY_WIDTH][PLAYER_INVENTORY_HEIGHT] = {};
+
+        InventoryItem armor[3] = {};
 
 		InventoryItem& GetInventoryItem(int x, int y)
 		{
