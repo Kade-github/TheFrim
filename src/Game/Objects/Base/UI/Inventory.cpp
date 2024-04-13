@@ -112,11 +112,19 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 			Sprite2D* slot = s.slot;
 			Sprite2D* startSlot = sSlot.slot;
 
+			_dragging = false;
+
 			if (s.id >= 36)
+			{
+				_draggingItem->position = position + glm::vec3(sSlot.x * 64, sSlot.y * 64, 0);
 				return;
+			}
 
 			if (sSlot.id >= 36)
+			{
+				_draggingItem->position = position + glm::vec3(sSlot.x * 64, sSlot.y * 64, 0);
 				return;
+			}
 
 			if (slot != nullptr && startSlot != nullptr)
 			{
@@ -168,6 +176,11 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 						player->playerData.inventory[(int)end.x][(int)end.y] = startItem;
 					}
 				}
+			}
+			else
+			{
+				_draggingItem->position = position + glm::vec3(sSlot.x * 64, sSlot.y * 64, 0);
+				_draggingItem = nullptr;
 			}
 
 			UpdateInventory();

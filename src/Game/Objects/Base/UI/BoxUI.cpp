@@ -125,19 +125,20 @@ void BoxUI::AddFront(Sprite2D* s, int id)
 
 BoxSlot& BoxUI::GetSlot(glm::vec2 pos)
 {
-	static BoxSlot slot;
-	slot.id = -1;
+	static BoxSlot nslot;
+	nslot.id = -1;
 	for (int i = 0; i < boxSlots.size(); i++)
 	{
-		Sprite2D* s = boxSlots[i].slot;
+		BoxSlot& slot = boxSlots[i];
+		Sprite2D* s = slot.slot;
 
-		glm::vec3 p = position + glm::vec3(s->width * boxSlots[i].x, s->height * boxSlots[i].y, 0);
+		glm::vec3 p = position + glm::vec3(s->width * slot.x, s->height * slot.y, 0);
 
-		if (pos.x >= p.x && pos.x <= p.x + s->width && pos.y >= p.y && pos.y <= p.y + s->height)
-			return boxSlots[i];
+		if (p.x <= pos.x && p.x + s->width > pos.x && p.y <= pos.y && p.y + s->height > pos.y)
+			return slot;
 	}
 
-	return slot;
+	return nslot;
 }
 
 Sprite2D* BoxUI::GetFront(glm::vec2 pos)
