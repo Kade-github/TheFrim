@@ -42,6 +42,9 @@ void ItemUI::Draw()
 
 	if (countText != NULL)
 	{
+		float sizeDiff = width / 48.0f;
+
+		countText->size = 32.0f * sizeDiff;
 		countText->position = glm::vec3(position.x + (width - (countText->width / 2)), position.y - (countText->height / 2), 0);
 		countText->Draw();
 		draws.push_back(countText->draws[0]);

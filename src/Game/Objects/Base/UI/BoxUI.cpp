@@ -193,7 +193,8 @@ void BoxUI::Draw()
 			f->position += glm::vec3(16, 16, 0);
 			f->Draw();
 			f->position -= glm::vec3(16, 16, 0);
-			draws.push_back(f->draws[0]);
+			for (int j = 0; j < f->draws.size(); j++)
+				draws.push_back(f->draws[j]);
 		}
 	}
 }

@@ -1,0 +1,6 @@
+#ifndef _CRAFTINGMANAGER_H
+#define _CRAFTINGMANAGER_H
+
+
+
+#endif

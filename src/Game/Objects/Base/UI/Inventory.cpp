@@ -89,12 +89,18 @@ void Inventory::UpdateInventory()
 		Data::InventoryItem& item = player->playerData.armor[y - 2];
 
 		if (item.type == Data::ItemType::ITEM_NULL)
+		{
+			id++;
 			continue;
+		}
 
 		BoxSlot& sl = GetSlot(id);
 
 		if (sl.id == -1)
+		{
+			id++;
 			continue;
+		}
 
 		glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
 
@@ -104,7 +110,7 @@ void Inventory::UpdateInventory()
 		s->height = 32;
 
 		sl.front = s;
-		i++;
+		id++;
 	}
 
 	// crafting
@@ -117,12 +123,18 @@ void Inventory::UpdateInventory()
 			Data::InventoryItem& item = crafting[(y - 1) * 2 + (x - 1)];
 
 			if (item.type == Data::ItemType::ITEM_NULL)
+			{
+				id++;
 				continue;
+			}
 
 			BoxSlot& sl = GetSlot(id);
 
 			if (sl.id == -1)
+			{
+				id++;
 				continue;
+			}
 
 			glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
 
@@ -132,7 +144,7 @@ void Inventory::UpdateInventory()
 			s->height = 32;
 
 			sl.front = s;
-			i++;
+			id++;
 		}
 	}
 }
@@ -181,6 +193,20 @@ void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2
 	}
 }
 
+Data::InventoryItem* Inventory::GetItem(int id, glm::vec2 pos)
+{
+	if (id < 36)
+		return &player->playerData.inventory[(int)pos.x][(int)pos.y];
+	else if (id < 39)
+		return &player->playerData.armor[id - 36];
+	else if (id < 43)
+		return &crafting[id - 39];
+	else if (id == 43)
+		return &output;
+
+	return nullptr;
+}
+
 void Inventory::Close()
 {
 	// give back all crafting
@@ -199,6 +225,20 @@ void Inventory::Close()
 		}
 
 		crafting[i] = {};
+	}
+
+	// give back output
+	
+	if (output.type != Data::ItemType::ITEM_NULL)
+	{
+		if (!player->playerData.GiveItem(output)) // inventory full, so drop it
+		{
+			Camera* c = Game::instance->GetCamera();
+
+			gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, output);
+		}
+
+		output = {};
 	}
 
 	gp->hud->UpdateHotbar();
@@ -230,26 +270,11 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to)
 		start.y = PLAYER_INVENTORY_HEIGHT - start.y;
 		end.y = PLAYER_INVENTORY_HEIGHT - end.y;
 
-		Data::InventoryItem* startItem = nullptr;
-		Data::InventoryItem* endItem = nullptr;
+		Data::InventoryItem* startItem = GetItem(sSlot.id, start);
+		Data::InventoryItem* endItem = GetItem(s.id, end);
 
-		if (sSlot.id < 36)
-			startItem = &player->playerData.inventory[(int)start.x][(int)start.y];
-		else if (sSlot.id < 39)
-			startItem = &player->playerData.armor[sSlot.id - 36];
-		else if (sSlot.id < 43)
-			startItem = &crafting[sSlot.id - 39];
-		else if (sSlot.id == 43)
-			startItem = &output;
-
-		if (s.id < 36)
-			endItem = &player->playerData.inventory[(int)end.x][(int)end.y];
-		else if (s.id < 39)
-			endItem = &player->playerData.armor[s.id - 36];
-		else if (s.id < 43)
-			endItem = &crafting[s.id - 39];
-		else if (s.id == 43)
-			return false; // can't move to output
+		if (s.id == 43) // can't move to output
+			return false;
 
 		// check if we can move it to that slot (armor)
 
@@ -276,16 +301,7 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to)
 			start.x -= 1;
 			start.y = PLAYER_INVENTORY_HEIGHT - start.y;
 
-			Data::InventoryItem* startItem = nullptr;
-
-			if (sSlot.id < 36)
-				startItem = &player->playerData.inventory[(int)start.x][(int)start.y];
-			else if (sSlot.id < 39)
-				startItem = &player->playerData.armor[sSlot.id - 36];
-			else if (sSlot.id < 43)
-				startItem = &crafting[sSlot.id - 39];
-			else if (sSlot.id == 43)
-				startItem = &output;
+			Data::InventoryItem* startItem = GetItem(sSlot.id, start);
 
 			if (startItem == nullptr || startItem->type == Data::ItemType::ITEM_NULL)
 				return false;
