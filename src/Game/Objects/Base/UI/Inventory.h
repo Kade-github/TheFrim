@@ -24,6 +24,8 @@ public:
 
 	void ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2);
 
+	void Close();
+
 	bool SwitchItem(glm::vec3 from, glm::vec3 to);
 
 	void MouseClick(int button, glm::vec2 pos) override;

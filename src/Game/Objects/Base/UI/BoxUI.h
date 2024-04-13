@@ -34,6 +34,7 @@ public:
 	void AddFront(Sprite2D* s, int id);
 
 	BoxSlot& GetSlot(glm::vec2 pos);
+	BoxSlot& GetSlot(int id);
 
 	Sprite2D* GetFront(glm::vec2 pos);
 

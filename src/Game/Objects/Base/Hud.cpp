@@ -5,6 +5,9 @@ void Hud::InventoryShown(bool s)
 {
 	Game::instance->SetLockedCursor(!s);
 
+	if (!s)
+		inv->Close();
+
 	inv->shown = s;
 	inv->UpdateInventory();
 }

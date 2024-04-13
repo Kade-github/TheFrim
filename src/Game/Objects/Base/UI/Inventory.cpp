@@ -28,7 +28,7 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 
 	for (int y = 2; y < 5; y++) // 36, 37, 38
 	{
-		AddSlot(0, PLAYER_INVENTORY_HEIGHT + y, i);
+		AddSlot(2, PLAYER_INVENTORY_HEIGHT + y, i);
 		i++;
 	}
 
@@ -81,6 +81,60 @@ void Inventory::UpdateInventory()
 			sl.front = s;
 		}
 	}
+
+	// armor
+	int id = 36;
+	for (int y = 2; y < 5; y++) // 36, 37, 38
+	{
+		Data::InventoryItem& item = player->playerData.armor[y - 2];
+
+		if (item.type == Data::ItemType::ITEM_NULL)
+			continue;
+
+		BoxSlot& sl = GetSlot(id);
+
+		if (sl.id == -1)
+			continue;
+
+		glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
+
+		ItemUI* s = new ItemUI(item.tag, pos, i, item.count);
+
+		s->width = 32;
+		s->height = 32;
+
+		sl.front = s;
+		i++;
+	}
+
+	// crafting
+
+	id = 39;
+	for (int y = 1; y < 3; y++) // 39, 40, 41, 42
+	{
+		for (int x = 1; x < 3; x++)
+		{
+			Data::InventoryItem& item = crafting[(y - 1) * 2 + (x - 1)];
+
+			if (item.type == Data::ItemType::ITEM_NULL)
+				continue;
+
+			BoxSlot& sl = GetSlot(id);
+
+			if (sl.id == -1)
+				continue;
+
+			glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
+
+			ItemUI* s = new ItemUI(item.tag, pos, i, item.count);
+
+			s->width = 32;
+			s->height = 32;
+
+			sl.front = s;
+			i++;
+		}
+	}
 }
 
 void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2)
@@ -125,6 +179,29 @@ void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2
 			
 		}
 	}
+}
+
+void Inventory::Close()
+{
+	// give back all crafting
+
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+	for (int i = 0; i < 4; i++)
+	{
+		Data::InventoryItem item = crafting[i];
+
+		if (!player->playerData.GiveItem(item)) // inventory full, so drop it
+		{
+			Camera* c = Game::instance->GetCamera();
+
+			gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, item);
+		}
+
+		crafting[i] = {};
+	}
+
+	gp->hud->UpdateHotbar();
 }
 
 bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to)
@@ -174,16 +251,60 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to)
 		else if (s.id == 43)
 			return false; // can't move to output
 
+		// check if we can move it to that slot (armor)
+
+		if (s.id >= 36 && s.id < 39)
+		{
+			int slot = s.id - 36;
+			if (!startItem->equipable || slot != startItem->armorSlot)
+				return false;
+		}
+
 		ApplyMove(startItem, endItem);
 	}
 	else
+	{
+		if (to.x < position.x || to.x > position.x + renderWidth || to.y < position.y || to.y > position.y + renderHeight)
+		{
+			// drop item
+			glm::vec3 from = glm::vec3(_startDrag.x, _startDrag.y, 0);
+
+			std::vector<std::string> sPos = StringTools::Split(startSlot->tag_id, ",");
+
+			glm::vec2 start = glm::vec2(std::stoi(sPos[0]), std::stoi(sPos[1]));
+
+			start.x -= 1;
+			start.y = PLAYER_INVENTORY_HEIGHT - start.y;
+
+			Data::InventoryItem* startItem = nullptr;
+
+			if (sSlot.id < 36)
+				startItem = &player->playerData.inventory[(int)start.x][(int)start.y];
+			else if (sSlot.id < 39)
+				startItem = &player->playerData.armor[sSlot.id - 36];
+			else if (sSlot.id < 43)
+				startItem = &crafting[sSlot.id - 39];
+			else if (sSlot.id == 43)
+				startItem = &output;
+
+			if (startItem == nullptr || startItem->type == Data::ItemType::ITEM_NULL)
+				return false;
+
+			Data::InventoryItem item = *startItem;
+
+			Camera* c = Game::instance->GetCamera();
+
+			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+			gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, item);	
+
+			*startItem = {};
+
+			return true;
+		}
+
 		return false;
-
-	UpdateInventory();
-
-	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
-
-	gp->hud->UpdateHotbar();
+	}
 
 	return true;
 }
@@ -214,6 +335,7 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 		{
 			glm::vec3 from = glm::vec3(_startDrag.x, _startDrag.y, 0);
 			glm::vec3 to = glm::vec3(pos.x, pos.y, 0);
+
 			if (!SwitchItem(from, to))
 			{
 				BoxSlot& sSlot = GetSlot(from);
@@ -221,6 +343,11 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 				_draggingItem->position = glm::vec3(from.x * sSlot.front->width, from.y * sSlot.front->height, 0);
 			}
 
+			UpdateInventory();
+
+			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+			gp->hud->UpdateHotbar();
 		}
 
 		_dragging = false;

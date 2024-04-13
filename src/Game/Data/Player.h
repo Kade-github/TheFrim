@@ -324,7 +324,7 @@ namespace Data
 			inventory[x][y] = { (int)type, count };
 		}
 
-        void GiveItem(InventoryItem item)
+        bool GiveItem(InventoryItem item)
         {
             // find if it's in the inventory
             if (item.stackable)
@@ -342,7 +342,7 @@ namespace Data
                             if (i.count < 64)
                             {
                                 i.count += item.count;
-                                return;
+                                return true;
                             }
                             else
                             {
@@ -366,10 +366,12 @@ namespace Data
                     if (i.type == ITEM_NULL)
                     {
 						i = item;
-						return;
+                        return true;
 					}
 				}
 			}
+            
+			return false;
 		}
 
 		MSGPACK_DEFINE_ARRAY(x, y, z, pitch, yaw, selectedSlot, health, inventory);
