@@ -66,6 +66,7 @@ void BoxUI::SetBox()
 			s->width = 64;
 			s->height = 64;
 
+
 			s->src = t->spriteSheet.GetUVFlip(tag);
 
 			back.push_back(s);
@@ -99,6 +100,8 @@ void BoxUI::AddSlot(float x, float y, int id)
 
 	s->src = t->spriteSheet.GetUVFlip("box_slot");
 
+	s->tag_id = std::to_string(x) + "," + std::to_string(y);
+
 	slot.slot = s;
 
 	boxSlots.push_back(slot);
@@ -110,6 +113,8 @@ void BoxUI::AddFront(Sprite2D* s, int id)
 	{
 		if (boxSlots[i].id == id)
 		{
+			s->position = glm::vec3(boxSlots[i].x * 64, boxSlots[i].y * 64, 0);
+
 			boxSlots[i].front = s;
 			boxSlots[i].front->width = 32;
 			boxSlots[i].front->height = 32;
@@ -120,6 +125,8 @@ void BoxUI::AddFront(Sprite2D* s, int id)
 
 BoxSlot& BoxUI::GetSlot(glm::vec2 pos)
 {
+	static BoxSlot slot;
+	slot.id = -1;
 	for (int i = 0; i < boxSlots.size(); i++)
 	{
 		Sprite2D* s = boxSlots[i].slot;
@@ -130,7 +137,7 @@ BoxSlot& BoxUI::GetSlot(glm::vec2 pos)
 			return boxSlots[i];
 	}
 
-	return boxSlots[0];
+	return slot;
 }
 
 Sprite2D* BoxUI::GetFront(glm::vec2 pos)
@@ -160,13 +167,16 @@ void BoxUI::Draw()
 		s->position = position + glm::vec3(s->width * boxSlots[i].x, s->height * boxSlots[i].y, 0);
 		s->Draw();
 		draws.push_back(s->draws[0]);
+	}
 
+	for (int i = 0; i < boxSlots.size(); i++)
+	{
 		Sprite2D* f = boxSlots[i].front;
 		if (f != nullptr)
 		{
-			f->position = position + glm::vec3(s->width * boxSlots[i].x, s->height * boxSlots[i].y, 0);
 			f->position += glm::vec3(16, 16, 0);
 			f->Draw();
+			f->position -= glm::vec3(16, 16, 0);
 			draws.push_back(f->draws[0]);
 		}
 	}

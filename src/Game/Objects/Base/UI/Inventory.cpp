@@ -11,6 +11,8 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 
 	int i = 0;
 
+	// 9x4
+
 	for (int y = 0; y < PLAYER_INVENTORY_HEIGHT; y++)
 	{
 		for (int x = 0; x < PLAYER_INVENTORY_WIDTH; x++)
@@ -19,6 +21,8 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 			i++;
 		}
 	}
+
+	// i at this point is = 36
 
 	// armor
 
@@ -50,7 +54,6 @@ void Inventory::UpdateInventory()
 	ClearFronts();
 
 	Texture* i = Texture::createWithImage("Assets/Textures/items.png", false); // grab from cache
-	int ind = 0;
 	for (int y = 0; y < PLAYER_INVENTORY_HEIGHT; y++)
 	{
 		for (int x = 0; x < PLAYER_INVENTORY_WIDTH; x++)
@@ -63,10 +66,19 @@ void Inventory::UpdateInventory()
 			int rX = x + 1;
 			int rY = PLAYER_INVENTORY_HEIGHT - y;
 
-			ItemUI* s = new ItemUI(item.tag, glm::vec3(0, 0, 0), i, item.count);
+			glm::vec3 pos = position + glm::vec3(64 * rX, 64 * rY, 0);
 
-			AddFront(s, ind);
-			ind++;
+			BoxSlot& sl = GetSlot(pos);
+
+			if (sl.id == -1)
+				continue;
+
+			ItemUI* s = new ItemUI(item.tag, pos, i, item.count);
+
+			s->width = 32;
+			s->height = 32;
+
+			sl.front = s;
 		}
 	}
 }
@@ -99,6 +111,12 @@ void Inventory::MouseRelease(int button, glm::vec2 pos)
 			BoxSlot& sSlot = GetSlot(_startDrag);
 			Sprite2D* slot = s.slot;
 			Sprite2D* startSlot = sSlot.slot;
+
+			if (s.id >= 36)
+				return;
+
+			if (sSlot.id >= 36)
+				return;
 
 			if (slot != nullptr && startSlot != nullptr)
 			{
@@ -183,7 +201,7 @@ void Inventory::Draw()
 		_s.slot->src = t->spriteSheet.GetUVFlip("box_slot");
 	}
 
-	if (selectedSlot != nullptr)
+	if (selectedSlot != nullptr && s.id != -1)
 		selectedSlot->src = t->spriteSheet.GetUVFlip("box_slot_selected");
 
 	if (_dragging)
