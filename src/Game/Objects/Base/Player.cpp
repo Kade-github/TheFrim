@@ -3,7 +3,7 @@
 #include "DroppedItem.h"
 #include <glm/gtx/rotate_vector.hpp>
 #include "../../LightingManager.h"
-
+#include <Helpers/StringTools.h>
 bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
@@ -324,7 +324,45 @@ void Player::Draw()
 	{
 		if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
-			selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * selectedBlock->toughness;
+			Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+			Data::InventoryItem item = playerData.inventory[scene->hud->selected][PLAYER_INVENTORY_HEIGHT - 1];
+
+			float toughness = selectedBlock->toughness;
+
+			bool correctTool = false;
+
+			switch (selectedBlock->soundType)
+			{
+				case S_GRASS:
+				case S_SAND:
+					if (StringTools::Contains(item.tag, "shovel"))
+					{
+						toughness *= item.breakingPower;
+						correctTool = true;
+					}
+					break;
+				case S_WOOD:
+					if (StringTools::Contains(item.tag, "axe"))
+					{
+						toughness *= item.breakingPower;
+						correctTool = true;
+					}
+					break;
+				case S_STONE:
+					if (StringTools::Contains(item.tag, "pickaxe"))
+					{
+						toughness *= item.breakingPower;
+						correctTool = true;
+					}
+					break;
+				default:
+					toughness *= item.breakingPower;
+					correctTool = true;
+					break;
+			}
+
+			selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * toughness;
 
 			if (selectedBlock->breakProgress >= 1)
 			{
@@ -336,13 +374,34 @@ void Player::Draw()
 
 				if (c != nullptr)
 				{
-					// for now make it so it drops, later make it so it only drops if it's broken with the right tool
+					bool giveItem = true;
+					if (selectedBlock->soundType == S_STONE)
+					{
+						float breakingPower = item.breakingPower;
 
-					Data::InventoryItem item = { selectedBlock->type, 1 };
+						giveItem = false;
 
-					Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+						if (correctTool)
+						{
+							switch (selectedBlock->type)
+							{
+							case STONE:
+							case COBBLESTONE:
+								if (breakingPower >= 2)
+									giveItem = true;
+								break;
+							}
+						}
+					}
+					
+					if (giveItem)
+					{
+						Data::InventoryItem item = { selectedBlock->type, 1 };
 
-					scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5,0.5,0.5), item);
+						Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+						scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5, 0.5, 0.5), item);
+					}
 
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
 				}
@@ -522,6 +581,13 @@ void Player::KeyPress(int key)
 			firstMouse = true;
 			scene->hud->InventoryShown(false);
 		}
+		break;
+	case GLFW_KEY_F:
+		// spawn diamond shovel
+
+		item = Data::InventoryItem(Data::ITEM_DIAMOND_SHOVEL, 1);
+
+		scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
 		break;
 	}
 

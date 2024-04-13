@@ -52,6 +52,11 @@ public:
 
         return tmp_s;
     }
+    
+    static bool Contains(std::string s, std::string find) {
+		return s.find(find) != std::string::npos;
+	}
+
 };
 
 #endif

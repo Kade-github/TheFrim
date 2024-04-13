@@ -82,6 +82,9 @@ namespace Data
         int armor = 0;
         int armorSlot = 0;
 
+        float breakingPower = 1.0f;
+        float durability = 1.0f;
+
 		int type = ITEM_NULL;
 		int count = 1;
 
@@ -162,14 +165,17 @@ namespace Data
             case ITEM_WOODEN_PICKAXE:
                 stackable = false;
                 tag = "item_wooden_pickaxe";
+                breakingPower = 2.0f;
                 break;
             case ITEM_WOODEN_SHOVEL:
                 stackable = false;
                 tag = "item_wooden_shovel";
+                breakingPower = 2.0f;
                 break;
             case ITEM_WOODEN_AXE:
                 stackable = false;
                 tag = "item_wooden_axe";
+                breakingPower = 2.0f;
                 break;
             case ITEM_WOODEN_SWORD:
                 stackable = false;
@@ -178,14 +184,17 @@ namespace Data
             case ITEM_STONE_PICKAXE:
                 stackable = false;
                 tag = "item_stone_pickaxe";
+                breakingPower = 4.0f;
                 break;
             case ITEM_STONE_SHOVEL:
                 stackable = false;
                 tag = "item_stone_shovel";
+                breakingPower = 4.0f;
                 break;
             case ITEM_STONE_AXE:
                 stackable = false;
                 tag = "item_stone_axe";
+                breakingPower = 4.0f;
                 break;
             case ITEM_STONE_SWORD:
                 stackable = false;
@@ -194,14 +203,17 @@ namespace Data
             case ITEM_IRON_PICKAXE:
                 stackable = false;
                 tag = "item_iron_pickaxe";
+                breakingPower = 6.0f;
                 break;
             case ITEM_IRON_SHOVEL:
                 stackable = false;
                 tag = "item_iron_shovel";
+                breakingPower = 6.0f;
                 break;
             case ITEM_IRON_AXE:
                 stackable = false;
                 tag = "item_iron_axe";
+                breakingPower = 6.0f;
                 break;
             case ITEM_IRON_SWORD:
                 stackable = false;
@@ -210,14 +222,17 @@ namespace Data
             case ITEM_GOLD_PICKAXE:
                 stackable = false;
                 tag = "item_gold_pickaxe";
+                breakingPower = 10.0f;
                 break;
             case ITEM_GOLD_SHOVEL:
                 stackable = false;
                 tag = "item_gold_shovel";
+                breakingPower = 10.0f;
                 break;
             case ITEM_GOLD_AXE:
                 stackable = false;
                 tag = "item_gold_axe";
+                breakingPower = 10.0f;
                 break;
             case ITEM_GOLD_SWORD:
                 stackable = false;
@@ -226,14 +241,17 @@ namespace Data
             case ITEM_DIAMOND_PICKAXE:
                 stackable = false;
                 tag = "item_diamond_pickaxe";
+                breakingPower = 8.0f;
                 break;
             case ITEM_DIAMOND_SHOVEL:
                 stackable = false;
                 tag = "item_diamond_shovel";
+                breakingPower = 8.0f;
                 break;
             case ITEM_DIAMOND_AXE:
                 stackable = false;
                 tag = "item_diamond_axe";
+                breakingPower = 8.0f;
                 break;
             case ITEM_DIAMOND_SWORD:
                 stackable = false;
