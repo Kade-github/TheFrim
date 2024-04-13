@@ -582,13 +582,6 @@ void Player::KeyPress(int key)
 			scene->hud->InventoryShown(false);
 		}
 		break;
-	case GLFW_KEY_F:
-		// spawn diamond shovel
-
-		item = Data::InventoryItem(Data::ITEM_DIAMOND_SHOVEL, 1);
-
-		scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
-		break;
 	}
 
 }
