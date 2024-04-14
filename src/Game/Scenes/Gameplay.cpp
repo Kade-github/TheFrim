@@ -7,6 +7,7 @@
 #include "../LightingManager.h"
 #include "../MusicManager.h"
 #include "../Data/Settings.h"
+#include "../CraftingManager.h"
 
 Gameplay::Gameplay(WorldManager* _wm)
 {
@@ -15,6 +16,12 @@ Gameplay::Gameplay(WorldManager* _wm)
 
 void Gameplay::Create()
 {
+	CraftingManager::GetInstance()->Init();
+
+	Game::instance->log->Write("Loaded World: " + wm->name);
+
+	Game::instance->log->Write("Loaded " + std::to_string(CraftingManager::GetInstance()->Recipes.size()) + " crafting recipes");
+
 	Game::instance->SetLockedCursor(true);
 
 	dim = new DroppedItemManager();

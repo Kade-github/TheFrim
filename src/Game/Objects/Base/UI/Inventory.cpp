@@ -1,7 +1,9 @@
 #include "Inventory.h"
 #include <Helpers/StringTools.h>
 #include <Game.h>
+#include "../../../CraftingManager.h"
 #include "../../../Scenes/Gameplay.h"
+
 
 Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 {
@@ -48,22 +50,9 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 
 }
 
-void Inventory::UpdateInventory(bool dontRemoveDrag)
+void Inventory::UpdateInventory(bool dontRemoveOutput)
 {
-	if (!dontRemoveDrag || _draggingItem == nullptr)
-		ClearFronts();
-	else
-	{
-		for (int i = 0; i < boxSlots.size(); i++)
-		{
-			BoxSlot& sl = boxSlots[i];
-			if (sl.front != nullptr && sl.id != _draggingItem->id)
-			{
-				delete sl.front;
-				sl.front = nullptr;
-			}
-		}
-	}
+	ClearFronts();
 
 	Texture* i = Texture::createWithImage("Assets/Textures/items.png", false); // grab from cache
 	for (int y = 0; y < PLAYER_INVENTORY_HEIGHT; y++)
@@ -165,6 +154,41 @@ void Inventory::UpdateInventory(bool dontRemoveDrag)
 			id++;
 		}
 	}
+
+	// output
+
+	for (auto& arr : stored_crafting)
+		std::fill(std::begin(arr), std::end(arr), Data::InventoryItem());
+
+	stored_crafting[0][0] = crafting[0];
+	stored_crafting[0][1] = crafting[1];
+	stored_crafting[1][0] = crafting[2];
+	stored_crafting[1][1] = crafting[3];
+
+	Data::InventoryItem out = CraftingManager::GetInstance()->Craft(stored_crafting);
+
+	if (out.type != Data::ItemType::ITEM_NULL)
+		output = out;
+
+
+	BoxSlot& sl = GetSlot(43);
+
+	if (sl.id != -1 && output.type != Data::ItemType::ITEM_NULL)
+	{
+		glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
+
+		ItemUI* s = new ItemUI(output.tag, pos, i, output.count);
+
+		s->id = sl.id;
+
+		s->width = 32;
+		s->height = 32;
+
+		sl.front = s;
+	}
+
+
+
 }
 
 void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2)
@@ -175,7 +199,7 @@ void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2
 
 		*item1 = *item2;
 		*item2 = temp;
-		
+
 	}
 	else
 	{
@@ -206,7 +230,7 @@ void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2
 
 			*item1 = *item2;
 			*item2 = temp;
-			
+
 		}
 	}
 }
@@ -246,7 +270,7 @@ void Inventory::Close()
 	}
 
 	// give back output
-	
+
 	if (output.type != Data::ItemType::ITEM_NULL)
 	{
 		if (!player->playerData.GiveItem(output)) // inventory full, so drop it
@@ -300,6 +324,9 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 		if (s.id == 43) // can't move to output
 			return false;
 
+		if (sSlot.id == 43 && endItem->type != Data::ItemType::ITEM_NULL && !endItem->stackable) // can't move to output
+			return false;
+
 		// check if we can move it to that slot (armor)
 
 		if (s.id >= 36 && s.id < 39)
@@ -336,7 +363,7 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 
 			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-			gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, item);	
+			gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, item);
 
 			*startItem = {};
 
@@ -358,10 +385,35 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 	{
 		if (!_dragging)
 		{
+			BoxSlot& sSlot = GetSlot(pos);
+
+			bool update = false;
+
+			if (sSlot.id == 43)
+			{
+				crafting[0] = stored_crafting[0][0];
+				crafting[1] = stored_crafting[0][1];
+				crafting[2] = stored_crafting[1][0];
+				crafting[3] = stored_crafting[1][1];
+				update = true;
+			}
+
+			// check if we are dragging a crafting ingredient
+
+			if (sSlot.id >= 39 && sSlot.id < 43)
+			{
+				output = {};
+				RemoveFront(43);
+			}
+
+			if (update)
+				UpdateInventory();
+
 			_draggingItem = (ItemUI*)GetFront(pos);
 
 			if (_draggingItem != nullptr)
 			{
+
 				_dragging = true;
 				_startDrag = Game::instance->GetCursorPos();
 			}

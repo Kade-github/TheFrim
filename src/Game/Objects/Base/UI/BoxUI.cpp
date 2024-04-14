@@ -87,6 +87,19 @@ void BoxUI::ClearFronts()
 	}
 }
 
+void BoxUI::RemoveFront(int id)
+{
+	for (int i = 0; i < boxSlots.size(); i++)
+	{
+		if (boxSlots[i].id == id)
+		{
+			delete boxSlots[i].front;
+			boxSlots[i].front = nullptr;
+			return;
+		}
+	}
+}
+
 void BoxUI::AddSlot(float x, float y, int id)
 {
 	BoxSlot slot;

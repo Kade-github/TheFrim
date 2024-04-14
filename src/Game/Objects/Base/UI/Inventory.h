@@ -16,6 +16,7 @@ class Inventory : public BoxUI
 public:
 
 	Data::InventoryItem crafting[4]; 
+	Data::InventoryItem stored_crafting[3][3];
 	Data::InventoryItem output;
 
 	Data::InventoryItem stored;
@@ -24,7 +25,7 @@ public:
 
 	Inventory(glm::vec3 _pos, Player* _player);
 
-	void UpdateInventory(bool dontRemoveDrag = false);
+	void UpdateInventory(bool dontRemoveOutput = false);
 
 	void ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2);
 

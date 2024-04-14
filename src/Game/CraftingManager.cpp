@@ -1,4 +1,5 @@
 #include "CraftingManager.h"
+#include <Game.h>
 
 CraftingManager* CraftingManager::GetInstance()
 {
@@ -8,6 +9,24 @@ CraftingManager* CraftingManager::GetInstance()
 
 void CraftingManager::Init()
 {
+	Recipes.clear();
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_WOODENPLANKS, 4),
+		{
+			{
+				{},{},{}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_WOOD, 1)},{},{}
+			},
+			{
+				{},{},{}
+			}
+		},
+		true
+	});
+
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_WOODENPLANKS, 4),
 		{
@@ -16,6 +35,39 @@ void CraftingManager::Init()
 			},
 			{
 				{},{},{}
+			},
+			{
+				{},{},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_STICK, 4),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 2)},{},{}
+			},
+			{
+				{},{},{}
+			},
+			{
+				{},{},{}
+			}
+		},
+		true
+	});
+
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_STICK, 4),
+		{
+			{
+				{},{},{}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 2)},{},{}
 			},
 			{
 				{},{},{}
@@ -37,41 +89,7 @@ Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3]
 	for(int i = 0; i < Recipes.size(); i++)
 	{
 		CraftingRecipe recipe = Recipes[i];
-		if (recipe.anyWhere)
-		{
-			std::map<Data::ItemType, int> itemsRequired;
-
-			for (int j = 0; j < 3; j++)
-			{
-				for (int k = 0; k < 3; k++)
-				{
-					if (ingredients[j][k].type != Data::ITEM_NULL)
-					{
-						itemsRequired[(Data::ItemType)ingredients[j][k].type] += ingredients[j][k].count;
-					}
-				}
-			}
-
-			// check if we have all the required items
-
-			bool hasAllItems = true;
-
-			for(int j = 0; j < 3; j++)
-			{
-				for(int k = 0; k < 3; k++)
-				{
-					if (itemsRequired.find((Data::ItemType)ingredients[j][k].type) == itemsRequired.end() || itemsRequired[(Data::ItemType)ingredients[j][k].type] < ingredients[j][k].count)
-						hasAllItems = false;
-				}
-
-				if (!hasAllItems)
-					break;
-			}
-
-			if (!hasAllItems)
-				continue;
-		}
-		else if (!recipe.IsMatch(ingredients))
+		if (!recipe.IsMatch(ingredients))
 			continue;
 
 		for (int j = 0; j < 3; j++)

@@ -124,7 +124,7 @@ namespace Data
                 placeable = true;
                 break;
             case ITEM_WOODENPLANKS:
-                tag = "item_wooden_planks";
+                tag = "item_wooden_plank";
                 placeable = true;
                 break;
             case ITEM_LEAVES:
