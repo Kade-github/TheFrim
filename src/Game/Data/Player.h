@@ -164,22 +164,22 @@ namespace Data
                 break;
             case ITEM_WOODEN_PICKAXE:
                 stackable = false;
-                tag = "item_wooden_pickaxe";
+                tag = "item_wood_pickaxe";
                 breakingPower = 2.0f;
                 break;
             case ITEM_WOODEN_SHOVEL:
                 stackable = false;
-                tag = "item_wooden_shovel";
+                tag = "item_wood_shovel";
                 breakingPower = 2.0f;
                 break;
             case ITEM_WOODEN_AXE:
                 stackable = false;
-                tag = "item_wooden_axe";
+                tag = "item_wood_axe";
                 breakingPower = 2.0f;
                 break;
             case ITEM_WOODEN_SWORD:
                 stackable = false;
-                tag = "item_wooden_sword";
+                tag = "item_wood_sword";
                 break;
             case ITEM_STONE_PICKAXE:
                 stackable = false;
