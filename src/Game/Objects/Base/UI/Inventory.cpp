@@ -650,7 +650,7 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 			Sprite2D* startSlot = sSlot.slot;
 			Sprite2D* slot = s.slot;
 
-			if (s.id == 43) // can't move to output
+			if (s.id == 90) // can't move to output
 				return;
 
 			if (slot == nullptr)
