@@ -363,6 +363,7 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 			glm::vec2 start = ConvertToSlotPos(startSlot->tag_id);
 
 			Data::InventoryItem* startItem = GetItem(sSlot.id, start);
+			*startItem = stored;
 
 			if (startItem == nullptr || startItem->type == Data::ItemType::ITEM_NULL)
 				return false;
