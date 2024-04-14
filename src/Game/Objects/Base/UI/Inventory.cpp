@@ -190,6 +190,18 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 }
 
+glm::vec2 Inventory::ConvertToSlotPos(std::string tag_id)
+{
+	std::vector<std::string> sPos = StringTools::Split(tag_id, ",");
+
+	glm::vec2 start = glm::vec2(std::stoi(sPos[0]), std::stoi(sPos[1]));
+
+	start.x -= 1;
+	start.y = PLAYER_INVENTORY_HEIGHT - start.y;
+
+	return start;
+}
+
 void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2)
 {
 	if (item2->type == Data::ItemType::ITEM_NULL)
@@ -282,7 +294,22 @@ void Inventory::Close()
 		output = {};
 	}
 
+	if (_dragging)
+	{
+		// drop item
+
+		if (!player->playerData.GiveItem(stored)) // inventory full, so drop it
+		{
+			Camera* c = Game::instance->GetCamera();
+
+			gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, stored);
+		}
+
+		stored = {};
+	}
+
 	_dragging = false;
+	delete _draggingItem;
 	_draggingItem = nullptr;
 
 	gp->hud->UpdateHotbar();
@@ -295,30 +322,22 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 	Sprite2D* slot = s.slot;
 	Sprite2D* startSlot = sSlot.slot;
 
-	if (s.x == sSlot.x && s.y == sSlot.y)
-		return false;
-
 	_dragging = false;
 
 	if (slot != nullptr && startSlot != nullptr)
 	{
 		// 9x4
 
-		std::vector<std::string> sPos = StringTools::Split(startSlot->tag_id, ",");
+		glm::vec2 start = ConvertToSlotPos(startSlot->tag_id);
 
-		glm::vec2 start = glm::vec2(std::stoi(sPos[0]), std::stoi(sPos[1]));
-
-		sPos = StringTools::Split(slot->tag_id, ",");
-		glm::vec2 end = glm::vec2(std::stoi(sPos[0]), std::stoi(sPos[1]));
-
-		start.x -= 1;
-		end.x -= 1;
-
-		start.y = PLAYER_INVENTORY_HEIGHT - start.y;
-		end.y = PLAYER_INVENTORY_HEIGHT - end.y;
+		glm::vec2 end = ConvertToSlotPos(slot->tag_id);
 
 		Data::InventoryItem* startItem = GetItem(sSlot.id, start);
+		*startItem = stored;
 		Data::InventoryItem* endItem = GetItem(s.id, end);
+
+		if (s.id == sSlot.id)
+			return false;
 
 		if (s.id == 43) // can't move to output
 			return false;
@@ -341,15 +360,7 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 	{
 		if (to.x < position.x || to.x > position.x + renderWidth || to.y < position.y || to.y > position.y + renderHeight)
 		{
-			// drop item
-			glm::vec3 from = glm::vec3(_startDrag.x, _startDrag.y, 0);
-
-			std::vector<std::string> sPos = StringTools::Split(startSlot->tag_id, ",");
-
-			glm::vec2 start = glm::vec2(std::stoi(sPos[0]), std::stoi(sPos[1]));
-
-			start.x -= 1;
-			start.y = PLAYER_INVENTORY_HEIGHT - start.y;
+			glm::vec2 start = ConvertToSlotPos(startSlot->tag_id);
 
 			Data::InventoryItem* startItem = GetItem(sSlot.id, start);
 
@@ -386,7 +397,13 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 		{
 			BoxSlot& sSlot = GetSlot(pos);
 
-			bool update = false;
+			glm::vec2 start = ConvertToSlotPos(sSlot.slot->tag_id);
+
+			Data::InventoryItem* it = GetItem(sSlot.id, start);
+
+			if (it == nullptr || it->type == Data::ITEM_NULL)
+				return;
+
 
 			if (sSlot.id == 43 && output.type != Data::ItemType::ITEM_NULL)
 			{
@@ -394,7 +411,6 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 				crafting[1] = stored_crafting[0][1];
 				crafting[2] = stored_crafting[1][0];
 				crafting[3] = stored_crafting[1][1];
-				update = true;
 			}
 
 			// check if we are dragging a crafting ingredient
@@ -405,14 +421,24 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 				RemoveFront(43);
 			}
 
-			if (update)
-				UpdateInventory();
+			stored = *it;
 
-			_draggingItem = (ItemUI*)GetFront(pos);
+			*it = {};
+
+			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+			gp->hud->UpdateHotbar();
+
+
+			Texture* _t = Texture::createWithImage("Assets/Textures/items.png", false); // grab from cache
+
+			_draggingItem = new ItemUI(stored.tag, glm::vec3(pos.x - 32, pos.y - 32, 0), _t, stored.count);
+
+			_draggingItem->width = 32;
+			_draggingItem->height = 32;
 
 			if (_draggingItem != nullptr)
 			{
-
 				_dragging = true;
 				_startDrag = Game::instance->GetCursorPos();
 			}
@@ -427,7 +453,6 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 
 			if (eSlot.id == 43)
 			{
-
 				stored_crafting[0][0] = crafting[0];
 				stored_crafting[0][1] = crafting[1];
 				stored_crafting[1][0] = crafting[2];
@@ -443,22 +468,33 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 				if (out.type != Data::ItemType::ITEM_NULL)
 					output = out;
 
-				UpdateInventory();
+				if (output.type == Data::ItemType::ITEM_NULL || output.type != stored.type || !stored.stackable)
+					return;
 
-				_draggingItem = (ItemUI*)GetFront(_startDrag);
+				if (stored.count + output.count > 64)
+					return;
+
+				stored.count += output.count;
+
+				_draggingItem->SetCount(stored.count);
+
+				output = {};
+
+				UpdateInventory();
 				return;
 			}
 
-			if (!SwitchItem(from, to))
-			{
-				_draggingItem->position = position + glm::vec3(sSlot.x * 64, sSlot.y * 64, 0);
-			}
+			SwitchItem(from, to);
+
 
 			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
 			gp->hud->UpdateHotbar();
 
+			stored = {};
+
 			_dragging = false;
+			delete _draggingItem;
 			_draggingItem = nullptr;
 		}
 
@@ -472,13 +508,11 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 			glm::vec3 to = glm::vec3(pos.x, pos.y, 0);
 
 			BoxSlot& sSlot = GetSlot(from); // from
-			_draggingSlot = sSlot.id;
-			Sprite2D* startSlot = sSlot.slot;
-
-			std::vector<std::string> sPos = StringTools::Split(startSlot->tag_id, ",");
-			glm::vec2 start = glm::vec2(std::stoi(sPos[0]), std::stoi(sPos[1]));
-
 			BoxSlot& s = GetSlot(to); // to
+
+			_draggingSlot = sSlot.id;
+
+			Sprite2D* startSlot = sSlot.slot;
 			Sprite2D* slot = s.slot;
 
 			if (s.id == 43) // can't move to output
@@ -487,29 +521,25 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 			if (slot == nullptr)
 				return;
 
-			std::vector<std::string> sPos2 = StringTools::Split(slot->tag_id, ",");
-			glm::vec2 end = glm::vec2(std::stoi(sPos2[0]), std::stoi(sPos2[1]));
-
-			start.x -= 1;
-			end.x -= 1;
-
-			start.y = PLAYER_INVENTORY_HEIGHT - start.y;
-			end.y = PLAYER_INVENTORY_HEIGHT - end.y;
+			glm::vec2 start = ConvertToSlotPos(startSlot->tag_id);
+			glm::vec2 end = ConvertToSlotPos(slot->tag_id);
 
 			Data::InventoryItem* startItem = GetItem(sSlot.id, start);
 			Data::InventoryItem* endItem = GetItem(s.id, end);
 
-			if (startItem->type != endItem->type && endItem->type != Data::ITEM_NULL)
+			if (stored.type != endItem->type && endItem->type != Data::ITEM_NULL)
 				return;
 
 			if (endItem->count + 1 > 64)
 				return;
 
-			startItem->count--;
+			stored.count--;
+
+			_draggingItem->SetCount(stored.count);
 
 			if (endItem->type == Data::ITEM_NULL)
 			{
-				Data::InventoryItem copy = *startItem;
+				Data::InventoryItem copy = stored;
 				copy.count = 1;
 				*endItem = copy;
 			}
@@ -520,25 +550,18 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 
 				endItem->count++;
 			}
-			_draggingItem = nullptr;
 
 			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-			if (startItem->count <= 0)
+			if (stored.count <= 0)
 			{
-				*startItem = {};
+				stored = {};
+				delete _draggingItem;
 				_draggingItem = nullptr;
 				_dragging = false;
 			}
 
 			gp->hud->UpdateHotbar();
-
-			if (_dragging)
-			{
-				BoxSlot& dr = GetSlot(_draggingSlot);
-				_draggingItem = (ItemUI*)dr.front;
-			}
-
 		}
 	}
 }
@@ -571,8 +594,15 @@ void Inventory::Draw()
 	if (selectedSlot != nullptr && s.id != -1)
 		selectedSlot->src = t->spriteSheet.GetUVFlip("box_slot_selected");
 
-	if (_dragging)
-		_draggingItem->position = glm::vec3(mouse.x - _draggingItem->width, mouse.y - _draggingItem->height, 0);
-
 	BoxUI::Draw();
+
+	if (_dragging)
+	{
+		_draggingItem->position = glm::vec3(mouse.x - _draggingItem->width / 2, mouse.y - _draggingItem->height / 2, 0);
+		_draggingItem->Draw();
+
+		for(auto& d : _draggingItem->draws)
+			draws.push_back(d);
+	}
+
 }

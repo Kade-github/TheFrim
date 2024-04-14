@@ -27,6 +27,8 @@ public:
 
 	void UpdateInventory(bool dontRemoveOutput = false);
 
+	glm::vec2 ConvertToSlotPos(std::string tag_id);
+
 	void ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2);
 
 	Data::InventoryItem* GetItem(int id, glm::vec2 pos);
