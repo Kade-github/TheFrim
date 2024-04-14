@@ -17,66 +17,56 @@ void Inventory::SetCrafting()
 	for (auto& arr : stored_crafting)
 		std::fill(std::begin(arr), std::end(arr), Data::InventoryItem());
 
-	/*
-		0 1 2
-		3 4 5
-		6 7 8
-	*/
-
 	if (isThreeByThree)
 	{
-
-		stored_crafting[0][0] = crafting[0];
-		stored_crafting[0][1] = crafting[1];
-		stored_crafting[0][2] = crafting[2];
+		stored_crafting[0][0] = crafting[6];
+		stored_crafting[0][1] = crafting[7];
+		stored_crafting[0][2] = crafting[8];
 
 		stored_crafting[1][0] = crafting[3];
 		stored_crafting[1][1] = crafting[4];
 		stored_crafting[1][2] = crafting[5];
 
-		stored_crafting[2][0] = crafting[6];
-		stored_crafting[2][1] = crafting[7];
-		stored_crafting[2][2] = crafting[8];
+		stored_crafting[2][0] = crafting[0];
+		stored_crafting[2][1] = crafting[1];
+		stored_crafting[2][2] = crafting[2];
+
+
 	}
 	else
 	{
-		stored_crafting[0][0] = crafting[0];
-		stored_crafting[0][1] = crafting[1];
+		stored_crafting[0][0] = crafting[2];
+		stored_crafting[0][1] = crafting[3];
 
-		stored_crafting[1][0] = crafting[2];
-		stored_crafting[1][1] = crafting[3];
+		stored_crafting[1][0] = crafting[0];
+		stored_crafting[1][1] = crafting[1];
 	}
 }
 
 void Inventory::UpdateTable()
 {
-	/*
-		0 1 2
-		3 4 5
-		6 7 8
-	*/
-
 	if (isThreeByThree)
 	{
-		crafting[0] = stored_crafting[0][0];
-		crafting[1] = stored_crafting[0][1];
-		crafting[2] = stored_crafting[0][2];
+		crafting[6] = stored_crafting[0][0];
+		crafting[7] = stored_crafting[0][1];
+		crafting[8] = stored_crafting[0][2];
 
 		crafting[3] = stored_crafting[1][0];
 		crafting[4] = stored_crafting[1][1];
 		crafting[5] = stored_crafting[1][2];
 
-		crafting[6] = stored_crafting[2][0];
-		crafting[7] = stored_crafting[2][1];
-		crafting[8] = stored_crafting[2][2];
+		crafting[0] = stored_crafting[2][0];
+		crafting[1] = stored_crafting[2][1];
+		crafting[2] = stored_crafting[2][2];
+
 	}
 	else
 	{
-		crafting[0] = stored_crafting[0][0];
-		crafting[1] = stored_crafting[0][1];
+		crafting[2] = stored_crafting[0][0];
+		crafting[3] = stored_crafting[0][1];
 
-		crafting[2] = stored_crafting[1][0];
-		crafting[3] = stored_crafting[1][1];
+		crafting[0] = stored_crafting[1][0];
+		crafting[1] = stored_crafting[1][1];
 	}
 }
 

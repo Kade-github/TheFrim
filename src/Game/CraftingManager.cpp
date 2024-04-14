@@ -137,6 +137,11 @@ void CraftingManager::AddRecipe(CraftingRecipe recipe)
 
 Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3])
 {
+	Game::instance->log->Write("-- Crafting --");
+	Game::instance->log->Write(std::to_string(ingredients[0][0].type) + " " + std::to_string(ingredients[0][1].type) + " " + std::to_string(ingredients[0][2].type));
+	Game::instance->log->Write(std::to_string(ingredients[1][0].type) + " " + std::to_string(ingredients[1][1].type) + " " + std::to_string(ingredients[1][2].type));
+	Game::instance->log->Write(std::to_string(ingredients[2][0].type) + " " + std::to_string(ingredients[2][1].type) + " " + std::to_string(ingredients[2][2].type));
+
 	for(int i = 0; i < Recipes.size(); i++)
 	{
 		CraftingRecipe recipe = Recipes[i];
