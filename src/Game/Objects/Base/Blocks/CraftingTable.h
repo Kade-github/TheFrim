@@ -1,12 +1,12 @@
-#ifndef _WOODENPLANKSBLOCK_H
-#define _WOODENPLANKSBLOCK_H
+#ifndef _CRAFTINGTABLE_H
+#define _CRAFTINGTABLE_H
 
 #include "../Block.h"
 
-class WoodenPlank : public Block
+class CraftingTable : public Block
 {
 public:
-	WoodenPlank(glm::vec3 _position) : Block(_position, BlockType::WOODENPLANKS) {
+	CraftingTable(glm::vec3 _position) : Block(_position, BlockType::CRAFTINGTABLE) {
 		position = _position;
 
 		soundType = SoundType::S_WOOD;
@@ -61,7 +61,7 @@ public:
 
 	BlockFace CreateTopFace() override
 	{
-		glm::vec4 dirt = t->spriteSheet.GetUVFlip("woodenPlank");
+		glm::vec4 dirt = t->spriteSheet.GetUVFlip("craftingtableTop");
 
 		std::vector<GameObject::VVertex> topVertices = CreateQuad(position + glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), 1, dirt);
 

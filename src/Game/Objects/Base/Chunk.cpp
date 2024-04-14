@@ -13,10 +13,12 @@
 #include "Blocks/Leaves.h"
 #include "Blocks/Sand.h"
 #include "Blocks/Water.h"
+#include "Blocks/CraftingTable.h"
+#include "Blocks/WoodenPlanks.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
-	for(GameObject::VVertex& v : vertices)
+	for (GameObject::VVertex& v : vertices)
 		v.normal = normal;
 }
 
@@ -137,7 +139,7 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 			return c->GetBlockNoCheck(c->position.x, y, z) > 0;
 		else
 			return true;
-	
+
 	}
 
 	if (_z < 0)
@@ -714,6 +716,12 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 	case WATER:
 		block = new Water(position + glm::vec3(x, y, z));
 		break;
+	case CRAFTINGTABLE:
+		block = new CraftingTable(position + glm::vec3(x, y, z));
+		break;
+	case WOODENPLANKS:
+		block = new WoodenPlank(position + glm::vec3(x, y, z));
+		break;
 	default:
 		block = new Dirt(position + glm::vec3(x, y, z));
 		break;
@@ -853,31 +861,31 @@ void Chunk::Draw()
 	glEnable(GL_CULL_FACE);
 
 	glBindVertexArray(VAO); // regular faces
-		txp->Bind();
-		s->Bind();
+	txp->Bind();
+	s->Bind();
 
-		glm::mat4 model = glm::mat4(1.0f);
+	glm::mat4 model = glm::mat4(1.0f);
 
-		s->SetUniformMat4f("model", &model[0][0]);
+	s->SetUniformMat4f("model", &model[0][0]);
 
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-		glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, size, GL_UNSIGNED_INT, 0);
 
-		txp->Unbind();
-		s->Unbind();
+	txp->Unbind();
+	s->Unbind();
 	glBindVertexArray(SHADOWVAO); // shadow faces
-		txp->Bind();
-		s->Bind();
+	txp->Bind();
+	s->Bind();
 
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SHADOWEBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SHADOWEBO);
 
-		glDrawElements(GL_TRIANGLES, shadowSize, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, shadowSize, GL_UNSIGNED_INT, 0);
 
-		s->Unbind();
-		txp->Unbind();
-	
+	s->Unbind();
+	txp->Unbind();
+
 	glBindVertexArray(0);
 
 	glDisable(GL_CULL_FACE);

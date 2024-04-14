@@ -11,6 +11,8 @@ void CraftingManager::Init()
 {
 	Recipes.clear();
 
+	#pragma region Recipes
+
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_WOODENPLANKS, 4),
 		{
@@ -76,6 +78,23 @@ void CraftingManager::Init()
 		true
 	});
 
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_CRAFTINGTABLE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 1)},{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 1)},{}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 1)},{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 1)},{}
+			},
+			{
+				{},{},{}
+			}
+		},
+		true
+	});
+
+	#pragma endregion
 
 }
 

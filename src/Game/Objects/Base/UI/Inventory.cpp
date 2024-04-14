@@ -170,7 +170,6 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 	if (out.type != Data::ItemType::ITEM_NULL)
 		output = out;
 
-
 	BoxSlot& sl = GetSlot(43);
 
 	if (sl.id != -1 && output.type != Data::ItemType::ITEM_NULL)
@@ -389,7 +388,7 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 
 			bool update = false;
 
-			if (sSlot.id == 43)
+			if (sSlot.id == 43 && output.type != Data::ItemType::ITEM_NULL)
 			{
 				crafting[0] = stored_crafting[0][0];
 				crafting[1] = stored_crafting[0][1];
@@ -423,12 +422,36 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 			glm::vec3 from = glm::vec3(_startDrag.x, _startDrag.y, 0);
 			glm::vec3 to = glm::vec3(pos.x, pos.y, 0);
 
+			BoxSlot& sSlot = GetSlot(_startDrag);
+			BoxSlot& eSlot = GetSlot(pos);
+
+			if (eSlot.id == 43)
+			{
+
+				stored_crafting[0][0] = crafting[0];
+				stored_crafting[0][1] = crafting[1];
+				stored_crafting[1][0] = crafting[2];
+				stored_crafting[1][1] = crafting[3];
+
+				Data::InventoryItem out = CraftingManager::GetInstance()->Craft(stored_crafting);
+
+				crafting[0] = stored_crafting[0][0];
+				crafting[1] = stored_crafting[0][1];
+				crafting[2] = stored_crafting[1][0];
+				crafting[3] = stored_crafting[1][1];
+
+				if (out.type != Data::ItemType::ITEM_NULL)
+					output = out;
+
+				UpdateInventory();
+
+				_draggingItem = (ItemUI*)GetFront(_startDrag);
+				return;
+			}
 
 			if (!SwitchItem(from, to))
 			{
-				BoxSlot& sSlot = GetSlot(from);
-
-				_draggingItem->position = glm::vec3(from.x * sSlot.front->width, from.y * sSlot.front->height, 0);
+				_draggingItem->position = position + glm::vec3(sSlot.x * 64, sSlot.y * 64, 0);
 			}
 
 			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
