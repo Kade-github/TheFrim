@@ -399,6 +399,10 @@ void Player::Draw()
 				if (c != nullptr)
 				{
 					bool giveItem = true;
+
+					if (selectedBlock->type == LEAVES)
+						giveItem = false;
+
 					if (selectedBlock->soundType == S_STONE)
 					{
 						float breakingPower = item.breakingPower;
@@ -421,6 +425,12 @@ void Player::Draw()
 					if (giveItem)
 					{
 						Data::InventoryItem item = { selectedBlock->type, 1 };
+
+						if (selectedBlock->type == STONE)
+							item = { COBBLESTONE, 1 };
+
+						if (selectedBlock->type == GRASS)
+							item = { DIRT, 1 };
 
 						Gameplay* scene = (Gameplay*)Game::instance->currentScene;
 
