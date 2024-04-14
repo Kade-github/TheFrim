@@ -33,6 +33,7 @@ public:
 	std::vector<Sprite2D*> armor;
 
 	void InventoryShown(bool s);
+	void ShowCraftingTable(bool s);
 
 	void SetSelected(int s);
 

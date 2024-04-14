@@ -80,6 +80,7 @@ public:
 	BlockType type;
 
 	bool transparent = false;
+	bool isInteractable = false;
 
 	float breakProgress = 0;
 	float toughness = 1;
@@ -112,6 +113,8 @@ public:
 	BlockFace BreakRightFace();
 	BlockFace BreakTopFace();
 	BlockFace BreakBottomFace();
+
+	virtual void OnInteract() {};
 
 
 	void Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned int>& inds);

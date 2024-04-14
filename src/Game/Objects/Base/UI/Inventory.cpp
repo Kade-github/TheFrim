@@ -10,6 +10,83 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 	player = _player;
 	order = 100;
 
+}
+
+void Inventory::SetCrafting()
+{
+	for (auto& arr : stored_crafting)
+		std::fill(std::begin(arr), std::end(arr), Data::InventoryItem());
+
+	/*
+		0 1 2
+		3 4 5
+		6 7 8
+	*/
+
+	if (isThreeByThree)
+	{
+
+		stored_crafting[0][0] = crafting[0];
+		stored_crafting[0][1] = crafting[1];
+		stored_crafting[0][2] = crafting[2];
+
+		stored_crafting[1][0] = crafting[3];
+		stored_crafting[1][1] = crafting[4];
+		stored_crafting[1][2] = crafting[5];
+
+		stored_crafting[2][0] = crafting[6];
+		stored_crafting[2][1] = crafting[7];
+		stored_crafting[2][2] = crafting[8];
+	}
+	else
+	{
+		stored_crafting[0][0] = crafting[0];
+		stored_crafting[0][1] = crafting[1];
+
+		stored_crafting[1][0] = crafting[2];
+		stored_crafting[1][1] = crafting[3];
+	}
+}
+
+void Inventory::UpdateTable()
+{
+	/*
+		0 1 2
+		3 4 5
+		6 7 8
+	*/
+
+	if (isThreeByThree)
+	{
+		crafting[0] = stored_crafting[0][0];
+		crafting[1] = stored_crafting[0][1];
+		crafting[2] = stored_crafting[0][2];
+
+		crafting[3] = stored_crafting[1][0];
+		crafting[4] = stored_crafting[1][1];
+		crafting[5] = stored_crafting[1][2];
+
+		crafting[6] = stored_crafting[2][0];
+		crafting[7] = stored_crafting[2][1];
+		crafting[8] = stored_crafting[2][2];
+	}
+	else
+	{
+		crafting[0] = stored_crafting[0][0];
+		crafting[1] = stored_crafting[0][1];
+
+		crafting[2] = stored_crafting[1][0];
+		crafting[3] = stored_crafting[1][1];
+	}
+}
+
+void Inventory::CreateInventory()
+{
+	ClearSlots();
+
+	isThreeByThree = false;
+	isArmor = false;
+
 	int i = 0;
 
 	// 9x4
@@ -22,8 +99,13 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 			i++;
 		}
 	}
+}
 
-	// i at this point is = 36
+void Inventory::CreateArmor()
+{
+	int i = 36;
+
+	isArmor = true;
 
 	// armor
 
@@ -33,6 +115,11 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 		i++;
 	}
 
+}
+
+void Inventory::CreateTwoByTwoCrafting()
+{
+	int i = 39;
 	// crafting
 
 	for (int y = 1; y < 3; y++) // 39, 40, 41, 42
@@ -46,8 +133,35 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 
 	// output
 
-	AddSlot(8, PLAYER_INVENTORY_HEIGHT + 3, i); // 43
+	AddSlot(8, PLAYER_INVENTORY_HEIGHT + 3, 90); // 90
+}
 
+void Inventory::CreateThreeByThreeCrafting()
+{
+	int i = 39;
+
+	isThreeByThree = true;
+
+	// crafting
+
+	/*
+		39 40 41
+		42 43 44
+		45 46 47
+	*/
+
+	for (int y = 1; y < 4; y++) 
+	{
+		for (int x = 1; x < 4; x++)
+		{
+			AddSlot(x + 2, PLAYER_INVENTORY_HEIGHT + y + 1, i);
+			i++;
+		}
+	}
+
+	// output
+
+	AddSlot(7.5f, PLAYER_INVENTORY_HEIGHT + 3, 90); // 90
 }
 
 void Inventory::UpdateInventory(bool dontRemoveOutput)
@@ -87,45 +201,11 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 	// armor
 	int id = 36;
-	for (int y = 2; y < 5; y++) // 36, 37, 38
+	if (isArmor)
 	{
-		Data::InventoryItem& item = player->playerData.armor[y - 2];
-
-		if (item.type == Data::ItemType::ITEM_NULL)
+		for (int y = 2; y < 5; y++) // 36, 37, 38
 		{
-			id++;
-			continue;
-		}
-
-		BoxSlot& sl = GetSlot(id);
-
-		if (sl.id == -1)
-		{
-			id++;
-			continue;
-		}
-
-		glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
-
-		ItemUI* s = new ItemUI(item.tag, pos, i, item.count);
-
-		s->id = sl.id;
-
-		s->width = 32;
-		s->height = 32;
-
-		sl.front = s;
-		id++;
-	}
-
-	// crafting
-
-	id = 39;
-	for (int y = 1; y < 3; y++) // 39, 40, 41, 42
-	{
-		for (int x = 1; x < 3; x++)
-		{
-			Data::InventoryItem& item = crafting[(y - 1) * 2 + (x - 1)];
+			Data::InventoryItem& item = player->playerData.armor[y - 2];
 
 			if (item.type == Data::ItemType::ITEM_NULL)
 			{
@@ -155,22 +235,94 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 		}
 	}
 
+	// crafting (2x2)
+
+	id = 39;
+	if (!isThreeByThree)
+	{
+		for (int y = 1; y < 3; y++) // 39, 40, 41, 42
+		{
+			for (int x = 1; x < 3; x++)
+			{
+				Data::InventoryItem& item = crafting[(y - 1) * 2 + (x - 1)];
+
+				if (item.type == Data::ItemType::ITEM_NULL)
+				{
+					id++;
+					continue;
+				}
+
+				BoxSlot& sl = GetSlot(id);
+
+				if (sl.id == -1)
+				{
+					id++;
+					continue;
+				}
+
+				glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
+
+				ItemUI* s = new ItemUI(item.tag, pos, i, item.count);
+
+				s->id = sl.id;
+
+				s->width = 32;
+				s->height = 32;
+
+				sl.front = s;
+				id++;
+			}
+		}
+	}
+	else
+	{
+		// crafting (3x3)
+
+		for (int y = 1; y < 4; y++)
+		{
+			for (int x = 1; x < 4; x++)
+			{
+				Data::InventoryItem& item = crafting[(y - 1) * 3 + (x - 1)];
+
+				if (item.type == Data::ItemType::ITEM_NULL)
+				{
+					id++;
+					continue;
+				}
+
+				BoxSlot& sl = GetSlot(id);
+
+				if (sl.id == -1)
+				{
+					id++;
+					continue;
+				}
+
+				glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
+
+				ItemUI* s = new ItemUI(item.tag, pos, i, item.count);
+
+				s->id = sl.id;
+
+				s->width = 32;
+				s->height = 32;
+
+				sl.front = s;
+				id++;
+			}
+		}
+	}
+
 	// output
 
-	for (auto& arr : stored_crafting)
-		std::fill(std::begin(arr), std::end(arr), Data::InventoryItem());
-
-	stored_crafting[0][0] = crafting[0];
-	stored_crafting[0][1] = crafting[1];
-	stored_crafting[1][0] = crafting[2];
-	stored_crafting[1][1] = crafting[3];
+	SetCrafting();
 
 	Data::InventoryItem out = CraftingManager::GetInstance()->Craft(stored_crafting);
 
 	if (out.type != Data::ItemType::ITEM_NULL)
 		output = out;
 
-	BoxSlot& sl = GetSlot(43);
+	BoxSlot& sl = GetSlot(90);
 
 	if (sl.id != -1 && output.type != Data::ItemType::ITEM_NULL)
 	{
@@ -252,9 +404,9 @@ Data::InventoryItem* Inventory::GetItem(int id, glm::vec2 pos)
 		return &player->playerData.inventory[(int)pos.x][(int)pos.y];
 	else if (id < 39)
 		return &player->playerData.armor[id - 36];
-	else if (id < 43)
+	else if (id < 90)
 		return &crafting[id - 39];
-	else if (id == 43)
+	else if (id == 90)
 		return &output;
 
 	return nullptr;
@@ -339,10 +491,10 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 		if (s.id == sSlot.id)
 			return false;
 
-		if (s.id == 43) // can't move to output
+		if (s.id == 90) // can't move to output
 			return false;
 
-		if (sSlot.id == 43 && endItem->type != Data::ItemType::ITEM_NULL && !endItem->stackable) // can't move to output
+		if (sSlot.id == 90 && endItem->type != Data::ItemType::ITEM_NULL && !endItem->stackable) // can't move to output
 			return false;
 
 		// check if we can move it to that slot (armor)
@@ -398,6 +550,9 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 		{
 			BoxSlot& sSlot = GetSlot(pos);
 
+			if (sSlot.slot == nullptr)
+				return;
+
 			glm::vec2 start = ConvertToSlotPos(sSlot.slot->tag_id);
 
 			Data::InventoryItem* it = GetItem(sSlot.id, start);
@@ -406,20 +561,15 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 				return;
 
 
-			if (sSlot.id == 43 && output.type != Data::ItemType::ITEM_NULL)
-			{
-				crafting[0] = stored_crafting[0][0];
-				crafting[1] = stored_crafting[0][1];
-				crafting[2] = stored_crafting[1][0];
-				crafting[3] = stored_crafting[1][1];
-			}
+			if (sSlot.id == 90 && output.type != Data::ItemType::ITEM_NULL)
+				UpdateTable();
 
 			// check if we are dragging a crafting ingredient
 
-			if (sSlot.id >= 39 && sSlot.id < 43)
+			if (sSlot.id >= 39 && sSlot.id < 90)
 			{
 				output = {};
-				RemoveFront(43);
+				RemoveFront(90);
 			}
 
 			stored = *it;
@@ -452,19 +602,13 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 			BoxSlot& sSlot = GetSlot(_startDrag);
 			BoxSlot& eSlot = GetSlot(pos);
 
-			if (eSlot.id == 43)
+			if (eSlot.id == 90)
 			{
-				stored_crafting[0][0] = crafting[0];
-				stored_crafting[0][1] = crafting[1];
-				stored_crafting[1][0] = crafting[2];
-				stored_crafting[1][1] = crafting[3];
+				SetCrafting();
 
 				Data::InventoryItem out = CraftingManager::GetInstance()->Craft(stored_crafting);
 
-				crafting[0] = stored_crafting[0][0];
-				crafting[1] = stored_crafting[0][1];
-				crafting[2] = stored_crafting[1][0];
-				crafting[3] = stored_crafting[1][1];
+				UpdateTable();
 
 				if (out.type != Data::ItemType::ITEM_NULL)
 					output = out;

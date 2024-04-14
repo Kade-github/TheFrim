@@ -48,6 +48,30 @@ void Player::SetItem(Data::InventoryItem item, int x, int y)
 	scene->hud->UpdateHotbar();
 }
 
+void Player::ToggleInventory()
+{
+	_inInventory = !_inInventory;
+
+	if (!_inInventory)
+		firstMouse = true;
+
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	scene->hud->InventoryShown(_inInventory);
+}
+
+void Player::ToggleCraftingTable()
+{
+	_inInventory = !_inInventory;
+
+	if (!_inInventory)
+		firstMouse = true;
+
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	scene->hud->ShowCraftingTable(_inInventory);
+}
+
 void Player::OnScroll(double x, double y)
 {
 	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
@@ -448,8 +472,14 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 	Camera* camera = Game::instance->GetCamera();
 
-	if (button == GLFW_MOUSE_BUTTON_RIGHT)
+	if (button == GLFW_MOUSE_BUTTON_RIGHT && selectedBlock != nullptr)
 	{
+		if (selectedBlock->isInteractable)
+		{
+			selectedBlock->OnInteract(); 
+			return;
+		}
+
 		glm::vec3 ray = position + (camera->cameraFront * 5.0f);
 		bool hit = RayTo(ray);
 		if (hit)
@@ -569,18 +599,11 @@ void Player::KeyPress(int key)
 		break;
 	case GLFW_KEY_E:
 		if (!_inInventory)
-		{
-			_inInventory = true;
-			scene->hud->InventoryShown(true);
-		}
+			ToggleInventory();
 		break;
 	case GLFW_KEY_ESCAPE:
 		if (_inInventory)
-		{
-			_inInventory = false;
-			firstMouse = true;
-			scene->hud->InventoryShown(false);
-		}
+			ToggleInventory();
 		break;
 	}
 

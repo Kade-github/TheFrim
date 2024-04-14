@@ -15,7 +15,7 @@ class Inventory : public BoxUI
 
 public:
 
-	Data::InventoryItem crafting[4]; 
+	Data::InventoryItem crafting[9]; 
 	Data::InventoryItem stored_crafting[3][3];
 	Data::InventoryItem output;
 
@@ -24,6 +24,20 @@ public:
 	bool shown = false;
 
 	Inventory(glm::vec3 _pos, Player* _player);
+
+	bool isThreeByThree = false;
+	bool isArmor = false;
+
+	void SetCrafting();
+	void UpdateTable();
+
+	void CreateInventory();
+
+	void CreateArmor();
+
+	void CreateTwoByTwoCrafting();
+
+	void CreateThreeByThreeCrafting();
 
 	void UpdateInventory(bool dontRemoveOutput = false);
 

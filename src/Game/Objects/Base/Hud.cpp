@@ -7,6 +7,31 @@ void Hud::InventoryShown(bool s)
 
 	if (!s)
 		inv->Close();
+	else
+	{
+		inv->CreateInventory();
+		inv->CreateArmor();
+		inv->CreateTwoByTwoCrafting();
+	}
+
+	inv->shown = s;
+	inv->UpdateInventory();
+}
+
+void Hud::ShowCraftingTable(bool s)
+{
+	if (inv->shown && s)
+		return;
+
+	Game::instance->SetLockedCursor(!s);
+
+	if (!s)
+		inv->Close();
+	else
+	{
+		inv->CreateInventory();
+		inv->CreateThreeByThreeCrafting();
+	}
 
 	inv->shown = s;
 	inv->UpdateInventory();

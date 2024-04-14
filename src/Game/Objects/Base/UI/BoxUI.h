@@ -31,6 +31,8 @@ public:
 	void ClearFronts();
 	void RemoveFront(int id);
 
+	void ClearSlots();
+
 	void AddSlot(float x, float y, int id);
 	void AddFront(Sprite2D* s, int id);
 
