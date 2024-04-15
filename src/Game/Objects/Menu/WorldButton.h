@@ -22,9 +22,6 @@ public:
 	~WorldButton()
 	{
 		delete _text;
-		delete _selectGreen;
-		delete _selectRed;
-		delete _normal;
 	}
 
 	void SetText(std::string _text);
