@@ -60,9 +60,6 @@ void Data::Tree::Variant2()
 	{
 		for (int z = -1; z < 2; z++)
 		{
-			if (x == 0 && z == 0) // dont replace stem
-				continue;
-
 			v.blocks.push_back(BlueprintBlock(LEAVES, x, 6, z));
 		}
 	}
@@ -169,7 +166,7 @@ void Data::Tree::GenerateVariation()
 
 void Data::Tree::Create(int x, int z, int y, Data::Chunk& c, Data::Region* r)
 {
-	if (r->doesBlockExistInRange(x, y, z, WOOD, 7))
+	if (r->doesBlockExistInRange(x, y, z, WOOD, 10))
 		return;
 
 	Structure::Create(x, z, y, c, r);
