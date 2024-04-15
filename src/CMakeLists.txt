@@ -73,12 +73,13 @@ endif()
 
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
-pugixml_DIR "${CMAKE_SOURCE_DIR}/../pugixml"
-imgui_DIR "${CMAKE_SOURCE_DIR}/../imgui"
-glfw3_DIR "${CMAKE_SOURCE_DIR}/../glfw"
-miniz_DIR "${CMAKE_SOURCE_DIR}/../miniz"
-assimp_DIR "${CMAKE_SOURCE_DIR}/../assimp"
 )
+
+SET(pugixml_DIR "${CMAKE_SOURCE_DIR}/../pugixml")
+SET(imgui_DIR "${CMAKE_SOURCE_DIR}/../imgui")
+SET(glfw3_DIR "${CMAKE_SOURCE_DIR}/../glfw")
+SET(miniz_DIR "${CMAKE_SOURCE_DIR}/../miniz")
+SET(assimp_DIR "${CMAKE_SOURCE_DIR}/../assimp")
 
 target_compile_features(TheFrim PUBLIC cxx_std_20)
 
