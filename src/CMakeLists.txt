@@ -23,6 +23,14 @@ miniz.c
 "Engine/stbi.h" 
 "Engine/stbi.cpp" 
 "Engine/External/imgui_impl_glfw.h"
+"Engine/External/imgui_impl_opengl3.h"
+"Engine/External/imgui.h"
+"Engine/External/imgui.cpp"
+"Engine/External/imgui_draw.cpp"
+"Engine/External/imgui_widgets.cpp"
+"Engine/External/imgui_demo.cpp"
+"Engine/External/imgui_internal.h"
+"Engine/External/imgui_tables.cpp"
 "Engine/Objects/Camera.h" 
  
  
@@ -95,9 +103,6 @@ target_link_libraries(TheFrim bass_fx)
 
 find_package(pugixml CONFIG REQUIRED)
 target_link_libraries(TheFrim pugixml::shared pugixml::pugixml)
-
-find_package(imgui CONFIG REQUIRED)
-target_link_libraries(TheFrim imgui::imgui)
 
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(TheFrim glfw)
