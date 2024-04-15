@@ -60,6 +60,10 @@ int main()
 	glBlendFuncSeparate(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA, GL_ONE, GL_ONE_MINUS_SRC_ALPHA);
 
 	glfwSetInputMode(game.GetWindow(), GLFW_CURSOR, GLFW_CURSOR_NORMAL);
+
+	if (glfwRawMouseMotionSupported())
+		glfwSetInputMode(game.GetWindow(), GLFW_RAW_MOUSE_MOTION, GLFW_TRUE);
+
 	game.lockedCursor = false;
 
 	glfwSetFramebufferSizeCallback(game.GetWindow(), [](GLFWwindow* window, int width, int height)
