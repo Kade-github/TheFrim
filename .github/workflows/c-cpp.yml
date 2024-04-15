@@ -1,0 +1,21 @@
+name: Build
+on:
+  push:
+jobs:
+  build-project:
+    name: Build Project
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
+
+      - name: Setup Ninja
+        uses: seanmiddleditch/gha-setup-ninja@v4
+      
+      - name: Configure and Build Project
+        uses: threeal/cmake-action@main
+        with:
+          generator: Ninja
+          c-compiler: clang
+          cxx-compiler: clang++
+          source-dir: ./src
