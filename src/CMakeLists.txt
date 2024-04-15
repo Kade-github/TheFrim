@@ -73,6 +73,11 @@ endif()
 
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
+pugixml_DIR "${CMAKE_SOURCE_DIR}/../pugixml"
+imgui_DIR "${CMAKE_SOURCE_DIR}/../imgui"
+glfw3_DIR "${CMAKE_SOURCE_DIR}/../glfw"
+miniz_DIR "${CMAKE_SOURCE_DIR}/../miniz"
+assimp_DIR "${CMAKE_SOURCE_DIR}/../assimp"
 )
 
 target_compile_features(TheFrim PUBLIC cxx_std_20)
@@ -82,6 +87,7 @@ target_include_directories(TheFrim PUBLIC "${CMAKE_SOURCE_DIR}/Engine")
 
 include_directories(${CMAKE_SOURCE_DIR}../Include)
 include_directories(${CMAKE_SOURCE_DIR}../Lib)
+include_directories(${CMAKE_SOURCE_DIR}../)
 
 target_link_libraries(TheFrim bass)
 target_link_libraries(TheFrim bass_fx)
