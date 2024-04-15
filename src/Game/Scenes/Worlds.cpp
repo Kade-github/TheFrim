@@ -65,7 +65,7 @@ void Worlds::SetScroll()
 	if (worldObjects.size() == 0)
 		return;
 
-	scrollBar->height = (deepBackground->height * ((worlds.size() * (worldObjects[0]->height)) / deepBackground->height)) - 64;
+	scrollBar->height = ((worldObjects[0]->height * 4) / worlds.size()) + 32;
 
 	float inital = deepBackground->position.y + deepBackground->height - (scrollBar->height + 32);
 
@@ -101,7 +101,7 @@ void Worlds::CreateWorldObjects()
 
 		World* world = new World(glm::vec3(0, 0, 0));
 
-		world->clip	= glm::vec4(deepBackground->position.x + 10, deepBackground->position.y - 60, deepBackground->width - 20, deepBackground->height);
+		world->clip	= glm::vec4(deepBackground->position.x + 10, deepBackground->position.y + 20, deepBackground->width - 20, deepBackground->height - 40);
 
 		world->width *= 1.45;
 		world->height *= 1.45;
@@ -112,7 +112,7 @@ void Worlds::CreateWorldObjects()
 		world->position.x = deepBackground->position.x + (deepBackground->width / 2) - (world->width / 2);
 		world->position.y = deepBackground->position.y + deepBackground->height - (world->height + 64) - ((world->height + 24) * i);
 
-		if (world->position.y > deepBackground->position.y || world->position.y < deepBackground->position.y)
+		if (world->position.y + world->height > deepBackground->position.y + deepBackground->height || world->position.y < deepBackground->position.y)
 			canScroll = true;
 
 		world->SetSelectCallback([&, i]() {
@@ -181,7 +181,7 @@ void Worlds::Draw()
 		World* w = worldObjects[i];
 
 		w->position.y = deepBackground->position.y + deepBackground->height - (w->height + 64) - ((w->height + 24) * i);
-		w->position.y *= 1 + (scrollModifier / 100);
+		w->position.y += (w->height * 6) * (scrollModifier / 100);
 	}
 
 
@@ -230,9 +230,6 @@ void Worlds::OnScroll(double x, double y)
 
 	if (scrollModifier < 0)
 		scrollModifier = 0;
-
-	if (scrollModifier > 100)
-		scrollModifier = 100;
 
 	SetScroll();
 }
