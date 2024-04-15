@@ -85,7 +85,8 @@ void CreateWorld::Create()
 
 void CreateWorld::Resize(float _w, float _h)
 {
-	c2d->Resize();
+	if (c2d != nullptr)
+		c2d->Resize();
 }
 
 void CreateWorld::Draw()

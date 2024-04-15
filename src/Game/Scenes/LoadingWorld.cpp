@@ -48,7 +48,8 @@ void LoadingWorld::Create()
 
 void LoadingWorld::Resize(float _w, float _h)
 {
-	c2d->Resize();
+	if (c2d != nullptr)
+		c2d->Resize();
 }
 
 void LoadingWorld::Draw()

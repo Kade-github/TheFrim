@@ -48,13 +48,12 @@ void GeneratingWorld::Create()
 
 void GeneratingWorld::Resize(float _w, float _h)
 {
-	c2d->Resize();
+	if (c2d != nullptr)
+		c2d->Resize();
 }
 
 void GeneratingWorld::Draw()
 {
-	static bool switched = false;
-
 	// update regions
 
 	wm->CheckGeneratedRegions();

@@ -57,7 +57,8 @@ void Worlds::Create()
 
 void Worlds::Resize(float _w, float _h)
 {
-	c2d->Resize();
+	if (c2d != nullptr)
+		c2d->Resize();
 }
 
 void Worlds::SetScroll()

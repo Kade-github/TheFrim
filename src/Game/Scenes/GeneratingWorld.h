@@ -11,6 +11,7 @@ class GeneratingWorld : public Scene
 	std::string _name;
 	std::string _seed;
 public:
+	bool switched = false;
 	WorldManager* wm;
 
 	Text2D* label;

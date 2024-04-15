@@ -150,5 +150,6 @@ void MainMenu::MouseClick(int button, glm::vec2 mPos)
 
 void MainMenu::Resize(float _w, float _h)
 {
-	c2d->Resize();
+	if (c2d != nullptr)
+		c2d->Resize();
 }
