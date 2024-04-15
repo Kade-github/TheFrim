@@ -8,6 +8,14 @@ jobs:
     steps:
       - name: Install PugiXML
         run: sudo apt-get install libpugixml-dev
+      - name: Install IMGUI
+        run: sudo apt-get install libimgui-dev
+      - name: Install GLFW
+        run: sudo apt-get install libglfw3-dev
+      - name: Install Miniz
+        run: sudo apt-get install libminiz-dev
+      - name: Install Assimp
+        run: sudo apt-get install libassimp-dev
       - name: Checkout
         uses: actions/checkout@v4.1.2
 
