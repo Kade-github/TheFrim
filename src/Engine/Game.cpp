@@ -39,6 +39,39 @@ void Game::CCreateWindow(int width, int height)
 
 }
 
+void Game::SetWindowSize(int width, int height)
+{
+	_width = width;
+	_height = height;
+
+	mouseXP = _width / 1920.0f;
+	mouseYP = _height / 1080.0f;
+
+	log->Write("Width: " + std::to_string(_width) + ". Height: " + std::to_string(_height));
+
+	log->Write("Set mouse percentages to " + std::to_string(mouseXP) + "," + std::to_string(mouseYP));
+
+	if (currentScene == nullptr)
+		return;
+
+	currentScene->Resize(_width, _height);
+
+	shader->Bind();
+
+	shader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
+
+	shader->Unbind();
+
+	noFogShader->Bind();
+
+	noFogShader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
+
+	noFogShader->Unbind();
+
+	glViewport(0, 0, _width, _height);
+}
+
+
 void Game::CreateRenderer()
 {
 	audioManager = new AudioManager();
@@ -124,6 +157,9 @@ void Game::Render()
 					break;
 				case 6:
 					currentScene->MouseRelease(e.var1, e.pos);
+					break;
+				case 7:
+					currentScene->FocusChange(e.var1);
 					break;
 			}
 		}

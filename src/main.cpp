@@ -24,9 +24,7 @@ int main()
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
 
-#if defined(__linux__)
-	glfwWindowHint(GLFW_RESIZABLE, GL_TRUE);
-#endif
+	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
 	glfwWindowHint(GLFW_SAMPLES, 4);
@@ -136,6 +134,11 @@ int main()
 				Game::instance->OnChar(codepoint);
 		});
 
+	glfwSetWindowFocusCallback(game.GetWindow(), [](GLFWwindow* window, int focused)
+		{
+			Game::instance->FocusChange(focused);
+		});
+
 	glfwMakeContextCurrent(NULL);
 
 	// start render thread
@@ -184,14 +187,12 @@ int main()
 				const GLFWvidmode* mode = glfwGetVideoMode(monitor);
 				glfwSetWindowMonitor(game.GetWindow(), monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
 
-				game.GetCamera()->width = mode->width;
-				game.GetCamera()->height = mode->height;
+				game.SetWindowSize(mode->width, mode->height);
 			}
 			else
 			{
 				glfwSetWindowMonitor(game.GetWindow(), NULL, 40, 40, 1920, 1080, 0);
-				game.GetCamera()->width = 1920;
-				game.GetCamera()->height = 1080;
+				game.SetWindowSize(1920, 1080);
 			}
 
 			game.needsUpdate = false;

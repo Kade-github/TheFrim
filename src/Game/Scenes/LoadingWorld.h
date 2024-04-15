@@ -10,6 +10,7 @@ class LoadingWorld : public Scene
 {
 	std::string _name;
 public:
+	bool switched = false;
 	WorldManager* wm;
 
 	Text2D* label;

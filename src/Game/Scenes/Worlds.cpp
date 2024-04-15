@@ -166,9 +166,6 @@ void Worlds::LoadWorld(Data::World w)
 void Worlds::DeleteWorld(Data::World w)
 {
 	WorldManager::instance->DeleteWorld(w);
-	worlds = WorldManager::GetWorlds();
-	CreateWorldObjects();
-
 	justDeleted = true;
 }
 
@@ -184,6 +181,13 @@ void Worlds::Draw()
 		w->position.y += (w->height * 6) * (scrollModifier / 100);
 	}
 
+	if (justDeleted)
+	{
+		worlds = WorldManager::GetWorlds();
+		CreateWorldObjects();
+		justDeleted = false;
+
+	}
 
 	Scene::Draw();
 }

@@ -39,6 +39,7 @@ public:
 	virtual void KeyRelease(int key) {};
 	virtual void OnChar(unsigned int c) {};
 	virtual void OnScroll(double x, double y) {};
+	virtual void FocusChange(bool focus) {};
 
 	void DelayedAddObject(GameObject* object)
 	{

@@ -10,8 +10,10 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 	_w = 1920;
 	_h = 1080;
 
-	_rW = 1920;
-	_rH = 1080;
+	glm::vec2 size = Game::instance->GetWindowSize();
+
+	_rW = size.x;
+	_rH = size.y;
 
 	def = Texture::createWithImage("Assets/Textures/Pixel.png");
 	def->dontDelete = true;
@@ -69,28 +71,12 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 	glBindVertexArray(0);
 
-	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1) };
-	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1) };
-	Vertex2D bl = { glm::vec3{0,_rH,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1) };
-	Vertex2D br = { glm::vec3{_rW,_rH,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1) };
-
-	vertices.push_back(tl);
-	vertices.push_back(tr);
-	vertices.push_back(bl);
-	vertices.push_back(bl);
-	vertices.push_back(tr);
-	vertices.push_back(br);
-
-	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex2D), vertices.data(), GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	Resize();
 
 }
 
 void Camera2D::Resize()
 {
-
 	glm::vec2 size = Game::instance->GetWindowSize();
 
 	_rW = size.x;
@@ -104,9 +90,9 @@ void Camera2D::ResizeTo()
 	vertices.clear();
 
 	Vertex2D tl = { glm::vec3{0,0,0} , glm::vec2{0,0}, glm::vec4(1,1,1,1) };
-	Vertex2D tr = { glm::vec3{_rW,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1) };
-	Vertex2D bl = { glm::vec3{0,_rH,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1) };
-	Vertex2D br = { glm::vec3{_rW,_rH,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1) };
+	Vertex2D tr = { glm::vec3{_w,0,0} , glm::vec2{1,0}, glm::vec4(1,1,1,1) };
+	Vertex2D bl = { glm::vec3{0,_h,0} , glm::vec2{0,1}, glm::vec4(1,1,1,1) };
+	Vertex2D br = { glm::vec3{_w,_h,0} , glm::vec2{1,1}, glm::vec4(1,1,1,1) };
 
 	vertices.push_back(tl);
 	vertices.push_back(tr);
@@ -115,17 +101,19 @@ void Camera2D::ResizeTo()
 	vertices.push_back(tr);
 	vertices.push_back(br);
 
+	glBindVertexArray(s_vao);
+
 	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
 	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(Vertex2D), vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
+
+	glBindVertexArray(0);
 }
 
 void Camera2D::UpdateFramebuffer()
 {
 	Camera* c = Game::instance->GetCamera();
-
-	glm::vec3 realPos = c->position + c->cameraFront;
 
 	std::vector<Draw2D> draws = {};
 
@@ -230,6 +218,7 @@ void Camera2D::UpdateFramebuffer()
 	glDisable(GL_SCISSOR_TEST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
+
 }
 
 void Camera2D::MouseClick(int button, glm::vec2 pos)
@@ -319,12 +308,13 @@ void Camera2D::DrawSprite()
 	if (t != NULL)
 		t->Bind();
 
-	glm::mat4 projection = glm::ortho(0.0f, _w, _h, 0.0f);
-	s->SetUniformMat4f("projection", &projection[0][0]);
-
 	glBindVertexArray(s_vao);
 
+	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);
+
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	glBindVertexArray(0);
 

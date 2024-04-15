@@ -138,37 +138,17 @@ public:
 		events.push_back(e);
 	};
 
-	void SetWindowSize(int width, int height) 
-	{ 
-		_width = width; 
-		_height = height; 
+	void FocusChange(bool focus)
+	{
+		Event e;
+		e.type = 7;
+		e.var1 = (int)focus;
+		std::lock_guard<std::mutex> lock(eventMtx);
+		events.push_back(e);
 
-		mouseXP = _width / 1920.0f;
-		mouseYP = _height / 1080.0f;
-
-		log->Write("Width: " + std::to_string(_width) + ". Height: " + std::to_string(_height));
-
-		log->Write("Set mouse percentages to " + std::to_string(mouseXP) + "," + std::to_string(mouseYP));
-
-		_camera->width = width;
-		_camera->height = height;
-
-		currentScene->Resize(width, height);
-
-		shader->Bind();
-
-		shader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
-
-		shader->Unbind();
-
-		noFogShader->Bind();
-
-		noFogShader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
-
-		noFogShader->Unbind();
-
-		glViewport(0, 0, _width, _height);
 	}
+
+	void SetWindowSize(int width, int height);
 
 	GLFWwindow* GetWindow() { return _window; }
 

@@ -40,6 +40,8 @@ public:
 	void ToggleInventory();
 	void ToggleCraftingTable();
 
+	void TogglePauseMenu();
+
 	void SetItem(Data::InventoryItem item, int x, int y);
 
 	Player(glm::vec3 pos);

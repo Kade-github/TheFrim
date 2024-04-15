@@ -53,7 +53,7 @@ void LoadingWorld::Resize(float _w, float _h)
 
 void LoadingWorld::Draw()
 {
-	static bool switched = false;
+
 
 	// update regions
 

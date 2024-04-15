@@ -50,8 +50,11 @@ void MainMenu::Create()
 
 	c2d->AddObject(exit);
 
-	MusicManager::GetInstance()->GenerateTrackList();
-	MusicManager::GetInstance()->PlayMusic("thefrim", 4);
+	if (!MusicManager::GetInstance()->IsPlaying())
+	{
+		MusicManager::GetInstance()->GenerateTrackList();
+		MusicManager::GetInstance()->PlayMusic("thefrim", 4);
+	}
 }
 
 void MainMenu::Draw()

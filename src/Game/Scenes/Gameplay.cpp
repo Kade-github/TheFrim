@@ -509,9 +509,24 @@ void Gameplay::MouseRelease(int button, glm::vec2 mPos)
 
 void Gameplay::OnScroll(double x, double y)
 {
-for (int i = 0; i < objects.size(); i++)
+	for (int i = 0; i < objects.size(); i++)
 	{
 		objects[i]->OnScroll(x, y);
+	}
+}
+
+void Gameplay::FocusChange(bool focus)
+{
+	static bool wasPaused = false;
+	if (!focus)
+	{
+		wasPaused = Hud::GamePaused;
+		
+		player->TogglePauseMenu();
+	}
+	else if (focus && !wasPaused)
+	{
+		player->TogglePauseMenu();
 	}
 }
 
@@ -522,4 +537,10 @@ void Gameplay::Destroy()
 	wm->SaveWorldNow();
 	delete wm;
 	delete dim;
+}
+
+void Gameplay::Resize(float _w, float _h)
+{
+	if (c2d != nullptr)
+		c2d->Resize();
 }

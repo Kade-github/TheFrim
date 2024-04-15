@@ -35,7 +35,11 @@ public:
 	void MouseRelease(int button, glm::vec2 mPos) override;
 	void OnScroll(double x, double y) override;
 
+	void FocusChange(bool focus) override;
+
 	void Destroy() override;
+
+	void Resize(float _w, float _h) override;
 };
 
 #endif

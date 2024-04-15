@@ -74,6 +74,15 @@ void Player::ToggleCraftingTable()
 	scene->hud->ShowCraftingTable(_inInventory);
 }
 
+void Player::TogglePauseMenu()
+{
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	scene->hud->ShowPauseMenu(!Hud::GamePaused);
+	if (Hud::GamePaused)
+		firstMouse = true;
+}
+
 void Player::OnScroll(double x, double y)
 {
 	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
@@ -617,11 +626,7 @@ void Player::KeyPress(int key)
 		if (_inInventory)
 			ToggleInventory();
 		else
-		{
-			scene->hud->ShowPauseMenu(!Hud::GamePaused);
-			if (Hud::GamePaused)
-				firstMouse = true;
-		}
+			TogglePauseMenu();
 		break;
 	}
 

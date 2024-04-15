@@ -344,6 +344,11 @@ void Entity::Draw()
 			CheckCollision(motion, 0);
 		}
 
+		// check if motion is NaN
+
+		if (motion.x != motion.x || motion.y != motion.y || motion.z != motion.z)
+			motion = preMotion;
+
 		position = motion;
 
 		if (isCreature)
