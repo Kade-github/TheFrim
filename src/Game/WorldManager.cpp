@@ -332,6 +332,14 @@ void WorldManager::SaveWorldNow()
 {
 	Game::instance->log->Write("Saving world...");
 
+	// if we're still generating regions, wait
+
+	while (_generatePool.get_tasks_running() != 0)
+	{
+		Game::instance->log->Write("Waiting for regions to finish... (" + std::to_string(_generatePool.get_tasks_running()) + " left)");
+		std::this_thread::sleep_for(std::chrono::milliseconds(100));
+	}
+
 	if (!std::filesystem::exists(_path))
 		std::filesystem::create_directories(_path);
 
