@@ -10,7 +10,7 @@ project(
 set(SOURCE_FILES 
 main.cpp 
 glad.c 
-miniz.c
+
 "Engine/Game.h" 
 "Engine/Game.cpp" 
 "Engine/Logging.h" 
@@ -22,15 +22,6 @@ miniz.c
 "Engine/OpenGL/Shader.cpp" 
 "Engine/stbi.h" 
 "Engine/stbi.cpp" 
-"Engine/External/imgui_impl_glfw.h"
-"Engine/External/imgui_impl_opengl3.h"
-"Engine/External/imgui.h"
-"Engine/External/imgui.cpp"
-"Engine/External/imgui_draw.cpp"
-"Engine/External/imgui_widgets.cpp"
-"Engine/External/imgui_demo.cpp"
-"Engine/External/imgui_internal.h"
-"Engine/External/imgui_tables.cpp"
 "Engine/Objects/Camera.h" 
  
  
@@ -47,10 +38,7 @@ miniz.c
 "Game/Data/World.h"   
 "Game/WorldManager.h" 
 "Game/WorldManager.cpp" 
-"Engine/External/imgui_impl_glfw.cpp" 
-"Engine/External/imgui_impl_opengl3.cpp" 
-"Engine/External/imgui_impl_opengl3.h" 
-"Engine/External/imgui_impl_opengl3_loader.h"
+ 
 "Game/Data/World.cpp" 
 "Engine/Helpers/StringTools.h" 
 "Engine/Objects/2DCamera.h" 
@@ -83,12 +71,6 @@ set_target_properties(TheFrim PROPERTIES
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
 
-SET(pugixml_DIR "${CMAKE_SOURCE_DIR}/../pugixml" CACHE PATH "pugixml directory override" FORCE)
-SET(imgui_DIR "${CMAKE_SOURCE_DIR}/../imgui" CACHE PATH "imgui directory override" FORCE)
-SET(glfw3_DIR "${CMAKE_SOURCE_DIR}/../glfw" CACHE PATH "glfw3 directory override" FORCE)
-SET(miniz_DIR "${CMAKE_SOURCE_DIR}/../miniz" CACHE PATH "miniz directory override" FORCE)
-SET(assimp_DIR "${CMAKE_SOURCE_DIR}/../assimp" CACHE PATH "assimp directory override" FORCE)
-
 target_compile_features(TheFrim PUBLIC cxx_std_20)
 
 target_include_directories(TheFrim PUBLIC "${CMAKE_SOURCE_DIR}/../Include")
@@ -106,9 +88,6 @@ target_link_libraries(TheFrim pugixml::shared pugixml::pugixml)
 
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(TheFrim glfw)
-
-find_package(miniz CONFIG REQUIRED)
-target_link_libraries(TheFrim miniz::miniz)
 
 find_package(assimp CONFIG REQUIRED)
 target_link_libraries(TheFrim assimp::assimp)

@@ -1,10 +1,6 @@
 #include "Game/Scenes/MainMenu.h"
 #include <thread>
 
-#include <imgui.h>
-#include <External/imgui_impl_glfw.h>
-#include <External/imgui_impl_opengl3.h>
-
 #include "Game/Data/Settings.h"
 
 int main()
