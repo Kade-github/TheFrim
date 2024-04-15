@@ -2,7 +2,6 @@
 #include <Objects/3DText.h>
 #include <Objects/3DSprite.h>
 #include <Game.h>
-#include <imgui.h>
 #include <Helpers/StringTools.h>
 #include "../LightingManager.h"
 #include "../MusicManager.h"

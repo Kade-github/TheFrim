@@ -197,11 +197,6 @@ public:
 
 		id = -1;
 	}
-
-	bool operator==(const Channel& c)
-	{
-		return id == c.id;
-	}
 };
 
 class AudioManager {
@@ -238,7 +233,7 @@ public:
 	{
 		for (int i = 0; i < channels.size(); i++)
 		{
-			if (channels[i] == c)
+			if (channels[i].id == c.id)
 			{
 				if (channels[i].isFreed)
 				{

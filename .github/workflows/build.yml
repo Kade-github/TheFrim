@@ -1,0 +1,67 @@
+name: Build
+on:
+  push:
+jobs:
+  build-project:
+    name: Linux Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install PugiXML
+        run: sudo apt-get install libpugixml-dev
+      - name: Install GLFW
+        run: sudo apt-get install libglfw3-dev
+      - name: Install Assimp
+        run: sudo apt-get install libassimp-dev
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
+      - name: Configure and Build Project
+        uses: threeal/cmake-action@main
+        with:
+          c-compiler: clang
+          cxx-compiler: clang++
+          source-dir: ./src
+          options: CMAKE_BUILD_TYPE=Release
+          build-args: --config Release
+      - name: Create build directory
+        run: mkdir ./final-build
+      - name: Copy assets
+        run: cp -r ./Assets ./final-build/Assets
+      - name: Copy executable
+        run: cp -r ./src/build/TheFrim ./final-build
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: The Frim (Linux Release)
+          path: ./final-build
+  build-project-windows:
+    name: Windows Build
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4.1.2
+      - name: vcpkg build
+        uses: johnwason/vcpkg-action@v6
+        id: vcpkg
+        with:
+          manifest-dir: ../src/
+          triplet: x64-windows-release
+          token: ${{ github.token }}
+          github-binarycache: true
+      - name: Cmake Configure
+        run: cmake ${{ steps.vcpkg.outputs.vcpkg-cmake-config }} -DCMAKE_BUILD_TYPE=Release -S ./src -B ./src/build
+      - name: Cmake Build
+        working-directory: ./src
+        run: cmake --build ./build --config Release
+      - name: Create build directory
+        run: mkdir ./final-build
+      - name: Copy assets
+        run: cp -r ./Assets ./final-build/Assets
+      - name: Copy DLLs
+        run: cp -r ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/assimp-vc143-mt.dll ./final-build && cp -r ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/glfw3.dll ./final-build && cp -r ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/pugixml.dll ./final-build && cp -r ./src/bassLibrary/bass.dll ./final-build && cp -r ./src/bassLibrary/bass_fx.dll ./final-build
+      - name: Copy executable
+        run: cp -r ./src/build/Release/TheFrim.exe ./final-build
+      - name: Upload Build Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: The Frim (Windows Release)
+          path: ./final-build

@@ -67,6 +67,8 @@ else()
     set(SUBSYSTEM_LINKER_OPTIONS "-mwindows")
 endif()
 
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -stdlib=libc++ -std=c++20")
+
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )

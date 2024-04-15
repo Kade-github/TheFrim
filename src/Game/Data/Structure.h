@@ -11,6 +11,13 @@ struct BlueprintBlock {
 	uint8_t type = 0;
 
 	int x = 0, y = 0, z = 0;
+
+	BlueprintBlock(uint8_t _type, int _x, int _y, int _z) {
+		x = _x;
+		y = _y;
+		z = _z;
+		type = _type;
+	};
 };
 
 struct Blueprint {
@@ -21,6 +28,17 @@ struct Blueprint {
 	int xWidth = 0;
 	int zWidth = 0;
 
+	Blueprint(int _negXWidth, int _negZWidth, int _xWidth, int _zWidth) {
+		negXWidth = _negXWidth;
+		negZWidth = _negZWidth;
+		xWidth = _xWidth;
+		zWidth = _zWidth;
+	};
+
+	Blueprint()
+	{
+
+	};
 };
 
 class Structure {

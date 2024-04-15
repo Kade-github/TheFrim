@@ -1,6 +1,5 @@
 #include "2DCamera.h"
 #include <Game.h>
-#include <imgui.h>
 #include <Helpers/StringTools.h>
 
 Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
@@ -218,7 +217,6 @@ void Camera2D::UpdateFramebuffer()
 	glDisable(GL_SCISSOR_TEST);
 
 	glBindFramebuffer(GL_FRAMEBUFFER, 0);
-
 }
 
 void Camera2D::MouseClick(int button, glm::vec2 pos)

@@ -1,0 +1,7 @@
+{
+  "dependencies": [
+    "pugixml",
+    "glfw3",
+    "assimp"
+  ]
+}
