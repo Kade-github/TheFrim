@@ -6,6 +6,8 @@ jobs:
     name: Build Project
     runs-on: ubuntu-latest
     steps:
+      - name: Install PugiXML
+        run: sudo apt-get install libpugixml-dev
       - name: Checkout
         uses: actions/checkout@v4.1.2
 
