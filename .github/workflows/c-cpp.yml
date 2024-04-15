@@ -8,12 +8,8 @@ jobs:
     steps:
       - name: Install PugiXML
         run: sudo apt-get install libpugixml-dev
-      - name: Install IMGUI
-        run: sudo apt-get install libimgui-dev
       - name: Install GLFW
         run: sudo apt-get install libglfw3-dev
-      - name: Install Miniz
-        run: sudo apt-get install libminizip1
       - name: Install Assimp
         run: sudo apt-get install libassimp-dev
       - name: Checkout
@@ -25,7 +21,6 @@ jobs:
       - name: Configure and Build Project
         uses: threeal/cmake-action@main
         with:
-          generator: Ninja
           c-compiler: clang
           cxx-compiler: clang++
           source-dir: ./src
