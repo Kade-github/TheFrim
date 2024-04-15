@@ -75,11 +75,11 @@ set_target_properties(TheFrim PROPERTIES
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"
 )
 
-SET(pugixml_DIR "${CMAKE_SOURCE_DIR}/../pugixml")
-SET(imgui_DIR "${CMAKE_SOURCE_DIR}/../imgui")
-SET(glfw3_DIR "${CMAKE_SOURCE_DIR}/../glfw")
-SET(miniz_DIR "${CMAKE_SOURCE_DIR}/../miniz")
-SET(assimp_DIR "${CMAKE_SOURCE_DIR}/../assimp")
+SET(pugixml_DIR "${CMAKE_SOURCE_DIR}/../pugixml" CACHE PATH "pugixml directory override" FORCE)
+SET(imgui_DIR "${CMAKE_SOURCE_DIR}/../imgui" CACHE PATH "imgui directory override" FORCE)
+SET(glfw3_DIR "${CMAKE_SOURCE_DIR}/../glfw" CACHE PATH "glfw3 directory override" FORCE)
+SET(miniz_DIR "${CMAKE_SOURCE_DIR}/../miniz" CACHE PATH "miniz directory override" FORCE)
+SET(assimp_DIR "${CMAKE_SOURCE_DIR}/../assimp" CACHE PATH "assimp directory override" FORCE)
 
 target_compile_features(TheFrim PUBLIC cxx_std_20)
 
