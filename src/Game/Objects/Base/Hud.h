@@ -7,6 +7,8 @@
 #include "UI/Inventory.h"
 #include "Player.h"
 
+#include "../Menu/Bar.h"
+
 class Hud : public GameObject
 {
 private:
@@ -18,9 +20,18 @@ private:
 	Texture* h;
 	Texture* i;
 
+	Text2D* pauseHeader;
+
+	Sprite2D* pauseBackground;
+
+	Bar* resume;
+	Bar* title;
+
 	float _heartUpdate = 0;
 
 public:
+	static bool GamePaused;
+
 	Inventory* inv;
 
 	int selected = 0;
@@ -35,6 +46,8 @@ public:
 	void InventoryShown(bool s);
 	void ShowCraftingTable(bool s);
 
+	void ShowPauseMenu(bool s);
+
 	void SetSelected(int s);
 
 	void UpdateHotbar();
@@ -46,6 +59,8 @@ public:
 	~Hud();
 
 	void Draw() override;
+
+	void MouseClick(int button, glm::vec2 pos) override;
 };
 
 #endif

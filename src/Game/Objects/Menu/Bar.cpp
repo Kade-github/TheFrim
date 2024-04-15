@@ -17,6 +17,8 @@ void Bar::Draw()
     label->position.x = position.x + (width / 2) - (label->width / 2);
     label->position.y = position.y;
 
+    label->color = color;
+
     Sprite2D::Draw();
 	label->Draw();
     draws = { draws[0], label->draws[0]};

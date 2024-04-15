@@ -107,6 +107,9 @@ void LightingManager::SunColor()
 
 void LightingManager::SunUpdate()
 {
+	if (Hud::GamePaused)
+		return;
+
 	static float lastSunStrength = 10;
 
 	sun.angle += Game::instance->deltaTime * 0.25;

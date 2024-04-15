@@ -1,5 +1,6 @@
 #include "Entity.h"
 #include <Game.h>
+#include "../../Scenes/Gameplay.h"
 #include "../../WorldManager.h"
 #include "../../MusicManager.h"
 
@@ -303,56 +304,82 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 
 void Entity::Draw()
 {
-	SetDirection();
-
-	// gravity
-
-	downVelocity -= gravity * Game::instance->deltaTime;
-
-	if (downVelocity < -18)
-		downVelocity = -18;
-
-	if (downVelocity > 18)
-		downVelocity = 18;
-
-	glm::vec3 preMotion = position;
-
-	glm::vec3 motion = position;
-
-	motion.y += downVelocity * Game::instance->deltaTime;
-
-	CheckVerticalCollision(motion);
-
-	motion += front * (forwardVelocity * Game::instance->deltaTime);
-
-	motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
-
-	if (isCreature)
+	if (!Hud::GamePaused)
 	{
-		CheckCollision(motion, 0.4);
 
-		CheckCollision(motion, 0.8);
+		SetDirection();
 
-		CheckCollision(motion, 1.8);
+		// gravity
+
+		downVelocity -= gravity * Game::instance->deltaTime;
+
+		if (downVelocity < -18)
+			downVelocity = -18;
+
+		if (downVelocity > 18)
+			downVelocity = 18;
+
+		glm::vec3 preMotion = position;
+
+		glm::vec3 motion = position;
+
+		motion.y += downVelocity * Game::instance->deltaTime;
+
+		CheckVerticalCollision(motion);
+
+		motion += front * (forwardVelocity * Game::instance->deltaTime);
+
+		motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
+
+		if (isCreature)
+		{
+			CheckCollision(motion, 0.4);
+
+			CheckCollision(motion, 0.8);
+
+			CheckCollision(motion, 1.8);
+		}
+		else
+		{
+			CheckCollision(motion, 0);
+		}
+
+		position = motion;
+
+		if (isCreature)
+		{
+			if (forwardVelocity != 0)
+				forwardVelocity *= 0.8;
+			if (strafeVelocity != 0)
+				strafeVelocity *= 0.8;
+		}
+		else
+		{
+			if (forwardVelocity != 0)
+				forwardVelocity *= 0.95;
+			if (strafeVelocity != 0)
+				strafeVelocity *= 0.95;
+		}
+
+		if (forwardVelocity <= 0.01 && forwardVelocity >= -0.01)
+			forwardVelocity = 0;
+
+		if (strafeVelocity <= 0.01 && strafeVelocity >= -0.01)
+			strafeVelocity = 0;
 	}
-	else
-	{
-		CheckCollision(motion, 0);
-	}
 
-	position = motion;
 	if (isCreature)
 		shadow->position = position - glm::vec3(0, 1.7, 0.5);
 	else
 		shadow->position = position - glm::vec3(0, 0.5, 0.5);
 
-	Chunk* currentChunk = WorldManager::instance->GetChunk(motion.x, motion.z);
+	Chunk* currentChunk = WorldManager::instance->GetChunk(position.x, position.z);
 
 	bool drawShadow = true;
 
 	if (currentChunk != nullptr)
 	{
-		int topBlock = currentChunk->GetHighestBlock(motion.x, motion.z);
+		int topBlock = currentChunk->GetHighestBlock(position.x, position.z);
 
 		float diff = topBlock - position.y;
 
@@ -374,28 +401,6 @@ void Entity::Draw()
 	}
 
 	shadow->angle = 90;
-
-
-	if (isCreature)
-	{
-		if (forwardVelocity != 0)
-			forwardVelocity *= 0.8;
-		if (strafeVelocity != 0)
-			strafeVelocity *= 0.8;
-	}
-	else
-	{
-		if (forwardVelocity != 0)
-			forwardVelocity *= 0.95;
-		if (strafeVelocity != 0)
-			strafeVelocity *= 0.95;
-	}
-
-	if (forwardVelocity <= 0.01 && forwardVelocity >= -0.01)
-		forwardVelocity = 0;
-
-	if (strafeVelocity <= 0.01 && strafeVelocity >= -0.01)
-		strafeVelocity = 0;
 
 	if (drawShadow)
 		shadow->Draw();

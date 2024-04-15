@@ -4,6 +4,8 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include "../../LightingManager.h"
 #include <Helpers/StringTools.h>
+
+
 bool firstMouse = false;
 
 float lastX = 400, lastY = 300;
@@ -170,7 +172,7 @@ void Player::Draw()
 	Camera* camera = Game::instance->GetCamera();
 	float p = camera->pitch;
 
-	if (!_inInventory)
+	if (!_inInventory && !Hud::GamePaused)
 	{
 		glm::vec2 mousePos = Game::instance->GetCursorPos(false);
 
@@ -206,7 +208,7 @@ void Player::Draw()
 
 	if (!freeCam)
 	{
-		if (!_inInventory)
+		if (!_inInventory && !Hud::GamePaused)
 		{
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
 			{
@@ -262,7 +264,7 @@ void Player::Draw()
 
 		Entity::Draw(); // physics
 	}
-	else if (!_inInventory)
+	else if (!_inInventory && !Hud::GamePaused)
 	{
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
 			position += camera->cameraFront * 0.05f;
@@ -344,7 +346,7 @@ void Player::Draw()
 	vertices.clear();
 	indices.clear();
 
-	if (!_inInventory)
+	if (!_inInventory && !Hud::GamePaused)
 	{
 		if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
@@ -477,7 +479,7 @@ void Player::Draw()
 
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
-	if (_inInventory)
+	if (_inInventory && !Hud::GamePaused)
 		return;
 
 	Camera* camera = Game::instance->GetCamera();
@@ -608,12 +610,18 @@ void Player::KeyPress(int key)
 		}
 		break;
 	case GLFW_KEY_E:
-		if (!_inInventory)
+		if (!_inInventory && !Hud::GamePaused)
 			ToggleInventory();
 		break;
 	case GLFW_KEY_ESCAPE:
 		if (_inInventory)
 			ToggleInventory();
+		else
+		{
+			scene->hud->ShowPauseMenu(!Hud::GamePaused);
+			if (Hud::GamePaused)
+				firstMouse = true;
+		}
 		break;
 	}
 

@@ -1,5 +1,12 @@
 #include "Hud.h"
 #include <Game.h>
+#include <Helpers/Collision2D.h>
+#include "../../MusicManager.h"
+#include "../../WorldManager.h"
+
+#include "../../Scenes/MainMenu.h"
+
+bool Hud::GamePaused = false;
 
 void Hud::InventoryShown(bool s)
 {
@@ -35,6 +42,28 @@ void Hud::ShowCraftingTable(bool s)
 
 	inv->shown = s;
 	inv->UpdateInventory();
+}
+
+void Hud::ShowPauseMenu(bool s)
+{
+	GamePaused = s;
+
+	Game::instance->SetLockedCursor(!s);
+
+	if (s)
+	{
+		pauseBackground->color = glm::vec4(1, 1, 1, 0.5);
+		resume->color = glm::vec4(1, 1, 1, 1);
+		title->color = glm::vec4(1, 1, 1, 1);
+		pauseHeader->color = glm::vec4(1, 1, 1, 1);
+	}
+	else
+	{
+		pauseBackground->color = glm::vec4(1, 1, 1, 0);
+		resume->color = glm::vec4(1, 1, 1, 0);
+		title->color = glm::vec4(1, 1, 1, 0);
+		pauseHeader->color = glm::vec4(1, 1, 1, 0);
+	}
 }
 
 void Hud::SetSelected(int s)
@@ -202,6 +231,52 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 
 	c2d->AddObject(inv);
 
+	// create pause stuff
+
+	pauseBackground = new Sprite2D("Assets/Textures/pauseBackground.png", glm::vec3(0, 0, 0));
+
+	pauseBackground->width = c2d->_w;
+	pauseBackground->height = c2d->_h;
+
+	pauseBackground->position = glm::vec3(0, 0, 0);
+	pauseBackground->color = glm::vec4(1, 1, 1, 0);
+
+	pauseBackground->order = 2;
+
+	c2d->AddObject(pauseBackground);
+
+	resume = new Bar(glm::vec3(0, 0, 0), "Resume Game");
+	resume->Resize((resume->width * 0.8) - 100, resume->height * 0.8);
+
+	resume->position.x = (c2d->_w / 2) - (resume->width / 2);
+	resume->position.y = (c2d->_h / 2) - (resume->height / 2);
+	resume->color = glm::vec4(1, 1, 1, 0);
+
+	resume->order = 3;
+
+	c2d->AddObject(resume);
+
+	title = new Bar(glm::vec3(0, 0, 0), "Save and Quit");
+	title->Resize((title->width * 0.8) - 100, title->height * 0.8);
+
+	title->position.x = (c2d->_w / 2) - (title->width / 2);
+	title->position.y = (c2d->_h / 2) - (title->height / 2) - 100;
+	title->color = glm::vec4(1, 1, 1, 0);
+
+	title->order = 3;
+
+	c2d->AddObject(title);
+
+	pauseHeader = new Text2D("Game Paused", "ArialFrim", glm::vec3(0, 0, 0), glm::vec4(1, 1, 1, 1), 62);
+
+	pauseHeader->position.x = (c2d->_w / 2) - (pauseHeader->width / 2);
+	pauseHeader->position.y = resume->position.y + resume->height + 100;
+	pauseHeader->color = glm::vec4(1, 1, 1, 0);
+
+	pauseHeader->order = 3;
+
+	c2d->AddObject(pauseHeader);
+
 	UpdateHotbar();
 	UpdateHearts();
 	UpdateArmor();
@@ -210,7 +285,44 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 Hud::~Hud()
 {
 	delete crosshair;
-	delete h;
+	
+	for (auto h : hotbar)
+	{
+		c2d->RemoveObject(h);
+		delete h;
+	}
+
+	hotbar.clear();
+
+	for (auto h : hotbarItems)
+	{
+		c2d->RemoveObject(h);
+		delete h;
+	}
+
+	hotbarItems.clear();
+
+	for (auto h : hearts)
+	{
+		c2d->RemoveObject(h);
+		delete h;
+	}
+
+	hearts.clear();
+
+	for (auto h : armor)
+	{
+		c2d->RemoveObject(h);
+		delete h;
+	}
+
+	armor.clear();
+
+	delete hand;
+	delete pauseBackground;
+	delete resume;
+	delete title;
+	delete pauseHeader;
 }
 
 void Hud::Draw()
@@ -227,5 +339,41 @@ void Hud::Draw()
 			h->color.w = std::lerp(1.0f, 0.45f, progress);
 		}
 		
+	}
+
+	// highlights for pause menu
+
+	glm::vec2 mouse = Game::instance->GetCursorPos();
+
+	if (GamePaused)
+	{
+		if (Collision2D::PointInRect(mouse, resume->position, glm::vec2(resume->width, resume->height)))
+			resume->color = glm::vec4(1, 1, 1, 0.85);
+		else
+			resume->color = glm::vec4(1, 1, 1, 1);
+
+		if (Collision2D::PointInRect(mouse, title->position, glm::vec2(title->width, title->height)))
+			title->color = glm::vec4(1, 1, 1, 0.85);
+		else
+			title->color = glm::vec4(1, 1, 1, 1);
+	}
+}
+
+void Hud::MouseClick(int button, glm::vec2 pos)
+{
+	if (GamePaused)
+	{
+		if (Collision2D::PointInRect(pos, resume->position, glm::vec2(resume->width, resume->height)))
+		{
+			MusicManager::GetInstance()->PlaySFX("select");
+			ShowPauseMenu(false);
+		}
+		else if (Collision2D::PointInRect(pos, title->position, glm::vec2(title->width, title->height)))
+		{
+			MusicManager::GetInstance()->PlaySFX("select");
+			GamePaused = false;
+			WorldManager::instance->SaveWorldNow();
+			Game::instance->SwitchScene(new MainMenu());
+		}
 	}
 }
