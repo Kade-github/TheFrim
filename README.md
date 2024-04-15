@@ -17,7 +17,7 @@ cp ../Assets build/Assets -r
 
 # Binaries
 
-Linux and Windows binaries can be found on the [releases tabs](https://github.com/Kade-github/TheFrim/tags), though if you want bleeding edge you'll find builds per-commit on the [actions tab](https://github.com/Kade-github/TheFrim/actions/workflows/build.yml).
+Linux and Windows binaries can be found on the [releases tab](https://github.com/Kade-github/TheFrim/tags), though if you want bleeding edge you'll find builds per-commit on the [actions tab](https://github.com/Kade-github/TheFrim/actions/workflows/build.yml).
 
 # Libraries and Attributions
 
