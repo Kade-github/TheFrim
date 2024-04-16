@@ -7,6 +7,8 @@
 
 void MainMenu::Create()
 {
+	Game::instance->SetLockedCursor(false);
+
 	c2d = new Camera2D(glm::vec3(0, 0, 0));
 
 	c2d->s = new Shader();

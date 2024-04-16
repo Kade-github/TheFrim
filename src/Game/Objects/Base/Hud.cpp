@@ -358,9 +358,17 @@ void Hud::Draw()
 			title->color = glm::vec4(1, 1, 1, 1);
 	}
 
-	if (_exiting && Game::instance->DidTakeScreenshot())
+	if (_exiting && !Game::instance->DidTakeScreenshot() && !_askedForScreenshot)
 	{
-		_exiting = false;
+		_askedForScreenshot = true;
+		// take screenshot
+
+		Game::instance->TakeScreenshot(WorldManager::instance->_path + "/screenshot.png");
+	}
+	else if (_exiting && _askedForScreenshot)
+	{
+		// exit
+
 		Game::instance->SwitchScene(new MainMenu());
 	}
 }

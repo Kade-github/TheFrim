@@ -200,7 +200,14 @@ void Game::Render()
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
-	if (switchScene)
+	if (_takeScreenshot)
+	{
+		CaptureScreen();
+		_tookScreenshot = true;
+		_takeScreenshot = false;
+	}
+
+	if (switchScene && (!_tookScreenshot && !_takeScreenshot))
 	{
 		if (currentScene != nullptr)
 		{
@@ -232,12 +239,6 @@ void Game::Render()
 
 	currentScene->Draw();
 
-	if (_takeScreenshot)
-	{
-		CaptureScreen();
-		_tookScreenshot = true;
-		_takeScreenshot = false;
-	}
 }
 
 void Game::Destroy()

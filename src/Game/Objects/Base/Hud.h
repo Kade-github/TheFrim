@@ -30,6 +30,7 @@ private:
 	float _heartUpdate = 0;
 
 	bool _exiting = false;
+	bool _askedForScreenshot = false;
 
 public:
 	static bool GamePaused;

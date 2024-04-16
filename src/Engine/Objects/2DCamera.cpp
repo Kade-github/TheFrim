@@ -297,6 +297,8 @@ void Camera2D::Draw()
 	glViewport(0, 0, _rW, _rH);
 
 	DrawSprite();
+
+
 }
 
 void Camera2D::DrawSprite()

@@ -52,6 +52,8 @@ std::vector<Data::World> WorldManager::GetWorlds()
 
 			upd.get().convert(_world);
 
+			_world._path = path;
+
 			worlds.push_back(_world);
 		}
 	}
@@ -352,10 +354,6 @@ void WorldManager::SaveWorldNow()
 		_world.saveRegion(r.data);
 	}
 	Game::instance->log->Write("World saved to " + _path);
-
-	// take screenshot
-
-	Game::instance->TakeScreenshot(_path + "/screenshot.png");
 }
 
 void WorldManager::DeleteWorld(Data::World w)
