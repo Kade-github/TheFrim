@@ -53,6 +53,11 @@ public:
 		deleteWorld->onClick = _callback;
 	}
 
+	void SetThumbnail(std::string _path)
+	{
+		worldThumbnail->t = Texture::createWithImage(_path);
+	}
+
 	void Draw() override;
 
 	void MouseClick(int button, glm::vec2 mPos) override

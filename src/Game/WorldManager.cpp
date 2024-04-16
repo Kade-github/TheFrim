@@ -52,6 +52,8 @@ std::vector<Data::World> WorldManager::GetWorlds()
 
 			upd.get().convert(_world);
 
+			_world._path = path;
+
 			worlds.push_back(_world);
 		}
 	}

@@ -1,10 +1,28 @@
 #include "Game.h"
-
+#include "stbi.h"
 #include "TextureCache.h"
 
 Game* Game::instance = nullptr;
 
 float lastFrame = 0.0f; // Time of last frame
+
+void Game::CaptureScreen()
+{
+	int width, height;
+	glfwGetFramebufferSize(_window, &width, &height);
+
+	unsigned char* data = new unsigned char[width * height * 3];
+
+	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+	unsigned char* data2 = new unsigned char[196609];
+
+	stbi_h::stbi_resize(data, width, height, 3, 256, 256, data2);
+
+	stbi_h::stbi_save_png(_screenshotPath.c_str(), 256, 256, 3, data2, 0);
+
+	delete[] data;
+}
 
 Game::Game(std::string title, std::string version)
 {
@@ -56,17 +74,14 @@ void Game::SetWindowSize(int width, int height)
 
 	currentScene->Resize(_width, _height);
 
+	glm::mat4 project = _camera->GetProjectionMatrix();
+
 	shader->Bind();
 
-	shader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
+	shader->SetUniformMat4f("projection", &project[0][0]);
 
 	shader->Unbind();
 
-	noFogShader->Bind();
-
-	noFogShader->SetUniformMat4f("projection", &_camera->GetProjectionMatrix()[0][0]);
-
-	noFogShader->Unbind();
 
 	glViewport(0, 0, _width, _height);
 }
@@ -82,22 +97,21 @@ void Game::CreateRenderer()
 
 	shader->Bind();
 
-	noFogShader = new Shader();
-	noFogShader->LoadShader("Assets/Shaders/vert.glsl", "Assets/Shaders/frag_nofog.glsl");
-
 	glm::mat4 model = glm::mat4(1.0f);
 
 	shader->SetUniformMat4f("model", &model[0][0]);
-
-	noFogShader->Bind();
-	noFogShader->SetUniformMat4f("model", &model[0][0]);
-
 
 	log->Write("OpenGL version: " + std::string((char*)glGetString(GL_VERSION)));
 	log->Write("OpenGL renderer: " + std::string((char*)glGetString(GL_RENDERER)));
 	log->Write("OpenGL vendor: " + std::string((char*)glGetString(GL_VENDOR)));
 
 	_camera = new Camera();
+}
+
+void Game::TakeScreenshot(std::string path)
+{
+	_takeScreenshot = true;
+	_screenshotPath = path;
 }
 
 void Game::SetScene(Scene* s)
@@ -176,7 +190,14 @@ void Game::Render()
 	deltaTime = currentFrame - lastFrame;
 	lastFrame = currentFrame;
 
-	if (switchScene)
+	if (_takeScreenshot)
+	{
+		CaptureScreen();
+		_tookScreenshot = true;
+		_takeScreenshot = false;
+	}
+
+	if (switchScene && (!_tookScreenshot && !_takeScreenshot))
 	{
 		if (currentScene != nullptr)
 		{
@@ -207,6 +228,7 @@ void Game::Render()
 	}
 
 	currentScene->Draw();
+
 }
 
 void Game::Destroy()

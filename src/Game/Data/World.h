@@ -89,7 +89,7 @@ namespace Data
 
 		void saveRegion(Region r);
 
-		MSGPACK_DEFINE_ARRAY(name, seed);
+		MSGPACK_DEFINE_ARRAY(name, seed, p);
 
 	};
 };

@@ -297,6 +297,8 @@ void Camera2D::Draw()
 	glViewport(0, 0, _rW, _rH);
 
 	DrawSprite();
+
+
 }
 
 void Camera2D::DrawSprite()
@@ -305,6 +307,8 @@ void Camera2D::DrawSprite()
 
 	if (t != NULL)
 		t->Bind();
+
+	glDisable(GL_DEPTH_TEST);
 
 	glBindVertexArray(s_vao);
 

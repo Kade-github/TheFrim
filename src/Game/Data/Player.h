@@ -316,7 +316,7 @@ namespace Data
 
 	struct Player
 	{
-		float x = 0, y = 180, z = 0;
+		float x = 0, y = -100, z = 0;
 		float pitch, yaw;
 
 		uint8_t selectedSlot = 0;

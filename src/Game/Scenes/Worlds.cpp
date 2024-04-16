@@ -3,6 +3,7 @@
 #include "CreateWorld.h"
 #include "LoadingWorld.h"
 #include "../MusicManager.h"
+#include <filesystem>
 #include <Helpers/Collision2D.h>
 
 void Worlds::Create()
@@ -101,6 +102,9 @@ void Worlds::CreateWorldObjects()
 		Data::World w = worlds[i];
 
 		World* world = new World(glm::vec3(0, 0, 0));
+
+		if (std::filesystem::exists(w._path + "/screenshot.png"))
+			world->SetThumbnail(w._path + "/screenshot.png");
 
 		world->clip	= glm::vec4(deepBackground->position.x + 10, deepBackground->position.y + 20, deepBackground->width - 20, deepBackground->height - 40);
 
