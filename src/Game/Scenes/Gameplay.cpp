@@ -100,15 +100,6 @@ void Gameplay::Draw()
 
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 
-	c2d->DrawDebugText("Sun: " + StringTools::ToTheDecimial(LightingManager::GetInstance()->sun.angle, 2) + ", Progress: " + StringTools::ToTheDecimial(LightingManager::GetInstance()->sun.angle / 360, 2), glm::vec2(4, 34), 24);
-
-	c2d->DrawDebugText("Camera Far: " + StringTools::ToTheDecimial(camera->cameraFar, 2), glm::vec2(4, 64), 24);
-
-	c2d->DrawDebugText("Regions: " + std::to_string(wm->regions.size()), glm::vec2(4, 94), 24);
-
-	c2d->DrawDebugText("Music Manager: " + std::to_string(glfwGetTime()) + "/" + std::to_string(MusicManager::GetInstance()->nextTrack), glm::vec2(4, 124), 24);
-
-
 	UpdateChunks();
 
 	MusicManager::GetInstance()->Update();
