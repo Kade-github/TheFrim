@@ -15,7 +15,7 @@ public:
 	WorldManager* wm;
 	Hud* hud;
 	Player* player;
-	Camera2D* c2d;
+	Camera2D* c2d = nullptr;
 
 	BS::thread_pool loadPool;
 
