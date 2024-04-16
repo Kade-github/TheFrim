@@ -29,6 +29,8 @@ private:
 
 	float _heartUpdate = 0;
 
+	bool _exiting = false;
+
 public:
 	static bool GamePaused;
 

@@ -1,6 +1,10 @@
 #define STB_IMAGE_IMPLEMENTATION
+#define STB_IMAGE_WRITE_IMPLEMENTATION
+#define STB_IMAGE_RESIZE_IMPLEMENTATION
 #define STBI_NO_SIMD
 #include <stb_image.h>
+#include <stb_image_write.h>
+#include <stb_image_resize.h>
 #include "stbi.h"
 
 Texture* stbi_h::stbi_load_file(std::string filePath)
@@ -61,4 +65,15 @@ bool stbi_h::get_error()
 		}
 	}
 	return false;
+}
+
+void stbi_h::stbi_save_png(std::string filePath, int w, int h, int comp, const void* data, int stride_in_bytes)
+{
+	stbi_flip_vertically_on_write(true);
+	stbi_write_png(filePath.c_str(), w, h, comp, data, stride_in_bytes);
+}
+
+void stbi_h::stbi_resize(unsigned char* data, int w, int h, int comp, int newW, int newH, unsigned char* outData)
+{
+	stbir_resize_uint8(data, w, h, 0, outData, newW, newH, 0, comp);
 }

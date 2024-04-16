@@ -1,10 +1,28 @@
 #include "Game.h"
-
+#include "stbi.h"
 #include "TextureCache.h"
 
 Game* Game::instance = nullptr;
 
 float lastFrame = 0.0f; // Time of last frame
+
+void Game::CaptureScreen()
+{
+	int width, height;
+	glfwGetFramebufferSize(_window, &width, &height);
+
+	unsigned char* data = new unsigned char[width * height * 3];
+
+	glReadPixels(0, 0, width, height, GL_RGB, GL_UNSIGNED_BYTE, data);
+
+	unsigned char* data2 = new unsigned char[196608];
+
+	stbi_h::stbi_resize(data, width, height, 3, 256, 256, data2);
+
+	stbi_h::stbi_save_png(_screenshotPath.c_str(), 256, 256, 3, data2, 0);
+
+	delete[] data;
+}
 
 Game::Game(std::string title, std::string version)
 {
@@ -98,6 +116,12 @@ void Game::CreateRenderer()
 	log->Write("OpenGL vendor: " + std::string((char*)glGetString(GL_VENDOR)));
 
 	_camera = new Camera();
+}
+
+void Game::TakeScreenshot(std::string path)
+{
+	_takeScreenshot = true;
+	_screenshotPath = path;
 }
 
 void Game::SetScene(Scene* s)
@@ -207,6 +231,13 @@ void Game::Render()
 	}
 
 	currentScene->Draw();
+
+	if (_takeScreenshot)
+	{
+		CaptureScreen();
+		_tookScreenshot = true;
+		_takeScreenshot = false;
+	}
 }
 
 void Game::Destroy()

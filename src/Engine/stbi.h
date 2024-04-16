@@ -58,6 +58,10 @@ public:
 	 */
 	static bool get_error();
 
+	static void stbi_save_png(std::string filePath, int w, int h, int comp, const void* data, int stride_in_bytes);
+
+	static void stbi_resize(unsigned char* data, int w, int h, int comp, int newW, int newH, unsigned char* outData);
+
 	/**
 	 * \brief A function to obtain a pixel's color values from a data stream
 	 * \param data The image data to scan

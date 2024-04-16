@@ -33,6 +33,12 @@ class Game
 
 	Camera* _camera = NULL;
 
+	std::string _screenshotPath = "";
+	bool _takeScreenshot = false;
+	bool _tookScreenshot = false;
+
+	void CaptureScreen();
+
 public:
 	static Game* instance;
 
@@ -64,6 +70,17 @@ public:
 	void CCreateWindow(int width, int height);
 
 	void CreateRenderer();
+
+	bool DidTakeScreenshot() { 
+		if (_tookScreenshot)
+		{
+			_tookScreenshot = false;
+			return true;
+		}
+		return false;
+	}
+
+	void TakeScreenshot(std::string path);
 
 	void SetLockedCursor(bool locked) { lockedCursor = locked; needsUpdate = true; }
 	void SetVsync(bool v) { 

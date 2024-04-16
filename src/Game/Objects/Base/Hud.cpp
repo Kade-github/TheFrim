@@ -357,6 +357,12 @@ void Hud::Draw()
 		else
 			title->color = glm::vec4(1, 1, 1, 1);
 	}
+
+	if (_exiting && Game::instance->DidTakeScreenshot())
+	{
+		_exiting = false;
+		Game::instance->SwitchScene(new MainMenu());
+	}
 }
 
 void Hud::MouseClick(int button, glm::vec2 pos)
@@ -371,10 +377,10 @@ void Hud::MouseClick(int button, glm::vec2 pos)
 		else if (Collision2D::PointInRect(pos, title->position, glm::vec2(title->width, title->height)))
 		{
 			MusicManager::GetInstance()->PlaySFX("select");
-			GamePaused = false;
+			player->TogglePauseMenu();
 			WorldManager::instance->SetPlayerPosition(player->position);
 			WorldManager::instance->SaveWorldNow();
-			Game::instance->SwitchScene(new MainMenu());
+			_exiting = true;
 		}
 	}
 }
