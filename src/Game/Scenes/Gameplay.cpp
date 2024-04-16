@@ -91,6 +91,9 @@ void Gameplay::Draw()
 
 	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
 
+	if (Settings::instance->fogDistance >= 1.19)
+		fog = 10000;
+
 	Game::instance->shader->SetUniform3f("CameraPos", camera->position.x, camera->position.y, camera->position.z);
 	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);
 	Game::instance->shader->SetUniform1f("FogFar", fog);

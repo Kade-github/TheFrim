@@ -29,5 +29,8 @@ void main()
     float d = distance(CameraPos, Position);
 	float fogFactor = getFogFactor(d);
 
-	FragColor = mix(color, vec4(FogColor, 1.0), fogFactor);
+    if (FogFar < 1000)
+	    FragColor = mix(color, vec4(FogColor, 1.0), fogFactor);
+    else
+		FragColor = color;
 }
