@@ -312,7 +312,7 @@ void Data::Region::generateStructures()
 
 							if (rand() % 100 < 2)
 							{
-								struct_tree.Create(_rx,_rz,_y + 1, c, this);
+								struct_tree.Create(_rx,_rz,_y, c, this);
 							}
 						}
 					}
