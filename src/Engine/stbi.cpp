@@ -4,7 +4,7 @@
 #define STBI_NO_SIMD
 #include <stb_image.h>
 #include <stb_image_write.h>
-#include <stb_image_resize.h>
+#include <stb_image_resizer.h>
 #include "stbi.h"
 
 Texture* stbi_h::stbi_load_file(std::string filePath)
@@ -75,5 +75,5 @@ void stbi_h::stbi_save_png(std::string filePath, int w, int h, int comp, const v
 
 void stbi_h::stbi_resize(unsigned char* data, int w, int h, int comp, int newW, int newH, unsigned char* outData)
 {
-	stbir_resize_uint8(data, w, h, 0, outData, newW, newH, 0, comp);
+	stbi_resize(data, w, h, comp, newW, newH, outData);
 }
