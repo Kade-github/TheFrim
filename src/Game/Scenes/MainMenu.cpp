@@ -7,8 +7,6 @@
 
 void MainMenu::Create()
 {
-	Game::instance->SetLockedCursor(false);
-
 	c2d = new Camera2D(glm::vec3(0, 0, 0));
 
 	c2d->s = new Shader();
@@ -57,6 +55,8 @@ void MainMenu::Create()
 		MusicManager::GetInstance()->GenerateTrackList();
 		MusicManager::GetInstance()->PlayMusic("thefrim", 4);
 	}
+
+	Game::instance->SetLockedCursor(false);
 }
 
 void MainMenu::Draw()
