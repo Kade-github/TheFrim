@@ -100,6 +100,13 @@ void Gameplay::Draw()
 
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 
+	if (player->position.y <= -100 && wm->regions.size() != 0)
+	{
+		Chunk* c = wm->GetChunk(player->position.x, player->position.z);
+
+		player->position.y = c->GetHighestBlock(player->position.x, player->position.z);
+	}
+
 	UpdateChunks();
 
 	MusicManager::GetInstance()->Update();

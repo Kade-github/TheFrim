@@ -372,6 +372,7 @@ void Hud::MouseClick(int button, glm::vec2 pos)
 		{
 			MusicManager::GetInstance()->PlaySFX("select");
 			GamePaused = false;
+			WorldManager::instance->SetPlayerPosition(player->position);
 			WorldManager::instance->SaveWorldNow();
 			Game::instance->SwitchScene(new MainMenu());
 		}
