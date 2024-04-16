@@ -24,23 +24,81 @@ void SettingsMenu::Create()
 
 	vsync = new Bar(glm::vec3(0, 0, 0), "VSync: " + std::string(Settings::instance->vsync ? "on" : "off"));
 
-	vsync->position = glm::vec3(c2d->_w / 2, c2d->_h / 2, 0);
+	vsync->position = glm::vec3(c2d->_w / 2, (c2d->_h / 2) + 200, 0);
+
+	vsync->position -= glm::vec3(vsync->width / 2, 0, 0);
 
 	c2d->AddObject(vsync);
 
 	fullscreen = new Bar(glm::vec3(0, 0, 0), "Fullscreen: " + std::string(Settings::instance->fullscreen ? "on" : "off"));
 
-	fullscreen->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 100, 0);
+	fullscreen->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 + 100, 0);
+
+	fullscreen->position -= glm::vec3(fullscreen->width / 2, 0, 0);
 
 	c2d->AddObject(fullscreen);
 
+	float fovPerc = Settings::instance->fov / 140;
+
+	if (fovPerc < 0.1f)
+		fovPerc = 0.1f;
+
+	if (fovPerc > 1.0f)
+		fovPerc = 1.0f;
+
+	fov = new DragBar(glm::vec3(0, 0, 0), "FOV", fovPerc);
+
+	fov->max = 140;
+
+	fov->position = glm::vec3(c2d->_w / 2, c2d->_h / 2, 0);
+
+	fov->position -= glm::vec3(fov->width / 2, 0, 0);
+
+	c2d->AddObject(fov);
+
+	float renderDistancePerc = Settings::instance->renderDistance;
+
+	if (renderDistancePerc < 0.1f)
+		renderDistancePerc = 0.1f;
+
+	if (renderDistancePerc > 2.0f)
+		renderDistancePerc = 2.0f;
+
+	renderDistance = new DragBar(glm::vec3(0, 0, 0), "Render Distance", renderDistancePerc);
+
+	renderDistance->max = 1;
+
+	renderDistance->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 100, 0);
+
+	renderDistance->position -= glm::vec3(renderDistance->width / 2, 0, 0);
+
+	c2d->AddObject(renderDistance);
+
+	float fogDistancePerc = Settings::instance->fogDistance;
+
+	if (fogDistancePerc < 0.1f)
+		fogDistancePerc = 0.1f;
+
+	if (fogDistancePerc > 2.0f)
+		fogDistancePerc = 2.0f;
+
+	fogDistance = new DragBar(glm::vec3(0, 0, 0), "Fog Distance", fogDistancePerc);
+
+	fogDistance->max = 1;
+
+	fogDistance->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 200, 0);
+
+	fogDistance->position -= glm::vec3(fogDistance->width / 2, 0, 0);
+
+	c2d->AddObject(fogDistance);
+
 	back = new Bar(glm::vec3(0, 0, 0), "Back");
 
-	back->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 200, 0);
+	back->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 300, 0);
+
+	back->position -= glm::vec3(back->width / 2, 0, 0);
 
 	c2d->AddObject(back);
-
-
 }
 
 void SettingsMenu::Draw()
@@ -64,6 +122,10 @@ void SettingsMenu::Draw()
 	else
 		back->selected = false;
 
+	Settings::instance->fov = fov->value * 140;
+	Settings::instance->renderDistance = renderDistance->value;
+	Settings::instance->fogDistance = fogDistance->value;
+
 	Scene::Draw();
 }
 
@@ -86,6 +148,13 @@ void SettingsMenu::MouseClick(int button, glm::vec2 mPos)
 		else if (back->selected)
 			Game::instance->SwitchScene(new MainMenu());
 	}
+
+	c2d->MouseClick(button, mPos);
+}
+
+void SettingsMenu::MouseRelease(int button, glm::vec2 mPos)
+{
+	c2d->MouseRelease(button, mPos);
 }
 
 void SettingsMenu::Resize(float _w, float _h)

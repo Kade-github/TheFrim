@@ -206,7 +206,7 @@ void Gameplay::UpdateChunks()
 
 			float distance = glm::distance(camera->position, fakePos);
 
-			if (distance < camera->cameraFar)
+			if (distance < camera->cameraFar * 1.5)
 			{
 				if (!c->isLoaded)
 				{
@@ -216,7 +216,7 @@ void Gameplay::UpdateChunks()
 
 				float angle = camera->YawAngleTo(fakePos);
 
-				if (angle < 200 || distance < 32)
+				if (angle < 200 || distance <= 32)
 				{
 					if (!c->isRendered || c->pleaseRender)
 					{
@@ -248,7 +248,7 @@ void Gameplay::UpdateChunks()
 
 		float distanceR = glm::distance(camera->position, glm::vec3(fakePosR.x, fakePosR.y, camera->position.z));
 
-		if (distanceR < camera->cameraFar && !wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		if (distanceR < camera->cameraFar * 1.5 && !wm->isRegionLoaded(fakePosR.x, fakePosR.z))
 		{
 			bool no = false;
 
@@ -269,7 +269,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		else if (distanceR > camera->cameraFar * 1.5 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
 		{
 			// deload
 
@@ -299,7 +299,7 @@ void Gameplay::UpdateChunks()
 
 		distanceR = glm::distance(camera->position, glm::vec3(camera->position.x, fakePosR.y, fakePosR.z));
 
-		if (distanceR < camera->cameraFar && !wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		if (distanceR < camera->cameraFar * 1.5 && !wm->isRegionLoaded(fakePosR.x, fakePosR.z))
 		{
 			bool no = false;
 
@@ -320,7 +320,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
+		else if (distanceR > camera->cameraFar * 1.5 && wm->isRegionLoaded(fakePosR.x, fakePosR.z))
 		{
 			// deload
 
@@ -350,7 +350,7 @@ void Gameplay::UpdateChunks()
 
 		distanceR = glm::distance(camera->position, glm::vec3(fakePosR.x, fakePosR.y, camera->position.z));
 
-		if (distanceR < camera->cameraFar && !wm->isRegionLoaded(fakePosR.x - amount, fakePosR.z))
+		if (distanceR < camera->cameraFar * 1.5 && !wm->isRegionLoaded(fakePosR.x - amount, fakePosR.z))
 		{
 			bool no = false;
 
@@ -371,7 +371,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar && wm->isRegionLoaded(fakePosR.x - amount, fakePosR.z))
+		else if (distanceR > camera->cameraFar * 1.5 && wm->isRegionLoaded(fakePosR.x - amount, fakePosR.z))
 		{
 			// deload
 
@@ -401,7 +401,7 @@ void Gameplay::UpdateChunks()
 
 		distanceR = glm::distance(camera->position, glm::vec3(camera->position.x, fakePosR.y, fakePosR.z));
 
-		if (distanceR < camera->cameraFar && !wm->isRegionLoaded(fakePosR.x, fakePosR.z - amount))
+		if (distanceR < camera->cameraFar * 1.5 && !wm->isRegionLoaded(fakePosR.x, fakePosR.z - amount))
 		{
 			bool no = false;
 
@@ -422,7 +422,7 @@ void Gameplay::UpdateChunks()
 					});
 			}
 		}
-		else if (distanceR > camera->cameraFar && wm->isRegionLoaded(fakePosR.x, fakePosR.z - amount))
+		else if (distanceR > camera->cameraFar * 1.5 && wm->isRegionLoaded(fakePosR.x, fakePosR.z - amount))
 		{
 			// deload
 

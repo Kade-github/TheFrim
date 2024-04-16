@@ -4,6 +4,7 @@
 #include <Objects/Scene.h>
 #include <Objects/2DCamera.h>
 #include "../Objects/Menu/Bar.h"
+#include "../Objects/Menu/DragBar.h"
 
 class SettingsMenu : public Scene
 {
@@ -15,12 +16,17 @@ public:
 	Bar* vsync;
 	Bar* fullscreen;
 
+	DragBar* fov;
+	DragBar* renderDistance;
+	DragBar* fogDistance;
+
 	Bar* back;
 
 	void Create() override;
 
 	void Draw() override;
 	void MouseClick(int button, glm::vec2 mPos) override;
+	void MouseRelease(int button, glm::vec2 mPos) override;
 	void Resize(float _w, float _h) override;
 };
 
