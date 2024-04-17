@@ -518,6 +518,9 @@ subChunk* Chunk::GetSubChunk(int y)
 	{
 		subChunk* sbc = subChunks[i];
 
+		if (sbc == nullptr)
+			continue;
+
 		if (sbc->y == y)
 			return sbc;
 	}
