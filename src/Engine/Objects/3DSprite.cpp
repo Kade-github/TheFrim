@@ -30,6 +30,14 @@ void Sprite3D::Draw()
 	model = glm::translate(model, position);
 	model = glm::rotate(model, glm::radians(angle), rotateAxis);
 
+	// angleZ
+
+	model = glm::rotate(model, glm::radians(angleZ), glm::vec3(0, 0, 1));
+
+	// angleY
+
+	model = glm::rotate(model, glm::radians(angleY), glm::vec3(0, 1, 0));
+
 	Game::instance->shader->Bind();
 
 	Game::instance->shader->SetUniformMat4f("model", &model[0][0]);

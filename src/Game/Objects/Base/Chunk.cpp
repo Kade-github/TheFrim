@@ -261,7 +261,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	subChunk* sbcBelow = GetSubChunk(y - 1);
 
-	if (sbcBelow->y <= -1) // create below
+	if (sbcBelow != nullptr) // create below
 	{
 		sbcBelow = CreateSubChunk(y - 1);
 
@@ -271,7 +271,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	subChunk* sbcAbove = GetSubChunk(y + 1);
 
-	if (sbcAbove->y <= -1) // create above
+	if (sbcAbove != nullptr) // create above
 	{
 		sbcAbove = CreateSubChunk(y + 1);
 
@@ -293,7 +293,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 			subChunk* s = c->GetSubChunk(y);
 
-			if (s->y <= -1)
+			if (s != nullptr)
 			{
 				s = c->CreateSubChunk(y);
 
@@ -313,7 +313,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		{
 			subChunk* s = c->GetSubChunk(y);
 
-			if (s->y <= -1)
+			if (s != nullptr)
 			{
 				s = c->CreateSubChunk(y);
 
@@ -333,7 +333,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		{
 			subChunk* s = c->GetSubChunk(y);
 
-			if (s->y <= -1)
+			if (s != nullptr)
 			{
 				s = c->CreateSubChunk(y);
 
@@ -353,7 +353,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		{
 			subChunk* s = c->GetSubChunk(y);
 
-			if (s->y <= -1)
+			if (s != nullptr)
 			{
 				s = c->CreateSubChunk(y);
 
@@ -462,7 +462,7 @@ void Chunk::CreateFaces(Block* b)
 
 void Chunk::RenderSubChunk(subChunk* sbc)
 {
-	if (sbc->y <= -1)
+	if (sbc == nullptr)
 		return;
 
 	for (int x = 0; x < CHUNK_SIZE; x++)
@@ -795,9 +795,6 @@ void Chunk::SetBuffer()
 	glBindVertexArray(0);
 
 	size = indices.size();
-
-	vertices.clear();
-	indices.clear();
 }
 
 void Chunk::SetShadowBuffer()
@@ -822,9 +819,6 @@ void Chunk::SetShadowBuffer()
 	glBindVertexArray(0);
 
 	shadowSize = shadowIndices.size();
-
-	shadowVertices.clear();
-	shadowIndices.clear();
 
 }
 

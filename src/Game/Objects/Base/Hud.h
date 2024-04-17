@@ -15,8 +15,6 @@ private:
 	Player* player;
 	Camera2D* c2d;
 
-	Sprite2D* hand;
-
 	Texture* h;
 	Texture* i;
 
@@ -33,6 +31,8 @@ private:
 	bool _askedForScreenshot = false;
 
 public:
+	Sprite3D* hand;
+
 	static bool GamePaused;
 
 	Inventory* inv;

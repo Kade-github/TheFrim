@@ -75,14 +75,12 @@ void Hud::SetSelected(int s)
 	if (item.type != Data::ItemType::ITEM_NULL)
 	{
 		hand->src = i->spriteSheet.GetUVFlip(item.tag);
-		hand->position.y = -(hand->height / 6);
-		hand->flipHorizontal = true;
+		hand->UpdateSprite();
 	}
 	else
 	{
 		hand->src = i->spriteSheet.GetUVFlip("hand");
-		hand->position.y = 0;
-		hand->flipHorizontal = false;
+		hand->UpdateSprite();
 	}
 }
 
@@ -188,12 +186,21 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	i = Texture::createWithImage("Assets/Textures/items.png", false);
 	i->spriteSheet.Load("Assets/Textures/items.xml", i->width, i->height);
 
-	hand = new Sprite2D(i, glm::vec3(0, 0, 0));
+	Texture* hn = Texture::createWithImageExtra("Assets/Textures/items.png", "nonFlipped"); // grab from cache
+	hn->spriteSheet.Load("Assets/Textures/items.xml", hn->width, hn->height);
 
-	hand->width = 512;
-	hand->height = 512;
+	hand = new Sprite3D(hn, glm::vec3(0, 0, 0));
+
+	hand->width = 0.3;
+	hand->height = 0.3;
 
 	hand->src = i->spriteSheet.GetUVFlip("hand");
+
+	hand->UpdateSprite();
+
+	hand->rotateAxis = glm::vec3(0, 1, 0);
+
+	hand->angle = 90;
 
 	hand->position.x = c2d->_w - hand->width;
 
@@ -204,8 +211,7 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 
 	// create hand
 
-	c2d->AddObject(hand);
-	hand->order = -1;
+	hand->order = 99999;
 
 	// create hotbar (9)
 
@@ -280,6 +286,8 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	UpdateHotbar();
 	UpdateHearts();
 	UpdateArmor();
+
+	hand->position = player->position;
 }
 
 Hud::~Hud()
@@ -328,6 +336,29 @@ Hud::~Hud()
 void Hud::Draw()
 {
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
+
+	Camera* cam = Game::instance->GetCamera();
+
+	// rotate hand according to camera
+
+	glm::vec3 camPos = cam->position + cam->cameraFront;
+
+	glm::vec3 dir = glm::normalize(camPos - player->position);
+
+	float angle = glm::degrees(atan2(dir.z, dir.x));
+
+	hand->angleY = -angle + 90;
+
+	glm::vec3 camRight = glm::normalize(glm::cross(cam->cameraFront, glm::vec3(0, 1, 0)));
+
+	// update hand position
+
+	glm::vec3 finalPos = ((player->position + cam->cameraFront * 0.4f) - glm::vec3(0, 0.4, 0)) + (camRight * 0.25f);
+
+	glm::vec3 lerped = glm::vec3(std::lerp(hand->position.x, finalPos.x, 0.2f), std::lerp(hand->position.y, finalPos.y, 0.2f), std::lerp(hand->position.z, finalPos.z, 0.2f));
+
+	hand->position = lerped;
+
 
 	// heartupdate tween
 

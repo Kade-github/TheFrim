@@ -276,24 +276,27 @@ void Player::Draw()
 	else if (!_inInventory && !Hud::GamePaused)
 	{
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
-			position += camera->cameraFront * 0.05f;
+			camera->position += camera->cameraFront * 0.05f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
-			position -= camera->cameraFront * 0.05f;
+			camera->position -= camera->cameraFront * 0.05f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
-			position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
+			camera->position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
-			position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
+			camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
 
 		shadow->Draw();
 	}
 
-	glm::vec3 storedPos = position;
+	if (!freeCam)
+	{
+		glm::vec3 storedPos = position;
 
-	camera->position = storedPos;
-	camera->position.y -= 0.1;
+		camera->position = storedPos;
+		camera->position.y -= 0.1;
+	}
 
 	if (headBop > 0)
 	{
@@ -301,10 +304,10 @@ void Player::Draw()
 		if (!moving || !isOnGround)
 			headBop -= 20.0f * Game::instance->deltaTime;
 
-		if (headBop > 1.25f)
-			headBop = 1.25f;
+		if (headBop > 0.8f)
+			headBop = 0.8f;
 
-		float s = (sin(glfwGetTime() * 16) * 0.05f) * headBop;
+		float s = (sin(glfwGetTime() * 12) * 0.04f) * headBop;
 
 		camera->position.y += s;
 

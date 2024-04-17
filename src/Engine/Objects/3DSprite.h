@@ -11,6 +11,8 @@ class Sprite3D : public GameObject
 
 	std::vector<GameObject::VVertex> vertices;
 public:
+	float angleZ = 0;
+	float angleY = 0;
 	glm::vec4 src = glm::vec4(0, 0, 1, 1);
 	Texture* t;
 	float width = 1;
