@@ -25,14 +25,14 @@ void Entity::Footstep()
 
 	if (c->DoesBlockExist(position.x, y, position.z))
 	{
-		subChunk& sb = c->GetSubChunk(y);
+		subChunk* sb = c->GetSubChunk(y);
 
-		if (sb.y < 0)
+		if (sb == nullptr)
 			return;
 
 		glm::vec3 _world = c->WorldToChunk(position);
 
-		Block* b = sb.getBlock(_world.x, _world.z);
+		Block* b = sb->getBlock(_world.x, _world.z);
 
 		if (b != nullptr)
 		{
