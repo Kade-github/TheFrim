@@ -12,12 +12,6 @@
 #include "../Objects/Base/Blocks/CraftingTable.h"
 #include "../Objects/Base/Blocks/WoodenPlanks.h"
 
-bool firstMouse = false;
-
-float p = 0;
-float yaw = 0;
-float lastX = 400, lastY = 300;
-
 BlockTest::BlockTest()
 {
 	glGenVertexArrays(1, &VAO);

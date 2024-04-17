@@ -11,6 +11,12 @@ class BlockTest : public Scene
 	std::vector<GameObject::VVertex> vertices;
 	std::vector<unsigned int> indices;
 
+    bool firstMouse = false;
+
+    float p = 0;
+    float yaw = 0;
+    float lastX = 400, lastY = 300;
+
 public:
 	Texture* t;
 	int blockId = 0;

@@ -84,7 +84,7 @@ target_link_libraries(TheFrim bass)
 target_link_libraries(TheFrim bass_fx)
 
 find_package(pugixml CONFIG REQUIRED)
-target_link_libraries(TheFrim pugixml::shared pugixml::pugixml)
+target_link_libraries(TheFrim pugixml::pugixml)
 
 find_package(glfw3 CONFIG REQUIRED)
 target_link_libraries(TheFrim glfw)
