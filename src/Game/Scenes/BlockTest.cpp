@@ -14,12 +14,6 @@
 
 BlockTest::BlockTest()
 {
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glGenBuffers(1, &EBO);
-
-	t = Texture::createWithImage("Assets/Textures/block.png");
-
 }
 
 void BlockTest::ChangeBlock()
@@ -106,12 +100,6 @@ void BlockTest::ChangeBlock()
 
 void BlockTest::Draw()
 {
-	Shader* s = Game::instance->shader;
-
-	s->Bind();
-
-	t->Bind();
-
 	Camera* cam = Game::instance->GetCamera();
 
 	glm::vec2 mousePos = Game::instance->GetCursorPos(false);
@@ -161,6 +149,12 @@ void BlockTest::Draw()
 
 	cam->SetDirection();
 
+    Shader* s = Game::instance->shader;
+
+    s->Bind();
+
+    t->Bind();
+
 	glBindVertexArray(VAO);
 
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
@@ -176,4 +170,16 @@ void BlockTest::Draw()
 
 void BlockTest::KeyPress(int key)
 {
+}
+
+void BlockTest::Create() {
+    Game::instance->SetLockedCursor(true);
+
+    glGenVertexArrays(1, &VAO);
+    glGenBuffers(1, &VBO);
+    glGenBuffers(1, &EBO);
+
+    t = Texture::createWithImage("Assets/Textures/block.png");
+
+    ChangeBlock();
 }

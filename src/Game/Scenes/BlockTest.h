@@ -24,7 +24,7 @@ public:
 	BlockTest();
 
 	void ChangeBlock();
-
+    void Create() override;
 	void Draw() override;
 	void KeyPress(int key) override;
 };
