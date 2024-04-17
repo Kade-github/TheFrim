@@ -189,11 +189,20 @@ bool MusicManager::IsPlaying()
 
 void MusicManager::Update()
 {
+	static float lastCheck = 0;
+
 	if (glfwGetTime() > nextTrack)
 		PlayNext();
 
 	if (Game::instance->audioManager->channels.size() == 0)
 		return;
+
+	if (glfwGetTime() > lastCheck)
+	{
+		lastCheck = glfwGetTime() + 0.15f;
+
+		Game::instance->audioManager->RemoveStagnentChannels();
+	}
 
 	if (_fadeDuration > 0)
 	{

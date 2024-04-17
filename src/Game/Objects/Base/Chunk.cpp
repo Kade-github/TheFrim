@@ -745,8 +745,9 @@ void Chunk::DestroySubChunk(subChunk& c)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			if (c.blocks[x][z] != nullptr)
-				delete c.blocks[x][z];
+			Block* b = c.blocks[x][z];
+			if (b != nullptr)
+				std::free(b);
 
 			c.blocks[x][z] = nullptr;
 		}
@@ -796,6 +797,8 @@ void Chunk::SetBuffer()
 
 	size = indices.size();
 
+	vertices.clear();
+	indices.clear();
 }
 
 void Chunk::SetShadowBuffer()
@@ -821,6 +824,9 @@ void Chunk::SetShadowBuffer()
 
 	shadowSize = shadowIndices.size();
 
+	shadowVertices.clear();
+	shadowIndices.clear();
+
 }
 
 void Chunk::Init()
@@ -836,6 +842,8 @@ void Chunk::Init()
 
 void Chunk::Destroy()
 {
+	DestroySubChunks();
+
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);

@@ -200,18 +200,18 @@ void Gameplay::UpdateChunks()
 
 		for (Chunk* c : r.chunks)
 		{
-			if (c->id < 0)
-			{
-				c->Init();
-				AddObject(c);
-			}
-
 			glm::vec3 fakePos = glm::vec3(c->position.x, camera->position.y, c->position.z);
 
 			float distance = glm::distance(camera->position, fakePos);
 
 			if (distance < camera->cameraFar * 1.5)
 			{
+				if (c->id < 0)
+				{
+					c->Init();
+					AddObject(c);
+				}
+
 				if (!c->isLoaded)
 				{
 					QueueLoad(c);
@@ -241,6 +241,8 @@ void Gameplay::UpdateChunks()
 				if (c->isLoaded)
 				{
 					c->Unload();
+					c->id = -1;
+					RemoveObject(c);
 					c->isLoaded = false;
 				}
 			}
@@ -288,6 +290,8 @@ void Gameplay::UpdateChunks()
 						if (c->isLoaded)
 						{
 							c->Unload();
+							c->id = -1;
+							RemoveObject(c);
 							c->isLoaded = false;
 						}
 					}
@@ -339,6 +343,8 @@ void Gameplay::UpdateChunks()
 						if (c->isLoaded)
 						{
 							c->Unload();
+							c->id = -1;
+							RemoveObject(c);
 							c->isLoaded = false;
 						}
 					}
@@ -390,6 +396,8 @@ void Gameplay::UpdateChunks()
 						if (c->isLoaded)
 						{
 							c->Unload();
+							c->id = -1;
+							RemoveObject(c);
 							c->isLoaded = false;
 						}
 					}
@@ -441,6 +449,8 @@ void Gameplay::UpdateChunks()
 						if (c->isLoaded)
 						{
 							c->Unload();
+							c->id = -1;
+							RemoveObject(c);
 							c->isLoaded = false;
 						}
 						RemoveObject(c);
@@ -475,6 +485,8 @@ void Gameplay::KeyPress(int key)
 				if (c->isLoaded)
 				{
 					c->Unload();
+					c->id = -1;
+					RemoveObject(c);
 					c->isLoaded = false;
 				}
 			}
