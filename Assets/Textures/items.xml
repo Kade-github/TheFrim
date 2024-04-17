@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <TextureAtlas imagePath="items.png" width="768" height="640" scale="1" format="RGBA8888">
   <sprite n="item_cobblestone" x="0" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_craftingtableTop" x="128" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_crafting_table" x="128" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_diamond_axe" x="0" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_diamond_pickaxe" x="128" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_diamond_shovel" x="256" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
@@ -29,5 +29,5 @@
   <sprite n="item_wood_pickaxe" x="640" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_wood_shovel" x="640" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_wood_sword" x="640" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wooden_plank" x="640" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wooden_planks" x="640" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
 </TextureAtlas>
