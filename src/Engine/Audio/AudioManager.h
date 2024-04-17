@@ -223,10 +223,16 @@ public:
 
 	Channel& CreateChannel(std::string path, std::string name, bool autoFree = false)
 	{
+        static Channel theC = Channel("", "", false);
+        theC.id = -1;
+
 		Channel c = Channel(path, name, autoFree);
 
 		if (c.IsLoaded())
 			channels.push_back(c);
+
+        if (channels.empty())
+            return theC;
 
 		return channels[channels.size() - 1];
 	}
