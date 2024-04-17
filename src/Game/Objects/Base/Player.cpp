@@ -340,11 +340,17 @@ void Player::Draw()
 
 		if (c != nullptr)
 		{
-			subChunk& sb = c->GetSubChunk(ray.y);
+			subChunk* sb = c->GetSubChunk(ray.y);
 
-			glm::vec3 _world = c->WorldToChunk(ray);
+			if (sb != nullptr)
+			{
 
-			selectedBlock = sb.getBlock(_world.x, _world.z);
+				glm::vec3 _world = c->WorldToChunk(ray);
+
+				selectedBlock = sb->getBlock(_world.x, _world.z);
+			}
+			else
+				selectedBlock = nullptr;
 		}
 		else
 			selectedBlock = nullptr;

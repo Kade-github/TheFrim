@@ -8,6 +8,6 @@ void Channel::EndSync(HSYNC handle, DWORD channel, DWORD data, void* user)
 	{
 		Game::instance->audioManager->RemoveChannel(c);
 
-		c.Free();
+		delete static_cast<std::string*>(user);
 	}
 }

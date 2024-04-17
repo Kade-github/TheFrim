@@ -47,7 +47,6 @@ public:
 	std::vector<Event> events;
 
 	Shader* shader;
-	Shader* noFogShader;
 
 	Logging* log;
 	bool swappedScenes = false;

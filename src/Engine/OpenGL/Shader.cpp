@@ -77,7 +77,7 @@ void Shader::SetUniform4f(const std::string& name, float v0, float v1, float v2,
 void Shader::SetUniformMat4f(const std::string& name, const float* matrix)
 {
     SETUNIFORM_GET_LOC_ID();
-	glUniformMatrix4fv(loc_id, 1, GL_FALSE, matrix);
+    glUniformMatrix4fv(loc_id, 1, GL_FALSE, matrix);
 }
 
 void Shader::LoadShader(std::string vert_shader, std::string frag_shader)

@@ -308,6 +308,8 @@ void Camera2D::DrawSprite()
 	if (t != NULL)
 		t->Bind();
 
+	glDisable(GL_DEPTH_TEST);
+
 	glBindVertexArray(s_vao);
 
 	glBindBuffer(GL_ARRAY_BUFFER, s_vbo);

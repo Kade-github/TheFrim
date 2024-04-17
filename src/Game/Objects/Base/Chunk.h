@@ -48,9 +48,9 @@ public:
 
     Data::Chunk myData;
 
-    std::vector<subChunk> subChunks;
+    std::vector<subChunk*> subChunks;
 
-    subChunk& GetSubChunk(int y);
+    subChunk* GetSubChunk(int y);
 
     Data::Chunk GetChunkData();
 
@@ -71,17 +71,17 @@ public:
 
     void ModifyBlock(float x, float y, float z, int id);
 
-    void RenderSubChunk(subChunk& c);
+    void RenderSubChunk(subChunk* c);
     void RenderSubChunks();
 
-    void RenderSubChunkShadow(subChunk& c);
+    void RenderSubChunkShadow(subChunk* c);
     void RenderSubChunksShadow();
 
-    subChunk CreateSubChunk(int y);
+    subChunk* CreateSubChunk(int y);
     Block* CreateBlock(int x, int y, int z, int id);
 
     void DestroySubChunk(int y);
-    void DestroySubChunk(subChunk& c);
+    void DestroySubChunk(subChunk* c);
     void DestroySubChunks();
     
     void CreateSubChunks();

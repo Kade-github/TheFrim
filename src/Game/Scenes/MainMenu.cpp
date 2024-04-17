@@ -57,6 +57,8 @@ void MainMenu::Create()
 		MusicManager::GetInstance()->GenerateTrackList();
 		MusicManager::GetInstance()->PlayMusic("thefrim", 4);
 	}
+
+	Game::instance->SetLockedCursor(false);
 }
 
 void MainMenu::Draw()

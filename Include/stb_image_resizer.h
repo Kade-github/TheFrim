@@ -368,18 +368,7 @@ typedef uint32_t stbir_uint32;
 typedef uint64_t stbir_uint64;
 #endif
 
-#ifdef _M_IX86_FP
-#if ( _M_IX86_FP >= 1 )
-#ifndef STBIR_SSE
-#define STBIR_SSE
-#endif
-#endif
-#endif
-
 #if defined(_x86_64) || defined( __x86_64__ ) || defined( _M_X64 ) || defined(__x86_64) || defined(_M_AMD64) || defined(__SSE2__) || defined(STBIR_SSE) || defined(STBIR_SSE2)
-  #ifndef STBIR_SSE2
-    #define STBIR_SSE2
-  #endif
   #if defined(__AVX__) || defined(STBIR_AVX2)
     #ifndef STBIR_AVX
       #ifndef STBIR_NO_AVX

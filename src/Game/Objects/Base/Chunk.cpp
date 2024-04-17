@@ -225,9 +225,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	if (w.z > CHUNK_SIZE - 1)
 		return;
 
-	subChunk& sbc = GetSubChunk(y);
+	subChunk* sbc = GetSubChunk(y);
 
-	if (sbc.y <= -1 && id > 0) // cant create air
+	if (sbc->y <= -1 && id > 0) // cant create air
 	{
 		// create subchunk
 
@@ -235,47 +235,47 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 		sbc = CreateSubChunk(y);
 
-		if (sbc.y > -1)
+		if (sbc->y > -1)
 			subChunks.push_back(sbc);
 	}
 	else
 	{
-		if (sbc.blocks[(int)w.x][(int)w.z] != nullptr) // if it exists, delete it if necessary
+		if (sbc->blocks[(int)w.x][(int)w.z] != nullptr) // if it exists, delete it if necessary
 		{
 			if (id <= 0)
-				delete sbc.blocks[(int)w.x][(int)w.z];
+				delete sbc->blocks[(int)w.x][(int)w.z];
 		}
 
 		if (id <= 0) // destroyed block
 		{
-			sbc.blocks[(int)w.x][(int)w.z] = nullptr;
+			sbc->blocks[(int)w.x][(int)w.z] = nullptr;
 			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = 0;
 		}
 		else
 		{
-			sbc.blocks[(int)w.x][(int)w.z] = CreateBlock(w.x, w.y, w.z, id);
+			sbc->blocks[(int)w.x][(int)w.z] = CreateBlock(w.x, w.y, w.z, id);
 
 			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
 		}
 	}
 
-	subChunk sbcBelow = GetSubChunk(y - 1);
+	subChunk* sbcBelow = GetSubChunk(y - 1);
 
-	if (sbcBelow.y <= -1) // create below
+	if (sbcBelow->y <= -1) // create below
 	{
 		sbcBelow = CreateSubChunk(y - 1);
 
-		if (sbcBelow.y > -1)
+		if (sbcBelow->y > -1)
 			subChunks.push_back(sbcBelow);
 	}
 
-	subChunk sbcAbove = GetSubChunk(y + 1);
+	subChunk* sbcAbove = GetSubChunk(y + 1);
 
-	if (sbcAbove.y <= -1) // create above
+	if (sbcAbove->y <= -1) // create above
 	{
 		sbcAbove = CreateSubChunk(y + 1);
 
-		if (sbcAbove.y > -1)
+		if (sbcAbove->y > -1)
 			subChunks.push_back(sbcAbove);
 	}
 
@@ -291,13 +291,13 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		{
 			// check if we need to create a subchunk
 
-			subChunk s = c->GetSubChunk(y);
+			subChunk* s = c->GetSubChunk(y);
 
-			if (s.y <= -1)
+			if (s->y <= -1)
 			{
 				s = c->CreateSubChunk(y);
 
-				if (s.y > -1)
+				if (s->y > -1)
 					c->subChunks.push_back(s);
 
 				gp->QueueLoadBlocks(c);
@@ -311,13 +311,13 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 		if (c != nullptr)
 		{
-			subChunk s = c->GetSubChunk(y);
+			subChunk* s = c->GetSubChunk(y);
 
-			if (s.y <= -1)
+			if (s->y <= -1)
 			{
 				s = c->CreateSubChunk(y);
 
-				if (s.y > -1)
+				if (s->y > -1)
 					c->subChunks.push_back(s);
 
 				gp->QueueLoadBlocks(c);
@@ -331,13 +331,13 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 		if (c != nullptr)
 		{
-			subChunk s = c->GetSubChunk(y);
+			subChunk* s = c->GetSubChunk(y);
 
-			if (s.y <= -1)
+			if (s->y <= -1)
 			{
 				s = c->CreateSubChunk(y);
 
-				if (s.y > -1)
+				if (s->y > -1)
 					c->subChunks.push_back(s);
 
 				gp->QueueLoadBlocks(c);
@@ -351,13 +351,13 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 		if (c != nullptr)
 		{
-			subChunk s = c->GetSubChunk(y);
+			subChunk* s = c->GetSubChunk(y);
 
-			if (s.y <= -1)
+			if (s->y <= -1)
 			{
 				s = c->CreateSubChunk(y);
 
-				if (s.y > -1)
+				if (s->y > -1)
 					c->subChunks.push_back(s);
 
 				gp->QueueLoadBlocks(c);
@@ -460,16 +460,16 @@ void Chunk::CreateFaces(Block* b)
 	}
 }
 
-void Chunk::RenderSubChunk(subChunk& sbc)
+void Chunk::RenderSubChunk(subChunk* sbc)
 {
-	if (sbc.y <= -1)
+	if (sbc->y <= -1)
 		return;
 
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			Block* block = sbc.getBlock(x, z);
+			Block* block = sbc->getBlock(x, z);
 			if (block == nullptr)
 				continue;
 
@@ -492,8 +492,8 @@ void Chunk::RenderSubChunks()
 
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		subChunk& sbc = subChunks[i];
-		if (sbc.y <= -1)
+		subChunk* sbc = subChunks[i];
+		if (sbc->y <= -1)
 			continue;
 
 		RenderSubChunk(sbc);
@@ -512,19 +512,16 @@ Chunk::Chunk(Texture* _txp, glm::vec3 _pos) : GameObject(_pos)
 	txp = _txp;
 }
 
-subChunk& Chunk::GetSubChunk(int y)
+subChunk* Chunk::GetSubChunk(int y)
 {
-	static subChunk empty;
-
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		subChunk& sbc = subChunks[i];
+		subChunk* sbc = subChunks[i];
 
-		if (sbc.y == y)
+		if (sbc->y == y)
 			return sbc;
 	}
-	empty.y = -1;
-	return empty;
+	return nullptr;
 }
 
 Data::Chunk Chunk::GetChunkData()
@@ -535,9 +532,9 @@ Data::Chunk Chunk::GetChunkData()
 
 	for (int y = 0; y < CHUNK_HEIGHT; y++)
 	{
-		subChunk& sbc = GetSubChunk(y);
+		subChunk* sbc = GetSubChunk(y);
 
-		if (sbc.y <= -1) // not loaded
+		if (sbc->y <= -1) // not loaded
 		{
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
@@ -551,8 +548,8 @@ Data::Chunk Chunk::GetChunkData()
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				if (sbc.blocks[x][z] != nullptr)
-					c.blocks[x][z][y] = sbc.blocks[x][z]->type;
+				if (sbc->blocks[x][z] != nullptr)
+					c.blocks[x][z][y] = sbc->blocks[x][z]->type;
 				else
 					c.blocks[x][z][y] = 0;
 			}
@@ -574,16 +571,16 @@ bool Chunk::IsInChunk(float x, float z)
 }
 
 
-void Chunk::RenderSubChunkShadow(subChunk& sbc)
+void Chunk::RenderSubChunkShadow(subChunk* sbc)
 {
-	if (sbc.y <= -1)
+	if (sbc->y <= -1)
 		return;
 
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			Block* block = sbc.getBlock(x, z);
+			Block* block = sbc->getBlock(x, z);
 			if (block == nullptr)
 				continue;
 
@@ -632,19 +629,19 @@ void Chunk::RenderSubChunksShadow()
 
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		subChunk& sbc = subChunks[i];
-		if (sbc.y <= -1)
+		subChunk* sbc = subChunks[i];
+		if (sbc->y <= -1)
 			continue;
 
 		RenderSubChunkShadow(sbc);
 	}
 }
 
-subChunk Chunk::CreateSubChunk(int y)
+subChunk* Chunk::CreateSubChunk(int y)
 {
-	subChunk sbc;
+	subChunk* sbc = new subChunk();
 
-	sbc.y = y;
+	sbc->y = y;
 
 	bool isOccluded = true;
 
@@ -676,14 +673,14 @@ subChunk Chunk::CreateSubChunk(int y)
 					isOccluded = false;
 			}
 
-			sbc.blocks[x][z] = CreateBlock(x, y, z, id);
+			sbc->blocks[x][z] = CreateBlock(x, y, z, id);
 		}
 	}
 
 	if (isOccluded)
 	{
 		DestroySubChunk(sbc);
-		return subChunk();
+		return nullptr;
 	}
 
 	return sbc;
@@ -734,29 +731,32 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 
 void Chunk::DestroySubChunk(int y)
 {
-	subChunk& sbc = GetSubChunk(y);
+	subChunk* sbc = GetSubChunk(y);
 
 	DestroySubChunk(sbc);
 }
 
-void Chunk::DestroySubChunk(subChunk& c)
+void Chunk::DestroySubChunk(subChunk* c)
 {
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			if (c.blocks[x][z] != nullptr)
-				delete c.blocks[x][z];
+			Block* b = c->blocks[x][z];
+			if (b != nullptr)
+				std::free(b);
 
-			c.blocks[x][z] = nullptr;
+			c->blocks[x][z] = nullptr;
 		}
 	}
+
+	delete c;
 }
 
 void Chunk::DestroySubChunks()
 {
 	for (int i = 0; i < subChunks.size(); i++)
-		DestroySubChunk(subChunks[i].y);
+		DestroySubChunk(subChunks[i]->y);
 
 	subChunks.clear();
 }
@@ -767,8 +767,8 @@ void Chunk::CreateSubChunks()
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
-		subChunk sbc = CreateSubChunk(y);
-		if (sbc.y > -1)
+		subChunk* sbc = CreateSubChunk(y);
+		if (sbc != nullptr)
 			subChunks.push_back(sbc);
 	}
 }
@@ -796,6 +796,8 @@ void Chunk::SetBuffer()
 
 	size = indices.size();
 
+	vertices.clear();
+	indices.clear();
 }
 
 void Chunk::SetShadowBuffer()
@@ -821,6 +823,9 @@ void Chunk::SetShadowBuffer()
 
 	shadowSize = shadowIndices.size();
 
+	shadowVertices.clear();
+	shadowIndices.clear();
+
 }
 
 void Chunk::Init()
@@ -836,6 +841,8 @@ void Chunk::Init()
 
 void Chunk::Destroy()
 {
+	DestroySubChunks();
+
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
 	glDeleteBuffers(1, &EBO);

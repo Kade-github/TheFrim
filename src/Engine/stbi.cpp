@@ -75,5 +75,5 @@ void stbi_h::stbi_save_png(std::string filePath, int w, int h, int comp, const v
 
 void stbi_h::stbi_resize(unsigned char* data, int w, int h, int comp, int newW, int newH, unsigned char* outData)
 {
-	stbi_resize(data, w, h, comp, newW, newH, outData);
+	stbir_resize_uint8_linear(data, w, h, 0, outData, newW, newH, 0, (stbir_pixel_layout)comp);
 }

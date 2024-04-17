@@ -93,6 +93,9 @@ void WorldManager::CreateWorld(std::string _seed, std::string _name)
 
 	_world._path = std::filesystem::current_path().string() + "/worlds/" + _world.name;
 
+	if (!std::filesystem::exists(_path))
+		std::filesystem::create_directories(_path);
+
 	// Generate regions
 
 	for(int i = -1; i < 2; i++)
@@ -129,6 +132,8 @@ bool WorldManager::IsRegionGenerated(int x, int z)
 
 		if (r.startX == 0 && r.startZ == 0 && r.endX == 0 && r.endZ == 0)
 			found = false;
+		else
+			found = true;
 	}
 
 	return found;
