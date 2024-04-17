@@ -50,6 +50,10 @@ void Gameplay::Create()
 
 	AddObject(hud);
 
+	AddObject(hud->hand);
+
+	hud->hand->order = 2;
+
 	hud->order = 1000;
 
 	UpdateChunks();
@@ -244,7 +248,6 @@ void Gameplay::UpdateChunks()
 				{
 					c->Unload();
 					c->id = -1;
-					c->myData = {};
 					RemoveObject(c);
 					c->isLoaded = false;
 				}
