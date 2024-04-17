@@ -129,6 +129,8 @@ bool WorldManager::IsRegionGenerated(int x, int z)
 
 		if (r.startX == 0 && r.startZ == 0 && r.endX == 0 && r.endZ == 0)
 			found = false;
+		else
+			found = true;
 	}
 
 	return found;

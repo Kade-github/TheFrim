@@ -20,6 +20,7 @@ class Channel {
 
 public:
 	bool autoFree = false;
+
 	static void EndSync(HSYNC handle, DWORD channel, DWORD data, void* user);
 
 	std::string name;
@@ -50,7 +51,8 @@ public:
 		if (IsLoaded())
 			length = BASS_ChannelBytes2Seconds(id, BASS_ChannelGetLength(id, BASS_POS_BYTE));
 
-		BASS_ChannelSetSync(id, BASS_SYNC_END, 0, Channel::EndSync, this);
+
+		BASS_ChannelSetSync(id, BASS_SYNC_END, 0, Channel::EndSync, NULL);
 	}
 
 	bool IsLoaded()
@@ -292,6 +294,21 @@ public:
 
 		return c;
 	}
+
+	void RemoveStagnentChannels()
+	{
+		for (int i = 0; i < channels.size(); i++)
+		{
+			Channel& c = channels[i];
+
+			if (c.autoFree && !c.isFreed && !c.IsPlaying())
+			{
+				RemoveChannel(c);
+				break;
+			}
+		}
+	}
+
 };
 
 #endif
