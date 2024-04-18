@@ -542,6 +542,9 @@ void Gameplay::KeyPress(int key)
 	{
 		objects[i]->KeyPress(key);
 	}
+
+	hud->KeyPress(key);
+	player->KeyPress(key);
 }
 
 void Gameplay::MouseClick(int button, glm::vec2 mPos)
