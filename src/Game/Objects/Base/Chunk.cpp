@@ -15,6 +15,7 @@
 #include "Blocks/Water.h"
 #include "Blocks/CraftingTable.h"
 #include "Blocks/WoodenPlanks.h"
+#include "Blocks/Glass.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -227,7 +228,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	subChunk* sbc = GetSubChunk(y);
 
-	if (sbc->y <= -1 && id > 0) // cant create air
+	if (sbc == nullptr && id > 0) // cant create air
 	{
 		// create subchunk
 
@@ -243,11 +244,45 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		if (sbc->blocks[(int)w.x][(int)w.z] != nullptr) // if it exists, delete it if necessary
 		{
 			if (id <= 0)
+			{
 				delete sbc->blocks[(int)w.x][(int)w.z];
+
+				if (sbc->blocks[(int)w.x][(int)w.z]->transparent)
+				{
+					// delete from transparent blocks
+
+					for (int i = 0; i < transparentBlocks.size(); i++)
+					{
+						Block* b = transparentBlocks[i];
+
+						if (b->position == sbc->blocks[(int)w.x][(int)w.z]->position)
+						{
+							transparentBlocks.erase(transparentBlocks.begin() + i);
+							break;
+						}
+					}
+				}
+			}
 		}
 
 		if (id <= 0) // destroyed block
 		{
+			if (sbc->blocks[(int)w.x][(int)w.z]->transparent)
+			{
+				// delete from transparent blocks
+
+				for (int i = 0; i < transparentBlocks.size(); i++)
+				{
+					Block* b = transparentBlocks[i];
+
+					if (b->position == sbc->blocks[(int)w.x][(int)w.z]->position)
+					{
+						transparentBlocks.erase(transparentBlocks.begin() + i);
+						break;
+					}
+				}
+			}
+
 			sbc->blocks[(int)w.x][(int)w.z] = nullptr;
 			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = 0;
 		}
@@ -255,13 +290,16 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		{
 			sbc->blocks[(int)w.x][(int)w.z] = CreateBlock(w.x, w.y, w.z, id);
 
+			if (sbc->blocks[(int)w.x][(int)w.z]->transparent)
+				transparentBlocks.push_back(sbc->blocks[(int)w.x][(int)w.z]);
+
 			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
 		}
 	}
 
 	subChunk* sbcBelow = GetSubChunk(y - 1);
 
-	if (sbcBelow != nullptr) // create below
+	if (sbcBelow == nullptr) // create below
 	{
 		sbcBelow = CreateSubChunk(y - 1);
 
@@ -271,7 +309,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	subChunk* sbcAbove = GetSubChunk(y + 1);
 
-	if (sbcAbove != nullptr) // create above
+	if (sbcAbove == nullptr) // create above
 	{
 		sbcAbove = CreateSubChunk(y + 1);
 
@@ -293,7 +331,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 			subChunk* s = c->GetSubChunk(y);
 
-			if (s != nullptr)
+			if (s == nullptr)
 			{
 				s = c->CreateSubChunk(y);
 
@@ -313,7 +351,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		{
 			subChunk* s = c->GetSubChunk(y);
 
-			if (s != nullptr)
+			if (s == nullptr)
 			{
 				s = c->CreateSubChunk(y);
 
@@ -333,7 +371,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		{
 			subChunk* s = c->GetSubChunk(y);
 
-			if (s != nullptr)
+			if (s == nullptr)
 			{
 				s = c->CreateSubChunk(y);
 
@@ -353,7 +391,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		{
 			subChunk* s = c->GetSubChunk(y);
 
-			if (s != nullptr)
+			if (s == nullptr)
 			{
 				s = c->CreateSubChunk(y);
 
@@ -387,23 +425,24 @@ void Chunk::CreateFaces(Block* b)
 	int y = b->position.y;
 	int z = b->position.z;
 
+	int t = GetBlock(x, y + 1, z);
 	// in our chunk
-	if (DoesBlockExist(x, y + 1, z))
+	if (t > 0 && t != GLASS && t != WATER)
 		top = false;
-
-	if (DoesBlockExist(x, y - 1, z))
+	t = GetBlock(x, y - 1, z);
+	if (t > 0 && t != GLASS && t != WATER)
 		bottom = false;
-
-	if (DoesBlockExist(x + 1, y, z))
+	t = GetBlock(x + 1, y, z);
+	if (t > 0 && t != GLASS && t != WATER)
 		left = false;
-
-	if (DoesBlockExist(x - 1, y, z))
+	t = GetBlock(x - 1, y, z);
+	if (t > 0 && t != GLASS && t != WATER)
 		right = false;
-
-	if (DoesBlockExist(x, y, z - 1))
+	t = GetBlock(x, y, z - 1);
+	if (t > 0 && t != GLASS && t != WATER)
 		front = false;
-
-	if (DoesBlockExist(x, y, z + 1))
+	t = GetBlock(x, y, z + 1);
+	if (t > 0 && t != GLASS && t != WATER)
 		back = false;
 
 	// create faces
@@ -471,6 +510,9 @@ void Chunk::RenderSubChunk(subChunk* sbc)
 		{
 			Block* block = sbc->getBlock(x, z);
 			if (block == nullptr)
+				continue;
+
+			if (block->transparent)
 				continue;
 
 			CreateFaces(block);
@@ -576,7 +618,7 @@ bool Chunk::IsInChunk(float x, float z)
 
 void Chunk::RenderSubChunkShadow(subChunk* sbc)
 {
-	if (sbc->y <= -1)
+	if (sbc == nullptr)
 		return;
 
 	for (int x = 0; x < CHUNK_SIZE; x++)
@@ -648,6 +690,8 @@ subChunk* Chunk::CreateSubChunk(int y)
 
 	bool isOccluded = true;
 
+	std::vector<Block*> transBlocks = {};
+
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
@@ -676,15 +720,28 @@ subChunk* Chunk::CreateSubChunk(int y)
 					isOccluded = false;
 			}
 
-			sbc->blocks[x][z] = CreateBlock(x, y, z, id);
+			Block* b = CreateBlock(x, y, z, id);
+
+			if (b->transparent)
+				transBlocks.push_back(b);
+
+			sbc->blocks[x][z] = b;
 		}
 	}
 
 	if (isOccluded)
 	{
+		for(Block* b : transBlocks)
+		{
+			delete b;
+		}
+		transBlocks.clear();
+
 		DestroySubChunk(sbc);
 		return nullptr;
 	}
+
+	transparentBlocks.insert(transparentBlocks.end(), transBlocks.begin(), transBlocks.end());
 
 	return sbc;
 }
@@ -721,6 +778,9 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 		break;
 	case WOODENPLANKS:
 		block = new WoodenPlank(position + glm::vec3(x, y, z));
+		break;
+	case GLASS:
+		block = new Glass(position + glm::vec3(x, y, z));
 		break;
 	default:
 		block = new Dirt(position + glm::vec3(x, y, z));
@@ -761,6 +821,8 @@ void Chunk::DestroySubChunks()
 	for (int i = 0; i < subChunks.size(); i++)
 		DestroySubChunk(subChunks[i]->y);
 
+	transparentBlocks.clear();
+
 	subChunks.clear();
 }
 
@@ -800,6 +862,42 @@ void Chunk::SetBuffer()
 	size = indices.size();
 }
 
+void Chunk::SetTransparentBuffer()
+{
+	transparentVertices.clear();
+	transparentIndices.clear();
+
+	for(Block* b : transparentBlocks)
+	{
+		CreateFaces(b);
+		for (BlockFace f : b->faces)
+		{
+			transparentVertices.insert(transparentVertices.end(), f.vertices.begin(), f.vertices.end());
+			for (int i = 0; i < f.indices.size(); i++)
+				transparentIndices.push_back(f.indices[i] + transparentVertices.size() - f.vertices.size());
+		}
+	}
+
+	// bind transparent vertex array
+	glBindVertexArray(TRANSPARENTVAO);
+
+	glBindBuffer(GL_ARRAY_BUFFER, TRANSPARENTVBO);
+	glBufferData(GL_ARRAY_BUFFER, transparentVertices.size() * sizeof(GameObject::VVertex), transparentVertices.data(), GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TRANSPARENTEBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, transparentIndices.size() * sizeof(unsigned int), transparentIndices.data(), GL_STATIC_DRAW);
+
+	// position attribute
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	// uv attribute
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
+	glEnableVertexAttribArray(1);
+
+	glBindVertexArray(0);
+}
+
 void Chunk::SetShadowBuffer()
 {
 	// bind shadow vertex array
@@ -831,6 +929,10 @@ void Chunk::Init()
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
 
+	glGenVertexArrays(1, &TRANSPARENTVAO);
+	glGenBuffers(1, &TRANSPARENTVBO);
+	glGenBuffers(1, &TRANSPARENTEBO);
+
 	glGenVertexArrays(1, &SHADOWVAO);
 	glGenBuffers(1, &SHADOWVBO);
 	glGenBuffers(1, &SHADOWEBO);
@@ -854,7 +956,7 @@ void Chunk::Unload()
 	DestroySubChunks();
 }
 
-void Chunk::Draw()
+void Chunk::DrawRegular()
 {
 	if (!isRendered)
 		return;
@@ -879,6 +981,52 @@ void Chunk::Draw()
 
 	txp->Unbind();
 	s->Unbind();
+
+	glBindVertexArray(0);
+
+	glDisable(GL_CULL_FACE);
+}
+
+void Chunk::DrawTransparent()
+{
+	if (!isRendered)
+		return;
+
+	Shader* s = Game::instance->shader;
+
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_CULL_FACE);
+
+	glBindVertexArray(TRANSPARENTVAO); // transparent faces
+	txp->Bind();
+	s->Bind();
+
+	glm::mat4 model = glm::mat4(1.0f);
+
+	s->SetUniformMat4f("model", &model[0][0]);
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TRANSPARENTEBO);
+
+	glDrawElements(GL_TRIANGLES, transparentIndices.size(), GL_UNSIGNED_INT, 0);
+
+	txp->Unbind();
+	s->Unbind();
+
+	glBindVertexArray(0);
+
+	glDisable(GL_CULL_FACE);
+}
+
+void Chunk::DrawShadows()
+{
+	if (!isRendered)
+		return;
+
+	Shader* s = Game::instance->shader;
+
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_CULL_FACE);
+
 	glBindVertexArray(SHADOWVAO); // shadow faces
 	txp->Bind();
 	s->Bind();

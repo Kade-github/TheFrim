@@ -20,11 +20,17 @@ public:
 class Chunk : public GameObject
 {
     unsigned int VAO, VBO, EBO;
+
+    unsigned int TRANSPARENTVAO, TRANSPARENTVBO, TRANSPARENTEBO;
+
     unsigned int SHADOWVAO, SHADOWVBO, SHADOWEBO;
     Texture* txp;
 
     std::vector<GameObject::VVertex> vertices;
     std::vector<unsigned int> indices;
+
+    std::vector<GameObject::VVertex> transparentVertices;
+    std::vector<unsigned int> transparentIndices;
 
     std::vector<GameObject::VVertex> shadowVertices;
     std::vector<unsigned int> shadowIndices;
@@ -51,6 +57,8 @@ public:
     std::vector<subChunk*> subChunks;
 
     subChunk* GetSubChunk(int y);
+
+    std::vector<Block*> transparentBlocks;
 
     Data::Chunk GetChunkData();
 
@@ -87,6 +95,7 @@ public:
     void CreateSubChunks();
 
     void SetBuffer();
+    void SetTransparentBuffer();
     void SetShadowBuffer();
 
     void Init();
@@ -94,7 +103,9 @@ public:
 
     void Unload();
 
-    void Draw() override;
+    void DrawRegular();
+    void DrawTransparent();
+    void DrawShadows();
 
 };
 

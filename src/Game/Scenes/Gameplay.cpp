@@ -118,6 +118,39 @@ void Gameplay::Draw()
 
 	MusicManager::GetInstance()->Update();
 
+	// Draw chunks (regular)
+
+	for (Region& r : wm->regions)
+	{
+		for (Chunk* c : r.chunks)
+		{
+			if (c->isRendered)
+				c->DrawRegular();
+		}
+	}
+
+	// Draw chunks (transparent)
+
+	for (Region& r : wm->regions)
+	{
+		for (Chunk* c : r.chunks)
+		{
+			if (c->isRendered)
+				c->DrawTransparent();
+		}
+	}
+
+	// Draw chunks (shadow)
+
+	for (Region& r : wm->regions)
+	{
+		for (Chunk* c : r.chunks)
+		{
+			if (c->isRendered)
+				c->DrawShadows();
+		}
+	}
+
 	Scene::Draw();
 
 	dim->Update(); // these use delayed 
@@ -232,6 +265,7 @@ void Gameplay::UpdateChunks()
 					{
 						c->pleaseRender = false;
 						c->SetBuffer();
+						c->SetTransparentBuffer();
 						c->SetShadowBuffer();
 					}
 					c->isRendered = true;
