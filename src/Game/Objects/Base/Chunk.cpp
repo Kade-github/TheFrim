@@ -629,6 +629,9 @@ void Chunk::RenderSubChunkShadow(subChunk* sbc)
 			if (block == nullptr)
 				continue;
 
+			if (block->transparent)
+				continue;
+
 			for (BlockFace f : block->faces)
 			{
 				// check light
