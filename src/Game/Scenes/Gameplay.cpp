@@ -31,8 +31,6 @@ void Gameplay::Create()
 
 	c2d->s->LoadShader("Assets/Shaders/vert2d.glsl", "Assets/Shaders/frag2d.glsl");
 
-	AddObject(c2d);
-
 	c2d->order = 3;
 
 	Camera* camera = Game::instance->GetCamera();
@@ -42,15 +40,9 @@ void Gameplay::Create()
 
 	player = new Player(wm->GetPlayerPosition());
 
-	AddObject(player);
-
 	player->order = 2;
 
 	hud = new Hud(glm::vec3(0, 0, 0), player, c2d);
-
-	AddObject(hud);
-
-	AddObject(hud->hand);
 
 	hud->hand->order = 2;
 
@@ -129,17 +121,6 @@ void Gameplay::Draw()
 		}
 	}
 
-	// Draw chunks (transparent)
-
-	for (Region& r : wm->regions)
-	{
-		for (Chunk* c : r.chunks)
-		{
-			if (c->isRendered)
-				c->DrawTransparent();
-		}
-	}
-
 	// Draw chunks (shadow)
 
 	for (Region& r : wm->regions)
@@ -152,6 +133,23 @@ void Gameplay::Draw()
 	}
 
 	Scene::Draw();
+
+	// Draw chunks (transparent)
+
+	for (Region& r : wm->regions)
+	{
+		for (Chunk* c : r.chunks)
+		{
+			if (c->isRendered)
+				c->DrawTransparent();
+		}
+	}
+
+	player->Draw();
+
+	hud->Draw();
+
+	c2d->Draw();
 
 	dim->Update(); // these use delayed 
 
@@ -552,6 +550,9 @@ void Gameplay::MouseClick(int button, glm::vec2 mPos)
 	{
 		objects[i]->MouseClick(button, mPos);
 	}
+
+	hud->MouseClick(button, mPos);
+	player->MouseClick(button, mPos);
 }
 
 void Gameplay::MouseRelease(int button, glm::vec2 mPos)
@@ -560,6 +561,9 @@ void Gameplay::MouseRelease(int button, glm::vec2 mPos)
 	{
 		objects[i]->MouseRelease(button, mPos);
 	}
+
+	hud->MouseRelease(button, mPos);
+	player->MouseRelease(button, mPos);
 }
 
 void Gameplay::OnScroll(double x, double y)
@@ -568,6 +572,9 @@ void Gameplay::OnScroll(double x, double y)
 	{
 		objects[i]->OnScroll(x, y);
 	}
+
+	hud->OnScroll(x, y);
+	player->OnScroll(x, y);
 }
 
 void Gameplay::FocusChange(bool focus)
@@ -583,6 +590,7 @@ void Gameplay::FocusChange(bool focus)
 	{
 		player->TogglePauseMenu();
 	}
+
 }
 
 void Gameplay::Destroy()
