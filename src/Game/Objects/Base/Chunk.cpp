@@ -288,10 +288,8 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		}
 		else
 		{
-			sbc->blocks[(int)w.x][(int)w.z] = CreateBlock(w.x, w.y, w.z, id);
-
-			if (sbc->blocks[(int)w.x][(int)w.z]->transparent)
-				transparentBlocks.push_back(sbc->blocks[(int)w.x][(int)w.z]);
+			Block* _b = CreateBlock(w.x, w.y, w.z, id);
+			sbc->blocks[(int)w.x][(int)w.z] = _b;
 
 			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
 		}
@@ -744,8 +742,15 @@ subChunk* Chunk::CreateSubChunk(int y)
 		return nullptr;
 	}
 
-	if (transparentBlocks.size() != 0)
-		transparentBlocks.insert(transparentBlocks.end(), transBlocks.begin(), transBlocks.end());
+	if (transBlocks.size() != 0)
+	{
+		for (Block* b : transBlocks)
+		{
+			// if it doesn't contain
+			if (std::find(transparentBlocks.begin(), transparentBlocks.end(), b) == transparentBlocks.end())
+				transparentBlocks.push_back(b);
+		}
+	}
 
 	return sbc;
 }
@@ -810,8 +815,27 @@ void Chunk::DestroySubChunk(subChunk* c)
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
 			Block* b = c->blocks[x][z];
-			if (b != nullptr)
-				std::free(b);
+
+			if (b == nullptr)
+				continue;
+
+			if (b->transparent)
+			{
+				// delete from transparent blocks
+
+				for (int i = 0; i < transparentBlocks.size(); i++)
+				{
+					Block* b = transparentBlocks[i];
+
+					if (b->position == c->blocks[x][z]->position)
+					{
+						transparentBlocks.erase(transparentBlocks.begin() + i);
+						break;
+					}
+				}
+			}
+
+			std::free(b);
 
 			c->blocks[x][z] = nullptr;
 		}
