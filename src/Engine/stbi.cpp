@@ -31,6 +31,7 @@ Texture* stbi_h::stbi_load_file_non_flipped(std::string filePath)
 
 unsigned char* stbi_h::stbi_load_file_data(std::string filePath, int* w, int* h)
 {
+	stbi_set_flip_vertically_on_load(false);
 	unsigned char* c = stbi_load(filePath.c_str(), w, h, nullptr, 4);
 	return c;
 }

@@ -1,6 +1,8 @@
 #include "Game/Scenes/MainMenu.h"
 #include <thread>
 
+#include <stbi.h>
+
 #include "Game/Data/Settings.h"
 
 int main()
@@ -165,6 +167,13 @@ int main()
 		});
 
 	renderThread.detach();
+
+
+	GLFWimage images[1];
+
+	images[0].pixels = stbi_h::stbi_load_file_data("Assets/Icon/frim_icon.png", &images[0].width, &images[0].height);
+
+	glfwSetWindowIcon(game.GetWindow(), 1, images);
 
 	game.needsUpdate = true;
 	game.isFullscreen = Settings::instance->fullscreen;
