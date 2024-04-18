@@ -5,6 +5,12 @@
 
 #include "Game/Data/Settings.h"
 
+#if defined(_WIN32) || defined(_WIN64)
+	#ifndef _DEBUG
+		#pragma comment(linker, "/SUBSYSTEM:windows /ENTRY:mainCRTStartup")
+	#endif
+#endif
+
 int main()
 {
 	Game game("The Frim", "0.0.3");
