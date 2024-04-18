@@ -24,7 +24,7 @@ void MusicManager::ShuffleTracks()
 
 	for (int i = 0; i < trackList.size(); i++)
 	{
-		std::uniform_real_distribution<int> distribution(0, trackList.size() - 1);
+		std::uniform_int_distribution<int> distribution(0, trackList.size() - 1);
 
 		int j = distribution(generator);
 
@@ -123,7 +123,7 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	nextTrack = glfwGetTime() + c.length + min;
 
-	std::uniform_real_distribution<int> distribution(min, 320); // 5 minute max
+	std::uniform_int_distribution<int> distribution(min, 320); // 5 minute max
 
 	int randomNumber = distribution(generator);
 
