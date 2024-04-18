@@ -8,7 +8,7 @@
 
 // split the chunk into subchunks by y axis.
 
-struct subChunk {
+class subChunk {
 public:
     int y = -1;
     Block* blocks[16][16] = {nullptr};

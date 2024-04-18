@@ -157,8 +157,13 @@ void Camera2D::UpdateFramebuffer()
 
 	s->Bind();
 
-	glm::mat4 projection = glm::ortho(0.0f, _w, _h, 0.0f);
-	s->SetUniformMat4f("projection", &projection[0][0]);
+	if (!setProject)
+	{
+		glm::mat4 projection = glm::ortho(0.0f, _w, _h, 0.0f);
+		s->SetUniformMat4f("projection", &projection[0][0]);
+
+		setProject = true;
+	}
 
 	glDisable(GL_DEPTH_TEST);
 

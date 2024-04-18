@@ -7,6 +7,7 @@
 class Camera2D : public GameObject
 {
 	int _lastId = 0;
+	bool setProject = false;
 public:
 	float _w, _h;
 	float _rW, _rH;

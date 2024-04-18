@@ -535,7 +535,7 @@ void Chunk::RenderSubChunks()
 	for (int i = 0; i < subChunks.size(); i++)
 	{
 		subChunk* sbc = subChunks[i];
-		if (sbc->y <= -1)
+		if (sbc == nullptr)
 			continue;
 
 		RenderSubChunk(sbc);
@@ -579,7 +579,7 @@ Data::Chunk Chunk::GetChunkData()
 	{
 		subChunk* sbc = GetSubChunk(y);
 
-		if (sbc->y <= -1) // not loaded
+		if (sbc == nullptr) // not loaded
 		{
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
@@ -675,7 +675,7 @@ void Chunk::RenderSubChunksShadow()
 	for (int i = 0; i < subChunks.size(); i++)
 	{
 		subChunk* sbc = subChunks[i];
-		if (sbc->y <= -1)
+		if (sbc == nullptr)
 			continue;
 
 		RenderSubChunkShadow(sbc);
@@ -741,7 +741,8 @@ subChunk* Chunk::CreateSubChunk(int y)
 		return nullptr;
 	}
 
-	transparentBlocks.insert(transparentBlocks.end(), transBlocks.begin(), transBlocks.end());
+	if (transparentBlocks.size() != 0)
+		transparentBlocks.insert(transparentBlocks.end(), transBlocks.begin(), transBlocks.end());
 
 	return sbc;
 }
@@ -958,7 +959,7 @@ void Chunk::Unload()
 
 void Chunk::DrawRegular()
 {
-	if (!isRendered)
+	if (!isRendered || size == 0)
 		return;
 
 	Shader* s = Game::instance->shader;
@@ -989,7 +990,7 @@ void Chunk::DrawRegular()
 
 void Chunk::DrawTransparent()
 {
-	if (!isRendered)
+	if (!isRendered || transparentIndices.size() == 0)
 		return;
 
 	Shader* s = Game::instance->shader;
@@ -1019,7 +1020,7 @@ void Chunk::DrawTransparent()
 
 void Chunk::DrawShadows()
 {
-	if (!isRendered)
+	if (!isRendered || shadowSize == 0)
 		return;
 
 	Shader* s = Game::instance->shader;

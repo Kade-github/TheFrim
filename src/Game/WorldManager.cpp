@@ -154,9 +154,9 @@ void WorldManager::CreateChunks(Region& r)
 
 void WorldManager::CheckGeneratedRegions()
 {
+	std::lock_guard<std::mutex> lock(generateMutex);
 	if (_generatedRegions.size() != 0)
 	{
-		std::lock_guard<std::mutex> lock(generateMutex);
 		for (Region r : _generatedRegions)
 			regions.push_back(r);
 
