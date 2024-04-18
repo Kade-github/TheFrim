@@ -223,7 +223,11 @@ void Gameplay::UpdateChunks()
 
 	wm->CheckGeneratedRegions();
 
+	static float lastUpdate = 0;
+
 	static std::vector<glm::vec2> toLoadedRegion = {};
+
+	float currentTime = glfwGetTime();
 
 	for (Region& r : wm->regions)
 	{
@@ -284,6 +288,14 @@ void Gameplay::UpdateChunks()
 					c->Unload();
 					c->isLoaded = false;
 				}
+			}
+
+			// Chunk updates
+
+			if (currentTime - lastUpdate > 0.05) // 20 updates a second (TPS)
+			{
+				if (c->isLoaded)
+					c->UpdateChunk();
 			}
 		}
 
@@ -498,8 +510,9 @@ void Gameplay::UpdateChunks()
 			}
 			break;
 		}
-
 	}
+
+	lastUpdate = glfwGetTime();
 }
 
 void Gameplay::KeyPress(int key)

@@ -1070,3 +1070,27 @@ void Chunk::DrawShadows()
 
 	glDisable(GL_CULL_FACE);
 }
+
+void Chunk::UpdateChunk()
+{
+	for (int i = 0; i < subChunks.size(); i++)
+	{
+		subChunk* sbc = subChunks[i];
+
+		if (sbc == nullptr)
+			continue;
+
+		for (int x = 0; x < CHUNK_SIZE; x++)
+		{
+			for (int z = 0; z < CHUNK_SIZE; z++)
+			{
+				Block* b = sbc->blocks[x][z];
+
+				if (b == nullptr)
+					continue;
+
+				b->Update();
+			}
+		}
+	}
+}
