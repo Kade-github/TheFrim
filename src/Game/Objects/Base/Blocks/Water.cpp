@@ -39,9 +39,9 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 
 	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
 
-	Water* b = (Water*)c->CreateBlock(_pos.x, _pos.y, _pos.z, WATER);
+	_pos -= c->position;
 
-	b->position -= c->position; // this gets added in CreateBlock
+	Water* b = (Water*)c->CreateBlock(_pos.x, _pos.y, _pos.z, WATER);
 
 	b->source = false;
 	b->strength = _strength;

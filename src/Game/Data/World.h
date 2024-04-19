@@ -13,23 +13,45 @@
 #include <mutex>
 #include <bitset>
 
+#include <vector>
+
 namespace Data
 {
+	struct DataTag
+	{
+		char name[32];
+		char value[64];
+
+		MSGPACK_DEFINE_ARRAY(name, value);
+	};
+
+	struct BlockData
+	{
+		uint8_t x = 0, y = 0, z = 0;
+		uint8_t type = 0;
+
+		std::vector<DataTag> tags;
+
+		MSGPACK_DEFINE_ARRAY(x, y, z, type, tags);
+
+	};
 
 	struct Chunk
 	{
 		bool isGenerated = false;
-		uint8_t blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_HEIGHT];
+		BlockData blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_HEIGHT];
 		int32_t x, z;
 
-		void placeBlock(int x, int y, int z, uint8_t block)
+		void placeBlock(int x, int y, int z, int type)
 		{
-			blocks[x][z][y] = block;
+			BlockData d;
+			d.type = type;
+			blocks[x][z][y] = d;
 		}
 
 		void removeBlock(int x, int y, int z)
 		{
-			blocks[x][z][y] = 0;
+			blocks[x][z][y] = {};
 		}
 
 		MSGPACK_DEFINE_ARRAY(blocks, x, z);

@@ -88,7 +88,7 @@ bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int rang
 				{
 					for (int _y = 0; _y < CHUNK_HEIGHT; _y++)
 					{
-						if (c.blocks[_x][_z][_y] == type)
+						if (c.blocks[_x][_z][_y].type == type)
 						{
 							if (abs(c.x + _x - x) < range && abs(c.z + _z - z) < range && abs(_y - y) < range)
 								return true;
@@ -240,7 +240,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 		{
 			for (int _y = 0; _y < CHUNK_HEIGHT; _y++)
 			{
-				chunk.blocks[_x][_z][_y] = 0;
+				chunk.blocks[_x][_z][_y].type = 0;
 			}
 		}
 	}
@@ -267,11 +267,11 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			for (int _y = rY; _y > -1; _y--)
 			{
 				if (_y == rY) // grass
-					chunk.blocks[_x][_z][_y] = GRASS;
+					chunk.blocks[_x][_z][_y].type = GRASS;
 				else if (_y > rY - 5) // dirt
-					chunk.blocks[_x][_z][_y] = DIRT;
+					chunk.blocks[_x][_z][_y].type = DIRT;
 				else // stone
-					chunk.blocks[_x][_z][_y] = STONE;
+					chunk.blocks[_x][_z][_y].type = STONE;
 			}
 		}
 	}
@@ -300,12 +300,12 @@ void Data::Region::generateStructures()
 				{
 					for (int _y = CHUNK_HEIGHT - 1; _y > -1; _y--)
 					{
-						if (c.blocks[_x][_z][_y] <= 0)
+						if (c.blocks[_x][_z][_y].type <= 0)
 							continue;
 
 						// trees
 
-						if (c.blocks[_x][_z][_y] == GRASS)
+						if (c.blocks[_x][_z][_y].type == GRASS)
 						{
 							int _rx = c.x + _x;
 							int _rz = c.z + _z;
