@@ -6,6 +6,9 @@
 class Water : public Block
 {
 public:
+	bool source = false;
+	int strength = 8;
+
 	Water(glm::vec3 _position) : Block(_position, BlockType::WATER) {
 		position = _position;
 
@@ -78,6 +81,12 @@ public:
 
 		return BlockFace(bottomVertices, { 0, 1, 3, 1, 2, 3 });
 	}
+
+	std::vector<glm::vec3> GetFreeSpaces(glm::vec3 _pos);
+
+	void PlaceWater(glm::vec3 _pos, int _strength);
+
+	void Update() override;
 };
 
 #endif

@@ -292,7 +292,7 @@ void Gameplay::UpdateChunks()
 
 			// Chunk updates
 
-			if (currentTime - lastUpdate > 0.05) // 20 updates a second (TPS)
+			if (currentTime - lastUpdate > 0.5f) // 5 updates a second (TPS)
 			{
 				if (c->isLoaded)
 					c->UpdateChunk();
@@ -511,8 +511,8 @@ void Gameplay::UpdateChunks()
 			break;
 		}
 	}
-
-	lastUpdate = glfwGetTime();
+	if (currentTime - lastUpdate > 0.5f) // 5 updates a second (TPS)
+		lastUpdate = glfwGetTime();
 }
 
 void Gameplay::KeyPress(int key)

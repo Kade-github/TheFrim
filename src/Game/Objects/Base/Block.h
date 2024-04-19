@@ -79,6 +79,8 @@ public:
 	glm::vec3 position;
 	BlockType type;
 
+	bool changedBlocks = false;
+
 	bool transparent = false;
 	bool isInteractable = false;
 

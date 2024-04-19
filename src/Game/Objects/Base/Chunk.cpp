@@ -206,7 +206,103 @@ int Chunk::GetBlockNoCheck(float x, float y, float z)
 
 bool Chunk::DoesBlockExist(float x, float y, float z)
 {
+	if (y < 0 || y > CHUNK_HEIGHT - 1)
+		return false;
+
+	if (x < position.x || x >= position.x + CHUNK_SIZE)
+		return InterchunkDoesBlockExist(x, y, z);
+
+	if (z < position.z || z >= position.z + CHUNK_SIZE)
+		return InterchunkDoesBlockExist(x, y, z);
+
 	return GetBlock(x, y, z) > 0; // if its anything under 0 (thats impossible, uint etc), and if its 0 it's air.
+}
+
+void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
+{
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+	if (w.x == 0)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+
+		if (c != nullptr)
+		{
+			// check if we need to create a subchunk
+
+			subChunk* s = c->GetSubChunk(y);
+
+			if (s == nullptr)
+			{
+				s = c->CreateSubChunk(y);
+
+				if (s != nullptr)
+					c->subChunks.push_back(s);
+
+				gp->QueueLoadBlocks(c);
+			}
+		}
+	}
+
+	if (w.x == CHUNK_SIZE - 1)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+
+		if (c != nullptr)
+		{
+			subChunk* s = c->GetSubChunk(y);
+
+			if (s == nullptr)
+			{
+				s = c->CreateSubChunk(y);
+
+				if (s != nullptr)
+					c->subChunks.push_back(s);
+
+				gp->QueueLoadBlocks(c);
+			}
+		}
+	}
+
+	if (w.z == 0)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+
+		if (c != nullptr)
+		{
+			subChunk* s = c->GetSubChunk(y);
+
+			if (s == nullptr)
+			{
+				s = c->CreateSubChunk(y);
+
+				if (s != nullptr)
+					c->subChunks.push_back(s);
+
+				gp->QueueLoadBlocks(c);
+			}
+		}
+	}
+
+	if (w.z == CHUNK_SIZE - 1)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
+
+		if (c != nullptr)
+		{
+			subChunk* s = c->GetSubChunk(y);
+
+			if (s == nullptr)
+			{
+				s = c->CreateSubChunk(y);
+
+				if (s != nullptr)
+					c->subChunks.push_back(s);
+
+				gp->QueueLoadBlocks(c);
+			}
+		}
+	}
 }
 
 void Chunk::ModifyBlock(float x, float y, float z, int id)
@@ -236,7 +332,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 		sbc = CreateSubChunk(y);
 
-		if (sbc->y > -1)
+		if (sbc != nullptr)
 			subChunks.push_back(sbc);
 	}
 	else
@@ -246,54 +342,30 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 			if (id <= 0)
 			{
 				delete sbc->blocks[(int)w.x][(int)w.z];
-
-				if (sbc->blocks[(int)w.x][(int)w.z]->transparent)
-				{
-					// delete from transparent blocks
-
-					for (int i = 0; i < transparentBlocks.size(); i++)
-					{
-						Block* b = transparentBlocks[i];
-
-						if (b->position == sbc->blocks[(int)w.x][(int)w.z]->position)
-						{
-							transparentBlocks.erase(transparentBlocks.begin() + i);
-							break;
-						}
-					}
-				}
 			}
 		}
 
 		if (id <= 0) // destroyed block
 		{
-			if (sbc->blocks[(int)w.x][(int)w.z]->transparent)
-			{
-				// delete from transparent blocks
-
-				for (int i = 0; i < transparentBlocks.size(); i++)
-				{
-					Block* b = transparentBlocks[i];
-
-					if (b->position == sbc->blocks[(int)w.x][(int)w.z]->position)
-					{
-						transparentBlocks.erase(transparentBlocks.begin() + i);
-						break;
-					}
-				}
-			}
-
 			sbc->blocks[(int)w.x][(int)w.z] = nullptr;
 			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = 0;
 		}
 		else
 		{
 			Block* _b = CreateBlock(w.x, w.y, w.z, id);
+
+			if (_b->type == WATER)
+			{
+				Water* w = (Water*)_b;
+				w->source = true;
+			}
+
 			sbc->blocks[(int)w.x][(int)w.z] = _b;
 
 			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
 		}
 	}
+
 
 	subChunk* sbcBelow = GetSubChunk(y - 1);
 
@@ -301,7 +373,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	{
 		sbcBelow = CreateSubChunk(y - 1);
 
-		if (sbcBelow->y > -1)
+		if (sbcBelow != nullptr)
 			subChunks.push_back(sbcBelow);
 	}
 
@@ -311,7 +383,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	{
 		sbcAbove = CreateSubChunk(y + 1);
 
-		if (sbcAbove->y > -1)
+		if (sbcAbove != nullptr)
 			subChunks.push_back(sbcAbove);
 	}
 
@@ -319,90 +391,131 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	gp->QueueLoadBlocks(this);
 
-	if (w.x == 0)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
-
-		if (c != nullptr)
-		{
-			// check if we need to create a subchunk
-
-			subChunk* s = c->GetSubChunk(y);
-
-			if (s == nullptr)
-			{
-				s = c->CreateSubChunk(y);
-
-				if (s->y > -1)
-					c->subChunks.push_back(s);
-
-				gp->QueueLoadBlocks(c);
-			}
-		}
-	}
-
-	if (w.x == CHUNK_SIZE - 1)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
-
-		if (c != nullptr)
-		{
-			subChunk* s = c->GetSubChunk(y);
-
-			if (s == nullptr)
-			{
-				s = c->CreateSubChunk(y);
-
-				if (s->y > -1)
-					c->subChunks.push_back(s);
-
-				gp->QueueLoadBlocks(c);
-			}
-		}
-	}
-
-	if (w.z == 0)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
-
-		if (c != nullptr)
-		{
-			subChunk* s = c->GetSubChunk(y);
-
-			if (s == nullptr)
-			{
-				s = c->CreateSubChunk(y);
-
-				if (s->y > -1)
-					c->subChunks.push_back(s);
-
-				gp->QueueLoadBlocks(c);
-			}
-		}
-	}
-
-	if (w.z == CHUNK_SIZE - 1)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
-
-		if (c != nullptr)
-		{
-			subChunk* s = c->GetSubChunk(y);
-
-			if (s == nullptr)
-			{
-				s = c->CreateSubChunk(y);
-
-				if (s->y > -1)
-					c->subChunks.push_back(s);
-
-				gp->QueueLoadBlocks(c);
-			}
-		}
-	}
+	CreateOtherSubchunks(x, y, z, w);
 
 	LightingManager::GetInstance()->RefreshShadows();
 
+}
+
+void Chunk::PlaceBlock(float x, float y, float z, Block* b)
+{
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
+
+	if (x >= 0 && x < CHUNK_SIZE - 1)
+		w.x = (int)x;
+
+	if (z >= 0 && z < CHUNK_SIZE - 1)
+		w.z = (int)z;
+
+	if (w.x > CHUNK_SIZE - 1)
+		return;
+
+	if (w.z > CHUNK_SIZE - 1)
+		return;
+
+	subChunk* sbc = GetSubChunk(y);
+
+	if (sbc == nullptr) // cant create air
+	{
+		// create subchunk
+
+		myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
+
+		sbc = CreateSubChunk(y);
+
+		if (sbc != nullptr)
+			subChunks.push_back(sbc);
+	}
+	else
+	{
+		if (sbc->blocks[(int)w.x][(int)w.z] != nullptr) // you can't place it duhh
+			return;
+
+		sbc->blocks[(int)w.x][(int)w.z] = b;
+
+		myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
+	}
+
+
+	subChunk* sbcBelow = GetSubChunk(y - 1);
+
+	if (sbcBelow == nullptr) // create below
+	{
+		sbcBelow = CreateSubChunk(y - 1);
+
+		if (sbcBelow != nullptr)
+			subChunks.push_back(sbcBelow);
+	}
+
+	subChunk* sbcAbove = GetSubChunk(y + 1);
+
+	if (sbcAbove == nullptr) // create above
+	{
+		sbcAbove = CreateSubChunk(y + 1);
+
+		if (sbcAbove != nullptr)
+			subChunks.push_back(sbcAbove);
+	}
+
+	// check if we need to update other chunks
+
+	gp->QueueLoadBlocks(this);
+
+	CreateOtherSubchunks(x, y, z, w);
+
+	LightingManager::GetInstance()->RefreshShadows();
+}
+
+void Chunk::BlitPlaceBlock(std::vector<Block*> bs)
+{
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+	
+	for (Block* b : bs)
+	{
+		glm::vec3 w = WorldToChunk(b->position);
+
+		if (b->position.x >= 0 && b->position.x < CHUNK_SIZE - 1)
+			w.x = (int)b->position.x;
+
+		if (b->position.z >= 0 && b->position.z < CHUNK_SIZE - 1)
+			w.z = (int)b->position.z;
+
+		if (w.x > CHUNK_SIZE - 1)
+			continue;
+
+		if (w.z > CHUNK_SIZE - 1)
+			continue;
+
+		subChunk* sbc = GetSubChunk(b->position.y);
+
+		if (sbc == nullptr) // cant create air
+		{
+			// create subchunk
+
+			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
+
+			sbc = CreateSubChunk(b->position.y);
+
+			if (sbc != nullptr)
+				subChunks.push_back(sbc);
+		}
+		else
+		{
+			if (sbc->blocks[(int)w.x][(int)w.z] != nullptr) // if it exists, delete it if necessary
+			{
+				delete sbc->blocks[(int)w.x][(int)w.z];
+			}
+
+			sbc->blocks[(int)w.x][(int)w.z] = b;
+
+			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
+		}
+
+		CreateOtherSubchunks(b->position.x, b->position.y, b->position.z, w);
+	}
+
+	LightingManager::GetInstance()->RefreshShadows();
 }
 
 // this is made confusingly. I'm sorry.
@@ -425,22 +538,22 @@ void Chunk::CreateFaces(Block* b)
 
 	int t = GetBlock(x, y + 1, z);
 	// in our chunk
-	if (t > 0 && t != GLASS && t != WATER)
+	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
 		top = false;
 	t = GetBlock(x, y - 1, z);
-	if (t > 0 && t != GLASS && t != WATER)
+	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
 		bottom = false;
 	t = GetBlock(x + 1, y, z);
-	if (t > 0 && t != GLASS && t != WATER)
+	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
 		left = false;
 	t = GetBlock(x - 1, y, z);
-	if (t > 0 && t != GLASS && t != WATER)
+	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
 		right = false;
 	t = GetBlock(x, y, z - 1);
-	if (t > 0 && t != GLASS && t != WATER)
+	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
 		front = false;
 	t = GetBlock(x, y, z + 1);
-	if (t > 0 && t != GLASS && t != WATER)
+	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
 		back = false;
 
 	// create faces
@@ -511,7 +624,17 @@ void Chunk::RenderSubChunk(subChunk* sbc)
 				continue;
 
 			if (block->transparent)
+			{
+				CreateFaces(block);
+
+				for (BlockFace f : block->faces)
+				{
+					transparentVertices.insert(transparentVertices.end(), f.vertices.begin(), f.vertices.end());
+					for (int i = 0; i < f.indices.size(); i++)
+						transparentIndices.push_back(f.indices[i] + transparentVertices.size() - f.vertices.size());
+				}
 				continue;
+			}
 
 			CreateFaces(block);
 
@@ -529,6 +652,9 @@ void Chunk::RenderSubChunks()
 {
 	vertices.clear();
 	indices.clear();
+
+	transparentVertices.clear();
+	transparentIndices.clear();
 
 	for (int i = 0; i < subChunks.size(); i++)
 	{
@@ -691,8 +817,6 @@ subChunk* Chunk::CreateSubChunk(int y)
 
 	bool isOccluded = true;
 
-	std::vector<Block*> transBlocks = {};
-
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
@@ -723,35 +847,15 @@ subChunk* Chunk::CreateSubChunk(int y)
 
 			Block* b = CreateBlock(x, y, z, id);
 
-			if (b->transparent)
-				transBlocks.push_back(b);
-
 			sbc->blocks[x][z] = b;
 		}
 	}
 
 	if (isOccluded)
 	{
-		for(Block* b : transBlocks)
-		{
-			delete b;
-		}
-		transBlocks.clear();
-
 		DestroySubChunk(sbc);
 		return nullptr;
 	}
-
-	if (transBlocks.size() != 0)
-	{
-		for (Block* b : transBlocks)
-		{
-			// if it doesn't contain
-			if (std::find(transparentBlocks.begin(), transparentBlocks.end(), b) == transparentBlocks.end())
-				transparentBlocks.push_back(b);
-		}
-	}
-
 	return sbc;
 }
 
@@ -819,22 +923,6 @@ void Chunk::DestroySubChunk(subChunk* c)
 			if (b == nullptr)
 				continue;
 
-			if (b->transparent)
-			{
-				// delete from transparent blocks
-
-				for (int i = 0; i < transparentBlocks.size(); i++)
-				{
-					Block* b = transparentBlocks[i];
-
-					if (b->position == c->blocks[x][z]->position)
-					{
-						transparentBlocks.erase(transparentBlocks.begin() + i);
-						break;
-					}
-				}
-			}
-
 			std::free(b);
 
 			c->blocks[x][z] = nullptr;
@@ -848,8 +936,6 @@ void Chunk::DestroySubChunks()
 {
 	for (int i = 0; i < subChunks.size(); i++)
 		DestroySubChunk(subChunks[i]->y);
-
-	transparentBlocks.clear();
 
 	subChunks.clear();
 }
@@ -892,20 +978,6 @@ void Chunk::SetBuffer()
 
 void Chunk::SetTransparentBuffer()
 {
-	transparentVertices.clear();
-	transparentIndices.clear();
-
-	for(Block* b : transparentBlocks)
-	{
-		CreateFaces(b);
-		for (BlockFace f : b->faces)
-		{
-			transparentVertices.insert(transparentVertices.end(), f.vertices.begin(), f.vertices.end());
-			for (int i = 0; i < f.indices.size(); i++)
-				transparentIndices.push_back(f.indices[i] + transparentVertices.size() - f.vertices.size());
-		}
-	}
-
 	// bind transparent vertex array
 	glBindVertexArray(TRANSPARENTVAO);
 
@@ -1090,6 +1162,12 @@ void Chunk::UpdateChunk()
 					continue;
 
 				b->Update();
+
+				if (b->changedBlocks)
+				{
+					b->changedBlocks = false;
+					return;
+				}
 			}
 		}
 	}

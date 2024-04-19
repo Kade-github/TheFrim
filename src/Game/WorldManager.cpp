@@ -112,14 +112,16 @@ bool WorldManager::IsRegionGenerated(int x, int z)
 	bool found = false;
 
 	bool loaded = false;
-
-	for (auto& r : regions)
-	{
-		if (r.startX == x && r.startZ == z)
+	{	
+		std::lock_guard<std::mutex> lock(generateMutex);
+		for (auto& r : regions)
 		{
-			found = true;
-			loaded = true;
-			break;
+			if (r.startX == x && r.startZ == z)
+			{
+				found = true;
+				loaded = true;
+				break;
+			}
 		}
 	}
 
@@ -234,6 +236,7 @@ void WorldManager::LoadWorld()
 
 Region& WorldManager::GetRegion(float x, float z)
 {
+	std::lock_guard<std::mutex> lock(generateMutex);
 	for (auto& r : regions)
 	{
 		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)
@@ -270,6 +273,7 @@ void WorldManager::SaveRegion(int x, int z)
 
 bool WorldManager::isRegionLoaded(float x, float z)
 {
+	std::lock_guard<std::mutex> lock(generateMutex);
 	for (auto& r : regions)
 	{
 		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)

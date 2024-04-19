@@ -351,6 +351,7 @@ void Player::Draw()
 				glm::vec3 _world = c->WorldToChunk(ray);
 
 				selectedBlock = sb->getBlock(_world.x, _world.z);
+
 			}
 			else
 				selectedBlock = nullptr;
@@ -458,35 +459,41 @@ void Player::Draw()
 					}
 
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
+
+					selectedBlock = nullptr;
 				}
 			}
 
-			std::vector<BlockFace> faces = {};
-
-			faces.push_back(selectedBlock->BreakTopFace());
-			ApplyNormal(faces[0].vertices, glm::vec3(0, 1, 0));
-			faces.push_back(selectedBlock->BreakBottomFace());
-			ApplyNormal(faces[1].vertices, glm::vec3(0, -1, 0));
-			faces.push_back(selectedBlock->BreakLeftFace());
-			ApplyNormal(faces[2].vertices, glm::vec3(1, 0, 0));
-			faces.push_back(selectedBlock->BreakRightFace());
-			ApplyNormal(faces[3].vertices, glm::vec3(-1, 0, 0));
-			faces.push_back(selectedBlock->BreakFrontFace());
-			ApplyNormal(faces[4].vertices, glm::vec3(0, 0, -1));
-			faces.push_back(selectedBlock->BreakBackFace());
-			ApplyNormal(faces[5].vertices, glm::vec3(0, 0, 1));
-
-			for (int i = 0; i < faces.size(); i++)
+			if (selectedBlock != nullptr)
 			{
-				BlockFace f = faces[i];
 
-				for (int j = 0; j < f.vertices.size(); j++)
-					f.vertices[j].position += f.vertices[j].normal * 0.01f;
+				std::vector<BlockFace> faces = {};
 
-				DrawBlockBreak(f);
+				faces.push_back(selectedBlock->BreakTopFace());
+				ApplyNormal(faces[0].vertices, glm::vec3(0, 1, 0));
+				faces.push_back(selectedBlock->BreakBottomFace());
+				ApplyNormal(faces[1].vertices, glm::vec3(0, -1, 0));
+				faces.push_back(selectedBlock->BreakLeftFace());
+				ApplyNormal(faces[2].vertices, glm::vec3(1, 0, 0));
+				faces.push_back(selectedBlock->BreakRightFace());
+				ApplyNormal(faces[3].vertices, glm::vec3(-1, 0, 0));
+				faces.push_back(selectedBlock->BreakFrontFace());
+				ApplyNormal(faces[4].vertices, glm::vec3(0, 0, -1));
+				faces.push_back(selectedBlock->BreakBackFace());
+				ApplyNormal(faces[5].vertices, glm::vec3(0, 0, 1));
+
+				for (int i = 0; i < faces.size(); i++)
+				{
+					BlockFace f = faces[i];
+
+					for (int j = 0; j < f.vertices.size(); j++)
+						f.vertices[j].position += f.vertices[j].normal * 0.01f;
+
+					DrawBlockBreak(f);
+				}
+
+				RenderBreak();
 			}
-
-			RenderBreak();
 		}
 		else if (selectedBlock != nullptr)
 		{
@@ -520,7 +527,9 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 			Chunk* c = WorldManager::instance->GetChunk(x, z);
 
-			if (c->DoesBlockExist(x, y, z))
+			int type = c->GetBlock(x, y, z);
+
+			if (type > 0 && type != WATER)
 				return;
 
 			if ((int)x == (int)position.x && (int)z == (int)position.z && (y == (int)position.y || y == (int)position.y - 1))
@@ -536,7 +545,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 				if (item.type != Data::ITEM_NULL && item.placeable)
 				{
-					c->ModifyBlock(x, y, z, item.type);
+					c->ModifyBlock(x, y, z, WATER);
 
 					if (item.count == 1)
 						playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = {};

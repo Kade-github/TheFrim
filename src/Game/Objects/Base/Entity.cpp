@@ -126,7 +126,10 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			currentChunk = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 			if (currentChunk != nullptr)
-				hit = currentChunk->DoesBlockExist(toX, ray.y, pZ);
+			{
+				int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
+				hit = type > 0 && type != WATER;
+			}
 
 			if (hit)
 				break;
@@ -154,7 +157,10 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			currentChunk = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 			if (currentChunk != nullptr)
-				hit = currentChunk->DoesBlockExist(_lastX, ray.y, toZ);
+			{
+				int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
+				hit = type > 0 && type != WATER;
+			}
 
 			if (hit)
 				break;
@@ -229,8 +235,8 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		{
 			ray.y = rp.y + (diff.y * progress);
 
-
-			hit = currentChunk->DoesBlockExist(toX, ray.y, toZ);
+			int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
+			hit = type > 0 && type != WATER;
 
 			if (hit)
 			{
@@ -290,11 +296,14 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 		if (c != nullptr)
-			if (c->DoesBlockExist(ray.x, ray.y, ray.z))
+		{
+			int type = c->GetBlock(ray.x, ray.y, ray.z);
+			if (type > 0 && type != WATER)
 			{
 				to = lastRay;
 				return true;
 			}
+		}
 
 		progress += 0.05;
 	}

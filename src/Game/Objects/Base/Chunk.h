@@ -58,8 +58,6 @@ public:
 
     subChunk* GetSubChunk(int y);
 
-    std::vector<Block*> transparentBlocks;
-
     Data::Chunk GetChunkData();
 
     glm::vec3 WorldToChunk(glm::vec3 pos);
@@ -77,7 +75,12 @@ public:
 
     bool DoesBlockExist(float x, float y, float z);
 
+    void CreateOtherSubchunks(float x, float y, float z, glm::vec3 _w);
+
     void ModifyBlock(float x, float y, float z, int id);
+
+    void PlaceBlock(float x, float y, float z, Block* b);
+    void BlitPlaceBlock(std::vector<Block*> bs);
 
     void RenderSubChunk(subChunk* c);
     void RenderSubChunks();
