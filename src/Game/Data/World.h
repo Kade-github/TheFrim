@@ -15,6 +15,31 @@
 
 namespace Data
 {
+	struct DataTag
+	{
+		char name[32];
+		char value[64];
+
+		MSGPACK_DEFINE_ARRAY(name, value);
+	};
+
+	struct BlockData
+	{
+		uint8_t x = 0, y = 0, z = 0;
+		uint8_t type = 0;
+
+		std::vector<DataTag> tags;
+
+		MSGPACK_DEFINE_ARRAY(x, y, z, type, tags);
+
+	};
+
+	struct DataChunk
+	{
+		std::vector<BlockData> blocks;
+
+		MSGPACK_DEFINE_ARRAY(blocks);
+	};
 
 	struct Chunk
 	{
