@@ -66,7 +66,7 @@ int Chunk::GetBlock(float x, float y, float z)
 	if (y < 0 || y > CHUNK_HEIGHT - 1)
 		return 0;
 
-	return myData.blocks[_x][_z][(int)y].type;
+	return myData.blocks[_x][_z][(int)y];
 }
 
 int Chunk::GetHighestBlock(float x, float z)
@@ -105,7 +105,7 @@ int Chunk::GetHighestBlock(float x, float z)
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
-		if (myData.blocks[_x][_z][y].type > 0)
+		if (myData.blocks[_x][_z][y] > 0)
 			return y;
 	}
 
@@ -201,7 +201,7 @@ int Chunk::GetBlockNoCheck(float x, float y, float z)
 	if (y < 0 || y > CHUNK_HEIGHT - 1)
 		return 0;
 
-	return myData.blocks[_x][_z][(int)y].type;
+	return myData.blocks[_x][_z][(int)y];
 }
 
 bool Chunk::DoesBlockExist(float x, float y, float z)
@@ -328,7 +328,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	{
 		// create subchunk
 
-		myData.blocks[(int)w.x][(int)w.z][(int)w.y].type = id;
+		myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
 
 		sbc = CreateSubChunk(y);
 
@@ -348,7 +348,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		if (id <= 0) // destroyed block
 		{
 			sbc->blocks[(int)w.x][(int)w.z] = nullptr;
-			myData.blocks[(int)w.x][(int)w.z][(int)w.y].type = 0;
+			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = 0;
 		}
 		else
 		{
@@ -362,7 +362,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 			sbc->blocks[(int)w.x][(int)w.z] = _b;
 
-			myData.blocks[(int)w.x][(int)w.z][(int)w.y].type = id;
+			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
 		}
 	}
 
@@ -420,7 +420,7 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 	{
 		// create subchunk
 
-		myData.blocks[(int)w.x][(int)w.z][(int)w.y].type = b->type;
+		myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
 
 		sbc = CreateSubChunk(y);
 
@@ -434,7 +434,7 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 
 		sbc->blocks[(int)w.x][(int)w.z] = b;
 
-		myData.blocks[(int)w.x][(int)w.z][(int)w.y].type = b->type;
+		myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
 	}
 
 
@@ -493,7 +493,7 @@ void Chunk::BlitPlaceBlock(std::vector<Block*> bs)
 		{
 			// create subchunk
 
-			myData.blocks[(int)w.x][(int)w.z][(int)w.y].type = b->type;
+			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
 
 			sbc = CreateSubChunk(b->position.y);
 
@@ -509,7 +509,7 @@ void Chunk::BlitPlaceBlock(std::vector<Block*> bs)
 
 			sbc->blocks[(int)w.x][(int)w.z] = b;
 
-			myData.blocks[(int)w.x][(int)w.z][(int)w.y].type = b->type;
+			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
 		}
 
 		CreateOtherSubchunks(b->position.x, b->position.y, b->position.z, w);
@@ -718,9 +718,9 @@ Data::Chunk Chunk::GetChunkData()
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
 				if (sbc->blocks[x][z] != nullptr)
-					c.blocks[x][z][y].type = sbc->blocks[x][z]->type;
+					c.blocks[x][z][y] = sbc->blocks[x][z]->type;
 				else
-					c.blocks[x][z][y].type = 0;
+					c.blocks[x][z][y] = 0;
 			}
 		}
 	}
@@ -821,7 +821,7 @@ subChunk* Chunk::CreateSubChunk(int y)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			int id = myData.blocks[x][z][y].type;
+			int id = myData.blocks[x][z][y];
 
 			if (id <= 0)
 				continue;
