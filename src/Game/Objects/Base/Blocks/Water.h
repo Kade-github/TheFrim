@@ -86,7 +86,7 @@ public:
 
 	void PlaceWater(glm::vec3 _pos, int _strength);
 
-	void Update() override;
+	void Update(int tick) override;
 };
 
 #endif

@@ -299,7 +299,7 @@ void Gameplay::UpdateChunks()
 			// Chunk updates
 
 			if (c->isLoaded)
-				c->UpdateChunk();
+				c->UpdateChunk(ticks);
 		}
 
 		int amount = (CHUNK_SIZE * REGION_SIZE);
@@ -514,6 +514,8 @@ void Gameplay::UpdateChunks()
 			break;
 		}
 	}
+
+	ticks++;
 }
 
 void Gameplay::KeyPress(int key)

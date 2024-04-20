@@ -115,7 +115,7 @@ public:
     void DrawTransparent();
     void DrawShadows();
 
-    void UpdateChunk();
+    void UpdateChunk(int tick);
 
 };
 

@@ -51,9 +51,9 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 	changedBlocks = true;
 }
 
-void Water::Update() // water functionality
+void Water::Update(int tick) // water functionality
 {
-	if (strength == 0)
+	if (strength == 0 || tick % 10 != 0)
 		return;
 
 	std::vector<glm::vec3> freeSpaces = GetFreeSpaces(position);

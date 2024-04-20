@@ -17,6 +17,8 @@ public:
 	Player* player;
 	Camera2D* c2d = nullptr;
 
+	int ticks = 0;
+
 	BS::thread_pool loadPool;
 
 	Gameplay(WorldManager* _wm);

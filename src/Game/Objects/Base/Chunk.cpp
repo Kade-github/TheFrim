@@ -1140,7 +1140,7 @@ void Chunk::DrawShadows()
 	glDisable(GL_CULL_FACE);
 }
 
-void Chunk::UpdateChunk()
+void Chunk::UpdateChunk(int tick)
 {
 	for (int i = 0; i < subChunks.size(); i++)
 	{
@@ -1158,7 +1158,7 @@ void Chunk::UpdateChunk()
 				if (b == nullptr)
 					continue;
 
-				b->Update();
+				b->Update(tick);
 
 				if (b->changedBlocks)
 				{
