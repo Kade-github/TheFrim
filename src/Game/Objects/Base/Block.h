@@ -4,7 +4,7 @@
 #include <Objects/GameObject.h>
 #include <glm/glm.hpp>
 #include <vector>
-
+#include "../../Data/World.h"
 #include <OpenGL/Texture.h>
 
 class BlockFace {
@@ -76,6 +76,7 @@ class Block
 	glm::vec4 GetBreakUV();
 
 public:
+	Data::BlockData data;
 	glm::vec3 position;
 	BlockType type;
 

@@ -372,7 +372,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	{
 		// create subchunk
 
-		myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
+		myData.placeBlock(w.x, w.y, w.z, id);
 
 		sbc = CreateSubChunk(y);
 
@@ -392,22 +392,11 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 		if (id <= 0) // destroyed block
 		{
 			sbc->blocks[(int)w.x][(int)w.z] = nullptr;
-			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = 0;
+			myData.removeBlockData(w.x, w.y, w.z);
+			myData.placeBlock(w.x, w.y, w.z, 0);
 		}
 		else
-		{
-			Block* _b = CreateBlock(w.x, w.y, w.z, id);
-
-			if (_b->type == WATER)
-			{
-				Water* w = (Water*)_b;
-				w->source = true;
-			}
-
-			sbc->blocks[(int)w.x][(int)w.z] = _b;
-
-			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = id;
-		}
+			myData.placeBlock(w.x, w.y, w.z, id);
 	}
 
 
@@ -443,6 +432,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 {
+	if (b == nullptr)
+		return;
+
 	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
 
@@ -464,7 +456,8 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 	{
 		// create subchunk
 
-		myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
+		myData.addBlockData(b->data, w.x, w.y, w.z);
+		myData.placeBlock(w.x, w.y, w.z, b->type);
 
 		sbc = CreateSubChunk(y);
 
@@ -475,12 +468,11 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 	{
 		if (sbc->blocks[(int)w.x][(int)w.z] != nullptr) // you can't place it duhh
 			return;
-
-		sbc->blocks[(int)w.x][(int)w.z] = b;
-
-		myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
+		myData.addBlockData(b->data, w.x, w.y, w.z);
+		myData.placeBlock(w.x, w.y, w.z, b->type);
 	}
 
+	delete b;
 
 	subChunk* sbcBelow = GetSubChunk(y - 1);
 
@@ -507,57 +499,6 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 	gp->QueueLoadBlocks(this);
 
 	CreateOtherSubchunks(x, y, z, w);
-
-	LightingManager::GetInstance()->RefreshShadows();
-}
-
-void Chunk::BlitPlaceBlock(std::vector<Block*> bs)
-{
-	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
-	
-	for (Block* b : bs)
-	{
-		glm::vec3 w = WorldToChunk(b->position);
-
-		if (b->position.x >= 0 && b->position.x < CHUNK_SIZE - 1)
-			w.x = (int)b->position.x;
-
-		if (b->position.z >= 0 && b->position.z < CHUNK_SIZE - 1)
-			w.z = (int)b->position.z;
-
-		if (w.x > CHUNK_SIZE - 1)
-			continue;
-
-		if (w.z > CHUNK_SIZE - 1)
-			continue;
-
-		subChunk* sbc = GetSubChunk(b->position.y);
-
-		if (sbc == nullptr) // cant create air
-		{
-			// create subchunk
-
-			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
-
-			sbc = CreateSubChunk(b->position.y);
-
-			if (sbc != nullptr)
-				subChunks.push_back(sbc);
-		}
-		else
-		{
-			if (sbc->blocks[(int)w.x][(int)w.z] != nullptr) // if it exists, delete it if necessary
-			{
-				delete sbc->blocks[(int)w.x][(int)w.z];
-			}
-
-			sbc->blocks[(int)w.x][(int)w.z] = b;
-
-			myData.blocks[(int)w.x][(int)w.z][(int)w.y] = b->type;
-		}
-
-		CreateOtherSubchunks(b->position.x, b->position.y, b->position.z, w);
-	}
 
 	LightingManager::GetInstance()->RefreshShadows();
 }
@@ -870,6 +811,8 @@ subChunk* Chunk::CreateSubChunk(int y)
 			if (id <= 0)
 				continue;
 
+			Data::BlockData data = myData.getBlockData(x, y, z);
+
 			if (isOccluded)
 			{
 				// normally an if-else chain like this is looked down upon,
@@ -889,7 +832,7 @@ subChunk* Chunk::CreateSubChunk(int y)
 					isOccluded = false;
 			}
 
-			Block* b = CreateBlock(x, y, z, id);
+			Block* b = CreateBlock(x, y, z, id, data);
 
 			sbc->blocks[x][z] = b;
 		}
@@ -903,9 +846,12 @@ subChunk* Chunk::CreateSubChunk(int y)
 	return sbc;
 }
 
-Block* Chunk::CreateBlock(int x, int y, int z, int id)
+Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 {
 	Block* block = nullptr;
+	Data::DataTag dataOne;
+	Data::DataTag dataTwo;
+
 
 	switch (id)
 	{
@@ -928,7 +874,14 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id)
 		block = new Sand(position + glm::vec3(x, y, z));
 		break;
 	case WATER:
-		block = new Water(position + glm::vec3(x, y, z));
+		dataOne = data.GetTag("source");
+		if (!dataOne.IsReal())
+			dataOne.SetValue("false");
+		dataTwo = data.GetTag("strength");
+		if (!dataTwo.IsReal())
+			dataTwo.SetValue("0");
+
+		block = new Water(position + glm::vec3(x, y, z), std::stoi(dataTwo.value), dataOne.value == "true" ? true : false);
 		break;
 	case CRAFTINGTABLE:
 		block = new CraftingTable(position + glm::vec3(x, y, z));

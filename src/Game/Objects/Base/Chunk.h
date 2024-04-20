@@ -89,7 +89,6 @@ public:
     void ModifyBlock(float x, float y, float z, int id);
 
     void PlaceBlock(float x, float y, float z, Block* b);
-    void BlitPlaceBlock(std::vector<Block*> bs);
 
     void RenderSubChunk(subChunk* c);
     void RenderSubChunks();
@@ -98,7 +97,7 @@ public:
     void RenderSubChunksShadow();
 
     subChunk* CreateSubChunk(int y);
-    Block* CreateBlock(int x, int y, int z, int id);
+    Block* CreateBlock(int x, int y, int z, int id, Data::BlockData data);
 
     void DestroySubChunk(int y);
     void DestroySubChunk(subChunk* c);

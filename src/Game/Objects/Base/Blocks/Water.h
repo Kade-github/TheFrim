@@ -6,12 +6,12 @@
 class Water : public Block
 {
 public:
-	bool source = false;
-	int strength = 8;
-
 	Chunk* currentChunk;
 
-	Water(glm::vec3 _position);
+	int strength = 8;
+	bool source = false;
+
+	Water(glm::vec3 _position, int strength, bool isSource);
 
 	BlockFace CreateFrontFace() override
 	{

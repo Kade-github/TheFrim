@@ -40,9 +40,6 @@ void BlockTest::ChangeBlock()
 	case SAND:
 		block = new Sand(glm::vec3());
 		break;
-	case WATER:
-		block = new Water(glm::vec3());
-		break;
 	case CRAFTINGTABLE:
 		block = new CraftingTable(glm::vec3());
 		break;

@@ -3,13 +3,27 @@
 #include "../Chunk.h"
 #include "../../../WorldManager.h"
 
-Water::Water(glm::vec3 _position) : Block(_position, BlockType::WATER) {
+Water::Water(glm::vec3 _position, int strength, bool isSource) : Block(_position, BlockType::WATER) {
 	position = _position;
 
 	soundType = SoundType::S_WATER;
 	toughness = 0;
 
 	transparent = true;
+
+	strength = strength;
+	source = isSource;
+
+	data.tags.clear();
+
+	Data::DataTag source = Data::DataTag();
+	source.Assemble("source", "false");
+
+	Data::DataTag str = Data::DataTag();
+	str.Assemble("strength", std::to_string(strength));
+
+	data.tags.push_back(str);
+	data.tags.push_back(source);
 
 	currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
 }
@@ -56,12 +70,20 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 
 	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
 
-	Water* b = (Water*)c->CreateBlock(_pos.x, _pos.y, _pos.z, WATER);
+	Data::BlockData d = data;
+	d.tags.clear();
+
+	d.AddTag("strength", std::to_string(_strength));
+	d.AddTag("source", "false");
+
+	Water* b = (Water*)c->CreateBlock(_pos.x, _pos.y, _pos.z, WATER, d);
 
 	b->position -= c->position; // this gets added in CreateBlock
 
 	b->source = false;
 	b->strength = _strength;
+
+	b->data = d;
 
 	c->PlaceBlock(_pos.x, _pos.y, _pos.z, b);
 
@@ -70,7 +92,7 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 
 void Water::Update(int tick) // water functionality
 {
-	if (strength == 0 || tick % 80 != 0 || currentChunk == nullptr)
+	if (strength == 0 || tick % 10 != 0 || currentChunk == nullptr)
 		return;
 
 	std::vector<glm::vec3> freeSpaces = GetFreeSpaces(position);

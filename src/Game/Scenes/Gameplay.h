@@ -17,7 +17,13 @@ public:
 	Player* player;
 	Camera2D* c2d = nullptr;
 
+	float lastUpdate = 0.0f;
+	float lastSecond = 0.0f;
+	std::vector<float> tickTimes;
+	float tps = 20.0f;
 	int ticks = 0;
+
+	int lastTickSecond = 0;
 
 	BS::thread_pool loadPool;
 

@@ -105,9 +105,6 @@ void Gameplay::Draw()
 
 	Game::instance->shader->Unbind();
 
-
-	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
-
 	if (player->position.y <= -100 && wm->regions.size() != 0)
 	{
 		Chunk* c = wm->GetChunk(player->position.x, player->position.z);
@@ -115,15 +112,38 @@ void Gameplay::Draw()
 		player->position.y = c->GetHighestBlock(player->position.x, player->position.z);
 	}
 
-	static float lastUpdate = 0;
-
 	float currentTime = glfwGetTime();
 	if (currentTime - lastUpdate > 0.05f) // 20 times a second
 	{
 		UpdateChunks();
 
-		lastUpdate = glfwGetTime();
+		lastUpdate = currentTime;
 	}
+
+	if (lastSecond < currentTime)
+	{
+		tps = ticks - lastTickSecond;
+		lastTickSecond = ticks;
+		lastSecond = currentTime + 1.0f;
+
+		tickTimes.push_back(tps);
+
+		if (tickTimes.size() > 10)
+			tickTimes.erase(tickTimes.begin());
+	}
+
+	float realTPS = 0;
+
+	for (int i = 0; i < tickTimes.size(); i++)
+	{
+		realTPS += tickTimes[i];
+	}
+
+	realTPS /= tickTimes.size();
+
+
+	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
+	c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
 
 	MusicManager::GetInstance()->Update();
 
@@ -238,6 +258,9 @@ void Gameplay::UpdateChunks()
 	static std::vector<glm::vec2> toLoadedRegion = {};
 
 	std::vector<Chunk*> allChunks;
+
+	if (!hud->GamePaused)
+		ticks++;
 
 	for (Region& r : wm->regions)
 	{
@@ -530,11 +553,9 @@ void Gameplay::UpdateChunks()
 
 		// Chunk updates
 
-		if (c->isLoaded)
+		if (c->isLoaded && !hud->GamePaused)
 			c->UpdateChunk(ticks);
 	}
-
-	ticks++;
 }
 
 void Gameplay::KeyPress(int key)
