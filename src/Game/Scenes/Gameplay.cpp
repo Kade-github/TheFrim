@@ -48,6 +48,8 @@ void Gameplay::Create()
 
 	hud->order = 1000;
 
+	wm->SaveWorldNow();
+
 	UpdateChunks();
 
 
