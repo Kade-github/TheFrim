@@ -46,6 +46,7 @@ class WorldManager
 	Data::World _world;
 	std::vector<Region> _generatedRegions;
 public:
+	std::mutex generateMutex;
 	std::string _path;
 	BS::thread_pool _generatePool;
 	static WorldManager* instance;

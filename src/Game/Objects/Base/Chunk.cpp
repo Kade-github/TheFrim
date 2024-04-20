@@ -120,24 +120,20 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 
 	if (_x < 0)
 	{
-		// right chunk
+		// left chunk
 
-		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
-
-		if (c != nullptr)
-			return c->GetBlockNoCheck(c->position.x + CHUNK_SIZE - 1, y, z) > 0;
+		if (left != nullptr)
+			return left->GetBlockNoCheck(left->position.x + CHUNK_SIZE - 1, y, _z) > 0;
 		else
 			return true;
 	}
 
 	if (_x >= CHUNK_SIZE)
 	{
-		// left chunk
+		// right chunk
 
-		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
-
-		if (c != nullptr)
-			return c->GetBlockNoCheck(c->position.x, y, z) > 0;
+		if (right != nullptr)
+			return right->GetBlockNoCheck(right->position.x, y, z) > 0;
 		else
 			return true;
 
@@ -147,10 +143,8 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 	{
 		// front chunk
 
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
-
-		if (c != nullptr)
-			return c->GetBlockNoCheck(x, y, c->position.z + CHUNK_SIZE - 1) > 0;
+		if (front != nullptr)
+			return front->GetBlockNoCheck(x, y, front->position.z + CHUNK_SIZE - 1) > 0;
 		else
 			return true;
 	}
@@ -159,10 +153,8 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 	{
 		// back chunk
 
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
-
-		if (c != nullptr)
-			return c->GetBlockNoCheck(x, y, c->position.z) > 0;
+		if (back != nullptr)
+			return back->GetBlockNoCheck(x, y, back->position.z) > 0;
 		else
 			return true;
 	}
@@ -224,7 +216,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 	if (w.x == 0)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+		Chunk* c = left;
 
 		if (c != nullptr)
 		{
@@ -246,7 +238,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 	if (w.x == CHUNK_SIZE - 1)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+		Chunk* c = right;
 
 		if (c != nullptr)
 		{
@@ -266,7 +258,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 	if (w.z == 0)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+		Chunk* c = back;
 
 		if (c != nullptr)
 		{
@@ -286,7 +278,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 	if (w.z == CHUNK_SIZE - 1)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
+		Chunk* c = front;
 
 		if (c != nullptr)
 		{
@@ -1025,6 +1017,11 @@ void Chunk::SetShadowBuffer()
 
 void Chunk::Init()
 {
+	right = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+	left = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+	front = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
+	back = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);

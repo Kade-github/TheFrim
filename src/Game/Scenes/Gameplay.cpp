@@ -50,6 +50,8 @@ void Gameplay::Create()
 
 	UpdateChunks();
 
+
+
 	loadPool.reset(std::thread::hardware_concurrency() * 3.14f);
 
 	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
@@ -111,7 +113,15 @@ void Gameplay::Draw()
 		player->position.y = c->GetHighestBlock(player->position.x, player->position.z);
 	}
 
-	UpdateChunks();
+	static float lastUpdate = 0;
+
+	float currentTime = glfwGetTime();
+	if (currentTime - lastUpdate > 0.05f) // 20 times a second
+	{
+		UpdateChunks();
+
+		lastUpdate = glfwGetTime();
+	}
 
 	MusicManager::GetInstance()->Update();
 
@@ -223,11 +233,7 @@ void Gameplay::UpdateChunks()
 
 	wm->CheckGeneratedRegions();
 
-	static float lastUpdate = 0;
-
 	static std::vector<glm::vec2> toLoadedRegion = {};
-
-	float currentTime = glfwGetTime();
 
 	for (Region& r : wm->regions)
 	{
@@ -292,11 +298,8 @@ void Gameplay::UpdateChunks()
 
 			// Chunk updates
 
-			if (currentTime - lastUpdate > 0.5f) // 5 updates a second (TPS)
-			{
-				if (c->isLoaded)
-					c->UpdateChunk();
-			}
+			if (c->isLoaded)
+				c->UpdateChunk();
 		}
 
 		int amount = (CHUNK_SIZE * REGION_SIZE);
@@ -511,8 +514,6 @@ void Gameplay::UpdateChunks()
 			break;
 		}
 	}
-	if (currentTime - lastUpdate > 0.5f) // 5 updates a second (TPS)
-		lastUpdate = glfwGetTime();
 }
 
 void Gameplay::KeyPress(int key)

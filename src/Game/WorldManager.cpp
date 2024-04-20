@@ -6,7 +6,6 @@
 
 #include <filesystem>
 
-std::mutex generateMutex;
 
 WorldManager* WorldManager::instance = nullptr;
 
@@ -113,7 +112,6 @@ bool WorldManager::IsRegionGenerated(int x, int z)
 
 	bool loaded = false;
 	{	
-		std::lock_guard<std::mutex> lock(generateMutex);
 		for (auto& r : regions)
 		{
 			if (r.startX == x && r.startZ == z)
@@ -156,7 +154,6 @@ void WorldManager::CreateChunks(Region& r)
 
 void WorldManager::CheckGeneratedRegions()
 {
-	std::lock_guard<std::mutex> lock(generateMutex);
 	if (_generatedRegions.size() != 0)
 	{
 		for (Region r : _generatedRegions)
@@ -176,7 +173,6 @@ void WorldManager::GenerateRegion(int x, int z)
 
 	CreateChunks(reg);
 
-	std::lock_guard<std::mutex> lock(generateMutex);
 	_generatedRegions.push_back(reg);
 
 	Game::instance->log->Write("Generated region " + std::to_string(x) + ", " + std::to_string(z));
@@ -236,7 +232,6 @@ void WorldManager::LoadWorld()
 
 Region& WorldManager::GetRegion(float x, float z)
 {
-	std::lock_guard<std::mutex> lock(generateMutex);
 	for (auto& r : regions)
 	{
 		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)
@@ -260,7 +255,6 @@ void WorldManager::LoadRegion(int x, int z)
 
 	CreateChunks(reg);
 
-	std::lock_guard<std::mutex> lock(generateMutex);
 	_generatedRegions.push_back(reg);
 
 	Game::instance->log->Write("Loaded region " + std::to_string(x) + ", " + std::to_string(z));
@@ -273,7 +267,6 @@ void WorldManager::SaveRegion(int x, int z)
 
 bool WorldManager::isRegionLoaded(float x, float z)
 {
-	std::lock_guard<std::mutex> lock(generateMutex);
 	for (auto& r : regions)
 	{
 		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)

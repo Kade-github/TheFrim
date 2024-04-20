@@ -54,6 +54,11 @@ public:
 
     Data::Chunk myData;
 
+    Chunk* left = nullptr;
+    Chunk* right = nullptr;
+    Chunk* front = nullptr;
+    Chunk* back = nullptr;
+
     std::vector<subChunk*> subChunks;
 
     subChunk* GetSubChunk(int y);
