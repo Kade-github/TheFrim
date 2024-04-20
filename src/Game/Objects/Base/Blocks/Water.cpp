@@ -3,33 +3,50 @@
 #include "../Chunk.h"
 #include "../../../WorldManager.h"
 
+Water::Water(glm::vec3 _position) : Block(_position, BlockType::WATER) {
+	position = _position;
+
+	soundType = SoundType::S_WATER;
+	toughness = 0;
+
+	transparent = true;
+
+	currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
+}
+
 std::vector<glm::vec3> Water::GetFreeSpaces(glm::vec3 _pos)
 {
 	std::vector<glm::vec3> freeSpaces = {};
 
 	// Get our current chunk
 
-	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
-
-	if (c == nullptr)
+	if (!DoesBlockExist(_pos - glm::vec3(0, 1, 0)) && !source)
 		return {};
 
-	if (!c->DoesBlockExist(_pos.x, _pos.y - 1, _pos.z))
-		return {};
+	if (!DoesBlockExist(_pos + glm::vec3(0, 0, 1)))
+		freeSpaces.push_back(_pos + glm::vec3(0, 0, 1));
 
-	if (!c->DoesBlockExist(_pos.x, _pos.y, _pos.z - 1))
-		freeSpaces.push_back(glm::vec3(_pos.x, _pos.y, _pos.z - 1));
+	if (!DoesBlockExist(_pos + glm::vec3(0, 0, -1)))
+		freeSpaces.push_back(_pos + glm::vec3(0, 0, -1));
 
-	if (!c->DoesBlockExist(_pos.x, _pos.y, _pos.z + 1))
-		freeSpaces.push_back(glm::vec3(_pos.x, _pos.y, _pos.z + 1));
+	if (!DoesBlockExist(_pos + glm::vec3(1, 0, 0)))
+		freeSpaces.push_back(_pos + glm::vec3(1, 0, 0));
 
-	if (!c->DoesBlockExist(_pos.x - 1, _pos.y, _pos.z))
-		freeSpaces.push_back(glm::vec3(_pos.x - 1, _pos.y, _pos.z));
-
-	if (!c->DoesBlockExist(_pos.x + 1, _pos.y, _pos.z))
-		freeSpaces.push_back(glm::vec3(_pos.x + 1, _pos.y, _pos.z));
+	if (!DoesBlockExist(_pos + glm::vec3(-1, 0, 0)))
+		freeSpaces.push_back(_pos + glm::vec3(-1, 0, 0));
 
 	return freeSpaces;
+}
+
+bool Water::DoesBlockExist(glm::vec3 _pos)
+{
+	if (currentChunk == nullptr)
+		return false;
+
+	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
+
+	int type = c->GetBlock(_pos.x, _pos.y, _pos.z);
+	return type > 0 && type != WATER;
 }
 
 void Water::PlaceWater(glm::vec3 _pos, int _strength)
@@ -53,20 +70,15 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 
 void Water::Update(int tick) // water functionality
 {
-	if (strength == 0 || tick % 10 != 0)
+	if (strength == 0 || tick % 80 != 0 || currentChunk == nullptr)
 		return;
 
 	std::vector<glm::vec3> freeSpaces = GetFreeSpaces(position);
 
 	if (freeSpaces.size() == 0)
 	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z);
-
-		if (c == nullptr)
-			return;
-
 		// go down
-		if (c->DoesBlockExist(position.x, position.y - 1, position.z))
+		if (currentChunk->DoesBlockExist(position.x, position.y - 1, position.z))
 			return;
 
 		PlaceWater(glm::vec3(position.x, position.y - 1, position.z), strength - 1);

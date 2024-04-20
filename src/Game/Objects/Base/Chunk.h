@@ -75,8 +75,12 @@ public:
 
     int GetBlockNoCheck(float x, float y, float z);
 
+    int GetBlockRaw(float x, float y, float z);
+
     // checks current chunk, and if needed; checks chunks around it.
     bool InterchunkDoesBlockExist(float x, float y, float z);
+
+    int GetBlockInterchunk(float x, float y, float z);
 
     bool DoesBlockExist(float x, float y, float z);
 

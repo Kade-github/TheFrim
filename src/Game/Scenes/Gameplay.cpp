@@ -237,6 +237,8 @@ void Gameplay::UpdateChunks()
 
 	static std::vector<glm::vec2> toLoadedRegion = {};
 
+	std::vector<Chunk*> allChunks;
+
 	for (Region& r : wm->regions)
 	{
 		// if the startx and startz is equal to a toLoadedRegion value, then remove it from the vector
@@ -250,59 +252,7 @@ void Gameplay::UpdateChunks()
 			}
 		}
 
-		for (Chunk* c : r.chunks)
-		{
-			glm::vec3 fakePos = glm::vec3(c->position.x, camera->position.y, c->position.z);
-
-			float distance = glm::distance(camera->position, fakePos);
-
-			if (distance < camera->cameraFar * 1)
-			{
-				if (c->id < 0)
-				{
-					c->id = 1;
-					c->Init();
-				}
-
-				if (!c->isLoaded)
-				{
-					QueueLoad(c);
-					return;
-				}
-
-				float angle = camera->YawAngleTo(fakePos);
-
-				if (angle < 200 || distance <= 32)
-				{
-					if (!c->isRendered || c->pleaseRender)
-					{
-						c->pleaseRender = false;
-						c->SetBuffer();
-						c->SetTransparentBuffer();
-						c->SetShadowBuffer();
-					}
-					c->isRendered = true;
-				}
-				else
-				{
-					if (!c->isRendered)
-						c->isRendered = false;
-				}
-			}
-			else
-			{
-				if (c->isLoaded)
-				{
-					c->Unload();
-					c->isLoaded = false;
-				}
-			}
-
-			// Chunk updates
-
-			if (c->isLoaded)
-				c->UpdateChunk(ticks);
-		}
+		allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
 
 		int amount = (CHUNK_SIZE * REGION_SIZE);
 
@@ -517,6 +467,73 @@ void Gameplay::UpdateChunks()
 		}
 	}
 
+	// sort chunks by distance
+
+	std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
+		{
+			glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
+			glm::vec3 fakePosB = glm::vec3(b->position.x, camera->position.y, b->position.z);
+
+			float distanceA = glm::distance(camera->position, fakePosA);
+			float distanceB = glm::distance(camera->position, fakePosB);
+
+			return distanceA < distanceB;
+		});
+
+	for (Chunk* c : allChunks)
+	{
+		glm::vec3 fakePos = glm::vec3(c->position.x, camera->position.y, c->position.z);
+
+		float distance = glm::distance(camera->position, fakePos);
+
+		if (distance < camera->cameraFar * 1)
+		{
+			if (c->id < 0)
+			{
+				c->id = 1;
+				c->Init();
+			}
+
+			if (!c->isLoaded)
+			{
+				QueueLoad(c);
+				return;
+			}
+
+			float angle = camera->YawAngleTo(fakePos);
+
+			if (angle < 200 || distance <= 32)
+			{
+				if (!c->isRendered || c->pleaseRender)
+				{
+					c->pleaseRender = false;
+					c->SetBuffer();
+					c->SetTransparentBuffer();
+					c->SetShadowBuffer();
+				}
+				c->isRendered = true;
+			}
+			else
+			{
+				if (!c->isRendered)
+					c->isRendered = false;
+			}
+		}
+		else
+		{
+			if (c->isLoaded)
+			{
+				c->Unload();
+				c->isLoaded = false;
+			}
+		}
+
+		// Chunk updates
+
+		if (c->isLoaded)
+			c->UpdateChunk(ticks);
+	}
+
 	ticks++;
 }
 
@@ -599,7 +616,7 @@ void Gameplay::FocusChange(bool focus)
 	if (!focus)
 	{
 		wasPaused = Hud::GamePaused;
-		
+
 		player->TogglePauseMenu();
 	}
 	else if (focus && !wasPaused)

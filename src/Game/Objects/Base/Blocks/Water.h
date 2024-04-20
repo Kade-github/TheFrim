@@ -1,7 +1,7 @@
 #ifndef _WATERBLOCK_H
 #define _WATERBLOCK_H
 
-#include "../Block.h"
+#include "../Chunk.h"
 
 class Water : public Block
 {
@@ -9,14 +9,9 @@ public:
 	bool source = false;
 	int strength = 8;
 
-	Water(glm::vec3 _position) : Block(_position, BlockType::WATER) {
-		position = _position;
+	Chunk* currentChunk;
 
-		soundType = SoundType::S_WATER;
-		toughness = 0;
-
-		transparent = true;
-	}
+	Water(glm::vec3 _position);
 
 	BlockFace CreateFrontFace() override
 	{
@@ -83,6 +78,8 @@ public:
 	}
 
 	std::vector<glm::vec3> GetFreeSpaces(glm::vec3 _pos);
+
+	bool DoesBlockExist(glm::vec3 _pos);
 
 	void PlaceWater(glm::vec3 _pos, int _strength);
 

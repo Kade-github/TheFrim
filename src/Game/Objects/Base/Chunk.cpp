@@ -162,6 +162,55 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 	return GetBlockNoCheck(x, y, z) > 0;
 }
 
+int Chunk::GetBlockInterchunk(float x, float y, float z)
+{
+	int _x = x;
+	int _z = z;
+
+	if (_x < 0)
+	{
+		// left chunk
+
+		if (left != nullptr)
+			return left->GetBlockNoCheck(left->position.x + CHUNK_SIZE - 1, y, _z);
+		else
+			return 0;
+	}
+
+	if (_x >= CHUNK_SIZE)
+	{
+		// right chunk
+
+		if (right != nullptr)
+			return right->GetBlockNoCheck(right->position.x, y, z);
+		else
+			return 0;
+
+	}
+
+	if (_z < 0)
+	{
+		// front chunk
+
+		if (front != nullptr)
+			return front->GetBlockNoCheck(x, y, front->position.z + CHUNK_SIZE - 1);
+		else
+			return 0;
+	}
+
+	if (_z >= CHUNK_SIZE)
+	{
+		// back chunk
+
+		if (back != nullptr)
+			return back->GetBlockNoCheck(x, y, back->position.z);
+		else
+			return 0;
+	}
+
+	return GetBlockNoCheck(x, y, z);
+}
+
 int Chunk::GetBlockNoCheck(float x, float y, float z)
 {
 	int _x = x;
@@ -196,16 +245,19 @@ int Chunk::GetBlockNoCheck(float x, float y, float z)
 	return myData.blocks[_x][_z][(int)y];
 }
 
+int Chunk::GetBlockRaw(float x, float y, float z)
+{
+	int _x = x;
+	int _z = z;
+
+	return myData.blocks[_x][_z][(int)y];
+	
+}
+
 bool Chunk::DoesBlockExist(float x, float y, float z)
 {
 	if (y < 0 || y > CHUNK_HEIGHT - 1)
 		return false;
-
-	if (x < position.x || x >= position.x + CHUNK_SIZE)
-		return InterchunkDoesBlockExist(x, y, z);
-
-	if (z < position.z || z >= position.z + CHUNK_SIZE)
-		return InterchunkDoesBlockExist(x, y, z);
 
 	return GetBlock(x, y, z) > 0; // if its anything under 0 (thats impossible, uint etc), and if its 0 it's air.
 }
