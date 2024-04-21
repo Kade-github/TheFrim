@@ -324,6 +324,7 @@ void Gameplay::UpdateChunks()
 						}
 
 						delete c;
+						c = nullptr;
 					}
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
@@ -376,6 +377,7 @@ void Gameplay::UpdateChunks()
 							c->isLoaded = false;
 						}
 						delete c;
+						c = nullptr;
 					}
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
@@ -428,6 +430,7 @@ void Gameplay::UpdateChunks()
 							c->isLoaded = false;
 						}
 						delete c;
+						c = nullptr;
 					}
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
@@ -481,6 +484,7 @@ void Gameplay::UpdateChunks()
 							c->isLoaded = false;
 						}
 						delete c;
+						c = nullptr;
 					}
 					wm->regions.erase(wm->regions.begin() + i);
 					break;

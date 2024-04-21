@@ -14,6 +14,8 @@ public:
 
 	bool isCreature = true;
 
+	bool inWater = false;
+
 	float gravity = 19.0f;
 	float jumpStrength = 7.8f;
 	float speed = 9.0f;
@@ -38,6 +40,7 @@ public:
 	void CheckVerticalCollision(glm::vec3& motion);
 
 	bool RayTo(glm::vec3& to, bool inside = false);
+	bool RayToIncludeWater(glm::vec3& to, bool inside = false);
 
 	void SetDirection()
 	{

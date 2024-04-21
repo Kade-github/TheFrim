@@ -311,8 +311,54 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 	return false;
 }
 
+bool Entity::RayToIncludeWater(glm::vec3& to, bool inside)
+{
+	glm::vec3 diff = to - position;
+
+	float sum = diff.x + diff.y + diff.z;
+
+	if (sum == 0)
+		return false;
+
+	float progress = 0;
+
+	glm::vec3 ray = position;
+
+	glm::vec3 start = position;
+
+	while (progress < 1)
+	{
+		glm::vec3 lastRay = ray;
+		ray = start + (diff * progress);
+		if (inside)
+			lastRay = ray;
+		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
+
+		if (c != nullptr)
+		{
+			int type = c->GetBlock(ray.x, ray.y, ray.z);
+			if (type == WATER)
+			{
+				to = lastRay;
+				return true;
+			}
+		}
+
+		progress += 0.05;
+	}
+
+	return false;
+}
+
 void Entity::Draw()
 {
+	// water check
+
+	glm::vec3 ray = position + glm::vec3(0, 0.1, 0);
+	bool hit = RayToIncludeWater(ray, true);
+
+	inWater = hit;
+
 	if (!Hud::GamePaused)
 	{
 
@@ -320,7 +366,22 @@ void Entity::Draw()
 
 		// gravity
 
-		downVelocity -= gravity * Game::instance->deltaTime;
+		float boyancy = 10.0f;
+
+		if (inWater)
+		{
+			if (downVelocity > 0)
+				downVelocity += boyancy * Game::instance->deltaTime;
+			else
+				downVelocity -= (boyancy * 0.25f) * Game::instance->deltaTime;
+
+			if (downVelocity > boyancy)
+				downVelocity = boyancy;
+			if (downVelocity < -boyancy * 0.25f)
+				downVelocity = -boyancy * 0.25f;
+		}
+		else
+			downVelocity -= gravity * Game::instance->deltaTime;
 
 		if (downVelocity < -18)
 			downVelocity = -18;

@@ -7,9 +7,13 @@
 #include <PerlinNoise.hpp>
 #include "../Objects/Base/Block.h"
 
+#include <Game.h>
+
 siv::PerlinNoise perlin;
 
 std::mutex m;
+
+int staticWaterLevel = 0;
 
 Data::Chunk Data::Region::getChunk(int x, int z)
 {
@@ -134,6 +138,14 @@ void Data::World::parseSeed()
 	perlin.reseed(seedNum);
 
 	srand(seedNum);
+
+	if (waterLevel == -1) 
+		waterLevel = rand() % 45 + 80; // 80 - 125
+
+	staticWaterLevel = waterLevel;
+
+	Game::instance->log->Write("Seed: " + std::to_string(seedNum));
+	Game::instance->log->Write("Water Level: " + std::to_string(waterLevel));
 }
 
 Data::Region Data::World::getRegion(int x, int z)
@@ -254,7 +266,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			int worldX = (_x + x);
 			int worldZ = (_z + z);
 
-			const double noise = perlin.normalizedOctave2D(worldX * scale, worldZ * scale, 4, 0.8);
+			const double noise = perlin.normalizedOctave2D(worldX * scale, worldZ * scale, 6, 1.0);
 
 			int rY = (CHUNK_HEIGHT / 2) + (int)((noise * 100));
 
@@ -272,6 +284,17 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 					chunk.bChunk.blocks[_x][_z][_y] = DIRT;
 				else // stone
 					chunk.bChunk.blocks[_x][_z][_y] = STONE;
+			}
+
+			if (rY < staticWaterLevel)
+			{
+				for (int _y = staticWaterLevel; _y > rY; _y--)
+				{
+					if (chunk.bChunk.blocks[_x][_z][_y] != 0)
+						break;
+
+					chunk.bChunk.blocks[_x][_z][_y] = WATER;
+				}
 			}
 		}
 	}
@@ -301,6 +324,9 @@ void Data::Region::generateStructures()
 					for (int _y = CHUNK_HEIGHT - 1; _y > -1; _y--)
 					{
 						if (c.bChunk.blocks[_x][_z][_y] <= 0)
+							continue;
+
+						if (_y <= staticWaterLevel)
 							continue;
 
 						// trees

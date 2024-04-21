@@ -122,6 +122,8 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 	{
 		// left chunk
 
+		left = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+
 		if (left != nullptr)
 			return left->GetBlockNoCheck(left->position.x + CHUNK_SIZE - 1, y, _z) > 0;
 		else
@@ -131,6 +133,8 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 	if (_x >= CHUNK_SIZE)
 	{
 		// right chunk
+
+		right = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
 		if (right != nullptr)
 			return right->GetBlockNoCheck(right->position.x, y, z) > 0;
@@ -143,6 +147,8 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 	{
 		// front chunk
 
+		front = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+
 		if (front != nullptr)
 			return front->GetBlockNoCheck(x, y, front->position.z + CHUNK_SIZE - 1) > 0;
 		else
@@ -152,6 +158,8 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 	if (_z >= CHUNK_SIZE)
 	{
 		// back chunk
+
+		back = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 
 		if (back != nullptr)
 			return back->GetBlockNoCheck(x, y, back->position.z) > 0;

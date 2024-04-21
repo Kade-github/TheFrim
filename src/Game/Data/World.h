@@ -186,6 +186,8 @@ namespace Data
 		std::vector<std::string> storedRegions;
 		std::string name;
 
+		int waterLevel = -1;
+
 		Player p;
 
 		unsigned long seedNum = 0;
@@ -207,7 +209,7 @@ namespace Data
 
 		void saveRegion(Region r);
 
-		MSGPACK_DEFINE_ARRAY(name, seed, p);
+		MSGPACK_DEFINE_ARRAY(name, seed, p, waterLevel);
 
 	};
 };

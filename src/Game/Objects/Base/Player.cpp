@@ -245,11 +245,11 @@ void Player::Draw()
 				strafeVelocity += speed;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
-			}
+			} 
 
-			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
+			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && (isOnGround || inWater))
 			{
-				if (glfwGetTime() - jumpCooldown < 0.15)
+				if (glfwGetTime() - jumpCooldown < 0.15 && !inWater)
 					return;
 
 				jumpCooldown = glfwGetTime();
@@ -361,6 +361,7 @@ void Player::Draw()
 	}
 	else
 		selectedBlock = nullptr;
+
 
 	vertices.clear();
 	indices.clear();
