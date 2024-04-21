@@ -272,19 +272,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 		if (c != nullptr)
 		{
-			// check if we need to create a subchunk
-
-			subChunk* s = c->GetSubChunk(y);
-
-			if (s == nullptr)
-			{
-				s = c->CreateSubChunk(y);
-
-				if (s != nullptr)
-					c->subChunks.push_back(s);
-
-				gp->QueueLoadBlocks(c);
-			}
+			gp->QueueLoadBlocks(c);
 		}
 	}
 
@@ -294,17 +282,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 		if (c != nullptr)
 		{
-			subChunk* s = c->GetSubChunk(y);
-
-			if (s == nullptr)
-			{
-				s = c->CreateSubChunk(y);
-
-				if (s != nullptr)
-					c->subChunks.push_back(s);
-
-				gp->QueueLoadBlocks(c);
-			}
+			gp->QueueLoadBlocks(c);
 		}
 	}
 
@@ -314,17 +292,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 		if (c != nullptr)
 		{
-			subChunk* s = c->GetSubChunk(y);
-
-			if (s == nullptr)
-			{
-				s = c->CreateSubChunk(y);
-
-				if (s != nullptr)
-					c->subChunks.push_back(s);
-
-				gp->QueueLoadBlocks(c);
-			}
+			gp->QueueLoadBlocks(c);
 		}
 	}
 
@@ -334,17 +302,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 		if (c != nullptr)
 		{
-			subChunk* s = c->GetSubChunk(y);
-
-			if (s == nullptr)
-			{
-				s = c->CreateSubChunk(y);
-
-				if (s != nullptr)
-					c->subChunks.push_back(s);
-
-				gp->QueueLoadBlocks(c);
-			}
+			gp->QueueLoadBlocks(c);
 		}
 	}
 }
@@ -366,61 +324,13 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	if (w.z > CHUNK_SIZE - 1)
 		return;
 
-	subChunk* sbc = GetSubChunk(y);
-
-	if (sbc == nullptr && id > 0) // cant create air
+	if (id <= 0) // destroyed block
 	{
-		// create subchunk
-
-		myData.placeBlock(w.x, w.y, w.z, id);
-
-		sbc = CreateSubChunk(y);
-
-		if (sbc != nullptr)
-			subChunks.push_back(sbc);
+		myData.removeBlockData(w.x, w.y, w.z);
+		myData.placeBlock(w.x, w.y, w.z, 0);
 	}
 	else
-	{
-		if (sbc->blocks[(int)w.x][(int)w.z] != nullptr) // if it exists, delete it if necessary
-		{
-			if (id <= 0)
-			{
-				delete sbc->blocks[(int)w.x][(int)w.z];
-			}
-		}
-
-		if (id <= 0) // destroyed block
-		{
-			sbc->blocks[(int)w.x][(int)w.z] = nullptr;
-			myData.removeBlockData(w.x, w.y, w.z);
-			myData.placeBlock(w.x, w.y, w.z, 0);
-		}
-		else
-			myData.placeBlock(w.x, w.y, w.z, id);
-	}
-
-
-	subChunk* sbcBelow = GetSubChunk(y - 1);
-
-	if (sbcBelow == nullptr) // create below
-	{
-		sbcBelow = CreateSubChunk(y - 1);
-
-		if (sbcBelow != nullptr)
-			subChunks.push_back(sbcBelow);
-	}
-
-	subChunk* sbcAbove = GetSubChunk(y + 1);
-
-	if (sbcAbove == nullptr) // create above
-	{
-		sbcAbove = CreateSubChunk(y + 1);
-
-		if (sbcAbove != nullptr)
-			subChunks.push_back(sbcAbove);
-	}
-
-	// check if we need to update other chunks
+		myData.placeBlock(w.x, w.y, w.z, id);
 
 	gp->QueueLoadBlocks(this);
 
@@ -450,49 +360,10 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 	if (w.z > CHUNK_SIZE - 1)
 		return;
 
-	subChunk* sbc = GetSubChunk(y);
-
-	if (sbc == nullptr) // cant create air
-	{
-		// create subchunk
-
-		myData.addBlockData(b->data, w.x, w.y, w.z);
-		myData.placeBlock(w.x, w.y, w.z, b->type);
-
-		sbc = CreateSubChunk(y);
-
-		if (sbc != nullptr)
-			subChunks.push_back(sbc);
-	}
-	else
-	{
-		if (sbc->blocks[(int)w.x][(int)w.z] != nullptr) // you can't place it duhh
-			return;
-		myData.addBlockData(b->data, w.x, w.y, w.z);
-		myData.placeBlock(w.x, w.y, w.z, b->type);
-	}
+	myData.addBlockData(b->data, w.x, w.y, w.z);
+	myData.placeBlock(w.x, w.y, w.z, b->type);
 
 	delete b;
-
-	subChunk* sbcBelow = GetSubChunk(y - 1);
-
-	if (sbcBelow == nullptr) // create below
-	{
-		sbcBelow = CreateSubChunk(y - 1);
-
-		if (sbcBelow != nullptr)
-			subChunks.push_back(sbcBelow);
-	}
-
-	subChunk* sbcAbove = GetSubChunk(y + 1);
-
-	if (sbcAbove == nullptr) // create above
-	{
-		sbcAbove = CreateSubChunk(y + 1);
-
-		if (sbcAbove != nullptr)
-			subChunks.push_back(sbcAbove);
-	}
 
 	// check if we need to update other chunks
 
@@ -852,6 +723,7 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 	Data::DataTag dataOne;
 	Data::DataTag dataTwo;
 
+	bool source = false;
 
 	switch (id)
 	{
@@ -881,7 +753,9 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 		if (!dataTwo.IsReal())
 			dataTwo.SetValue("0");
 
-		block = new Water(position + glm::vec3(x, y, z), std::stoi(dataTwo.value), dataOne.value == "true" ? true : false);
+		source = std::string(dataOne.value) == "true";
+
+		block = new Water(position + glm::vec3(x, y, z), std::stoi(dataTwo.value), source);
 		break;
 	case CRAFTINGTABLE:
 		block = new CraftingTable(position + glm::vec3(x, y, z));
@@ -1164,12 +1038,6 @@ void Chunk::UpdateChunk(int tick)
 					continue;
 
 				b->Update(tick);
-
-				if (b->changedBlocks)
-				{
-					b->changedBlocks = false;
-					return;
-				}
 			}
 		}
 	}

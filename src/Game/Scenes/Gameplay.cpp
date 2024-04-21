@@ -594,6 +594,8 @@ void Gameplay::KeyPress(int key)
 		objects[i]->KeyPress(key);
 	}
 
+	c2d->KeyPress(key);
+
 	hud->KeyPress(key);
 	player->KeyPress(key);
 }

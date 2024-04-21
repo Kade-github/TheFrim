@@ -12,6 +12,8 @@ class Logging
 	std::chrono::time_point<std::chrono::system_clock> _start;
 	std::ofstream _file;
 public:
+	std::vector<std::string> logs;
+
 	Logging(std::string path)
 	{
 		_file.open(path);
@@ -48,6 +50,11 @@ public:
 		_file << log << std::endl;
 
 		_file.flush();
+
+		logs.push_back(log);
+
+		if (logs.size() > 10)
+			logs.erase(logs.begin());
 	}
 
 };

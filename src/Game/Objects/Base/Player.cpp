@@ -545,7 +545,13 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 				if (item.type != Data::ITEM_NULL && item.placeable)
 				{
-					c->ModifyBlock(x, y, z, WATER);
+					Data::BlockData d = Data::BlockData();
+					d.AddTag("source", "true");
+					d.AddTag("strength", "8");
+
+					Block* b = c->CreateBlock(x, y, z, WATER, d);
+
+					c->PlaceBlock(x, y, z, b);
 
 					if (item.count == 1)
 						playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = {};

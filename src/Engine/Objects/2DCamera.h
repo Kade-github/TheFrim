@@ -9,6 +9,8 @@ class Camera2D : public GameObject
 	int _lastId = 0;
 	bool setProject = false;
 public:
+	bool debug = false;
+
 	float _w, _h;
 	float _rW, _rH;
 	unsigned int s_vao, s_vbo;
