@@ -90,21 +90,29 @@ namespace Data
 		MSGPACK_DEFINE_ARRAY(blocks);
 	};
 
-	struct Chunk
+	struct BlockChunk
 	{
-		bool isGenerated = false;
 		uint8_t blocks[CHUNK_SIZE][CHUNK_SIZE][CHUNK_HEIGHT];
+
+		MSGPACK_DEFINE_ARRAY(blocks);
+	};
+
+	class Chunk
+	{
+	public:
+		bool isGenerated = false;
+		BlockChunk bChunk;
 		int32_t x, z;
 		DataChunk data;
 
 		void placeBlock(int x, int y, int z, uint8_t block)
 		{
-			blocks[x][z][y] = block;
+			bChunk.blocks[x][z][y] = block;
 		}
 
 		void removeBlock(int x, int y, int z)
 		{
-			blocks[x][z][y] = 0;
+			bChunk.blocks[x][z][y] = 0;
 		}
 
 		BlockData getBlockData(int x, int y, int z)
@@ -142,7 +150,7 @@ namespace Data
 		}
 		
 
-		MSGPACK_DEFINE_ARRAY(blocks, x, z, data);
+		MSGPACK_DEFINE_ARRAY(bChunk, x, z, data);
 	};
 
 	struct Region {

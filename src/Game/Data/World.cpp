@@ -88,7 +88,7 @@ bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int rang
 				{
 					for (int _y = 0; _y < CHUNK_HEIGHT; _y++)
 					{
-						if (c.blocks[_x][_z][_y] == type)
+						if (c.bChunk.blocks[_x][_z][_y] == type)
 						{
 							if (abs(c.x + _x - x) < range && abs(c.z + _z - z) < range && abs(_y - y) < range)
 								return true;
@@ -240,7 +240,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 		{
 			for (int _y = 0; _y < CHUNK_HEIGHT; _y++)
 			{
-				chunk.blocks[_x][_z][_y] = 0;
+				chunk.bChunk.blocks[_x][_z][_y] = 0;
 			}
 		}
 	}
@@ -267,11 +267,11 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			for (int _y = rY; _y > -1; _y--)
 			{
 				if (_y == rY) // grass
-					chunk.blocks[_x][_z][_y] = GRASS;
+					chunk.bChunk.blocks[_x][_z][_y] = GRASS;
 				else if (_y > rY - 5) // dirt
-					chunk.blocks[_x][_z][_y] = DIRT;
+					chunk.bChunk.blocks[_x][_z][_y] = DIRT;
 				else // stone
-					chunk.blocks[_x][_z][_y] = STONE;
+					chunk.bChunk.blocks[_x][_z][_y] = STONE;
 			}
 		}
 	}
@@ -300,19 +300,19 @@ void Data::Region::generateStructures()
 				{
 					for (int _y = CHUNK_HEIGHT - 1; _y > -1; _y--)
 					{
-						if (c.blocks[_x][_z][_y] <= 0)
+						if (c.bChunk.blocks[_x][_z][_y] <= 0)
 							continue;
 
 						// trees
 
-						if (c.blocks[_x][_z][_y] == GRASS)
+						if (c.bChunk.blocks[_x][_z][_y] == GRASS)
 						{
 							int _rx = c.x + _x;
 							int _rz = c.z + _z;
 
 							if (rand() % 100 < 2)
 							{
-								struct_tree.Create(_rx,_rz,_y, c, this);
+								struct_tree.Create(_rx,_rz,_y - 1, c, this);
 							}
 						}
 					}

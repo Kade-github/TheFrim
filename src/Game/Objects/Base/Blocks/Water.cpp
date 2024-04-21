@@ -72,18 +72,27 @@ bool Water::DoesBlockExist(glm::vec3 _pos)
 	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
 
 	if (c == nullptr)
-		return false;
+		return true;
 
 	int type = c->GetBlock(_pos.x, _pos.y, _pos.z);
-	return type > 0;
+	return type > 0 && type != WATER;
 }
 
 void Water::PlaceWater(glm::vec3 _pos, int _strength)
 {
+	if (_pos.y < position.y)
+		_strength += 2;
+
 	if (_strength <= 0)
 		return;
 
 	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
+
+	if (c == nullptr)
+		return;
+
+	if (c->DoesBlockExist(_pos.x, _pos.y, _pos.z))
+		return;
 
 	Data::BlockData d = data;
 	d.tags.clear();
@@ -109,7 +118,7 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 
 void Water::Update(int tick) // water functionality
 {
-	if (strength == 0 || tick % 10 != 0 || currentChunk == nullptr)
+	if (strength == 0 || tick % 8 != 0 || currentChunk == nullptr)
 		return;
 
 	std::vector<glm::vec3> freeSpaces = GetFreeSpaces(position);

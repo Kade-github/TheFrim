@@ -66,7 +66,7 @@ int Chunk::GetBlock(float x, float y, float z)
 	if (y < 0 || y > CHUNK_HEIGHT - 1)
 		return 0;
 
-	return myData.blocks[_x][_z][(int)y];
+	return myData.bChunk.blocks[_x][_z][(int)y];
 }
 
 int Chunk::GetHighestBlock(float x, float z)
@@ -105,7 +105,7 @@ int Chunk::GetHighestBlock(float x, float z)
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
-		if (myData.blocks[_x][_z][y] > 0)
+		if (myData.bChunk.blocks[_x][_z][y] > 0)
 			return y;
 	}
 
@@ -242,7 +242,7 @@ int Chunk::GetBlockNoCheck(float x, float y, float z)
 	if (y < 0 || y > CHUNK_HEIGHT - 1)
 		return 0;
 
-	return myData.blocks[_x][_z][(int)y];
+	return myData.bChunk.blocks[_x][_z][(int)y];
 }
 
 int Chunk::GetBlockRaw(float x, float y, float z)
@@ -250,8 +250,8 @@ int Chunk::GetBlockRaw(float x, float y, float z)
 	int _x = x;
 	int _z = z;
 
-	return myData.blocks[_x][_z][(int)y];
-	
+	return myData.bChunk.blocks[_x][_z][(int)y];
+
 }
 
 bool Chunk::DoesBlockExist(float x, float y, float z)
@@ -264,16 +264,13 @@ bool Chunk::DoesBlockExist(float x, float y, float z)
 
 void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 {
-	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
 	if (w.x == 0)
 	{
 		Chunk* c = left;
 
 		if (c != nullptr)
-		{
-			gp->QueueLoadBlocks(c);
-		}
+			c->modified = true;
 	}
 
 	if (w.x == CHUNK_SIZE - 1)
@@ -281,9 +278,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 		Chunk* c = right;
 
 		if (c != nullptr)
-		{
-			gp->QueueLoadBlocks(c);
-		}
+			c->modified = true;
 	}
 
 	if (w.z == 0)
@@ -291,9 +286,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 		Chunk* c = back;
 
 		if (c != nullptr)
-		{
-			gp->QueueLoadBlocks(c);
-		}
+			c->modified = true;
 	}
 
 	if (w.z == CHUNK_SIZE - 1)
@@ -301,9 +294,7 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 		Chunk* c = front;
 
 		if (c != nullptr)
-		{
-			gp->QueueLoadBlocks(c);
-		}
+			c->modified = true;
 	}
 }
 
@@ -332,12 +323,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	else
 		myData.placeBlock(w.x, w.y, w.z, id);
 
-	gp->QueueLoadBlocks(this);
+	modified = true;
 
 	CreateOtherSubchunks(x, y, z, w);
-
-	LightingManager::GetInstance()->RefreshShadows();
-
 }
 
 void Chunk::PlaceBlock(float x, float y, float z, Block* b)
@@ -365,13 +353,9 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 
 	delete b;
 
-	// check if we need to update other chunks
-
-	gp->QueueLoadBlocks(this);
+	modified = true;
 
 	CreateOtherSubchunks(x, y, z, w);
-
-	LightingManager::GetInstance()->RefreshShadows();
 }
 
 // this is made confusingly. I'm sorry.
@@ -564,7 +548,7 @@ Data::Chunk Chunk::GetChunkData()
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
 				for (int z = 0; z < CHUNK_SIZE; z++)
-					c.blocks[x][z][y] = myData.blocks[x][z][y];
+					c.bChunk.blocks[x][z][y] = myData.bChunk.blocks[x][z][y];
 			}
 			continue;
 		}
@@ -574,9 +558,9 @@ Data::Chunk Chunk::GetChunkData()
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
 				if (sbc->blocks[x][z] != nullptr)
-					c.blocks[x][z][y] = sbc->blocks[x][z]->type;
+					c.bChunk.blocks[x][z][y] = sbc->blocks[x][z]->type;
 				else
-					c.blocks[x][z][y] = 0;
+					c.bChunk.blocks[x][z][y] = 0;
 			}
 		}
 	}
@@ -677,7 +661,7 @@ subChunk* Chunk::CreateSubChunk(int y)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			int id = myData.blocks[x][z][y];
+			int id = myData.bChunk.blocks[x][z][y];
 
 			if (id <= 0)
 				continue;
@@ -1021,6 +1005,16 @@ void Chunk::DrawShadows()
 
 void Chunk::UpdateChunk(int tick)
 {
+	if (modified)
+	{
+		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+		gp->QueueLoadBlocks(this);
+
+		LightingManager::GetInstance()->RefreshShadows();
+		modified = false;
+	}
+
 	for (int i = 0; i < subChunks.size(); i++)
 	{
 		subChunk* sbc = subChunks[i];

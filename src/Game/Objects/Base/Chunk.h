@@ -46,6 +46,8 @@ public:
     bool isBeingLoaded = false;
     bool isShadowLoaded = false;
 
+    bool modified = false;
+
     bool pleaseRender = false;
 
     bool isLoaded = false;
