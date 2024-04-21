@@ -215,34 +215,39 @@ void Player::Draw()
 
 	bool moving = false;
 
+	float sp = speed;
+
+	if (inWater)
+		sp = speed / 2;
+
 	if (!freeCam)
 	{
 		if (!_inInventory && !Hud::GamePaused)
 		{
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
 			{
-				forwardVelocity += speed;
+				forwardVelocity += sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
 			{
-				forwardVelocity -= speed;
+				forwardVelocity -= sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
 			{
-				strafeVelocity -= speed;
+				strafeVelocity -= sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 			{
-				strafeVelocity += speed;
+				strafeVelocity += sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			} 
@@ -258,17 +263,17 @@ void Player::Draw()
 				isOnGround = false;
 			}
 
-			if (forwardVelocity > speed)
-				forwardVelocity = speed;
+			if (forwardVelocity > sp)
+				forwardVelocity = sp;
 
-			if (forwardVelocity < -speed)
-				forwardVelocity = -speed;
+			if (forwardVelocity < -sp)
+				forwardVelocity = -sp;
 
-			if (strafeVelocity > speed)
-				strafeVelocity = speed;
+			if (strafeVelocity > sp)
+				strafeVelocity = sp;
 
-			if (strafeVelocity < -speed)
-				strafeVelocity = -speed;
+			if (strafeVelocity < -sp)
+				strafeVelocity = -sp;
 		}
 
 		Entity::Draw(); // physics

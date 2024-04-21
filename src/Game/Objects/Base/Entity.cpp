@@ -355,9 +355,11 @@ void Entity::Draw()
 	// water check
 
 	glm::vec3 ray = position + glm::vec3(0, 0.1, 0);
-	bool hit = RayToIncludeWater(ray, true);
-
-	inWater = hit;
+	glm::vec3 ray2 = position - glm::vec3(0, 0.8, 0);
+	if (isCreature)
+		inWater = RayToIncludeWater(ray, true) || RayToIncludeWater(ray2, true);
+	else
+		inWater = RayToIncludeWater(ray, true);
 
 	if (!Hud::GamePaused)
 	{
@@ -371,7 +373,7 @@ void Entity::Draw()
 		if (inWater)
 		{
 			if (downVelocity > 0)
-				downVelocity += boyancy * Game::instance->deltaTime;
+				downVelocity += (boyancy * 0.25f) * Game::instance->deltaTime;
 			else
 				downVelocity -= (boyancy * 0.25f) * Game::instance->deltaTime;
 

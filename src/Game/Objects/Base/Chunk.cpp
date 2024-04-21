@@ -33,27 +33,24 @@ int Chunk::GetBlock(float x, float y, float z)
 	int _x = x;
 	int _z = z;
 
-	if (x < position.x)
-		return 0;
-
-	if (x > position.x + CHUNK_SIZE)
-		return 0;
-
-	if (z < position.z)
-		return 0;
-
-	if (z > position.z + CHUNK_SIZE)
-		return 0;
-
 	glm::vec3 w = WorldToChunk(glm::vec3(x, y, z));
 
-	_x = w.x;
-	_z = w.z;
+	if (_x >= CHUNK_SIZE || _x < 0)
+		_x = w.x;
 
-	if (_x > CHUNK_SIZE - 1)
+	if (_z >= CHUNK_SIZE || _z < 0)
+		_z = w.z;
+
+	if (_x == 16)
+		_x = 15;
+
+	if (_z == 16)
+		_z = 15;
+
+	if (_x >= CHUNK_SIZE)
 		return 0;
 
-	if (_z > CHUNK_SIZE - 1)
+	if (_z >= CHUNK_SIZE)
 		return 0;
 
 	if (_x < 0)
@@ -74,27 +71,27 @@ int Chunk::GetHighestBlock(float x, float z)
 	int _x = x;
 	int _z = z;
 
-	if (x < position.x)
-		return 0;
-
-	if (x > position.x + CHUNK_SIZE)
-		return 0;
-
-	if (z < position.z)
-		return 0;
-
-	if (z > position.z + CHUNK_SIZE)
-		return 0;
-
 	glm::vec3 w = WorldToChunk(glm::vec3(x, 0, z));
+
+	if (_x >= CHUNK_SIZE || _x < 0)
+		w.x = _x;
+
+	if (_z >= CHUNK_SIZE || _z < 0)
+		w.z = _z;
 
 	_x = w.x;
 	_z = w.z;
 
-	if (_x > CHUNK_SIZE - 1)
+	if (_x == 16)
+		_x = 15;
+
+	if (_z == 16)
+		_z = 15;
+
+	if (_x >= CHUNK_SIZE)
 		return 0;
 
-	if (_z > CHUNK_SIZE - 1)
+	if (_z >= CHUNK_SIZE)
 		return 0;
 
 	if (_x < 0)
@@ -105,7 +102,7 @@ int Chunk::GetHighestBlock(float x, float z)
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
-		if (myData.bChunk.blocks[_x][_z][y] > 0)
+		if (myData.bChunk.blocks[_x][_z][y] > 0 && myData.bChunk.blocks[_x][_z][y] != WATER)
 			return y;
 	}
 
@@ -125,7 +122,7 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 		left = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 
 		if (left != nullptr)
-			return left->GetBlock(left->position.x + CHUNK_SIZE - 1, y, _z) > 0;
+			return left->GetBlock(CHUNK_SIZE - 1, y, _z) > 0;
 		else
 			return true;
 	}
@@ -137,7 +134,7 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 		right = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
 		if (right != nullptr)
-			return right->GetBlock(right->position.x, y, z) > 0;
+			return right->GetBlock(0, y, z) > 0;
 		else
 			return true;
 
@@ -150,7 +147,7 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 		front = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 
 		if (front != nullptr)
-			return front->GetBlock(x, y, front->position.z + CHUNK_SIZE - 1) > 0;
+			return front->GetBlock(x, y, CHUNK_SIZE - 1) > 0;
 		else
 			return true;
 	}
@@ -162,7 +159,7 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 		back = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 
 		if (back != nullptr)
-			return back->GetBlock(x, y, back->position.z) > 0;
+			return back->GetBlock(x, y, 0) > 0;
 		else
 			return true;
 	}
@@ -179,8 +176,10 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 	{
 		// left chunk
 
+		left = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+
 		if (left != nullptr)
-			return left->GetBlock(left->position.x + CHUNK_SIZE - 1, y, _z);
+			return left->GetBlock(CHUNK_SIZE - 1, y, _z);
 		else
 			return 0;
 	}
@@ -189,8 +188,10 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 	{
 		// right chunk
 
+		right = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+
 		if (right != nullptr)
-			return right->GetBlock(right->position.x, y, z);
+			return right->GetBlock(0, y, z);
 		else
 			return 0;
 
@@ -200,8 +201,10 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 	{
 		// front chunk
 
+		front = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+
 		if (front != nullptr)
-			return front->GetBlock(x, y, front->position.z + CHUNK_SIZE - 1);
+			return front->GetBlock(x, y, CHUNK_SIZE - 1);
 		else
 			return 0;
 	}
@@ -210,8 +213,10 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 	{
 		// back chunk
 
+		back = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
+
 		if (back != nullptr)
-			return back->GetBlock(x, y, back->position.z);
+			return back->GetBlock(x, y, 0);
 		else
 			return 0;
 	}
@@ -380,28 +385,28 @@ void Chunk::CreateFaces(Block* b)
 	bool front = true;
 	bool back = true;
 
-	int x = b->position.x;
+	int x = b->position.x - position.x;
 	int y = b->position.y;
-	int z = b->position.z;
+	int z = b->position.z - position.z;
 
-	int t = GetBlock(x, y + 1, z);
+	int t = GetBlockInterchunk(x, y + 1, z);
 	// in our chunk
-	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
+	if (t > 0 && (b->transparent))
 		top = false;
-	t = GetBlock(x, y - 1, z);
-	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
+	t = GetBlockInterchunk(x, y - 1, z);
+	if (t > 0 && ( b->transparent))
 		bottom = false;
-	t = GetBlock(x + 1, y, z);
-	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
+	t = GetBlockInterchunk(x + 1, y, z);
+	if (t > 0 && (b->transparent))
 		left = false;
-	t = GetBlock(x - 1, y, z);
-	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
+	t = GetBlockInterchunk(x - 1, y, z);
+	if (t > 0 && (b->transparent))
 		right = false;
-	t = GetBlock(x, y, z - 1);
-	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
+	t = GetBlockInterchunk(x, y, z - 1);
+	if (t > 0 && (b->transparent))
 		front = false;
-	t = GetBlock(x, y, z + 1);
-	if (t > 0 && ((t != GLASS && t != WATER) || b->transparent))
+	t = GetBlockInterchunk(x, y, z + 1);
+	if (t > 0 && (b->transparent))
 		back = false;
 
 	// create faces
@@ -665,54 +670,59 @@ subChunk* Chunk::CreateSubChunk(int y)
 
 	bool isOccluded = true;
 
-	for (int x = 0; x < CHUNK_SIZE; x++)
+	int type = GetBlock(0, y + 1, 0);
+	int type2 = GetBlock(0, y - 1, 0);
+	int type3 = GetBlockInterchunk(CHUNK_SIZE, y, 0);
+	int type4 = GetBlockInterchunk(-1, y, 0);
+	int type5 = GetBlockInterchunk(0, y, CHUNK_SIZE);
+	int type6 = GetBlockInterchunk(0, y, -1);
+
+	if (type <= 0 || (type == WATER || type == GLASS))
+		isOccluded = false;
+	else if (type2 <= 0 || (type == WATER || type == GLASS))
+		isOccluded = false;
+	else if (type3 <= 0 || (type == WATER || type == GLASS))
+		isOccluded = false;
+	else if (type4 <= 0 || (type == WATER || type == GLASS))
+		isOccluded = false;
+	else if (type5 <= 0 || (type == WATER || type == GLASS))
+		isOccluded = false;
+	else if (type6 <= 0 || (type == WATER || type == GLASS))
+		isOccluded = false;
+	bool hasBlocks = false;
+
+	if (!isOccluded)
 	{
-		for (int z = 0; z < CHUNK_SIZE; z++)
+		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
-			int id = myData.bChunk.blocks[x][z][y];
-
-			if (id <= 0)
-				continue;
-
-			Data::BlockData data = myData.getBlockData(x, y, z);
-
-			if (isOccluded)
+			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				// normally an if-else chain like this is looked down upon,
-				// but honestly what would you do huh? exactly :(
+				int id = myData.bChunk.blocks[x][z][y];
 
-				int type = GetBlock(position.x + x, y + 1, position.z + z);
-				int type2 = GetBlock(position.x + x, y - 1, position.z + z);
-				int type3 = GetBlockInterchunk(position.x + x + 1, y, position.z + z);
-				int type4 = GetBlockInterchunk(position.x + x - 1, y, position.z + z);
-				int type5 = GetBlockInterchunk(position.x + x, y, position.z + z + 1);
-				int type6 = GetBlockInterchunk(position.x + x, y, position.z + z - 1);
+				if (id <= 0)
+					continue;
 
-				if (type > 0 && (type != WATER && type != GLASS))
-					isOccluded = false;
-				else if (type2 > 0 && (type2 != WATER && type2 != GLASS))
-					isOccluded = false;
-				else if (type3 > 0 && (type3 != WATER && type3 != GLASS))
-					isOccluded = false;
-				else if (type4 > 0 && (type4 != WATER && type4 != GLASS))
-					isOccluded = false;
-				else if (type5 > 0 && (type5 != WATER && type5 != GLASS))
-					isOccluded = false;
-				else if (type6 > 0 && (type6 != WATER && type6 != GLASS))
-					isOccluded = false;
+				Data::BlockData data = myData.getBlockData(x, y, z);
+
+				Block* b = CreateBlock(x, y, z, id, data);
+
+				sbc->blocks[x][z] = b;
+				hasBlocks = true;
 			}
-
-			Block* b = CreateBlock(x, y, z, id, data);
-
-			sbc->blocks[x][z] = b;
 		}
 	}
-
-	if (isOccluded)
+	else
 	{
 		DestroySubChunk(sbc);
 		return nullptr;
 	}
+
+	if (!hasBlocks)
+	{
+		DestroySubChunk(sbc);
+		return nullptr;
+	}
+
 	return sbc;
 }
 
