@@ -125,7 +125,7 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 		left = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 
 		if (left != nullptr)
-			return left->GetBlockNoCheck(left->position.x + CHUNK_SIZE - 1, y, _z) > 0;
+			return left->GetBlock(left->position.x + CHUNK_SIZE - 1, y, _z) > 0;
 		else
 			return true;
 	}
@@ -137,7 +137,7 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 		right = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
 		if (right != nullptr)
-			return right->GetBlockNoCheck(right->position.x, y, z) > 0;
+			return right->GetBlock(right->position.x, y, z) > 0;
 		else
 			return true;
 
@@ -150,7 +150,7 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 		front = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 
 		if (front != nullptr)
-			return front->GetBlockNoCheck(x, y, front->position.z + CHUNK_SIZE - 1) > 0;
+			return front->GetBlock(x, y, front->position.z + CHUNK_SIZE - 1) > 0;
 		else
 			return true;
 	}
@@ -162,12 +162,12 @@ bool Chunk::InterchunkDoesBlockExist(float x, float y, float z)
 		back = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 
 		if (back != nullptr)
-			return back->GetBlockNoCheck(x, y, back->position.z) > 0;
+			return back->GetBlock(x, y, back->position.z) > 0;
 		else
 			return true;
 	}
 
-	return GetBlockNoCheck(x, y, z) > 0;
+	return GetBlock(x, y, z) > 0;
 }
 
 int Chunk::GetBlockInterchunk(float x, float y, float z)
@@ -180,7 +180,7 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 		// left chunk
 
 		if (left != nullptr)
-			return left->GetBlockNoCheck(left->position.x + CHUNK_SIZE - 1, y, _z);
+			return left->GetBlock(left->position.x + CHUNK_SIZE - 1, y, _z);
 		else
 			return 0;
 	}
@@ -190,7 +190,7 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 		// right chunk
 
 		if (right != nullptr)
-			return right->GetBlockNoCheck(right->position.x, y, z);
+			return right->GetBlock(right->position.x, y, z);
 		else
 			return 0;
 
@@ -201,7 +201,7 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 		// front chunk
 
 		if (front != nullptr)
-			return front->GetBlockNoCheck(x, y, front->position.z + CHUNK_SIZE - 1);
+			return front->GetBlock(x, y, front->position.z + CHUNK_SIZE - 1);
 		else
 			return 0;
 	}
@@ -211,12 +211,12 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 		// back chunk
 
 		if (back != nullptr)
-			return back->GetBlockNoCheck(x, y, back->position.z);
+			return back->GetBlock(x, y, back->position.z);
 		else
 			return 0;
 	}
 
-	return GetBlockNoCheck(x, y, z);
+	return GetBlock(x, y, z);
 }
 
 int Chunk::GetBlockNoCheck(float x, float y, float z)
@@ -681,17 +681,24 @@ subChunk* Chunk::CreateSubChunk(int y)
 				// normally an if-else chain like this is looked down upon,
 				// but honestly what would you do huh? exactly :(
 
-				if (!DoesBlockExist(position.x + x, y + 1, position.z + z))
+				int type = GetBlock(position.x + x, y + 1, position.z + z);
+				int type2 = GetBlock(position.x + x, y - 1, position.z + z);
+				int type3 = GetBlockInterchunk(position.x + x + 1, y, position.z + z);
+				int type4 = GetBlockInterchunk(position.x + x - 1, y, position.z + z);
+				int type5 = GetBlockInterchunk(position.x + x, y, position.z + z + 1);
+				int type6 = GetBlockInterchunk(position.x + x, y, position.z + z - 1);
+
+				if (type > 0 && (type != WATER && type != GLASS))
 					isOccluded = false;
-				else if (!DoesBlockExist(position.x + x, y - 1, position.z + z))
+				else if (type2 > 0 && (type2 != WATER && type2 != GLASS))
 					isOccluded = false;
-				else if (!InterchunkDoesBlockExist(x - 1, y, z))
+				else if (type3 > 0 && (type3 != WATER && type3 != GLASS))
 					isOccluded = false;
-				else if (!InterchunkDoesBlockExist(x + 1, y, z))
+				else if (type4 > 0 && (type4 != WATER && type4 != GLASS))
 					isOccluded = false;
-				else if (!InterchunkDoesBlockExist(x, y, z - 1))
+				else if (type5 > 0 && (type5 != WATER && type5 != GLASS))
 					isOccluded = false;
-				else if (!InterchunkDoesBlockExist(x, y, z + 1))
+				else if (type6 > 0 && (type6 != WATER && type6 != GLASS))
 					isOccluded = false;
 			}
 
@@ -740,10 +747,10 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 	case WATER:
 		dataOne = data.GetTag("source");
 		if (!dataOne.IsReal())
-			dataOne.SetValue("false");
+			dataOne.SetValue("true");
 		dataTwo = data.GetTag("strength");
 		if (!dataTwo.IsReal())
-			dataTwo.SetValue("0");
+			dataTwo.SetValue("8");
 
 		source = std::string(dataOne.value) == "true";
 
