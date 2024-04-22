@@ -3,7 +3,7 @@
 
 #include <string>
 #include <vector>
-
+#include <glm/vec3.hpp>
 #include <random>
 
 class MusicManager
@@ -42,8 +42,15 @@ public:
 	void PlayMusic(std::string path);
 	void PlayMusic(std::string path, float fadeDuration);
 
+	void SetReverb(float mix, float time);
+	void SetCompression(float threshold, float ratio, float attack, float release);
+
+	void RemoveFXs();
+
+	void Set3DPosition(glm::vec3 pos, glm::vec3 front, glm::vec3 top);
+
 	void PlaySFX(std::string path, std::string customName = "sfx");
-	void PlaySFX(std::string path, float pitch, std::string customName = "sfx");
+	void PlaySFX(std::string path, glm::vec3 from, float pitch, std::string customName = "sfx");
 
 	void FadeOut(float duration);
 

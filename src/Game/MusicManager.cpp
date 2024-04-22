@@ -2,6 +2,7 @@
 #include "Game.h"
 
 #include <filesystem>
+#include <bass.h>
 
 
 void MusicManager::FreeMusic()
@@ -86,8 +87,6 @@ void MusicManager::PlayMusic(std::string path)
 
 	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
 
-	c.SetReverb(0.5f, 0.5f);
-
 	c.Play();
 
 	_fadeTime = 0;
@@ -112,6 +111,8 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	c.SetVolume(0);
 
+	c.CreateFX();
+
 	c.Play();
 
 	_fadeTime = glfwGetTime();
@@ -131,6 +132,32 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 }
 
+void MusicManager::SetReverb(float mix, float time)
+{
+	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+
+	c.SetReverb(mix, time);
+}
+
+void MusicManager::SetCompression(float threshold, float ratio, float attack, float release)
+{
+	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+
+	c.SetCompression(threshold, ratio, attack, release, 0.0f);
+}
+
+void MusicManager::RemoveFXs()
+{
+	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+
+	c.RemoveFXHandles();
+}
+
+void MusicManager::Set3DPosition(glm::vec3 pos, glm::vec3 front, glm::vec3 top)
+{
+	Game::instance->audioManager->Set3DPosition(pos, front, top);
+}
+
 void MusicManager::PlaySFX(std::string path, std::string customName)
 {
 	std::string rPath = "Assets/Sfx/" + path + ".ogg";
@@ -140,7 +167,7 @@ void MusicManager::PlaySFX(std::string path, std::string customName)
 	c.Play();
 }
 
-void MusicManager::PlaySFX(std::string path, float pitch, std::string customName)
+void MusicManager::PlaySFX(std::string path, glm::vec3 from, float pitch, std::string customName)
 {
 	std::string rPath = "Assets/Sfx/" + path + ".ogg";
 
@@ -149,6 +176,16 @@ void MusicManager::PlaySFX(std::string path, float pitch, std::string customName
 	c.CreateFX();
 
 	c.SetPitch(pitch);
+
+	BASS_3DVECTOR pos;
+
+	BASS_Get3DPosition(&pos, nullptr, nullptr, nullptr);
+
+	glm::vec3 _currentPos = { pos.x, pos.y, pos.z };
+
+	c.Set3DDistanceFactor(glm::distance(from, _currentPos));
+
+	Game::instance->audioManager->Apply3D();
 
 	c.Play();
 }

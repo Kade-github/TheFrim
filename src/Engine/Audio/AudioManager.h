@@ -3,7 +3,7 @@
 
 #include <bass.h>
 #include <bass_fx.h>
-
+#include <glm/vec3.hpp>
 #include <iostream>
 
 #include <string>
@@ -12,14 +12,11 @@
 class Channel {
 	std::string _path;
 
-	void CheckError()
-	{
-		if (BASS_ErrorGetCode() != 0)
-			std::cout << "BASS Error: " << BASS_ErrorGetCode() << std::endl;
-	}
-
+	void CheckError();
 public:
 	bool autoFree = false;
+
+	std::vector<unsigned int> fxHandles = {};
 
 	static void EndSync(HSYNC handle, DWORD channel, DWORD data, void* user);
 
@@ -96,6 +93,15 @@ public:
 		CheckError();
 	}
 
+	void Set3DDistanceFactor(float dist)
+	{
+		if (!IsLoaded())
+			return;
+
+		BASS_Set3DFactors(dist, -1.0f, -1.0f);
+		CheckError();
+	}
+
 	void SetVolume(float vol)
 	{
 		if (!IsLoaded())
@@ -129,10 +135,32 @@ public:
 		CheckError();
 	}
 
-	void SetReverb(float mix, float time)
+	void RemoveFXHandles()
+	{
+		for (int i = 0; i < fxHandles.size(); i++)
+			BASS_ChannelRemoveFX(id, fxHandles[i]);
+
+		fxHandles.clear();
+	}
+
+	void RemoveFXHandle(int handle)
+	{
+		BASS_ChannelRemoveFX(id, handle);
+
+		for (int i = 0; i < fxHandles.size(); i++)
+		{
+			if (fxHandles[i] == handle)
+			{
+				fxHandles.erase(fxHandles.begin() + i);
+				break;
+			}
+		}
+	}
+
+	int SetReverb(float mix, float time)
 	{
 		if (!IsLoaded())
-			return;
+			return -1;
 
 		BASS_DX8_REVERB reverb;
 
@@ -141,15 +169,19 @@ public:
 		reverb.fReverbTime = time;
 		reverb.fHighFreqRTRatio = 0.001f;
 
-		BASS_FXSetParameters(id, &reverb);
+		int fx = BASS_ChannelSetFX(id, BASS_FX_DX8_REVERB, 1);
+
+		BASS_FXSetParameters(fx, &reverb);
 
 		CheckError();
+
+		return fx;
 	}
 
-	void Set3DReverb(float mix, float time)
+	int Set3DReverb(float mix, float time)
 	{
 		if (!IsLoaded())
-			return;
+			return -1;
 
 		BASS_DX8_I3DL2REVERB reverb;
 
@@ -166,9 +198,35 @@ public:
 		reverb.flDensity = 100.0f;
 		reverb.flHFReference = 5000.0f;
 
-		BASS_FXSetParameters(id, &reverb);
+		int fxHandle = BASS_ChannelSetFX(id, BASS_FX_DX8_I3DL2REVERB, 1);
+
+		BASS_FXSetParameters(fxHandle, &reverb);
 
 		CheckError();
+
+		return fxHandle;
+	}
+
+	int SetCompression(float threshold, float ratio, float attack, float release, float gain)
+	{
+		if (!IsLoaded())
+			return -1;
+
+		BASS_DX8_COMPRESSOR compressor;
+
+		compressor.fGain = gain;
+		compressor.fAttack = attack;
+		compressor.fRelease = release;
+		compressor.fThreshold = threshold;
+		compressor.fRatio = ratio;
+
+		int fxHandle = BASS_ChannelSetFX(id, BASS_FX_DX8_COMPRESSOR, 1);
+
+		BASS_FXSetParameters(fxHandle, &compressor);
+
+		CheckError();
+
+		return fxHandle;
 	}
 
 	void SetPitch(float p)
@@ -191,6 +249,7 @@ public:
 	{
 		if (IsLoaded())
 		{
+			RemoveFXHandles();
 			BASS_ChannelStop(id);
 			BASS_StreamFree(id);
 
@@ -315,6 +374,19 @@ public:
 		}
 	}
 
+	void Set3DPosition(glm::vec3 _pos, glm::vec3 _front, glm::vec3 _top)
+	{
+		BASS_3DVECTOR pos = { _pos.x, _pos.y, _pos.z };
+		BASS_3DVECTOR front = { _front.x, _front.y, _front.z };
+		BASS_3DVECTOR top = { _top.x, _top.y, _top.z };
+
+		BASS_Set3DPosition(&pos, NULL, &front, &top);
+	}
+
+	void Apply3D()
+	{
+		BASS_Apply3D();
+	}
 };
 
 #endif

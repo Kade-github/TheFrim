@@ -92,6 +92,7 @@ void Gameplay::Draw()
 	glm::mat4 project = camera->GetProjectionMatrix();
 
 	Game::instance->shader->SetUniformMat4f("projection", glm::value_ptr(project));
+	Game::instance->shader->SetUniformMat4f(5, glm::value_ptr(project));
 
 	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
 
@@ -152,6 +153,22 @@ void Gameplay::Draw()
 		if (player->selectedBlock != nullptr)
 			c2d->DrawDebugText("Selected Block: " + std::to_string(player->selectedBlock->position.x) + ", " + std::to_string(player->selectedBlock->position.y) + ", " + std::to_string(player->selectedBlock->position.z), glm::vec2(4, 100), 24);
 	}
+
+	c2d->DrawDebugText("Player Velocity: " + StringTools::ToTheDecimial(player->forwardVelocity, 2) + ", " + StringTools::ToTheDecimial(player->strafeVelocity, 2) + ", " + StringTools::ToTheDecimial(player->downVelocity, 2), glm::vec2(4, 124), 24);
+
+	if (player->inWater && !watermusicfx)
+	{
+		MusicManager::GetInstance()->SetCompression(4, 3, 0.5, 0.5);
+		MusicManager::GetInstance()->SetReverb(0, 0.05f);
+		watermusicfx = true;
+	}
+	else if (!player->inWater && watermusicfx)
+	{
+		MusicManager::GetInstance()->RemoveFXs();
+		watermusicfx = false;
+	}
+
+	MusicManager::GetInstance()->Set3DPosition(camera->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();
 

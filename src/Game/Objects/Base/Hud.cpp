@@ -189,6 +189,11 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	Texture* hn = Texture::createWithImageExtra("Assets/Textures/items.png", "nonFlipped"); // grab from cache
 	hn->spriteSheet.Load("Assets/Textures/items.xml", hn->width, hn->height);
 
+	waterOverlay = new Sprite2D("Assets/Textures/waterOverlay.png", glm::vec3(0, 0, 0));
+
+	waterOverlay->width = c2d->_w;
+	waterOverlay->height = c2d->_h;
+
 	hand = new Sprite3D(hn, glm::vec3(0, 0, 0));
 
 	hand->width = 0.3;
@@ -205,6 +210,11 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	hand->position.x = c2d->_w - hand->width;
 
 	crosshair = new Sprite2D("Assets/Textures/crosshair.png", glm::vec3(c2d->_w / 2, c2d->_h / 2, 0));
+
+	c2d->AddObject(waterOverlay);
+
+	waterOverlay->order = 1;
+	waterOverlay->color.a = 0;
 
 	c2d->AddObject(crosshair);
 	crosshair->order = 1;
@@ -335,6 +345,17 @@ Hud::~Hud()
 
 void Hud::Draw()
 {
+	if (player->topWater)
+	{
+		if (waterOverlay->color.a < 0.7f)
+			waterOverlay->color.a += 10.0f * Game::instance->deltaTime;
+	}
+	else
+	{
+		if (waterOverlay->color.a > 0.0f)
+			waterOverlay->color.a -= 10.0f * Game::instance->deltaTime;
+	}
+
 	hand->Draw();
 
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);

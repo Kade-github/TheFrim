@@ -65,7 +65,7 @@ int Chunk::GetBlock(float x, float y, float z)
 	return myData.bChunk.blocks[(int)_x][(int)_z][(int)y];
 }
 
-int Chunk::GetHighestBlock(float x, float z)
+int Chunk::GetHighestBlock(float x, float z, bool water)
 {
 	float _x = x;
 	float _z = z;
@@ -97,8 +97,16 @@ int Chunk::GetHighestBlock(float x, float z)
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
-		if (myData.bChunk.blocks[(int)_x][(int)_z][y] > 0 && myData.bChunk.blocks[(int)_x][(int)_z][y] != WATER)
-			return y;
+		if (!water)
+		{
+			if (myData.bChunk.blocks[(int)_x][(int)_z][y] > 0)
+				return y;
+		}
+		else
+		{
+			if (myData.bChunk.blocks[(int)_x][(int)_z][y] > 0 && myData.bChunk.blocks[(int)_x][(int)_z][y] != WATER)
+				return y;
+		}
 	}
 
 	return -1;

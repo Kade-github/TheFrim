@@ -17,6 +17,8 @@ public:
 	Player* player;
 	Camera2D* c2d = nullptr;
 
+	bool watermusicfx = false;
+
 	float lastUpdate = 0.0f;
 	float lastSecond = 0.0f;
 	std::vector<float> tickTimes;

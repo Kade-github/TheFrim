@@ -29,6 +29,8 @@ public:
 	void Draw() override;
 	void MouseClick(int button, glm::vec2 mPos) override;
 	void Resize(float _w, float _h) override;
+
+	void KeyPress(int key) override;
 };
 
 #endif

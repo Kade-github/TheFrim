@@ -44,13 +44,13 @@ void Entity::Footstep()
 			switch (b->soundType)
 			{
 			case SoundType::S_GRASS:
-				MusicManager::GetInstance()->PlaySFX("grass_sfx", pitch, "walk");
+				MusicManager::GetInstance()->PlaySFX("grass_sfx", position, pitch, "walk");
 				break;
 			case SoundType::S_STONE:
-				MusicManager::GetInstance()->PlaySFX("stone_sfx", pitch, "walk");
+				MusicManager::GetInstance()->PlaySFX("stone_sfx", position, pitch, "walk");
 				break;
 			case SoundType::S_WOOD:
-				MusicManager::GetInstance()->PlaySFX("wood_sfx", pitch, "walk");
+				MusicManager::GetInstance()->PlaySFX("wood_sfx", position, pitch, "walk");
 				break;
 			}
 		}
@@ -369,10 +369,7 @@ void Entity::Draw()
 
 		if (inWater)
 		{
-			if (downVelocity > 0)
-				downVelocity += (boyancy * 0.25f) * Game::instance->deltaTime;
-			else
-				downVelocity -= (boyancy * 0.25f) * Game::instance->deltaTime;
+			downVelocity -= (boyancy * 0.25f) * Game::instance->deltaTime;
 
 			if (downVelocity > boyancy)
 				downVelocity = boyancy;
@@ -453,7 +450,7 @@ void Entity::Draw()
 
 	if (currentChunk != nullptr)
 	{
-		int topBlock = currentChunk->GetHighestBlock(position.x, position.z);
+		int topBlock = currentChunk->GetHighestBlock(position.x, position.z, true);
 
 		float diff = topBlock - position.y;
 

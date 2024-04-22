@@ -182,3 +182,8 @@ void MainMenu::Resize(float _w, float _h)
 	if (c2d != nullptr)
 		c2d->Resize();
 }
+
+void MainMenu::KeyPress(int key)
+{
+	c2d->KeyPress(key);
+}

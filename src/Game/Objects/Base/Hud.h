@@ -21,6 +21,7 @@ private:
 	Text2D* pauseHeader;
 
 	Sprite2D* pauseBackground;
+	Sprite2D* waterOverlay;
 
 	Bar* resume;
 	Bar* title;
