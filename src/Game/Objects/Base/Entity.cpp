@@ -92,20 +92,14 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 		float toX = motion.x;
 		float toZ = motion.z;
 
+		float initialX = motion.x;
+		float initialZ = motion.z;
 
 		float pX = position.x;
 		float pZ = position.z;
 
 		glm::vec3 ray = position;
 		ray.y = toY;
-
-		glm::vec3 _world = currentChunk->WorldToChunk(ray);
-
-		if (_world.x == 16)
-			toX--;
-
-		if (_world.z == 16)
-			toZ--;
 
 		bool hit = false;
 
@@ -132,7 +126,9 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			}
 
 			if (hit)
+			{
 				break;
+			}
 
 			progress += 0.1;
 		}
@@ -163,7 +159,9 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			}
 
 			if (hit)
+			{
 				break;
+			}
 
 			progress += 0.1;
 		}
@@ -216,14 +214,6 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 
 		float toX = position.x;
 		float toZ = position.z;
-
-		glm::vec3 _world = currentChunk->WorldToChunk(ray);
-
-		if (_world.x == 16)
-			toX--;
-
-		if (_world.z == 16)
-			toZ--;
 
 		int _lastY = -1;
 

@@ -278,10 +278,20 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 
 			for (int _y = rY; _y > -1; _y--)
 			{
-				if (_y == rY) // grass
-					chunk.bChunk.blocks[_x][_z][_y] = GRASS;
-				else if (_y > rY - 5) // dirt
-					chunk.bChunk.blocks[_x][_z][_y] = DIRT;
+				if (_y == rY) // grass or sand
+				{
+					if (rY <= staticWaterLevel)
+						chunk.bChunk.blocks[_x][_z][_y] = SAND;
+					else
+						chunk.bChunk.blocks[_x][_z][_y] = GRASS;
+				}
+				else if (_y > rY - 5) // dirt or sand
+				{
+					if (rY <= staticWaterLevel)
+						chunk.bChunk.blocks[_x][_z][_y] = SAND;
+					else
+						chunk.bChunk.blocks[_x][_z][_y] = DIRT;
+				}
 				else // stone
 					chunk.bChunk.blocks[_x][_z][_y] = STONE;
 			}

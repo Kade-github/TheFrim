@@ -53,7 +53,7 @@ public:
 
 		logs.push_back(log);
 
-		if (logs.size() > 10)
+		if (logs.size() > 30)
 			logs.erase(logs.begin());
 	}
 
