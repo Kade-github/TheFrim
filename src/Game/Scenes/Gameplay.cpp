@@ -31,8 +31,6 @@ void Gameplay::Create()
 
 	c2d->s->LoadShader("Assets/Shaders/vert2d.glsl", "Assets/Shaders/frag2d.glsl");
 
-	AddObject(c2d);
-
 	c2d->order = 3;
 
 	Camera* camera = Game::instance->GetCamera();
@@ -42,21 +40,19 @@ void Gameplay::Create()
 
 	player = new Player(wm->GetPlayerPosition());
 
-	AddObject(player);
-
 	player->order = 2;
 
 	hud = new Hud(glm::vec3(0, 0, 0), player, c2d);
-
-	AddObject(hud);
-
-	AddObject(hud->hand);
 
 	hud->hand->order = 2;
 
 	hud->order = 1000;
 
+	wm->SaveWorldNow();
+
 	UpdateChunks();
+
+
 
 	loadPool.reset(std::thread::hardware_concurrency() * 3.14f);
 
@@ -93,6 +89,10 @@ void Gameplay::Draw()
 
 	Game::instance->shader->Bind();
 
+	glm::mat4 project = camera->GetProjectionMatrix();
+
+	Game::instance->shader->SetUniformMat4f(5, glm::value_ptr(project));
+
 	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
 
 	if (Settings::instance->fogDistance >= 1.19)
@@ -102,10 +102,8 @@ void Gameplay::Draw()
 	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);
 	Game::instance->shader->SetUniform1f("FogFar", fog);
 
+
 	Game::instance->shader->Unbind();
-
-
-	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 
 	if (player->position.y <= -100 && wm->regions.size() != 0)
 	{
@@ -114,11 +112,89 @@ void Gameplay::Draw()
 		player->position.y = c->GetHighestBlock(player->position.x, player->position.z);
 	}
 
-	UpdateChunks();
+	float currentTime = glfwGetTime();
+	if (currentTime - lastUpdate > 0.05f) // 20 times a second
+	{
+		UpdateChunks();
+
+		lastUpdate = currentTime;
+	}
+
+	if (lastSecond < currentTime)
+	{
+		tps = ticks - lastTickSecond;
+		lastTickSecond = ticks;
+		lastSecond = currentTime + 1.0f;
+
+		tickTimes.push_back(tps);
+
+		if (tickTimes.size() > 10)
+			tickTimes.erase(tickTimes.begin());
+	}
+
+	float realTPS = 0;
+
+	for (int i = 0; i < tickTimes.size(); i++)
+	{
+		realTPS += tickTimes[i];
+	}
+
+	realTPS /= tickTimes.size();
+
+	Chunk* currentChunk = wm->GetChunk(player->position.x, player->position.z);
+
+	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
+	c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
+	c2d->DrawDebugText("Player in water: " + std::to_string(player->inWater), glm::vec2(4, 52), 24);
+	if (currentChunk != nullptr)
+	{
+		c2d->DrawDebugText("Subchunks in chunk: " + std::to_string(currentChunk->subChunks.size()), glm::vec2(4, 76), 24);
+		if (player->selectedBlock != nullptr)
+			c2d->DrawDebugText("Selected Block: " + std::to_string(player->selectedBlock->position.x) + ", " + std::to_string(player->selectedBlock->position.y) + ", " + std::to_string(player->selectedBlock->position.z), glm::vec2(4, 100), 24);
+	}
 
 	MusicManager::GetInstance()->Update();
 
+	// Draw chunks (regular)
+
+	for (Region& r : wm->regions)
+	{
+		for (Chunk* c : r.chunks)
+		{
+			if (c->isRendered)
+				c->DrawRegular();
+		}
+	}
+
+	// Draw chunks (shadow)
+
+	for (Region& r : wm->regions)
+	{
+		for (Chunk* c : r.chunks)
+		{
+			if (c->isRendered)
+				c->DrawShadows();
+		}
+	}
+
 	Scene::Draw();
+
+	// Draw chunks (transparent)
+
+	for (Region& r : wm->regions)
+	{
+		for (Chunk* c : r.chunks)
+		{
+			if (c->isRendered)
+				c->DrawTransparent();
+		}
+	}
+
+	player->Draw();
+
+	hud->Draw();
+
+	c2d->Draw();
 
 	dim->Update(); // these use delayed 
 
@@ -189,6 +265,11 @@ void Gameplay::UpdateChunks()
 
 	static std::vector<glm::vec2> toLoadedRegion = {};
 
+	std::vector<Chunk*> allChunks;
+
+	if (!hud->GamePaused)
+		ticks++;
+
 	for (Region& r : wm->regions)
 	{
 		// if the startx and startz is equal to a toLoadedRegion value, then remove it from the vector
@@ -202,57 +283,7 @@ void Gameplay::UpdateChunks()
 			}
 		}
 
-		for (Chunk* c : r.chunks)
-		{
-			glm::vec3 fakePos = glm::vec3(c->position.x, camera->position.y, c->position.z);
-
-			float distance = glm::distance(camera->position, fakePos);
-
-			if (distance < camera->cameraFar * 1)
-			{
-				if (c->id < 0)
-				{
-					if (!c->myData.isGenerated)
-						c->myData = wm->GetChunkData(c->position.x, c->position.z);
-					c->Init();
-					AddObject(c);
-				}
-
-				if (!c->isLoaded)
-				{
-					QueueLoad(c);
-					return;
-				}
-
-				float angle = camera->YawAngleTo(fakePos);
-
-				if (angle < 200 || distance <= 32)
-				{
-					if (!c->isRendered || c->pleaseRender)
-					{
-						c->pleaseRender = false;
-						c->SetBuffer();
-						c->SetShadowBuffer();
-					}
-					c->isRendered = true;
-				}
-				else
-				{
-					if (!c->isRendered)
-						c->isRendered = false;
-				}
-			}
-			else
-			{
-				if (c->isLoaded)
-				{
-					c->Unload();
-					c->id = -1;
-					RemoveObject(c);
-					c->isLoaded = false;
-				}
-			}
-		}
+		allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
 
 		int amount = (CHUNK_SIZE * REGION_SIZE);
 
@@ -274,6 +305,8 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
+				Game::instance->log->Write("Loading region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
 				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
@@ -297,10 +330,11 @@ void Gameplay::UpdateChunks()
 						if (c->isLoaded)
 						{
 							c->Unload();
-							c->id = -1;
-							RemoveObject(c);
 							c->isLoaded = false;
 						}
+
+						delete c;
+						c = nullptr;
 					}
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
@@ -327,6 +361,8 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
+				Game::instance->log->Write("Loading region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
 				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
@@ -350,10 +386,10 @@ void Gameplay::UpdateChunks()
 						if (c->isLoaded)
 						{
 							c->Unload();
-							c->id = -1;
-							RemoveObject(c);
 							c->isLoaded = false;
 						}
+						delete c;
+						c = nullptr;
 					}
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
@@ -380,6 +416,8 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
+				Game::instance->log->Write("Loading region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
 				toLoadedRegion.push_back(glm::vec2(fakePosR.x - amount, fakePosR.z));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
@@ -403,10 +441,10 @@ void Gameplay::UpdateChunks()
 						if (c->isLoaded)
 						{
 							c->Unload();
-							c->id = -1;
-							RemoveObject(c);
 							c->isLoaded = false;
 						}
+						delete c;
+						c = nullptr;
 					}
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
@@ -433,6 +471,8 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
+				Game::instance->log->Write("Loading region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
 				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z - amount));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
@@ -457,11 +497,10 @@ void Gameplay::UpdateChunks()
 						if (c->isLoaded)
 						{
 							c->Unload();
-							c->id = -1;
-							RemoveObject(c);
 							c->isLoaded = false;
 						}
-						RemoveObject(c);
+						delete c;
+						c = nullptr;
 					}
 					wm->regions.erase(wm->regions.begin() + i);
 					break;
@@ -469,7 +508,73 @@ void Gameplay::UpdateChunks()
 			}
 			break;
 		}
+	}
 
+	// sort chunks by distance
+
+	std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
+		{
+			glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
+			glm::vec3 fakePosB = glm::vec3(b->position.x, camera->position.y, b->position.z);
+
+			float distanceA = glm::distance(camera->position, fakePosA);
+			float distanceB = glm::distance(camera->position, fakePosB);
+
+			return distanceA < distanceB;
+		});
+
+	for (Chunk* c : allChunks)
+	{
+		glm::vec3 fakePos = glm::vec3(c->position.x, camera->position.y, c->position.z);
+
+		float distance = glm::distance(camera->position, fakePos);
+
+		if (distance < camera->cameraFar * 1)
+		{
+			if (c->id < 0)
+			{
+				c->id = 1;
+				c->Init();
+			}
+
+			if (!c->isLoaded)
+			{
+				QueueLoad(c);
+				return;
+			}
+
+			float angle = camera->YawAngleTo(fakePos);
+
+			if (angle < 200 || distance <= 32)
+			{
+				if (!c->isRendered || c->pleaseRender)
+				{
+					c->pleaseRender = false;
+					c->SetBuffer();
+					c->SetTransparentBuffer();
+					c->SetShadowBuffer();
+				}
+				c->isRendered = true;
+			}
+			else
+			{
+				if (!c->isRendered)
+					c->isRendered = false;
+			}
+		}
+		else
+		{
+			if (c->isLoaded)
+			{
+				c->Unload();
+				c->isLoaded = false;
+			}
+		}
+
+		// Chunk updates
+
+		if (c->isLoaded && !hud->GamePaused)
+			c->UpdateChunk(ticks);
 	}
 }
 
@@ -484,18 +589,12 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_F6)
 	{
-		for (Region& r : wm->regions)
+		Chunk* c = wm->GetChunk(player->position.x, player->position.z);
+
+		if (c != nullptr)
 		{
-			for (Chunk* c : r.chunks)
-			{
-				if (c->isLoaded)
-				{
-					c->Unload();
-					c->id = -1;
-					RemoveObject(c);
-					c->isLoaded = false;
-				}
-			}
+			c->Unload();
+			c->isLoaded = false;
 		}
 	}
 
@@ -510,6 +609,11 @@ void Gameplay::KeyPress(int key)
 	{
 		objects[i]->KeyPress(key);
 	}
+
+	c2d->KeyPress(key);
+
+	hud->KeyPress(key);
+	player->KeyPress(key);
 }
 
 void Gameplay::MouseClick(int button, glm::vec2 mPos)
@@ -518,6 +622,9 @@ void Gameplay::MouseClick(int button, glm::vec2 mPos)
 	{
 		objects[i]->MouseClick(button, mPos);
 	}
+
+	hud->MouseClick(button, mPos);
+	player->MouseClick(button, mPos);
 }
 
 void Gameplay::MouseRelease(int button, glm::vec2 mPos)
@@ -526,6 +633,9 @@ void Gameplay::MouseRelease(int button, glm::vec2 mPos)
 	{
 		objects[i]->MouseRelease(button, mPos);
 	}
+
+	hud->MouseRelease(button, mPos);
+	player->MouseRelease(button, mPos);
 }
 
 void Gameplay::OnScroll(double x, double y)
@@ -534,6 +644,9 @@ void Gameplay::OnScroll(double x, double y)
 	{
 		objects[i]->OnScroll(x, y);
 	}
+
+	hud->OnScroll(x, y);
+	player->OnScroll(x, y);
 }
 
 void Gameplay::FocusChange(bool focus)
@@ -542,13 +655,14 @@ void Gameplay::FocusChange(bool focus)
 	if (!focus)
 	{
 		wasPaused = Hud::GamePaused;
-		
+
 		player->TogglePauseMenu();
 	}
 	else if (focus && !wasPaused)
 	{
 		player->TogglePauseMenu();
 	}
+
 }
 
 void Gameplay::Destroy()

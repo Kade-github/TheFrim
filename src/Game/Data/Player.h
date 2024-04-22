@@ -124,7 +124,7 @@ namespace Data
                 placeable = true;
                 break;
             case ITEM_WOODENPLANKS:
-                tag = "item_wooden_plank";
+                tag = "item_wooden_planks";
                 placeable = true;
                 break;
             case ITEM_LEAVES:
@@ -164,7 +164,7 @@ namespace Data
                 break;
             case ITEM_WOODEN_PICKAXE:
                 stackable = false;
-                tag = "item_wood_pickaxe";
+                tag = "item_wood_pick";
                 breakingPower = 2.0f;
                 break;
             case ITEM_WOODEN_SHOVEL:
@@ -183,7 +183,7 @@ namespace Data
                 break;
             case ITEM_STONE_PICKAXE:
                 stackable = false;
-                tag = "item_stone_pickaxe";
+                tag = "item_stone_pick";
                 breakingPower = 4.0f;
                 break;
             case ITEM_STONE_SHOVEL:
@@ -202,7 +202,7 @@ namespace Data
                 break;
             case ITEM_IRON_PICKAXE:
                 stackable = false;
-                tag = "item_iron_pickaxe";
+                tag = "item_iron_pick";
                 breakingPower = 6.0f;
                 break;
             case ITEM_IRON_SHOVEL:
@@ -221,7 +221,7 @@ namespace Data
                 break;
             case ITEM_GOLD_PICKAXE:
                 stackable = false;
-                tag = "item_gold_pickaxe";
+                tag = "item_gold_pick";
                 breakingPower = 10.0f;
                 break;
             case ITEM_GOLD_SHOVEL:
@@ -240,7 +240,7 @@ namespace Data
                 break;
             case ITEM_DIAMOND_PICKAXE:
                 stackable = false;
-                tag = "item_diamond_pickaxe";
+                tag = "item_diamond_pick";
                 breakingPower = 8.0f;
                 break;
             case ITEM_DIAMOND_SHOVEL:

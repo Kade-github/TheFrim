@@ -6,7 +6,6 @@
 
 #include <filesystem>
 
-std::mutex generateMutex;
 
 WorldManager* WorldManager::instance = nullptr;
 
@@ -112,14 +111,15 @@ bool WorldManager::IsRegionGenerated(int x, int z)
 	bool found = false;
 
 	bool loaded = false;
-
-	for (auto& r : regions)
-	{
-		if (r.startX == x && r.startZ == z)
+	{	
+		for (auto& r : regions)
 		{
-			found = true;
-			loaded = true;
-			break;
+			if (r.startX == x && r.startZ == z)
+			{
+				found = true;
+				loaded = true;
+				break;
+			}
 		}
 	}
 
@@ -173,7 +173,6 @@ void WorldManager::GenerateRegion(int x, int z)
 	Region reg(r, std::vector<Chunk*>());
 
 	CreateChunks(reg);
-
 	std::lock_guard<std::mutex> lock(generateMutex);
 	_generatedRegions.push_back(reg);
 
@@ -234,6 +233,7 @@ void WorldManager::LoadWorld()
 
 Region& WorldManager::GetRegion(float x, float z)
 {
+
 	for (auto& r : regions)
 	{
 		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)

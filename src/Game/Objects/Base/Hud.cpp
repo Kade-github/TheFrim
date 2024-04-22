@@ -335,6 +335,8 @@ Hud::~Hud()
 
 void Hud::Draw()
 {
+	hand->Draw();
+
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
 	Camera* cam = Game::instance->GetCamera();

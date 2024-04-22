@@ -7,9 +7,13 @@
 #include <PerlinNoise.hpp>
 #include "../Objects/Base/Block.h"
 
+#include <Game.h>
+
 siv::PerlinNoise perlin;
 
 std::mutex m;
+
+int staticWaterLevel = 0;
 
 Data::Chunk Data::Region::getChunk(int x, int z)
 {
@@ -88,7 +92,7 @@ bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int rang
 				{
 					for (int _y = 0; _y < CHUNK_HEIGHT; _y++)
 					{
-						if (c.blocks[_x][_z][_y] == type)
+						if (c.bChunk.blocks[_x][_z][_y] == type)
 						{
 							if (abs(c.x + _x - x) < range && abs(c.z + _z - z) < range && abs(_y - y) < range)
 								return true;
@@ -134,6 +138,14 @@ void Data::World::parseSeed()
 	perlin.reseed(seedNum);
 
 	srand(seedNum);
+
+	if (waterLevel == -1) 
+		waterLevel = rand() % 45 + 80; // 80 - 125
+
+	staticWaterLevel = waterLevel;
+
+	Game::instance->log->Write("Seed: " + std::to_string(seedNum));
+	Game::instance->log->Write("Water Level: " + std::to_string(waterLevel));
 }
 
 Data::Region Data::World::getRegion(int x, int z)
@@ -240,7 +252,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 		{
 			for (int _y = 0; _y < CHUNK_HEIGHT; _y++)
 			{
-				chunk.blocks[_x][_z][_y] = 0;
+				chunk.bChunk.blocks[_x][_z][_y] = 0;
 			}
 		}
 	}
@@ -254,7 +266,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			int worldX = (_x + x);
 			int worldZ = (_z + z);
 
-			const double noise = perlin.normalizedOctave2D(worldX * scale, worldZ * scale, 4, 0.8);
+			const double noise = perlin.normalizedOctave2D(worldX * scale, worldZ * scale, 6, 1.0);
 
 			int rY = (CHUNK_HEIGHT / 2) + (int)((noise * 100));
 
@@ -266,12 +278,33 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 
 			for (int _y = rY; _y > -1; _y--)
 			{
-				if (_y == rY) // grass
-					chunk.blocks[_x][_z][_y] = GRASS;
-				else if (_y > rY - 5) // dirt
-					chunk.blocks[_x][_z][_y] = DIRT;
+				if (_y == rY) // grass or sand
+				{
+					if (rY <= staticWaterLevel)
+						chunk.bChunk.blocks[_x][_z][_y] = SAND;
+					else
+						chunk.bChunk.blocks[_x][_z][_y] = GRASS;
+				}
+				else if (_y > rY - 5) // dirt or sand
+				{
+					if (rY <= staticWaterLevel)
+						chunk.bChunk.blocks[_x][_z][_y] = SAND;
+					else
+						chunk.bChunk.blocks[_x][_z][_y] = DIRT;
+				}
 				else // stone
-					chunk.blocks[_x][_z][_y] = STONE;
+					chunk.bChunk.blocks[_x][_z][_y] = STONE;
+			}
+
+			if (rY < staticWaterLevel)
+			{
+				for (int _y = staticWaterLevel; _y > rY; _y--)
+				{
+					if (chunk.bChunk.blocks[_x][_z][_y] != 0)
+						break;
+
+					chunk.bChunk.blocks[_x][_z][_y] = WATER;
+				}
 			}
 		}
 	}
@@ -300,19 +333,22 @@ void Data::Region::generateStructures()
 				{
 					for (int _y = CHUNK_HEIGHT - 1; _y > -1; _y--)
 					{
-						if (c.blocks[_x][_z][_y] <= 0)
+						if (c.bChunk.blocks[_x][_z][_y] <= 0)
+							continue;
+
+						if (_y <= staticWaterLevel)
 							continue;
 
 						// trees
 
-						if (c.blocks[_x][_z][_y] == GRASS)
+						if (c.bChunk.blocks[_x][_z][_y] == GRASS)
 						{
 							int _rx = c.x + _x;
 							int _rz = c.z + _z;
 
 							if (rand() % 100 < 2)
 							{
-								struct_tree.Create(_rx,_rz,_y, c, this);
+								struct_tree.Create(_rx,_rz,_y - 1, c, this);
 							}
 						}
 					}

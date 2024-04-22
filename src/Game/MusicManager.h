@@ -3,6 +3,9 @@
 
 #include <string>
 #include <vector>
+
+#include <random>
+
 class MusicManager
 {
 	float _fadeTime = 0.0f;
@@ -11,6 +14,8 @@ class MusicManager
 	bool _isPlaying = false;
 
 	std::vector<std::string> trackList;
+
+	std::default_random_engine generator;
 
 public:
 	float nextTrack = 0.0f;
@@ -26,6 +31,8 @@ public:
 	std::string currentSong = "";
 
 	void FreeMusic();
+
+	void ShuffleTracks();
 
 	void GenerateTrackList();
 	void GenerateAmbientTrackList();

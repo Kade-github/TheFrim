@@ -32,6 +32,11 @@ void Entity::Footstep()
 
 		glm::vec3 _world = c->WorldToChunk(position);
 
+		if (_world.x == 16)
+			_world.x = 15;
+		if (_world.z == 16)
+			_world.z = 15;
+
 		Block* b = sb->getBlock(_world.x, _world.z);
 
 		if (b != nullptr)
@@ -92,20 +97,14 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 		float toX = motion.x;
 		float toZ = motion.z;
 
+		float initialX = motion.x;
+		float initialZ = motion.z;
 
 		float pX = position.x;
 		float pZ = position.z;
 
 		glm::vec3 ray = position;
 		ray.y = toY;
-
-		glm::vec3 _world = currentChunk->WorldToChunk(ray);
-
-		if (_world.x == 16)
-			toX--;
-
-		if (_world.z == 16)
-			toZ--;
 
 		bool hit = false;
 
@@ -126,10 +125,15 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			currentChunk = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 			if (currentChunk != nullptr)
-				hit = currentChunk->DoesBlockExist(toX, ray.y, pZ);
+			{
+				int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
+				hit = type > 0 && type != WATER;
+			}
 
 			if (hit)
+			{
 				break;
+			}
 
 			progress += 0.1;
 		}
@@ -154,10 +158,15 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			currentChunk = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 			if (currentChunk != nullptr)
-				hit = currentChunk->DoesBlockExist(_lastX, ray.y, toZ);
+			{
+				int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
+				hit = type > 0 && type != WATER;
+			}
 
 			if (hit)
+			{
 				break;
+			}
 
 			progress += 0.1;
 		}
@@ -211,14 +220,6 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		float toX = position.x;
 		float toZ = position.z;
 
-		glm::vec3 _world = currentChunk->WorldToChunk(ray);
-
-		if (_world.x == 16)
-			toX--;
-
-		if (_world.z == 16)
-			toZ--;
-
 		int _lastY = -1;
 
 		bool hit = false;
@@ -229,8 +230,8 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		{
 			ray.y = rp.y + (diff.y * progress);
 
-
-			hit = currentChunk->DoesBlockExist(toX, ray.y, toZ);
+			int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
+			hit = type > 0 && type != WATER;
 
 			if (hit)
 			{
@@ -290,11 +291,53 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 		if (c != nullptr)
-			if (c->DoesBlockExist(ray.x, ray.y, ray.z))
+		{
+			int type = c->GetBlock(ray.x, ray.y, ray.z);
+			if (type > 0 && type != WATER)
 			{
 				to = lastRay;
 				return true;
 			}
+		}
+
+		progress += 0.05;
+	}
+
+	return false;
+}
+
+bool Entity::RayToIncludeWater(glm::vec3& to, bool inside)
+{
+	glm::vec3 diff = to - position;
+
+	float sum = diff.x + diff.y + diff.z;
+
+	if (sum == 0)
+		return false;
+
+	float progress = 0;
+
+	glm::vec3 ray = position;
+
+	glm::vec3 start = position;
+
+	while (progress < 1)
+	{
+		glm::vec3 lastRay = ray;
+		ray = start + (diff * progress);
+		if (inside)
+			lastRay = ray;
+		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
+
+		if (c != nullptr)
+		{
+			int type = c->GetBlock(ray.x, ray.y, ray.z);
+			if (type == WATER)
+			{
+				to = lastRay;
+				return true;
+			}
+		}
 
 		progress += 0.05;
 	}
@@ -304,6 +347,17 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 
 void Entity::Draw()
 {
+	// water check
+
+	glm::vec3 ray = position + glm::vec3(0, 0.1, 0);
+	glm::vec3 ray2 = position - glm::vec3(0, 0.8, 0);
+
+	topWater = RayToIncludeWater(ray, true);
+	if (isCreature)
+		inWater = topWater || RayToIncludeWater(ray2, true);
+	else
+		inWater = topWater;
+
 	if (!Hud::GamePaused)
 	{
 
@@ -311,7 +365,22 @@ void Entity::Draw()
 
 		// gravity
 
-		downVelocity -= gravity * Game::instance->deltaTime;
+		float boyancy = 10.0f;
+
+		if (inWater)
+		{
+			if (downVelocity > 0)
+				downVelocity += (boyancy * 0.25f) * Game::instance->deltaTime;
+			else
+				downVelocity -= (boyancy * 0.25f) * Game::instance->deltaTime;
+
+			if (downVelocity > boyancy)
+				downVelocity = boyancy;
+			if (downVelocity < -boyancy * 0.25f)
+				downVelocity = -boyancy * 0.25f;
+		}
+		else
+			downVelocity -= gravity * Game::instance->deltaTime;
 
 		if (downVelocity < -18)
 			downVelocity = -18;

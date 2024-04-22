@@ -80,6 +80,11 @@ void Shader::SetUniformMat4f(const std::string& name, const float* matrix)
     glUniformMatrix4fv(loc_id, 1, GL_FALSE, matrix);
 }
 
+void Shader::SetUniformMat4f(const int loc_id, const float* matrix)
+{
+    glUniformMatrix4fv(loc_id, 1, GL_FALSE, matrix);
+}
+
 void Shader::LoadShader(std::string vert_shader, std::string frag_shader)
 {
     std::ifstream vertF(vert_shader);

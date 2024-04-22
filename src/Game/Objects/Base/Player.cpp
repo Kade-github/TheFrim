@@ -215,60 +215,67 @@ void Player::Draw()
 
 	bool moving = false;
 
+	float sp = speed;
+
+	if (inWater)
+		sp = speed / 2;
+
 	if (!freeCam)
 	{
 		if (!_inInventory && !Hud::GamePaused)
 		{
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
 			{
-				forwardVelocity += speed;
+				forwardVelocity += sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
 			{
-				forwardVelocity -= speed;
+				forwardVelocity -= sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
 			{
-				strafeVelocity -= speed;
+				strafeVelocity -= sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 			{
-				strafeVelocity += speed;
+				strafeVelocity += sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
-			}
+			} 
 
-			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && isOnGround)
+			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && (isOnGround || inWater))
 			{
-				if (glfwGetTime() - jumpCooldown < 0.15)
+				if (glfwGetTime() - jumpCooldown < 0.15 && !inWater)
 					return;
 
 				jumpCooldown = glfwGetTime();
 
 				downVelocity = jumpStrength;
+				if (topWater)
+					downVelocity = jumpStrength / 2;
 				isOnGround = false;
 			}
 
-			if (forwardVelocity > speed)
-				forwardVelocity = speed;
+			if (forwardVelocity > sp)
+				forwardVelocity = sp;
 
-			if (forwardVelocity < -speed)
-				forwardVelocity = -speed;
+			if (forwardVelocity < -sp)
+				forwardVelocity = -sp;
 
-			if (strafeVelocity > speed)
-				strafeVelocity = speed;
+			if (strafeVelocity > sp)
+				strafeVelocity = sp;
 
-			if (strafeVelocity < -speed)
-				strafeVelocity = -speed;
+			if (strafeVelocity < -sp)
+				strafeVelocity = -sp;
 		}
 
 		Entity::Draw(); // physics
@@ -351,6 +358,7 @@ void Player::Draw()
 				glm::vec3 _world = c->WorldToChunk(ray);
 
 				selectedBlock = sb->getBlock(_world.x, _world.z);
+
 			}
 			else
 				selectedBlock = nullptr;
@@ -360,6 +368,7 @@ void Player::Draw()
 	}
 	else
 		selectedBlock = nullptr;
+
 
 	vertices.clear();
 	indices.clear();
@@ -458,35 +467,41 @@ void Player::Draw()
 					}
 
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
+
+					selectedBlock = nullptr;
 				}
 			}
 
-			std::vector<BlockFace> faces = {};
-
-			faces.push_back(selectedBlock->BreakTopFace());
-			ApplyNormal(faces[0].vertices, glm::vec3(0, 1, 0));
-			faces.push_back(selectedBlock->BreakBottomFace());
-			ApplyNormal(faces[1].vertices, glm::vec3(0, -1, 0));
-			faces.push_back(selectedBlock->BreakLeftFace());
-			ApplyNormal(faces[2].vertices, glm::vec3(1, 0, 0));
-			faces.push_back(selectedBlock->BreakRightFace());
-			ApplyNormal(faces[3].vertices, glm::vec3(-1, 0, 0));
-			faces.push_back(selectedBlock->BreakFrontFace());
-			ApplyNormal(faces[4].vertices, glm::vec3(0, 0, -1));
-			faces.push_back(selectedBlock->BreakBackFace());
-			ApplyNormal(faces[5].vertices, glm::vec3(0, 0, 1));
-
-			for (int i = 0; i < faces.size(); i++)
+			if (selectedBlock != nullptr)
 			{
-				BlockFace f = faces[i];
 
-				for (int j = 0; j < f.vertices.size(); j++)
-					f.vertices[j].position += f.vertices[j].normal * 0.01f;
+				std::vector<BlockFace> faces = {};
 
-				DrawBlockBreak(f);
+				faces.push_back(selectedBlock->BreakTopFace());
+				ApplyNormal(faces[0].vertices, glm::vec3(0, 1, 0));
+				faces.push_back(selectedBlock->BreakBottomFace());
+				ApplyNormal(faces[1].vertices, glm::vec3(0, -1, 0));
+				faces.push_back(selectedBlock->BreakLeftFace());
+				ApplyNormal(faces[2].vertices, glm::vec3(1, 0, 0));
+				faces.push_back(selectedBlock->BreakRightFace());
+				ApplyNormal(faces[3].vertices, glm::vec3(-1, 0, 0));
+				faces.push_back(selectedBlock->BreakFrontFace());
+				ApplyNormal(faces[4].vertices, glm::vec3(0, 0, -1));
+				faces.push_back(selectedBlock->BreakBackFace());
+				ApplyNormal(faces[5].vertices, glm::vec3(0, 0, 1));
+
+				for (int i = 0; i < faces.size(); i++)
+				{
+					BlockFace f = faces[i];
+
+					for (int j = 0; j < f.vertices.size(); j++)
+						f.vertices[j].position += f.vertices[j].normal * 0.01f;
+
+					DrawBlockBreak(f);
+				}
+
+				RenderBreak();
 			}
-
-			RenderBreak();
 		}
 		else if (selectedBlock != nullptr)
 		{
@@ -520,7 +535,9 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 			Chunk* c = WorldManager::instance->GetChunk(x, z);
 
-			if (c->DoesBlockExist(x, y, z))
+			int type = c->GetBlock(x, y, z);
+
+			if (type > 0 && type != WATER)
 				return;
 
 			if ((int)x == (int)position.x && (int)z == (int)position.z && (y == (int)position.y || y == (int)position.y - 1))
@@ -536,7 +553,13 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 				if (item.type != Data::ITEM_NULL && item.placeable)
 				{
-					c->ModifyBlock(x, y, z, item.type);
+					Data::BlockData d = Data::BlockData();
+					d.AddTag("source", "true");
+					d.AddTag("strength", "8");
+
+					Block* b = c->CreateBlock(x, y, z, WATER, d);
+
+					c->PlaceBlock(x, y, z, b);
 
 					if (item.count == 1)
 						playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = {};

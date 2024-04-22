@@ -16,7 +16,6 @@ class Player : public Entity
 	float headBop = 0;
 	float _shake = 0;
 
-	Block* selectedBlock = nullptr;
 	BlockFace selectedFace;
 
 	void DrawBlockBreak(BlockFace f);
@@ -29,6 +28,7 @@ class Player : public Entity
 
 public:
 	Data::Player playerData;
+	Block* selectedBlock = nullptr;
 
 	float jumpCooldown = 0;
 

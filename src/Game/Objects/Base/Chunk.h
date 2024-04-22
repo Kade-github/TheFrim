@@ -8,7 +8,7 @@
 
 // split the chunk into subchunks by y axis.
 
-struct subChunk {
+class subChunk {
 public:
     int y = -1;
     Block* blocks[16][16] = {nullptr};
@@ -20,11 +20,17 @@ public:
 class Chunk : public GameObject
 {
     unsigned int VAO, VBO, EBO;
+
+    unsigned int TRANSPARENTVAO, TRANSPARENTVBO, TRANSPARENTEBO;
+
     unsigned int SHADOWVAO, SHADOWVBO, SHADOWEBO;
     Texture* txp;
 
     std::vector<GameObject::VVertex> vertices;
     std::vector<unsigned int> indices;
+
+    std::vector<GameObject::VVertex> transparentVertices;
+    std::vector<unsigned int> transparentIndices;
 
     std::vector<GameObject::VVertex> shadowVertices;
     std::vector<unsigned int> shadowIndices;
@@ -40,6 +46,8 @@ public:
     bool isBeingLoaded = false;
     bool isShadowLoaded = false;
 
+    bool modified = false;
+
     bool pleaseRender = false;
 
     bool isLoaded = false;
@@ -47,6 +55,11 @@ public:
     Chunk(Texture* _txp, glm::vec3 _pos);
 
     Data::Chunk myData;
+
+    Chunk* left = nullptr;
+    Chunk* right = nullptr;
+    Chunk* front = nullptr;
+    Chunk* back = nullptr;
 
     std::vector<subChunk*> subChunks;
 
@@ -64,12 +77,20 @@ public:
 
     int GetBlockNoCheck(float x, float y, float z);
 
+    int GetBlockRaw(float x, float y, float z);
+
     // checks current chunk, and if needed; checks chunks around it.
     bool InterchunkDoesBlockExist(float x, float y, float z);
 
+    int GetBlockInterchunk(float x, float y, float z);
+
     bool DoesBlockExist(float x, float y, float z);
 
+    void CreateOtherSubchunks(glm::vec3 _w);
+
     void ModifyBlock(float x, float y, float z, int id);
+
+    void PlaceBlock(float x, float y, float z, Block* b);
 
     void RenderSubChunk(subChunk* c);
     void RenderSubChunks();
@@ -78,7 +99,7 @@ public:
     void RenderSubChunksShadow();
 
     subChunk* CreateSubChunk(int y);
-    Block* CreateBlock(int x, int y, int z, int id);
+    Block* CreateBlock(int x, int y, int z, int id, Data::BlockData data);
 
     void DestroySubChunk(int y);
     void DestroySubChunk(subChunk* c);
@@ -87,6 +108,7 @@ public:
     void CreateSubChunks();
 
     void SetBuffer();
+    void SetTransparentBuffer();
     void SetShadowBuffer();
 
     void Init();
@@ -94,7 +116,11 @@ public:
 
     void Unload();
 
-    void Draw() override;
+    void DrawRegular();
+    void DrawTransparent();
+    void DrawShadows();
+
+    void UpdateChunk(int tick);
 
 };
 

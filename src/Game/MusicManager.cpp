@@ -18,8 +18,26 @@ void MusicManager::FreeMusic()
 	_isPlaying = false;
 }
 
+void MusicManager::ShuffleTracks()
+{
+	// shuffle
+
+	for (int i = 0; i < trackList.size(); i++)
+	{
+		std::uniform_int_distribution<int> distribution(0, trackList.size() - 1);
+
+		int j = distribution(generator);
+
+		std::string temp = trackList[i];
+		trackList[i] = trackList[j];
+		trackList[j] = temp;
+	}
+}
+
 void MusicManager::GenerateTrackList()
 {
+	generator.seed(time(nullptr));
+
 	trackList.clear();
 
 	std::string path = "Assets/Music/tracks/";
@@ -35,16 +53,7 @@ void MusicManager::GenerateTrackList()
 		}
 	}
 
-	// shuffle
-
-	for (int i = 0; i < trackList.size(); i++)
-	{
-		int j = std::rand() % trackList.size();
-
-		std::string temp = trackList[i];
-		trackList[i] = trackList[j];
-		trackList[j] = temp;
-	}
+	ShuffleTracks();
 }
 
 void MusicManager::GenerateAmbientTrackList()
@@ -55,16 +64,7 @@ void MusicManager::GenerateAmbientTrackList()
 	trackList.push_back("imsotired");
 	trackList.push_back("somethinglurks");
 
-	// shuffle
-
-	for (int i = 0; i < trackList.size(); i++)
-	{
-		int j = std::rand() % trackList.size();
-
-		std::string temp = trackList[i];
-		trackList[i] = trackList[j];
-		trackList[j] = temp;
-	}
+	ShuffleTracks();
 }
 
 bool MusicManager::ChannelIsPlaying(std::string name)
@@ -123,9 +123,12 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	nextTrack = glfwGetTime() + c.length + min;
 
-	nextTrack += rand() % min; // add random time
+	std::uniform_int_distribution<int> distribution(min, 320); // 5 minute max
 
-	// total: 2-4 minutes
+	int randomNumber = distribution(generator);
+
+	nextTrack += randomNumber;
+
 }
 
 void MusicManager::PlaySFX(std::string path, std::string customName)

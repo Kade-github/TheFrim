@@ -40,9 +40,6 @@ void BlockTest::ChangeBlock()
 	case SAND:
 		block = new Sand(glm::vec3());
 		break;
-	case WATER:
-		block = new Water(glm::vec3());
-		break;
 	case CRAFTINGTABLE:
 		block = new CraftingTable(glm::vec3());
 		break;
@@ -88,12 +85,12 @@ void BlockTest::ChangeBlock()
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
 
 	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)0);
 	glEnableVertexAttribArray(0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)0);
 
 	// uv attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
 	glEnableVertexAttribArray(1);
+	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
 
 	glBindVertexArray(0);
 }
@@ -153,6 +150,13 @@ void BlockTest::Draw()
 
     s->Bind();
 
+	glm::mat4 model = glm::mat4(1.0f);
+
+	s->SetUniformMat4f("model", &model[0][0]);
+	Game::instance->shader->SetUniform3f("FogColor", 1.0f,1.0f,1.0f);
+	Game::instance->shader->SetUniform1f("FogFar", 100.0f);
+
+
     t->Bind();
 
 	glBindVertexArray(VAO);
@@ -170,6 +174,17 @@ void BlockTest::Draw()
 
 void BlockTest::KeyPress(int key)
 {
+	switch (key)
+	{
+	case GLFW_KEY_2:
+		blockId++;
+		ChangeBlock();
+		break;
+	case GLFW_KEY_1:
+		blockId--;
+		ChangeBlock();
+		break;
+	}
 }
 
 void BlockTest::Create() {
@@ -180,6 +195,7 @@ void BlockTest::Create() {
     glGenBuffers(1, &EBO);
 
     t = Texture::createWithImage("Assets/Textures/block.png");
+	t->spriteSheet.Load("Assets/Textures/block.xml", t->width, t->height);
 
     ChangeBlock();
 }

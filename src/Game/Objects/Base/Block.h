@@ -4,7 +4,7 @@
 #include <Objects/GameObject.h>
 #include <glm/glm.hpp>
 #include <vector>
-
+#include "../../Data/World.h"
 #include <OpenGL/Texture.h>
 
 class BlockFace {
@@ -76,8 +76,11 @@ class Block
 	glm::vec4 GetBreakUV();
 
 public:
+	Data::BlockData data;
 	glm::vec3 position;
 	BlockType type;
+
+	bool changedBlocks = false;
 
 	bool transparent = false;
 	bool isInteractable = false;
@@ -116,6 +119,7 @@ public:
 
 	virtual void OnInteract() {};
 
+	virtual void Update(int tick) {};
 
 	void Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned int>& inds);
 
