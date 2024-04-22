@@ -86,7 +86,7 @@ public:
 
     bool DoesBlockExist(float x, float y, float z);
 
-    void CreateOtherSubchunks(float x, float y, float z, glm::vec3 _w);
+    void CreateOtherSubchunks(glm::vec3 _w);
 
     void ModifyBlock(float x, float y, float z, int id);
 

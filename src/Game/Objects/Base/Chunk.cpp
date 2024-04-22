@@ -270,20 +270,20 @@ bool Chunk::DoesBlockExist(float x, float y, float z)
 	return GetBlock(x, y, z) > 0; // if its anything under 0 (thats impossible, uint etc), and if its 0 it's air.
 }
 
-void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
+void Chunk::CreateOtherSubchunks(glm::vec3 w)
 {
 
 	if (w.x == 0)
 	{
-		Chunk* c = left;
+		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 
 		if (c != nullptr)
 			c->modified = true;
 	}
 
-	if (w.x == CHUNK_SIZE - 1)
+	if (w.x >= CHUNK_SIZE)
 	{
-		Chunk* c = right;
+		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
 		if (c != nullptr)
 			c->modified = true;
@@ -291,15 +291,15 @@ void Chunk::CreateOtherSubchunks(float x, float y, float z, glm::vec3 w)
 
 	if (w.z == 0)
 	{
-		Chunk* c = back;
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 
 		if (c != nullptr)
 			c->modified = true;
 	}
 
-	if (w.z == CHUNK_SIZE - 1)
+	if (w.z >= CHUNK_SIZE)
 	{
-		Chunk* c = front;
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 
 		if (c != nullptr)
 			c->modified = true;
@@ -333,7 +333,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	modified = true;
 
-	CreateOtherSubchunks(x, y, z, w);
+	CreateOtherSubchunks(w);
 }
 
 void Chunk::PlaceBlock(float x, float y, float z, Block* b)
@@ -363,7 +363,7 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 
 	modified = true;
 
-	CreateOtherSubchunks(x, y, z, w);
+	CreateOtherSubchunks(w);
 }
 
 // this is made confusingly. I'm sorry.
@@ -572,6 +572,8 @@ Data::Chunk Chunk::GetChunkData()
 			}
 		}
 	}
+
+	c.data = myData.data;
 
 	return c;
 }
