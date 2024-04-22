@@ -59,6 +59,11 @@ enum BlockType
 	CLAY = 11,
 	GLASS = 12,
 	WATER = 13,
+	BEDROCK = 14,
+	COAL_ORE = 15,
+	IRON_ORE = 16,
+	GOLD_ORE = 17,
+	DIAMOND_ORE = 18,
 };
 
 enum SoundType {

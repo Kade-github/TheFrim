@@ -1,5 +1,7 @@
 #include "DroppedItem.h"
 #include <Game.h>
+#include "Chunk.h"
+#include "../../WorldManager.h"
 
 DroppedItem::DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i) : Entity(_pos)
 {
@@ -9,6 +11,8 @@ DroppedItem::DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i) : En
 
 	isCreature = false;
 
+	blockMode = i.placeable;
+
 	rotateAxis = glm::vec3(0, 1, 0);
 
 	item = i;
@@ -16,8 +20,19 @@ DroppedItem::DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i) : En
 	sprite->src = t->spriteSheet.GetUVFlip(item.tag);
 
 	sprite->UpdateSprite();
-
+	
 	lifeTime = glfwGetTime();
+}
+
+DroppedItem::~DroppedItem()
+{
+	if (blockMode)
+	{
+		glDeleteVertexArrays(1, &VAO);
+		glDeleteBuffers(1, &VBO);
+		glDeleteBuffers(1, &EBO);
+	}
+	delete sprite;
 }
 
 void DroppedItem::Draw()
@@ -30,7 +45,6 @@ void DroppedItem::Draw()
 	sprite->position = position;
 	sprite->rotateAxis = rotateAxis;
 	sprite->angle = angle;
-
 	sprite->Draw();
 
 	Entity::Draw();

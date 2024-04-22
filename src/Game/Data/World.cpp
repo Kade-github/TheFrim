@@ -294,6 +294,9 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 				}
 				else // stone
 					chunk.bChunk.blocks[_x][_z][_y] = STONE;
+
+				if (_y == 0)
+					chunk.bChunk.blocks[_x][_z][_y] = BEDROCK;
 			}
 
 			if (rY < staticWaterLevel)

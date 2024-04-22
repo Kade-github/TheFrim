@@ -27,10 +27,11 @@ public:
 	}
 
 	bool ambient = false;
-
+	bool dontFree = false;
 	std::string currentSong = "";
 
 	void FreeMusic();
+
 
 	void ShuffleTracks();
 
@@ -42,7 +43,7 @@ public:
 	void PlayMusic(std::string path);
 	void PlayMusic(std::string path, float fadeDuration);
 
-	void SetReverb(float mix, float time);
+	void SetReverb(float room, float damp, float wet);
 	void SetCompression(float threshold, float ratio, float attack, float release);
 
 	void RemoveFXs();
@@ -53,6 +54,8 @@ public:
 	void PlaySFX(std::string path, glm::vec3 from, float pitch, std::string customName = "sfx");
 
 	void FadeOut(float duration);
+
+	void FadeTo(float volume, float duration);
 
 	void PlayNext();
 

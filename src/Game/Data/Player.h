@@ -31,9 +31,12 @@ namespace Data
 		ITEM_FURNACE = 10,
 		ITEM_CLAY = 11,
 		ITEM_GLASS = 12,
-		ITEM_IRON_ORE = 13,
-		ITEM_GOLD_ORE = 14,
-		ITEM_DIAMOND_ORE = 15,
+        // water would be here, ITEM_WATER = 13 (but it's not an item)
+        ITEM_BEDROCK = 14,
+        ITEM_COAL_ORE = 15,
+        ITEM_IRON_ORE = 16,
+        ITEM_GOLD_ORE = 17,
+        ITEM_DIAMOND_ORE = 18,
 
 		// items (127-255)
 
@@ -147,6 +150,14 @@ namespace Data
                 tag = "item_glass";
                 placeable = true;
                 break;
+            case ITEM_BEDROCK:
+				tag = "item_bedrock";
+				placeable = true;
+				break;
+            case ITEM_COAL_ORE:
+                tag = "item_coal_ore";
+				placeable = true;
+				break;
             case ITEM_IRON_ORE:
                 tag = "item_iron_ore";
                 placeable = true;

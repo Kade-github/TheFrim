@@ -156,18 +156,6 @@ void Gameplay::Draw()
 
 	c2d->DrawDebugText("Player Velocity: " + StringTools::ToTheDecimial(player->forwardVelocity, 2) + ", " + StringTools::ToTheDecimial(player->strafeVelocity, 2) + ", " + StringTools::ToTheDecimial(player->downVelocity, 2), glm::vec2(4, 124), 24);
 
-	if (player->inWater && !watermusicfx)
-	{
-		MusicManager::GetInstance()->SetCompression(4, 3, 0.5, 0.5);
-		MusicManager::GetInstance()->SetReverb(0, 0.05f);
-		watermusicfx = true;
-	}
-	else if (!player->inWater && watermusicfx)
-	{
-		MusicManager::GetInstance()->RemoveFXs();
-		watermusicfx = false;
-	}
-
 	MusicManager::GetInstance()->Set3DPosition(camera->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();

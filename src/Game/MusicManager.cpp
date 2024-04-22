@@ -132,18 +132,18 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 }
 
-void MusicManager::SetReverb(float mix, float time)
+void MusicManager::SetReverb(float room, float damp, float wet)
 {
 	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
 
-	c.SetReverb(mix, time);
+	c.SetReverb(room, damp, wet);
 }
 
 void MusicManager::SetCompression(float threshold, float ratio, float attack, float release)
 {
 	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
 
-	c.SetCompression(threshold, ratio, attack, release, 0.0f);
+	c.SetCompression(threshold, ratio, attack, release, -4.0f);
 }
 
 void MusicManager::RemoveFXs()
@@ -201,6 +201,24 @@ void MusicManager::FadeOut(float duration)
 	_fadeDuration = -duration;
 	_startVolume = c.volume;
 
+	dontFree = false;
+
+}
+
+void MusicManager::FadeTo(float volume, float duration)
+{
+	if (currentSong == "")
+		return;
+
+	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+
+	_fadeTime = glfwGetTime();
+	_fadeDuration = duration;
+	_startVolume = c.volume;
+
+	dontFree = true;
+
+	c.SetVolume(volume);
 }
 
 void MusicManager::PlayNext()
@@ -263,7 +281,7 @@ void MusicManager::Update()
 	{
 		float t = (glfwGetTime() - _fadeTime) / -_fadeDuration;
 
-		if (t > 1)
+		if (t > 1 && !dontFree)
 		{
 			_fadeDuration = 0;
 			t = 1;

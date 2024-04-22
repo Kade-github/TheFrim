@@ -16,6 +16,11 @@
 #include "Blocks/CraftingTable.h"
 #include "Blocks/WoodenPlanks.h"
 #include "Blocks/Glass.h"
+#include "Blocks/Bedrock.h"
+#include "Blocks/CoalOre.h"
+#include "Blocks/IronOre.h"
+#include "Blocks/GoldOre.h"
+#include "Blocks/DiamondOre.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -789,6 +794,21 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 		break;
 	case GLASS:
 		block = new Glass(position + glm::vec3(x, y, z));
+		break;
+	case BEDROCK:
+		block = new Bedrock(position + glm::vec3(x, y, z));
+		break;
+	case COAL_ORE:
+		block = new CoalOre(position + glm::vec3(x, y, z));
+		break;
+	case IRON_ORE:
+		block = new IronOre(position + glm::vec3(x, y, z));
+		break;
+	case GOLD_ORE:
+		block = new GoldOre(position + glm::vec3(x, y, z));
+		break;
+	case DIAMOND_ORE:
+		block = new DiamondOre(position + glm::vec3(x, y, z));
 		break;
 	default:
 		block = new Dirt(position + glm::vec3(x, y, z));

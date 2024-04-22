@@ -157,52 +157,28 @@ public:
 		}
 	}
 
-	int SetReverb(float mix, float time)
+
+	int SetReverb(float room, float damp, float wet)
 	{
 		if (!IsLoaded())
 			return -1;
 
 		BASS_DX8_REVERB reverb;
 
-		reverb.fInGain = -3.0f;
-		reverb.fReverbMix = mix;
-		reverb.fReverbTime = time;
-		reverb.fHighFreqRTRatio = 0.001f;
+		reverb.fInGain = 0.0f;
+		reverb.fReverbMix = wet;
+		reverb.fReverbTime = room;
 
-		int fx = BASS_ChannelSetFX(id, BASS_FX_DX8_REVERB, 1);
+		reverb.fHighFreqRTRatio = damp;
 
-		BASS_FXSetParameters(fx, &reverb);
 
-		CheckError();
-
-		return fx;
-	}
-
-	int Set3DReverb(float mix, float time)
-	{
-		if (!IsLoaded())
-			return -1;
-
-		BASS_DX8_I3DL2REVERB reverb;
-
-		reverb.lRoom = -1000;
-		reverb.lRoomHF = -100;
-		reverb.flRoomRolloffFactor = 0.0f;
-		reverb.flDecayTime = time;
-		reverb.flDecayHFRatio = 0.1f;
-		reverb.lReflections = -2602;
-		reverb.flReflectionsDelay = 0.007f;
-		reverb.lReverb = 200;
-		reverb.flReverbDelay = 0.011f;
-		reverb.flDiffusion = 100.0f;
-		reverb.flDensity = 100.0f;
-		reverb.flHFReference = 5000.0f;
-
-		int fxHandle = BASS_ChannelSetFX(id, BASS_FX_DX8_I3DL2REVERB, 1);
+		int fxHandle = BASS_ChannelSetFX(id, BASS_FX_DX8_REVERB, 1);
 
 		BASS_FXSetParameters(fxHandle, &reverb);
 
 		CheckError();
+
+		fxHandles.push_back(fxHandle);
 
 		return fxHandle;
 	}
@@ -225,6 +201,8 @@ public:
 		BASS_FXSetParameters(fxHandle, &compressor);
 
 		CheckError();
+
+		fxHandles.push_back(fxHandle);
 
 		return fxHandle;
 	}
