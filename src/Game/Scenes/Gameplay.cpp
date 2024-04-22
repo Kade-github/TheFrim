@@ -91,7 +91,7 @@ void Gameplay::Draw()
 
 	glm::mat4 project = camera->GetProjectionMatrix();
 
-	Game::instance->shader->SetUniformMat4f(5, glm::value_ptr(project));
+	Game::instance->shader->SetUniformMat4f("projection", glm::value_ptr(project));
 
 	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
 

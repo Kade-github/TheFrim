@@ -5,9 +5,9 @@ layout (location = 1) in vec2 aTexCoord;
 out vec2 TexCoord;
 out vec3 Position;
 
+uniform mat4 projection;
 uniform mat4 model;
 uniform mat4 view;
-uniform mat4 projection;
 
 void main()
 {

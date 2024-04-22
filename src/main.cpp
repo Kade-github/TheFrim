@@ -31,7 +31,6 @@ int main()
 	glfwWindowHint(GLFW_RESIZABLE, GL_FALSE);
 
 	glfwWindowHint(GLFW_DOUBLEBUFFER, GL_TRUE);
-	glfwWindowHint(GLFW_SAMPLES, 4);
 
 
 	game.CCreateWindow(1920, 1080);
