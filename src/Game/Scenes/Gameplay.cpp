@@ -147,7 +147,11 @@ void Gameplay::Draw()
 	c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
 	c2d->DrawDebugText("Player in water: " + std::to_string(player->inWater), glm::vec2(4, 52), 24);
 	if (currentChunk != nullptr)
+	{
 		c2d->DrawDebugText("Subchunks in chunk: " + std::to_string(currentChunk->subChunks.size()), glm::vec2(4, 76), 24);
+		if (player->selectedBlock != nullptr)
+			c2d->DrawDebugText("Selected Block: " + std::to_string(player->selectedBlock->position.x) + ", " + std::to_string(player->selectedBlock->position.y) + ", " + std::to_string(player->selectedBlock->position.z), glm::vec2(4, 100), 24);
+	}
 
 	MusicManager::GetInstance()->Update();
 
@@ -577,16 +581,12 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_F6)
 	{
-		for (Region& r : wm->regions)
+		Chunk* c = wm->GetChunk(player->position.x, player->position.z);
+
+		if (c != nullptr)
 		{
-			for (Chunk* c : r.chunks)
-			{
-				if (c->isLoaded)
-				{
-					c->Unload();
-					c->isLoaded = false;
-				}
-			}
+			c->Unload();
+			c->isLoaded = false;
 		}
 	}
 

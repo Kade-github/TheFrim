@@ -41,6 +41,11 @@ int Chunk::GetBlock(float x, float y, float z)
 	if (_z >= CHUNK_SIZE || _z < 0)
 		_z = (int)w.z;
 
+	if (_x == 16)
+		_x = 15;
+	if (_z == 16)
+		_z = 15;
+
 	if (_x >= CHUNK_SIZE)
 		return 0;
 
@@ -167,7 +172,7 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 		left = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 
 		if (left != nullptr)
-			return left->GetBlock(0, y, _z);
+			return left->GetBlock(CHUNK_SIZE - 1, y, _z);
 		else
 			return 0;
 	}
@@ -179,7 +184,7 @@ int Chunk::GetBlockInterchunk(float x, float y, float z)
 		right = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
 		if (right != nullptr)
-			return right->GetBlock(CHUNK_SIZE - 1, y, z);
+			return right->GetBlock(0, y, z);
 		else
 			return 0;
 
@@ -658,25 +663,37 @@ subChunk* Chunk::CreateSubChunk(int y)
 
 	bool isOccluded = true;
 
-	int type = GetBlock(0, y + 1, 0);
-	int type2 = GetBlock(0, y - 1, 0);
+	for (int x = 0; x < CHUNK_SIZE; x++)
+	{
+		for (int z = 0; z < CHUNK_SIZE; z++)
+		{
+			int type = GetBlock(x, y + 1, z);
+			int type2 = GetBlock(x, y - 1, z);
+
+			if (type <= 0 || (type == WATER || type == GLASS))
+				isOccluded = false;
+			else if (type2 <= 0 || (type2 == WATER || type2 == GLASS))
+				isOccluded = false;
+
+			if (!isOccluded)
+				break;
+		}
+	}
+
 	int type3 = GetBlockInterchunk(CHUNK_SIZE, y, 0);
 	int type4 = GetBlockInterchunk(-1, y, 0);
 	int type5 = GetBlockInterchunk(0, y, CHUNK_SIZE);
 	int type6 = GetBlockInterchunk(0, y, -1);
 
-	if (type <= 0 || (type == WATER || type == GLASS))
-		isOccluded = false;
-	if (type2 <= 0 || (type2 == WATER || type2 == GLASS))
-		isOccluded = false;
 	if (type3 <= 0 || (type3 == WATER || type3 == GLASS))
 		isOccluded = false;
-	if (type4 <= 0 || (type4 == WATER || type4 == GLASS))
+	else if (type4 <= 0 || (type4 == WATER || type4 == GLASS))
 		isOccluded = false;
-	if (type5 <= 0 || (type5 == WATER || type5 == GLASS))
+	else if (type5 <= 0 || (type5 == WATER || type5 == GLASS))
 		isOccluded = false;
-	if (type6 <= 0 || (type6 == WATER || type6 == GLASS))
+	else if (type6 <= 0 || (type6 == WATER || type6 == GLASS))
 		isOccluded = false;
+
 	bool hasBlocks = false;
 
 	if (!isOccluded)
