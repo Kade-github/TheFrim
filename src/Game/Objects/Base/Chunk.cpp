@@ -67,19 +67,21 @@ int Chunk::GetBlock(float x, float y, float z)
 
 int Chunk::GetHighestBlock(float x, float z)
 {
-	int _x = x;
-	int _z = z;
+	float _x = x;
+	float _z = z;
 
 	glm::vec3 w = WorldToChunk(glm::vec3(x, 0, z));
 
 	if (_x >= CHUNK_SIZE || _x < 0)
-		w.x = _x;
+		_x = (int)w.x;
 
 	if (_z >= CHUNK_SIZE || _z < 0)
-		w.z = _z;
+		_z = (int)w.z;
 
-	_x = w.x;
-	_z = w.z;
+	if (_x == 16)
+		_x = 15;
+	if (_z == 16)
+		_z = 15;
 
 	if (_x >= CHUNK_SIZE)
 		return 0;
@@ -95,7 +97,7 @@ int Chunk::GetHighestBlock(float x, float z)
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
-		if (myData.bChunk.blocks[_x][_z][y] > 0 && myData.bChunk.blocks[_x][_z][y] != WATER)
+		if (myData.bChunk.blocks[(int)_x][(int)_z][y] > 0 && myData.bChunk.blocks[(int)_x][(int)_z][y] != WATER)
 			return y;
 	}
 
@@ -669,30 +671,28 @@ subChunk* Chunk::CreateSubChunk(int y)
 		{
 			int type = GetBlock(x, y + 1, z);
 			int type2 = GetBlock(x, y - 1, z);
+			int type3 = GetBlockInterchunk(x + 1, y, z);
+			int type4 = GetBlockInterchunk(x - 1, y, z);
+			int type5 = GetBlockInterchunk(x, y, z + 1);
+			int type6 = GetBlockInterchunk(x, y, z - 1);
 
 			if (type <= 0 || (type == WATER || type == GLASS))
 				isOccluded = false;
 			else if (type2 <= 0 || (type2 == WATER || type2 == GLASS))
+				isOccluded = false;
+			else if (type3 <= 0 || (type3 == WATER || type3 == GLASS))
+				isOccluded = false;
+			else if (type4 <= 0 || (type4 == WATER || type4 == GLASS))
+				isOccluded = false;
+			else if (type5 <= 0 || (type5 == WATER || type5 == GLASS))
+				isOccluded = false;
+			else if (type6 <= 0 || (type6 == WATER || type6 == GLASS))
 				isOccluded = false;
 
 			if (!isOccluded)
 				break;
 		}
 	}
-
-	int type3 = GetBlockInterchunk(CHUNK_SIZE, y, 0);
-	int type4 = GetBlockInterchunk(-1, y, 0);
-	int type5 = GetBlockInterchunk(0, y, CHUNK_SIZE);
-	int type6 = GetBlockInterchunk(0, y, -1);
-
-	if (type3 <= 0 || (type3 == WATER || type3 == GLASS))
-		isOccluded = false;
-	else if (type4 <= 0 || (type4 == WATER || type4 == GLASS))
-		isOccluded = false;
-	else if (type5 <= 0 || (type5 == WATER || type5 == GLASS))
-		isOccluded = false;
-	else if (type6 <= 0 || (type6 == WATER || type6 == GLASS))
-		isOccluded = false;
 
 	bool hasBlocks = false;
 
@@ -1043,7 +1043,7 @@ void Chunk::UpdateChunk(int tick)
 
 		gp->QueueLoadBlocks(this);
 
-		LightingManager::GetInstance()->RefreshShadows();
+		gp->QueueShadow(this);
 		modified = false;
 	}
 

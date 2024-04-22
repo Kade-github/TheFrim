@@ -351,10 +351,12 @@ void Entity::Draw()
 
 	glm::vec3 ray = position + glm::vec3(0, 0.1, 0);
 	glm::vec3 ray2 = position - glm::vec3(0, 0.8, 0);
+
+	topWater = RayToIncludeWater(ray, true);
 	if (isCreature)
-		inWater = RayToIncludeWater(ray, true) || RayToIncludeWater(ray2, true);
+		inWater = topWater || RayToIncludeWater(ray2, true);
 	else
-		inWater = RayToIncludeWater(ray, true);
+		inWater = topWater;
 
 	if (!Hud::GamePaused)
 	{

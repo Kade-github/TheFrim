@@ -260,7 +260,7 @@ void Player::Draw()
 				jumpCooldown = glfwGetTime();
 
 				downVelocity = jumpStrength;
-				if (inWater)
+				if (topWater)
 					downVelocity = jumpStrength / 2;
 				isOnGround = false;
 			}

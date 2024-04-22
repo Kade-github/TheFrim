@@ -14,6 +14,7 @@ public:
 
 	bool isCreature = true;
 
+	bool topWater = false;
 	bool inWater = false;
 
 	float gravity = 19.0f;

@@ -305,6 +305,8 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
+				Game::instance->log->Write("Loading region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
 				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
@@ -359,6 +361,8 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
+				Game::instance->log->Write("Loading region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
 				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
@@ -412,6 +416,8 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
+				Game::instance->log->Write("Loading region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
 				toLoadedRegion.push_back(glm::vec2(fakePosR.x - amount, fakePosR.z));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
@@ -465,6 +471,8 @@ void Gameplay::UpdateChunks()
 			}
 			if (!no)
 			{
+				Game::instance->log->Write("Loading region: " + std::to_string(fakePosR.x) + ", " + std::to_string(fakePosR.z));
+
 				toLoadedRegion.push_back(glm::vec2(fakePosR.x, fakePosR.z - amount));
 				wm->_generatePool.detach_task([this, r, amount]()
 					{
