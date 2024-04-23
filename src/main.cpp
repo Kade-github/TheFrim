@@ -13,7 +13,7 @@
 
 int main()
 {
-	Game game("The Frim", "0.0.3");
+	Game game("The Frim", "0.0.4");
 
 	Settings::instance->Load();
 
