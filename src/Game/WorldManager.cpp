@@ -358,6 +358,7 @@ void WorldManager::SaveWorldNow()
 	{
 		_world.saveRegion(r.data);
 	}
+
 	Game::instance->log->Write("World saved to " + _path);
 }
 

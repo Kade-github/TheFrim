@@ -94,6 +94,8 @@ void Gameplay::Draw()
 	LightingManager::GetInstance()->SunUpdate();
 	LightingManager::GetInstance()->SunColor();
 
+	wm->_world.sunAngle = LightingManager::GetInstance()->sun.angle;
+
 	celestialSun->position = player->position - rotate(glm::vec3(0, 0, 8), glm::vec3(1, 0, 0), glm::radians(LightingManager::GetInstance()->sun.angle));
 	celestialSun->angle = LightingManager::GetInstance()->sun.angle;
 
