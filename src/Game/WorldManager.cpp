@@ -245,13 +245,14 @@ Region& WorldManager::GetRegion(float x, float z)
 
 void WorldManager::LoadRegion(int x, int z)
 {
-	if (!IsRegionGenerated(x, z))
+    int size = (CHUNK_SIZE * REGION_SIZE);
+	if (!IsRegionGenerated(x * size, z * size))
 	{
 		GenerateRegion(x, z);
 		return;
 	}
 
-	Data::Region r = _world.getRegion(x, z);
+	Data::Region r = _world.getRegion(x * size, z * size);
 
 	Region reg(r, std::vector<Chunk*>());
 
