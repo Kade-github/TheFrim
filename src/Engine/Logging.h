@@ -12,7 +12,7 @@ class Logging
 	std::chrono::time_point<std::chrono::system_clock> _start;
 	std::ofstream _file;
 public:
-	std::vector<std::string> logs;
+	std::vector<std::string> logs = {};
 
 	Logging(std::string path)
 	{
