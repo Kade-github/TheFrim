@@ -124,7 +124,7 @@ void SettingsMenu::Draw()
 
 	Settings::instance->fov = fov->value * 140;
 	Settings::instance->renderDistance = renderDistance->value;
-	Settings::instance->fogDistance = fogDistance->value * 1.2;
+	Settings::instance->fogDistance = fogDistance->value * 1.2f;
 
 	Scene::Draw();
 }
