@@ -648,6 +648,12 @@ void Gameplay::KeyPress(int key)
 	if (key == GLFW_KEY_F10)
 		LightingManager::GetInstance()->sun.angle += 25;
 
+	if (key == GLFW_KEY_F11)
+	{
+		Camera* camera = Game::instance->GetCamera();
+		player->Launch(camera->cameraFront, 10.0f);
+	}
+
 	for (int i = 0; i < objects.size(); i++)
 	{
 		objects[i]->KeyPress(key);
@@ -698,7 +704,6 @@ void Gameplay::FocusChange(bool focus)
 	if (!focus)
 	{
 		wasPaused = Hud::GamePaused;
-
 		player->TogglePauseMenu();
 	}
 	else if (focus && !wasPaused)
