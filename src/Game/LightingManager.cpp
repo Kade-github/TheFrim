@@ -37,7 +37,7 @@ bool IsLightBlocked(glm::vec3 start, glm::vec3 end)
 void LightingManager::SunColor()
 {
 	glm::vec3 peak = glm::vec3(0.64f, 0.7f, 0.7f);
-	glm::vec3 dawn = glm::vec3(0.83f, 0.6f, 0.28f);
+	glm::vec3 dawn = glm::vec3(0.42f, 0.43f, 0.56f);
 	glm::vec3 night = glm::vec3(0.05f, 0.06f, 0.09f);
 
 	float angle = sun.angle;
