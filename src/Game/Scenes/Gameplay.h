@@ -3,6 +3,7 @@
 
 #include <Objects/Scene.h>
 #include <Objects/2DSprite.h>
+#include <Objects/3DSprite.h>
 #include <BS_thread_pool.hpp>
 #include "../Objects/Base/Hud.h"
 #include "../WorldManager.h"
@@ -17,7 +18,8 @@ public:
 	Player* player;
 	Camera2D* c2d = nullptr;
 
-	bool watermusicfx = false;
+	Sprite3D* celestialSun;
+	Sprite3D* celestialMoon;
 
 	float lastUpdate = 0.0f;
 	float lastSecond = 0.0f;

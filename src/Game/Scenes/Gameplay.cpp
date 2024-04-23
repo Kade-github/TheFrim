@@ -8,6 +8,16 @@
 #include "../Data/Settings.h"
 #include "../CraftingManager.h"
 
+glm::vec3 rotate(const glm::vec3& v, const glm::vec3& k, float theta)
+{
+	float cos_theta = cos(theta);
+	float sin_theta = sin(theta);
+
+	glm::vec3 rotated = (v * cos_theta) + (glm::cross(k, v) * sin_theta) + (k * glm::dot(k, v)) * (1 - cos_theta);
+
+	return rotated;
+}
+
 Gameplay::Gameplay(WorldManager* _wm)
 {
 	wm = _wm;
@@ -52,21 +62,43 @@ void Gameplay::Create()
 
 	UpdateChunks();
 
+	celestialSun = new Sprite3D("Assets/Textures/sun.png", glm::vec3(0, 0, 0));
+	celestialSun->width = 1;
+	celestialSun->height = 1;
 
+	celestialSun->position = glm::vec3(0, 0, 0);
+	celestialSun->rotateAxis = glm::vec3(1, 0, 0);
+
+	celestialSun->depth = false;
+
+	celestialMoon = new Sprite3D("Assets/Textures/moon.png", glm::vec3(0, 0, 0));
+	celestialMoon->width = 1;
+	celestialMoon->height = 1;
+
+	celestialMoon->position = glm::vec3(0, 0, 0);
+	celestialMoon->rotateAxis = glm::vec3(1, 0, 0);
+
+	celestialMoon->depth = false;
 
 	loadPool.reset(std::thread::hardware_concurrency() * 3.14f);
 
 	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
 
-	MusicManager::GetInstance()->nextTrack = 45.0f; // start at 45 seconds
+	MusicManager::GetInstance()->nextTrack = glfwGetTime() + 45.0f; // start at 45 seconds
 
-	LightingManager::GetInstance()->sun.angle = 90; // set to noon
+	LightingManager::GetInstance()->sun.angle = wm->_world.sunAngle;
 }
 
 void Gameplay::Draw()
 {
 	LightingManager::GetInstance()->SunUpdate();
 	LightingManager::GetInstance()->SunColor();
+
+	celestialSun->position = player->position - rotate(glm::vec3(0, 0, 8), glm::vec3(1, 0, 0), glm::radians(LightingManager::GetInstance()->sun.angle));
+	celestialSun->angle = LightingManager::GetInstance()->sun.angle;
+
+	celestialMoon->position = player->position + rotate(glm::vec3(0, 0, 8), glm::vec3(1, 0, 0), glm::radians(LightingManager::GetInstance()->sun.angle));
+	celestialMoon->angle = LightingManager::GetInstance()->sun.angle;
 
 	if (LightingManager::GetInstance()->sun.angle >= 180) // night time
 	{
@@ -159,6 +191,10 @@ void Gameplay::Draw()
 	MusicManager::GetInstance()->Set3DPosition(camera->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();
+
+	celestialSun->Draw();
+
+	celestialMoon->Draw();
 
 	// Draw chunks (regular)
 
@@ -530,9 +566,9 @@ void Gameplay::UpdateChunks()
 
 	for (Chunk* c : allChunks)
 	{
-		glm::vec3 fakePos = glm::vec3(c->position.x, camera->position.y, c->position.z);
+		glm::vec3 fakePos = glm::vec3(c->position.x, player->position.y, c->position.z);
 
-		float distance = glm::distance(camera->position, fakePos);
+		float distance = glm::distance(player->position, fakePos);
 
 		if (distance < camera->cameraFar * 1)
 		{
