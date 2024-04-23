@@ -52,8 +52,7 @@ void Sprite3D::Draw()
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
 
 	glBindVertexArray(0);
-	if (!depth)
-		glEnable(GL_DEPTH_TEST);
+	glEnable(GL_DEPTH_TEST);
 
 	t->Unbind();
 
