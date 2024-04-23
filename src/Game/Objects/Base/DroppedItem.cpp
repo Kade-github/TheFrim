@@ -8,6 +8,7 @@ DroppedItem::DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i) : En
 	sprite = new Sprite3D(t, _pos);
 	sprite->width = 0.5f;
 	sprite->height = 0.5f;
+	sprite->depth = true;
 
 	isCreature = false;
 

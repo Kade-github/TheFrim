@@ -45,8 +45,8 @@ void Sprite3D::Draw()
 	t->Bind();
 
 	if (!depth)
-		glDisable(GL_CULL_FACE);
-	glDisable(GL_DEPTH_TEST);
+		glDisable(GL_DEPTH_TEST);
+	glDisable(GL_CULL_FACE);
 	glBindVertexArray(VAO);
 
 	glDrawArrays(GL_TRIANGLES, 0, vertices.size());
