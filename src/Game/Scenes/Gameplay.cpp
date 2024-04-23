@@ -148,7 +148,7 @@ void Gameplay::Draw()
 	}
 
 	float currentTime = glfwGetTime();
-	if (currentTime - lastUpdate > 0.05f) // 20 times a second
+	if (std::abs(currentTime - lastUpdate) >= 0.05f) // 20 times a second
 	{
 		UpdateChunks();
 
@@ -235,9 +235,12 @@ void Gameplay::Draw()
 
 	player->Draw();
 
-	hud->Draw();
+	if (showHud)
+	{
+		hud->Draw();
 
-	c2d->Draw();
+		c2d->Draw();
+	}
 
 	dim->Update(); // these use delayed 
 
@@ -417,6 +420,11 @@ void Gameplay::KeyPress(int key)
 	{
 		Camera* camera = Game::instance->GetCamera();
 		player->Launch(camera->cameraFront, 10.0f);
+	}
+
+	if (key == GLFW_KEY_F12)
+	{
+		showHud = !showHud;
 	}
 
 	for (int i = 0; i < objects.size(); i++)

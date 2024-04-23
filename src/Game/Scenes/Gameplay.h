@@ -12,6 +12,7 @@
 class Gameplay : public Scene
 {
 public:
+	bool showHud = true;
 	DroppedItemManager* dim;
 	WorldManager* wm;
 	Hud* hud;

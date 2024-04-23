@@ -14,6 +14,10 @@ siv::PerlinNoise perlin;
 std::mutex m;
 
 int staticWaterLevel = 0;
+int staticRandomAdvancement = 0;
+int staticSeed = 0;
+
+std::minstd_rand0 r;
 
 Data::Chunk Data::Region::getChunk(int x, int z)
 {
@@ -106,6 +110,13 @@ bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int rang
 	return false;
 }
 
+int getRandom(int min, int max)
+{
+	staticRandomAdvancement++;
+	r.seed(staticSeed + staticRandomAdvancement);
+	return r() % (max - min + 1) + min;	
+}
+
 void Data::World::scanForRegions()
 {
 	for (auto& file : std::filesystem::directory_iterator(_path))
@@ -139,8 +150,14 @@ void Data::World::parseSeed()
 
 	srand(seedNum);
 
-	if (waterLevel == -1) 
-		waterLevel = rand() % 45 + 80; // 80 - 125
+	staticRandomAdvancement = randomAdvancement;
+
+	r = std::minstd_rand0(seedNum);
+
+	staticSeed = seedNum;
+
+	if (waterLevel == -1)
+		waterLevel = getRandom(80, 125);
 
 	staticWaterLevel = waterLevel;
 
@@ -219,6 +236,8 @@ Data::Region Data::World::generateRegion(int x, int z)
 
 void Data::World::saveRegion(Region r)
 {
+	randomAdvancement = staticRandomAdvancement;
+
 	std::string name = "r_" + std::to_string(r.startX) + "_" + std::to_string(r.startZ) + "_" + std::to_string(r.endX) + "_" + std::to_string(r.endZ) + ".r";
 
 	std::cout << "Saving " << name << std::endl;
@@ -349,7 +368,7 @@ void Data::Region::generateStructures()
 							int _rx = c.x + _x;
 							int _rz = c.z + _z;
 
-							if (rand() % 100 < 2)
+							if (getRandom(0,100) < 2)
 							{
 								struct_tree.Create(_rx,_rz,_y - 1, c, this);
 							}

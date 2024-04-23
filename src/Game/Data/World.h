@@ -12,6 +12,7 @@
 #include <string>
 #include <mutex>
 #include <bitset>
+#include <random>
 
 namespace Data
 {
@@ -189,6 +190,8 @@ namespace Data
 		float sunAngle = 90;
 		int waterLevel = -1;
 
+		int randomAdvancement = 0;
+
 		Player p;
 
 		unsigned long seedNum = 0;
@@ -210,7 +213,7 @@ namespace Data
 
 		void saveRegion(Region r);
 
-		MSGPACK_DEFINE_ARRAY(name, seed, p, waterLevel, sunAngle);
+		MSGPACK_DEFINE_ARRAY(name, seed, p, waterLevel, sunAngle, randomAdvancement);
 
 	};
 };
