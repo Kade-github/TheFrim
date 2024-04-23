@@ -64,6 +64,7 @@ void MusicManager::GenerateAmbientTrackList()
 	trackList.push_back("ambientocclusion");
 	trackList.push_back("imsotired");
 	trackList.push_back("somethinglurks");
+	trackList.push_back("draft");
 
 	ShuffleTracks();
 }
