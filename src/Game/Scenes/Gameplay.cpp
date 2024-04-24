@@ -192,6 +192,8 @@ void Gameplay::Draw()
 
 	c2d->DrawDebugText("Chunks Loaded/Rendered: " + std::to_string(chunksLoaded) + "/" + std::to_string(chunksRendered), glm::vec2(4, 148), 24);
 
+	c2d->DrawDebugText("Regions Loaded: " + std::to_string(regionsLoaded), glm::vec2(4, 172), 24);
+
 	MusicManager::GetInstance()->Set3DPosition(camera->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();
@@ -318,6 +320,8 @@ void Gameplay::UpdateChunks()
 	if (!hud->GamePaused)
 		ticks++;
 
+	regionsLoaded = 0;
+
 	glm::vec3 fakePos = glm::vec3(player->position.x, 0, player->position.z);
 
 	float regionSize = (CHUNK_SIZE * REGION_SIZE);
@@ -335,6 +339,8 @@ void Gameplay::UpdateChunks()
 
 		if (distanceToCenter > camera->cameraFar * 2.0f && r.loaded)
 		{
+			wm->SaveRegion(r.startX, r.startZ);
+
 			// unload
 			for (Chunk* c : r.chunks)
 			{
@@ -354,6 +360,7 @@ void Gameplay::UpdateChunks()
 		}
 
 		r.loaded = true;
+		regionsLoaded++;
 
 		float distanceToLeft = glm::distance(fakePos, glm::vec3(r.startX - regionSize / 2, 0, r.startZ));
 		float distanceToRight = glm::distance(fakePos, glm::vec3(r.startX + regionSize / 2, 0, r.startZ));
@@ -367,6 +374,7 @@ void Gameplay::UpdateChunks()
 			if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
 				if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
 				{
+					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 					toLoadedRegion.push_back(pos);
 					wm->LoadRegion(pos.x, pos.y);
 
@@ -377,8 +385,6 @@ void Gameplay::UpdateChunks()
 						if (c->position.x == r.startX)
 							UnloadChunk(c);
 					}
-
-					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 				}
 		}
 
@@ -389,6 +395,7 @@ void Gameplay::UpdateChunks()
 			if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
 				if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
 				{
+					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 					toLoadedRegion.push_back(pos);
 					wm->LoadRegion(pos.x, pos.y);
 
@@ -396,11 +403,9 @@ void Gameplay::UpdateChunks()
 
 					for (Chunk* c : r.chunks)
 					{
-						if (c->position.x == r.startX + regionSize)
+						if (c->position.x == r.startX + regionSize - 16)
 							UnloadChunk(c);
 					}
-
-					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 				}
 		}
 
@@ -411,6 +416,7 @@ void Gameplay::UpdateChunks()
 			if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
 				if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
 				{
+					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 					toLoadedRegion.push_back(pos);
 					wm->LoadRegion(pos.x, pos.y);
 
@@ -421,8 +427,6 @@ void Gameplay::UpdateChunks()
 						if (c->position.z == r.startZ)
 							UnloadChunk(c);
 					}
-
-					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 				}
 		}
 
@@ -433,6 +437,7 @@ void Gameplay::UpdateChunks()
 			if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
 				if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
 				{
+					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 					toLoadedRegion.push_back(pos);
 					wm->LoadRegion(pos.x, pos.y);
 
@@ -440,11 +445,9 @@ void Gameplay::UpdateChunks()
 
 					for (Chunk* c : r.chunks)
 					{
-						if (c->position.z == r.startZ + regionSize)
+						if (c->position.z == r.startZ + regionSize - 16)
 							UnloadChunk(c);
 					}
-
-					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 				}
 		}
 	}
@@ -542,6 +545,7 @@ void Gameplay::UnloadChunk(Chunk* c)
 	c->pleaseRender = false;
 }
 
+
 void Gameplay::KeyPress(int key)
 {
 
@@ -638,6 +642,19 @@ void Gameplay::FocusChange(bool focus)
 
 void Gameplay::Destroy()
 {
+	// save all regions
+
+	for(Region& r : wm->regions)
+	{
+		wm->SaveRegion(r.startX, r.startZ);
+
+		for (Chunk* c : r.chunks)
+		{
+			c->Unload();
+			delete c;
+		}
+	}
+
 	wm->SetPlayerPosition(player->position);
 
 	wm->SaveWorldNow();

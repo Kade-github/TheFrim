@@ -29,6 +29,7 @@ public:
 	int ticks = 0;
 	int chunksLoaded = 0;
 	int chunksRendered = 0;
+	int regionsLoaded = 0;
 	int lastTickSecond = 0;
 
 	BS::thread_pool loadPool;
@@ -45,7 +46,6 @@ public:
 	void UpdateChunks();
 
 	void UnloadChunk(Chunk* c);
-
 
 	void KeyPress(int key) override;
 	void MouseClick(int button, glm::vec2 mPos) override;

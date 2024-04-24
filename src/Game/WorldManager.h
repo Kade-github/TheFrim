@@ -32,6 +32,11 @@ public:
 		return data.getChunk(x, z);
 	}
 
+	Data::Chunk* GetChunkDataRef(int x, int z)
+	{
+		return data.getChunkPtr(x, z);
+	}
+
 	// equals operator
 
 	bool operator==(const Region& r) const

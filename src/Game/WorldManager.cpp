@@ -266,7 +266,19 @@ void WorldManager::LoadRegion(int x, int z)
 
 void WorldManager::SaveRegion(int x, int z)
 {
-	_world.saveRegion(GetRegion(x, z).data);
+	Region& r = GetRegion(x, z);
+	for(auto& c : r.chunks)
+	{
+		Data::Chunk* cD = r.GetChunkDataRef(c->position.x, c->position.z);
+
+		if (cD != nullptr)
+		{
+			cD->bChunk = c->myData.bChunk;
+			cD->data = c->myData.data;
+		}
+	}
+
+	_world.saveRegion(r.data);
 }
 
 bool WorldManager::isRegionLoaded(float x, float z)
