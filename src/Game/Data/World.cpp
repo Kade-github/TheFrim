@@ -240,7 +240,7 @@ void Data::World::saveRegion(Region r)
 
 	std::string name = "r_" + std::to_string(r.startX) + "_" + std::to_string(r.startZ) + "_" + std::to_string(r.endX) + "_" + std::to_string(r.endZ) + ".r";
 
-	std::cout << "Saving " << name << std::endl;
+	Game::instance->log->Write("Saving " + name);
 
 	try
 	{
@@ -252,7 +252,7 @@ void Data::World::saveRegion(Region r)
 	}
 	catch (const std::exception& e)
 	{
-		std::cout << "Failed to open " << name << " " << e.what() << std::endl;
+		Game::instance->log->Write("Error saving region: " + std::string(e.what()));
 	}
 }
 

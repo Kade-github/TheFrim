@@ -79,6 +79,7 @@ public:
 	void LoadRegion(int x, int z);
 
 	void SaveRegion(int x, int z);
+	void SaveRegion(Region& r);
 
 	Region& GetRegion(float x, float z);
 	Chunk* GetChunk(float x, float z);

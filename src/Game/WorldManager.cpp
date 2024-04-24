@@ -267,7 +267,13 @@ void WorldManager::LoadRegion(int x, int z)
 void WorldManager::SaveRegion(int x, int z)
 {
 	Region& r = GetRegion(x, z);
-	for(auto& c : r.chunks)
+
+	SaveRegion(r);
+}
+
+void WorldManager::SaveRegion(Region& r)
+{
+	for (auto& c : r.chunks)
 	{
 		Data::Chunk* cD = r.GetChunkDataRef(c->position.x, c->position.z);
 
@@ -369,7 +375,7 @@ void WorldManager::SaveWorldNow()
 
 	for (auto& r : regions)
 	{
-		_world.saveRegion(r.data);
+		SaveRegion(r);
 	}
 
 	Game::instance->log->Write("World saved to " + _path);

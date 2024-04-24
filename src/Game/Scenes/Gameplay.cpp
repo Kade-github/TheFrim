@@ -642,18 +642,6 @@ void Gameplay::FocusChange(bool focus)
 
 void Gameplay::Destroy()
 {
-	// save all regions
-
-	for(Region& r : wm->regions)
-	{
-		wm->SaveRegion(r.startX, r.startZ);
-
-		for (Chunk* c : r.chunks)
-		{
-			c->Unload();
-			delete c;
-		}
-	}
 
 	wm->SetPlayerPosition(player->position);
 
