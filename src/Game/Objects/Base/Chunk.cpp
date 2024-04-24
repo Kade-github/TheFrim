@@ -824,6 +824,9 @@ void Chunk::DestroySubChunk(int y)
 {
 	subChunk* sbc = GetSubChunk(y);
 
+	if (sbc == nullptr)
+		return;
+
 	DestroySubChunk(sbc);
 }
 
@@ -845,12 +848,14 @@ void Chunk::DestroySubChunk(subChunk* c)
 	}
 
 	delete c;
+
+	subChunks.erase(std::remove(subChunks.begin(), subChunks.end(), c), subChunks.end());
 }
 
 void Chunk::DestroySubChunks()
 {
-	for (int i = 0; i < subChunks.size(); i++)
-		DestroySubChunk(subChunks[i]->y);
+	for (int i = CHUNK_HEIGHT; i > -1; i--)
+		DestroySubChunk(i);
 
 	subChunks.clear();
 }
@@ -1077,7 +1082,10 @@ void Chunk::UpdateChunk(int tick)
 		modified = false;
 	}
 
-	if (wasModified)
+	if (wasModified || keepUpdating)
+	{
+		if (keepUpdating)
+			keepUpdating = false;
 		for (int i = 0; i < subChunks.size(); i++)
 		{
 			subChunk* sbc = subChunks[i];
@@ -1094,8 +1102,10 @@ void Chunk::UpdateChunk(int tick)
 					if (b == nullptr)
 						continue;
 
-					b->Update(tick);
+					if (!b->Update(tick))
+						keepUpdating = true;
 				}
 			}
 		}
+	}
 }

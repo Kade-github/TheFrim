@@ -74,6 +74,7 @@ Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 
 }
 
+
 void Camera2D::Resize()
 {
 	glm::vec2 size = Game::instance->GetWindowSize();

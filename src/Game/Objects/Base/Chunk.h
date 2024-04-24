@@ -38,7 +38,7 @@ class Chunk : public GameObject
     void CreateFaces(Block* b);
 
     void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
-
+    bool keepUpdating = false;
 
     int shadowSize = 0;
     int size = 0;

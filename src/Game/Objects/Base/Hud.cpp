@@ -302,8 +302,6 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 
 Hud::~Hud()
 {
-	delete crosshair;
-	
 	for (auto h : hotbar)
 	{
 		c2d->RemoveObject(h);
@@ -335,12 +333,6 @@ Hud::~Hud()
 	}
 
 	armor.clear();
-
-	delete hand;
-	delete pauseBackground;
-	delete resume;
-	delete title;
-	delete pauseHeader;
 }
 
 void Hud::Draw()

@@ -62,6 +62,11 @@ public:
 
 	}
 
+	~GameObject2D()
+	{
+		draws = {};
+	}
+
 	Texture* t = NULL;
 	Shader* s = NULL;
 

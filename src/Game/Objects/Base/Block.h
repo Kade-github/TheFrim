@@ -124,7 +124,7 @@ public:
 
 	virtual void OnInteract() {};
 
-	virtual void Update(int tick) {};
+	virtual bool Update(int tick) { return true; };
 
 	void Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned int>& inds);
 
