@@ -1,6 +1,7 @@
 #include "2DCamera.h"
 #include <Game.h>
 #include <Helpers/StringTools.h>
+#include <Helpers/Performance.h>
 
 Camera2D::Camera2D(glm::vec3 pos) : GameObject(pos)
 {
@@ -300,6 +301,14 @@ void Camera2D::Draw()
 	std::string format = StringTools::ToTheDecimial(fps, 0);
 
 	DrawDebugText("FPS: " + format, glm::vec2(4, _h - 28), 24);
+
+    size_t memoryUsageBytes = getCurrentRSS();
+
+    float memUsage = memoryUsageBytes / 1024.0f / 1024.0f;
+
+    format = StringTools::ToTheDecimial(memUsage, 2);
+
+    DrawDebugText("Memory Usage: " + format + "MB", glm::vec2(4, _h - 52), 24);
 
 	if (debug)
 	{

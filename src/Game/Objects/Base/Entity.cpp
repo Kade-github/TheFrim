@@ -37,7 +37,7 @@ void Entity::Footstep()
 		if (_world.z == 16)
 			_world.z = 15;
 
-		Block* b = sb->getBlock(_world.x, _world.z);
+		std::shared_ptr<Block> b = sb->getBlock(_world.x, _world.z);
 
 		if (b != nullptr)
 		{

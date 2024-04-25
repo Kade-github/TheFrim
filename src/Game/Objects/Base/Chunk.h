@@ -11,10 +11,10 @@
 class subChunk {
 public:
     int y = -1;
-    Block* blocks[16][16] = {nullptr};
+    std::shared_ptr<Block> blocks[16][16] = {nullptr};
 
     // input here has to be between 0-15 for both x and z
-    Block* getBlock(int x, int z);
+    std::shared_ptr<Block> getBlock(int x, int z);
 };
 
 class Chunk : public GameObject
@@ -90,7 +90,7 @@ public:
 
     void ModifyBlock(float x, float y, float z, int id);
 
-    void PlaceBlock(float x, float y, float z, Block* b);
+    void PlaceBlock(float x, float y, float z, std::shared_ptr<Block>b);
 
     void RenderSubChunk(std::shared_ptr<subChunk> c);
     void RenderSubChunks();
@@ -99,7 +99,7 @@ public:
     void RenderSubChunksShadow();
 
     std::shared_ptr<subChunk> CreateSubChunk(int y);
-    Block* CreateBlock(int x, int y, int z, int id, Data::BlockData data);
+    std::shared_ptr<Block> CreateBlock(int x, int y, int z, int id, Data::BlockData data);
 
     void DestroySubChunk(int y);
     void DestroySubChunk(std::shared_ptr<subChunk> c);
