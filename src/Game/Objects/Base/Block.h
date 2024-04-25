@@ -10,8 +10,8 @@
 struct BlockFace {
 	glm::vec3 position;
 	glm::vec3 sum;
-	std::vector<GameObject::VVertex> vertices;
-	std::vector<unsigned int> indices;
+	std::vector<GameObject::VVertex> vertices = {};
+	std::vector<unsigned int> indices = {};
 	int type = 0;
 	int lightLevel = 0;
 
@@ -35,6 +35,12 @@ struct BlockFace {
 		vertices[1].uv = glm::vec2(uv.x + uv.z, uv.y);
 		vertices[2].uv = glm::vec2(uv.x, uv.y + uv.w);
 		vertices[3].uv = glm::vec2(uv.x + uv.z, uv.y + uv.w);
+	}
+
+	~BlockFace()
+	{
+		vertices.clear();
+		indices.clear();
 	}
 
 	bool operator==(const BlockFace& other) const

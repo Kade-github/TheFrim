@@ -25,7 +25,7 @@ void Entity::Footstep()
 
 	if (c->DoesBlockExist(position.x, y, position.z))
 	{
-		subChunk* sb = c->GetSubChunk(y);
+		std::shared_ptr<subChunk> sb = c->GetSubChunk(y);
 
 		if (sb == nullptr)
 			return;

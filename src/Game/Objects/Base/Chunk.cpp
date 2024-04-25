@@ -471,7 +471,7 @@ void Chunk::CreateFaces(Block* b)
 	}
 }
 
-void Chunk::RenderSubChunk(subChunk* sbc)
+void Chunk::RenderSubChunk(std::shared_ptr<subChunk>sbc)
 {
 	if (sbc == nullptr)
 		return;
@@ -519,7 +519,7 @@ void Chunk::RenderSubChunks()
 
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		subChunk* sbc = subChunks[i];
+		std::shared_ptr<subChunk>sbc = subChunks[i];
 		if (sbc == nullptr)
 			continue;
 
@@ -539,11 +539,11 @@ Chunk::Chunk(Texture* _txp, glm::vec3 _pos) : GameObject(_pos)
 	txp = _txp;
 }
 
-subChunk* Chunk::GetSubChunk(int y)
+std::shared_ptr<subChunk>Chunk::GetSubChunk(int y)
 {
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		subChunk* sbc = subChunks[i];
+		std::shared_ptr<subChunk>sbc = subChunks[i];
 
 		if (sbc == nullptr)
 			continue;
@@ -562,7 +562,7 @@ Data::Chunk Chunk::GetChunkData()
 
 	for (int y = 0; y < CHUNK_HEIGHT; y++)
 	{
-		subChunk* sbc = GetSubChunk(y);
+		std::shared_ptr<subChunk>sbc = GetSubChunk(y);
 
 		if (sbc == nullptr) // not loaded
 		{
@@ -603,7 +603,7 @@ bool Chunk::IsInChunk(float x, float z)
 }
 
 
-void Chunk::RenderSubChunkShadow(subChunk* sbc)
+void Chunk::RenderSubChunkShadow(std::shared_ptr<subChunk>sbc)
 {
 	if (sbc == nullptr)
 		return;
@@ -664,7 +664,7 @@ void Chunk::RenderSubChunksShadow()
 
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		subChunk* sbc = subChunks[i];
+		std::shared_ptr<subChunk> sbc = subChunks[i];
 		if (sbc == nullptr)
 			continue;
 
@@ -672,9 +672,9 @@ void Chunk::RenderSubChunksShadow()
 	}
 }
 
-subChunk* Chunk::CreateSubChunk(int y)
+std::shared_ptr<subChunk>Chunk::CreateSubChunk(int y)
 {
-	subChunk* sbc = new subChunk();
+	std::shared_ptr<subChunk> sbc = std::make_shared<subChunk>();
 
 	sbc->y = y;
 
@@ -822,7 +822,7 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 
 void Chunk::DestroySubChunk(int y)
 {
-	subChunk* sbc = GetSubChunk(y);
+	std::shared_ptr<subChunk> sbc = GetSubChunk(y);
 
 	if (sbc == nullptr)
 		return;
@@ -830,7 +830,7 @@ void Chunk::DestroySubChunk(int y)
 	DestroySubChunk(sbc);
 }
 
-void Chunk::DestroySubChunk(subChunk* c)
+void Chunk::DestroySubChunk(std::shared_ptr<subChunk>c)
 {
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
@@ -841,15 +841,13 @@ void Chunk::DestroySubChunk(subChunk* c)
 			if (b == nullptr)
 				continue;
 
-			std::free(b);
+			b->faces.clear();
+
+			delete b;
 
 			c->blocks[x][z] = nullptr;
 		}
 	}
-
-	delete c;
-
-	subChunks.erase(std::remove(subChunks.begin(), subChunks.end(), c), subChunks.end());
 }
 
 void Chunk::DestroySubChunks()
@@ -866,7 +864,7 @@ void Chunk::CreateSubChunks()
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
-		subChunk* sbc = CreateSubChunk(y);
+		std::shared_ptr<subChunk> sbc = CreateSubChunk(y);
 		if (sbc != nullptr)
 			subChunks.push_back(sbc);
 	}
@@ -989,6 +987,15 @@ void Chunk::Unload()
 	shadowVertices.clear();
 	shadowIndices.clear();
 
+	vertices.shrink_to_fit();
+	indices.shrink_to_fit();
+
+	transparentVertices.shrink_to_fit();
+	transparentIndices.shrink_to_fit();
+
+	shadowVertices.shrink_to_fit();
+	shadowIndices.shrink_to_fit();
+
 	size = 0;
 	shadowSize = 0;
 }
@@ -1100,7 +1107,7 @@ void Chunk::UpdateChunk(int tick)
 			keepUpdating = false;
 		for (int i = 0; i < subChunks.size(); i++)
 		{
-			subChunk* sbc = subChunks[i];
+			std::shared_ptr<subChunk>sbc = subChunks[i];
 
 			if (sbc == nullptr)
 				continue;

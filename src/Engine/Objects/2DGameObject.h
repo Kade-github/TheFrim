@@ -47,6 +47,11 @@ struct Draw2D
 
 	std::vector<Vertex2D> vertices;
 
+	~Draw2D()
+	{
+		vertices.clear();
+	}
+
 	glm::vec4 clipRect = glm::vec4(-1, -1, -1, -1);
 };
 

@@ -481,7 +481,7 @@ void Gameplay::UpdateChunks()
 
 		float distance = glm::distance(player->position, fakePos);
 
-		if (distance < camera->cameraFar * 1)
+		if (distance < camera->cameraFar)
 		{
 			if (c->id < 0)
 			{

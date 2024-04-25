@@ -350,7 +350,7 @@ void Player::Draw()
 
 		if (c != nullptr)
 		{
-			subChunk* sb = c->GetSubChunk(ray.y);
+			std::shared_ptr<subChunk> sb = c->GetSubChunk(ray.y);
 
 			if (sb != nullptr)
 			{

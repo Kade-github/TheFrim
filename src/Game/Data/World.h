@@ -51,6 +51,11 @@ namespace Data
 
 		std::vector<DataTag> tags;
 
+		~BlockData()
+		{
+			tags.clear();
+		}
+
 		DataTag GetTag(std::string name)
 		{
 			for(DataTag t : tags)
@@ -87,6 +92,11 @@ namespace Data
 	struct DataChunk
 	{
 		std::vector<BlockData> blocks = {};
+
+		~DataChunk()
+		{
+			blocks.clear();
+		}
 
 		MSGPACK_DEFINE_ARRAY(blocks);
 	};

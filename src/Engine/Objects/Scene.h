@@ -27,10 +27,14 @@ public:
 
 			delete object;
 		}
+
+		objects.clear();
+		delayedObjects.clear();
 	}
 
 	std::vector<GameObject*> objects = {};
 	std::vector<GameObject*> delayedObjects = {};
+
 
 	virtual void MouseMove(float x, float y) {};
 	virtual void MouseClick(int button, glm::vec2 mPos) {};

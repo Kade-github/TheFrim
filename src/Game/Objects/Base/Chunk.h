@@ -61,9 +61,9 @@ public:
     Chunk* front = nullptr;
     Chunk* back = nullptr;
 
-    std::vector<subChunk*> subChunks;
+    std::vector<std::shared_ptr<subChunk>> subChunks;
 
-    subChunk* GetSubChunk(int y);
+    std::shared_ptr<subChunk> GetSubChunk(int y);
 
     Data::Chunk GetChunkData();
 
@@ -92,17 +92,17 @@ public:
 
     void PlaceBlock(float x, float y, float z, Block* b);
 
-    void RenderSubChunk(subChunk* c);
+    void RenderSubChunk(std::shared_ptr<subChunk> c);
     void RenderSubChunks();
 
-    void RenderSubChunkShadow(subChunk* c);
+    void RenderSubChunkShadow(std::shared_ptr<subChunk> c);
     void RenderSubChunksShadow();
 
-    subChunk* CreateSubChunk(int y);
+    std::shared_ptr<subChunk> CreateSubChunk(int y);
     Block* CreateBlock(int x, int y, int z, int id, Data::BlockData data);
 
     void DestroySubChunk(int y);
-    void DestroySubChunk(subChunk* c);
+    void DestroySubChunk(std::shared_ptr<subChunk> c);
     void DestroySubChunks();
     
     void CreateSubChunks();
