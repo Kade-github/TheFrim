@@ -76,6 +76,18 @@ void Sprite3D::UpdateSprite()
 	br.position = _br;
 	bl.position = _bl;
 
+	if (flipHorizontal)
+	{
+		VVertex temp = tl;
+		tl = tr;
+		tr = temp;
+
+		temp = bl;
+		bl = br;
+		br = temp;
+	}
+
+
 	float rX = t->width * src.x;
 	float rY = t->height * src.y;
 	float rW = t->width * src.z;

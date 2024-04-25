@@ -14,6 +14,8 @@ public:
 
 	bool depth = true;
 
+	bool flipHorizontal = false;
+
 	float angleZ = 0;
 	float angleY = 0;
 	glm::vec4 src = glm::vec4(0, 0, 1, 1);

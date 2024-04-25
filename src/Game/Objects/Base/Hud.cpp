@@ -195,7 +195,8 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	waterOverlay->height = c2d->_h;
 
 	hand = new Sprite3D(hn, glm::vec3(0, 0, 0));
-
+	hand->flipHorizontal = true;
+	hand->depth = false;
 	hand->width = 0.3;
 	hand->height = 0.3;
 
