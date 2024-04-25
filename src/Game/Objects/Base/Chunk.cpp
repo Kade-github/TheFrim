@@ -979,6 +979,18 @@ void Chunk::Destroy()
 void Chunk::Unload()
 {
 	DestroySubChunks();
+
+	vertices.clear();
+	indices.clear();
+
+	transparentVertices.clear();
+	transparentIndices.clear();
+
+	shadowVertices.clear();
+	shadowIndices.clear();
+
+	size = 0;
+	shadowSize = 0;
 }
 
 void Chunk::DrawRegular()

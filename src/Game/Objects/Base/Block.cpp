@@ -121,6 +121,11 @@ BlockFace Block::BreakBottomFace()
 	return BlockFace(bottomVertices, { 0, 1, 3, 1, 2, 3 });
 }
 
+Block::~Block()
+{
+	faces.clear();
+}
+
 void Block::Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned int>& inds)
 {
 	for (int i = 0; i < faces.size(); i++)

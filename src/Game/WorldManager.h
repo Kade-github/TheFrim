@@ -74,6 +74,8 @@ public:
 
 	void CheckGeneratedRegions();
 
+	~WorldManager();
+
 	bool IsRegionGenerated(int x, int z);
 	bool isRegionLoaded(float x, float z);
 	void LoadRegion(int x, int z);

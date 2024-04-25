@@ -7,8 +7,7 @@
 #include "../../Data/World.h"
 #include <OpenGL/Texture.h>
 
-class BlockFace {
-public:
+struct BlockFace {
 	glm::vec3 position;
 	glm::vec3 sum;
 	std::vector<GameObject::VVertex> vertices;
@@ -121,6 +120,8 @@ public:
 	BlockFace BreakRightFace();
 	BlockFace BreakTopFace();
 	BlockFace BreakBottomFace();
+
+	~Block();
 
 	virtual void OnInteract() {};
 

@@ -25,7 +25,6 @@ Gameplay::Gameplay(WorldManager* _wm)
 
 void Gameplay::Create()
 {
-	CraftingManager::GetInstance()->Init();
 
 	Game::instance->log->Write("Loaded World: " + wm->name);
 
@@ -337,7 +336,7 @@ void Gameplay::UpdateChunks()
 
 		float distanceToCenter = glm::distance(fakePos, glm::vec3(r.startX + (regionSize / 2), 0, r.startZ + (regionSize / 2)));
 
-		if (distanceToCenter > camera->cameraFar * 4.0f && r.loaded)
+		if (distanceToCenter > camera->cameraFar * 3.0f && r.loaded)
 		{
 			wm->SaveRegion(r.startX, r.startZ);
 
@@ -657,6 +656,8 @@ void Gameplay::Destroy()
 			c->Unload();
 			delete c;
 		}
+
+		r.chunks.clear();
 	}
 
 	wm->regions.clear();

@@ -5,9 +5,12 @@
 #include <Helpers/Collision2D.h>
 #include "../MusicManager.h"
 #include "BlockTest.h"
+#include "../CraftingManager.h"
 
 void MainMenu::Create()
 {
+	CraftingManager::GetInstance()->Init();
+
 	c2d = new Camera2D(glm::vec3(0, 0, 0));
 
 	c2d->s = new Shader();

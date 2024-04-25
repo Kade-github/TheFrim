@@ -164,6 +164,11 @@ void WorldManager::CheckGeneratedRegions()
 	}
 }
 
+WorldManager::~WorldManager()
+{
+	instance = nullptr;
+}
+
 void WorldManager::GenerateRegion(int x, int z)
 {
 	Data::Region r = _world.generateRegion(x, z);
