@@ -83,17 +83,17 @@ include_directories(${CMAKE_SOURCE_DIR}../Include)
 include_directories(${CMAKE_SOURCE_DIR}../Lib)
 include_directories(${CMAKE_SOURCE_DIR}../)
 
-target_link_libraries(TheFrim bass -static)
-target_link_libraries(TheFrim bass_fx -static)
+target_link_libraries(TheFrim bass)
+target_link_libraries(TheFrim bass_fx)
 
 find_package(pugixml CONFIG REQUIRED)
-target_link_libraries(TheFrim pugixml::pugixml -static)
+target_link_libraries(TheFrim pugixml::pugixml)
 
 find_package(glfw3 CONFIG REQUIRED)
-target_link_libraries(TheFrim glfw -static)
+target_link_libraries(TheFrim glfw)
 
 find_package(assimp CONFIG REQUIRED)
-target_link_libraries(TheFrim assimp::assimp -static)
+target_link_libraries(TheFrim assimp::assimp)
 
 add_subdirectory(zstr)
 target_link_libraries(TheFrim zstr::zstr)
