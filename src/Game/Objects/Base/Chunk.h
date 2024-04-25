@@ -11,10 +11,10 @@
 class subChunk {
 public:
     int y = -1;
-    std::shared_ptr<Block> blocks[16][16] = {nullptr};
+    Block* blocks[16][16] = {nullptr};
 
     // input here has to be between 0-15 for both x and z
-    std::shared_ptr<Block> getBlock(int x, int z);
+    Block* getBlock(int x, int z);
 };
 
 class Chunk : public GameObject
@@ -35,7 +35,7 @@ class Chunk : public GameObject
     std::vector<GameObject::VVertex> shadowVertices;
     std::vector<unsigned int> shadowIndices;
 
-    void CreateFaces(std::shared_ptr<Block> b);
+    void CreateFaces(Block* b);
 
     void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
     bool keepUpdating = false;
@@ -91,7 +91,7 @@ public:
 
     void ModifyBlock(float x, float y, float z, int id);
 
-    void PlaceBlock(float x, float y, float z, std::shared_ptr<Block> b);
+    void PlaceBlock(float x, float y, float z, Block* b);
 
     void RenderSubChunk(std::shared_ptr<subChunk> c);
     void RenderSubChunks();
@@ -100,7 +100,7 @@ public:
     void RenderSubChunksShadow();
 
     std::shared_ptr<subChunk> CreateSubChunk(int y);
-    std::shared_ptr<Block> CreateBlock(int x, int y, int z, int id, Data::BlockData data);
+    Block* CreateBlock(int x, int y, int z, int id, Data::BlockData data);
 
     void DestroySubChunk(int y);
     void DestroySubChunk(std::shared_ptr<subChunk> c);
@@ -113,7 +113,7 @@ public:
     void SetShadowBuffer();
 
     void Init();
-    void Destroy() override;
+    void Destroy();
 
     void Unload();
 

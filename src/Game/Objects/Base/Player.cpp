@@ -558,7 +558,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 				if (item.type != Data::ITEM_NULL && item.placeable)
 				{
-					std::shared_ptr<Block> b = c->CreateBlock(x, y, z, item.type, Data::BlockData());
+					Block* b = c->CreateBlock(x, y, z, item.type, Data::BlockData());
 
 					c->PlaceBlock(x, y, z, b);
 

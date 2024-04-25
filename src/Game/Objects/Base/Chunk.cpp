@@ -28,7 +28,7 @@ void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 no
 		v.normal = normal;
 }
 
-std::shared_ptr<Block> subChunk::getBlock(int x, int z)
+Block* subChunk::getBlock(int x, int z)
 {
 	return blocks[x][z];
 }
@@ -337,7 +337,7 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	CreateOtherSubchunks(w);
 }
 
-void Chunk::PlaceBlock(float x, float y, float z, std::shared_ptr<Block> b)
+void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 {
 	if (b == nullptr)
 		return;
@@ -366,7 +366,7 @@ void Chunk::PlaceBlock(float x, float y, float z, std::shared_ptr<Block> b)
 }
 
 // this is made confusingly. I'm sorry.
-void Chunk::CreateFaces(std::shared_ptr<Block> b)
+void Chunk::CreateFaces(Block* b)
 {
 	if (b == nullptr)
 		return;
@@ -466,7 +466,7 @@ void Chunk::RenderSubChunk(std::shared_ptr<subChunk>sbc)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-            std::shared_ptr<Block> block = sbc->getBlock(x, z);
+            Block* block = sbc->getBlock(x, z);
 			if (block == nullptr)
 				continue;
 
@@ -598,7 +598,7 @@ void Chunk::RenderSubChunkShadow(std::shared_ptr<subChunk>sbc)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-            std::shared_ptr<Block> block = sbc->getBlock(x, z);
+			Block* block = sbc->getBlock(x, z);
 			if (block == nullptr)
 				continue;
 
@@ -710,7 +710,7 @@ std::shared_ptr<subChunk>Chunk::CreateSubChunk(int y)
 
 				Data::BlockData data = myData.getBlockData(x, y, z);
 
-                std::shared_ptr<Block> b = CreateBlock(x, y, z, id, data);
+				Block* b = CreateBlock(x, y, z, id, data);
 
 				sbc->blocks[x][z] = b;
 				hasBlocks = true;
@@ -732,9 +732,9 @@ std::shared_ptr<subChunk>Chunk::CreateSubChunk(int y)
 	return sbc;
 }
 
-std::shared_ptr<Block> Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
+Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 {
-	std::shared_ptr<Block> block;
+	Block* block;
 	Data::DataTag dataOne;
 	Data::DataTag dataTwo;
 
@@ -743,22 +743,22 @@ std::shared_ptr<Block> Chunk::CreateBlock(int x, int y, int z, int id, Data::Blo
 	switch (id)
 	{
 	case GRASS:
-		block = std::make_shared<Grass>(position + glm::vec3(x, y, z));
+		block = new Grass(position + glm::vec3(x, y, z));
 		break;
 	case STONE:
-		block = std::make_shared<Stone>(position + glm::vec3(x, y, z));
+		block = new Stone(position + glm::vec3(x, y, z));
 		break;
 	case COBBLESTONE:
-		block = std::make_shared<Cobblestone>(position + glm::vec3(x, y, z));
+		block = new Cobblestone(position + glm::vec3(x, y, z));
 		break;
 	case WOOD:
-		block = std::make_shared<Wood>(position + glm::vec3(x, y, z));
+		block = new Wood(position + glm::vec3(x, y, z));
 		break;
 	case LEAVES:
-		block = std::make_shared<Leaves>(position + glm::vec3(x, y, z));
+		block = new Leaves(position + glm::vec3(x, y, z));
 		break;
 	case SAND:
-		block = std::make_shared<Sand>(position + glm::vec3(x, y, z));
+		block = new Sand(position + glm::vec3(x, y, z));
 		break;
 	case WATER:
 		dataOne = data.GetTag("source");
@@ -770,34 +770,34 @@ std::shared_ptr<Block> Chunk::CreateBlock(int x, int y, int z, int id, Data::Blo
 
 		source = std::string(dataOne.value) == "true";
 
-		block = std::make_shared<Water>(position + glm::vec3(x, y, z), std::stoi(dataTwo.value), source);
+		block = new Water(position + glm::vec3(x, y, z), std::stoi(dataTwo.value), source);
 		break;
 	case CRAFTINGTABLE:
-		block = std::make_shared<CraftingTable>(position + glm::vec3(x, y, z));
+		block = new CraftingTable(position + glm::vec3(x, y, z));
 		break;
 	case WOODENPLANKS:
-		block = std::make_shared<WoodenPlank>(position + glm::vec3(x, y, z));
+		block = new WoodenPlank(position + glm::vec3(x, y, z));
 		break;
 	case GLASS:
-		block = std::make_shared<Glass>(position + glm::vec3(x, y, z));
+		block = new Glass(position + glm::vec3(x, y, z));
 		break;
 	case BEDROCK:
-		block = std::make_shared<Bedrock>(position + glm::vec3(x, y, z));
+		block = new Bedrock(position + glm::vec3(x, y, z));
 		break;
 	case COAL_ORE:
-		block = std::make_shared<CoalOre>(position + glm::vec3(x, y, z));
+		block = new CoalOre(position + glm::vec3(x, y, z));
 		break;
 	case IRON_ORE:
-		block = std::make_shared<IronOre>(position + glm::vec3(x, y, z));
+		block = new IronOre(position + glm::vec3(x, y, z));
 		break;
 	case GOLD_ORE:
-		block = std::make_shared<GoldOre>(position + glm::vec3(x, y, z));
+		block = new GoldOre(position + glm::vec3(x, y, z));
 		break;
 	case DIAMOND_ORE:
-		block = std::make_shared<DiamondOre>(position + glm::vec3(x, y, z));
+		block = new DiamondOre(position + glm::vec3(x, y, z));
 		break;
 	default:
-		block = std::make_shared<Dirt>(position + glm::vec3(x, y, z));
+		block = new Dirt(position + glm::vec3(x, y, z));
 		break;
 	}
 
@@ -822,17 +822,16 @@ void Chunk::DestroySubChunk(std::shared_ptr<subChunk>c)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			std::shared_ptr<Block> b = c->blocks[x][z];
+			Block* b = c->blocks[x][z];
 
 			if (b == nullptr) {
-                b.reset();
-                c->blocks[x][z] = {};
+                c->blocks[x][z] = nullptr;
                 continue;
             }
 
 			b->faces.clear();
-            b.reset();
-			c->blocks[x][z] = {};
+			delete b;
+			c->blocks[x][z] = nullptr;
 		}
 	}
 }
@@ -930,9 +929,9 @@ void Chunk::SetShadowBuffer()
 
 void Chunk::Init()
 {
-    if (inited)
-        return;
-    inited = true;
+	if (inited)
+		return;
+	inited = true;
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -961,17 +960,11 @@ void Chunk::Destroy()
 	glDeleteVertexArrays(1, &SHADOWVAO);
 	glDeleteBuffers(1, &SHADOWVBO);
 	glDeleteBuffers(1, &SHADOWEBO);
-
-    glDeleteVertexArrays(1, &TRANSPARENTVAO);
-    glDeleteBuffers(1, &TRANSPARENTVBO);
-    glDeleteBuffers(1, &TRANSPARENTEBO);
-
-    inited = false;
 }
 
 void Chunk::Unload()
 {
-	Destroy();
+	DestroySubChunks();
 
 	vertices.clear();
 	indices.clear();
@@ -1096,7 +1089,7 @@ void Chunk::UpdateChunk(int tick)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-                std::shared_ptr<Block>b = sbc->blocks[x][z];
+				Block* b = sbc->blocks[x][z];
 
 				if (b == nullptr)
 					continue;

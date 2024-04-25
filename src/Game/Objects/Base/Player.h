@@ -28,7 +28,7 @@ class Player : public Entity
 
 public:
 	Data::Player playerData;
-	std::shared_ptr<Block> selectedBlock = nullptr;
+	Block* selectedBlock = nullptr;
 
 	float jumpCooldown = 0;
 

@@ -100,7 +100,7 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 	d.AddTag("strength", std::to_string(_strength));
 	d.AddTag("source", "false");
 
-    std::shared_ptr<Water> b = std::static_pointer_cast<Water>(c->CreateBlock(_pos.x, _pos.y, _pos.z, WATER, d));
+	Water* b = (Water*)c->CreateBlock(_pos.x, _pos.y, _pos.z, WATER, d);
 
 	b->position -= c->position; // this gets added in CreateBlock
 
