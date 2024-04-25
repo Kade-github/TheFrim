@@ -636,10 +636,15 @@ void Gameplay::OnScroll(double x, double y)
 void Gameplay::FocusChange(bool focus)
 {
 	static bool wasPaused = false;
+
+	if (hud->inv->shown)
+		return;
+
 	if (!focus)
 	{
 		wasPaused = Hud::GamePaused;
-		player->TogglePauseMenu();
+		if (!wasPaused)
+			player->TogglePauseMenu();
 	}
 	else if (focus && !wasPaused)
 	{

@@ -23,6 +23,8 @@ void Hud::InventoryShown(bool s)
 
 	inv->shown = s;
 	inv->UpdateInventory();
+
+	GamePaused = s;
 }
 
 void Hud::ShowCraftingTable(bool s)
@@ -394,7 +396,7 @@ void Hud::Draw()
 
 	glm::vec2 mouse = Game::instance->GetCursorPos();
 
-	if (GamePaused)
+	if (GamePaused && !inv->shown)
 	{
 		if (Collision2D::PointInRect(mouse, resume->position, glm::vec2(resume->width, resume->height)))
 			resume->color = glm::vec4(1, 1, 1, 0.85);
@@ -424,7 +426,7 @@ void Hud::Draw()
 
 void Hud::MouseClick(int button, glm::vec2 pos)
 {
-	if (GamePaused)
+	if (GamePaused && !inv->shown)
 	{
 		if (Collision2D::PointInRect(pos, resume->position, glm::vec2(resume->width, resume->height)))
 		{

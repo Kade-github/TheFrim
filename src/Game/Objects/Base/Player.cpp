@@ -408,7 +408,7 @@ void Player::Draw()
 					}
 					break;
 				case S_STONE:
-					if (StringTools::Contains(item.tag, "pickaxe"))
+					if (StringTools::Contains(item.tag, "pick"))
 					{
 						toughness *= item.breakingPower;
 						correctTool = true;

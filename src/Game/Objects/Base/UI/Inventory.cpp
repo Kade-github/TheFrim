@@ -465,7 +465,7 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 
 	_dragging = false;
 
-	if (slot != nullptr && startSlot != nullptr)
+	if (slot != nullptr && startSlot != nullptr && s.id != -1 && sSlot.id != -1)
 	{
 		// 9x4
 
@@ -499,30 +499,25 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 	}
 	else
 	{
-		if (to.x < position.x || to.x > position.x + renderWidth || to.y < position.y || to.y > position.y + renderHeight)
-		{
-			glm::vec2 start = ConvertToSlotPos(startSlot->tag_id);
+		glm::vec2 start = ConvertToSlotPos(startSlot->tag_id);
 
-			Data::InventoryItem* startItem = GetItem(sSlot.id, start);
-			*startItem = stored;
+		Data::InventoryItem* startItem = GetItem(sSlot.id, start);
+		*startItem = stored;
 
-			if (startItem == nullptr || startItem->type == Data::ItemType::ITEM_NULL)
-				return false;
+		if (startItem == nullptr || startItem->type == Data::ItemType::ITEM_NULL)
+			return false;
 
-			Data::InventoryItem item = *startItem;
+		Data::InventoryItem item = *startItem;
 
-			Camera* c = Game::instance->GetCamera();
+		Camera* c = Game::instance->GetCamera();
 
-			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-			gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, item);
+		gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, item);
 
-			*startItem = {};
+		*startItem = {};
 
-			return true;
-		}
-
-		return false;
+		return true;
 	}
 
 	return true;
