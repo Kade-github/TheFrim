@@ -36,9 +36,12 @@ void DroppedItemManager::SpawnItem(glm::vec3 pos, Data::InventoryItem i)
 
 void DroppedItemManager::AddItem(DroppedItem* item)
 {
+	static int itemId = 0;
 	items.push_back(item);
 
 	Gameplay* g = (Gameplay*)Game::instance->currentScene;
+
+	item->id = itemId++;
 
 	g->DelayedAddObject(item);
 }
@@ -47,13 +50,14 @@ void DroppedItemManager::RemoveItem(DroppedItem* item)
 {
 	for (int i = 0; i < items.size(); i++)
 	{
-		if (items[i] == item)
+		if (items[i]->id == item->id)
 		{
 			items.erase(items.begin() + i);
 			Gameplay* g = (Gameplay*)Game::instance->currentScene;
 			g->RemoveObject(item);
 
 			delete item;
+			item = nullptr;
 			break;
 		}
 	}
@@ -71,6 +75,9 @@ void DroppedItemManager::Update()
 
 		float time = glfwGetTime() - item->lifeTime;
 
+		if (time < 0.25f || item->delayed)
+			continue;
+
 		if (time > 240.0f) // expire after 4 minutes
 		{
 			RemoveItem(item);
@@ -79,7 +86,7 @@ void DroppedItemManager::Update()
 
 		float distance = glm::distance(player->position - glm::vec3(0,1.8,0), item->position);
 
-		if (distance <= 1.35f && time >= 0.25f && (
+		if (distance <= 1.35f && (
 			(int)item->position.y == (int)(player->position.y - 1) ||
 			(int)item->position.y == (int)(player->position.y) ||
 			(int)item->position.y == (int)(player->position.y + 1))) // pickup range
@@ -101,6 +108,11 @@ void DroppedItemManager::Update()
 					continue;
 
 				DroppedItem* item2 = items[i2];
+
+				float lifeTime = glfwGetTime() - item2->lifeTime;
+
+				if (lifeTime < 0.25f || item2->delayed)
+					continue;
 
 				if (item->item.type == item2->item.type && glm::distance(item->position, item2->position) <= 0.5f)
 				{

@@ -43,6 +43,7 @@ public:
 
 	void DelayedAddObject(GameObject* object)
 	{
+		object->delayed = true;
 		delayedObjects.push_back(object);
 	}
 
@@ -90,7 +91,11 @@ public:
 
 		for (int i = 0; i < delayedObjects.size(); i++)
 		{
-			AddObject(delayedObjects[i]);
+			if (delayedObjects[i] != nullptr)
+			{
+				delayedObjects[i]->delayed = false;
+				AddObject(delayedObjects[i]);
+			}
 		}
 
 		delayedObjects.clear();

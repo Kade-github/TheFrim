@@ -51,6 +51,7 @@ public:
 	}
 
 	bool visible = true;
+	bool delayed = false;
 
 	std::string tag_id = "object";
 

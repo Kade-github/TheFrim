@@ -337,7 +337,7 @@ void Gameplay::UpdateChunks()
 
 		float distanceToCenter = glm::distance(fakePos, glm::vec3(r.startX + (regionSize / 2), 0, r.startZ + (regionSize / 2)));
 
-		if (distanceToCenter > camera->cameraFar * 2.0f && r.loaded)
+		if (distanceToCenter > camera->cameraFar * 4.0f && r.loaded)
 		{
 			wm->SaveRegion(r.startX, r.startZ);
 
@@ -350,6 +350,9 @@ void Gameplay::UpdateChunks()
 					delete c;
 				}
 			}
+
+			r.chunks = {};
+
 			r.loaded = false;
 
 			wm->regions.erase(std::remove(wm->regions.begin(), wm->regions.end(), r), wm->regions.end());
@@ -362,12 +365,12 @@ void Gameplay::UpdateChunks()
 		r.loaded = true;
 		regionsLoaded++;
 
-		float distanceToLeft = glm::distance(fakePos, glm::vec3(r.startX - regionSize / 2, 0, r.startZ));
-		float distanceToRight = glm::distance(fakePos, glm::vec3(r.startX + regionSize / 2, 0, r.startZ));
-		float distanceToTop = glm::distance(fakePos, glm::vec3(r.startX, 0, r.startZ - regionSize / 2));
-		float distanceToBottom = glm::distance(fakePos, glm::vec3(r.startX, 0, r.startZ + regionSize / 2));
+		float distanceToLeft = glm::distance(fakePos, glm::vec3(r.startX - regionSize, 0, r.startZ));
+		float distanceToRight = glm::distance(fakePos, glm::vec3(r.startX + regionSize, 0, r.startZ));
+		float distanceToTop = glm::distance(fakePos, glm::vec3(r.startX, 0, r.startZ - regionSize));
+		float distanceToBottom = glm::distance(fakePos, glm::vec3(r.startX, 0, r.startZ + regionSize));
 
-		if (distanceToLeft < camera->cameraFar * 0.85f)
+		if (distanceToLeft < camera->cameraFar * 2)
 		{
 			glm::vec2 pos = glm::vec2((r.startX / regionSize) - 1, r.startZ / regionSize);
 
@@ -388,7 +391,7 @@ void Gameplay::UpdateChunks()
 				}
 		}
 
-		if (distanceToRight < camera->cameraFar * 0.85f)
+		if (distanceToRight < camera->cameraFar * 2)
 		{
 			glm::vec2 pos = glm::vec2((r.startX / regionSize) + 1, r.startZ / regionSize);
 
@@ -409,7 +412,7 @@ void Gameplay::UpdateChunks()
 				}
 		}
 
-		if (distanceToTop < camera->cameraFar * 0.85f)
+		if (distanceToTop < camera->cameraFar * 2)
 		{
 			glm::vec2 pos = glm::vec2(r.startX / regionSize, (r.startZ / regionSize) - 1);
 
@@ -430,7 +433,7 @@ void Gameplay::UpdateChunks()
 				}
 		}
 
-		if (distanceToBottom < camera->cameraFar * 0.85f)
+		if (distanceToBottom < camera->cameraFar * 2)
 		{
 			glm::vec2 pos = glm::vec2(r.startX / regionSize, (r.startZ / regionSize) + 1);
 
