@@ -933,10 +933,6 @@ void Chunk::Init()
     if (inited)
         return;
     inited = true;
-	right = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
-	left = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
-	front = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
-	back = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
@@ -954,6 +950,9 @@ void Chunk::Init()
 void Chunk::Destroy()
 {
 	DestroySubChunks();
+
+	if (!inited)
+		return;
 
 	glDeleteVertexArrays(1, &VAO);
 	glDeleteBuffers(1, &VBO);
@@ -982,15 +981,6 @@ void Chunk::Unload()
 
 	shadowVertices.clear();
 	shadowIndices.clear();
-
-	vertices.shrink_to_fit();
-	indices.shrink_to_fit();
-
-	transparentVertices.shrink_to_fit();
-	transparentIndices.shrink_to_fit();
-
-	shadowVertices.shrink_to_fit();
-	shadowIndices.shrink_to_fit();
 
 	size = 0;
 	shadowSize = 0;

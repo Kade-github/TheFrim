@@ -350,6 +350,7 @@ void Gameplay::UpdateChunks()
 				if (c->isLoaded)
 				{
 					UnloadChunk(c);
+					c->myData = {};
 					delete c;
 				}
 			}
@@ -655,7 +656,8 @@ void Gameplay::Destroy()
 	{
 		for (Chunk* c : r.chunks)
 		{
-			c->Unload();
+			UnloadChunk(c);
+			c->myData = {};
 			delete c;
 		}
 
