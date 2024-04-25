@@ -190,6 +190,8 @@ void Player::Draw()
 
 		if (firstMouse)
 		{
+			p = playerData.pitch;
+			yaw = playerData.yaw;
 			lastX = x;
 			lastY = y;
 			firstMouse = false;
@@ -331,6 +333,9 @@ void Player::Draw()
 
 	camera->pitch = p;
 	camera->yaw = yaw;
+
+	playerData.pitch = p;
+	playerData.yaw = yaw;
 
 	if (_shake > 0)
 	{
@@ -553,11 +558,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 				if (item.type != Data::ITEM_NULL && item.placeable)
 				{
-					Data::BlockData d = Data::BlockData();
-					d.AddTag("source", "true");
-					d.AddTag("strength", "8");
-
-					Block* b = c->CreateBlock(x, y, z, WATER, d);
+					Block* b = c->CreateBlock(x, y, z, item.type, Data::BlockData());
 
 					c->PlaceBlock(x, y, z, b);
 

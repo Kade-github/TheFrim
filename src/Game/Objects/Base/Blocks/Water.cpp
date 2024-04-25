@@ -121,10 +121,10 @@ bool Water::Update(int tick) // water functionality
 	if (strength == 0 || currentChunk == nullptr)
 		return true;
 
-	std::vector<glm::vec3> freeSpaces = GetFreeSpaces(position);
-
-	if (tick % 8 != 0 || (freeSpaces.size() != 0 && tick % 8 != 0))
+	if (tick % 8 != 0)
 		return false;
+
+	std::vector<glm::vec3> freeSpaces = GetFreeSpaces(position);
 
 	for (glm::vec3 freeSpace : freeSpaces)
 	{
@@ -132,5 +132,6 @@ bool Water::Update(int tick) // water functionality
 
 		PlaceWater(freeSpace, strength - 1);
 	}
+
 	return true;
 }

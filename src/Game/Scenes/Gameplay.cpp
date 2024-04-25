@@ -51,11 +51,14 @@ void Gameplay::Create()
 
 	player->order = 2;
 
+	player->playerData = wm->_world.p;
+
 	hud = new Hud(glm::vec3(0, 0, 0), player, c2d);
 
 	hud->hand->order = 2;
 
 	hud->order = 1000;
+
 
 	wm->SaveWorldNow();
 
@@ -646,9 +649,9 @@ void Gameplay::FocusChange(bool focus)
 
 void Gameplay::Destroy()
 {
+	wm->_world.p = player->playerData;
 
 	wm->SetPlayerPosition(player->position);
-
 	wm->SaveWorldNow();
 
 	for (Region& r : wm->regions)

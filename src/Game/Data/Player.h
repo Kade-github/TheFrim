@@ -322,13 +322,13 @@ namespace Data
 			return { "", "" };
 		}
 
-        MSGPACK_DEFINE_ARRAY(type, count, nbt);
+        MSGPACK_DEFINE_ARRAY(type, count, nbt, tag, durability, placeable, equipable, stackable, armor, armorSlot);
 	};
 
 	struct Player
 	{
 		float x = 0, y = -100, z = 0;
-		float pitch, yaw;
+		float pitch = 0, yaw = 0;
 
 		uint8_t selectedSlot = 0;
 

@@ -286,37 +286,25 @@ bool Chunk::DoesBlockExist(float x, float y, float z)
 void Chunk::CreateOtherSubchunks(glm::vec3 w)
 {
 
-	if (w.x == 0)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
+	Chunk* c1 = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 
-		if (c != nullptr)
-			c->modified = true;
-	}
+	if (c1 != nullptr)
+		c1->modified = true;
 
-	if (w.x >= CHUNK_SIZE)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
+	Chunk* c2 = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 
-		if (c != nullptr)
-			c->modified = true;
-	}
+	if (c2 != nullptr)
+		c2->modified = true;
 
-	if (w.z == 0)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
+	Chunk* c3 = WorldManager::instance->GetChunk(position.x, position.z - CHUNK_SIZE);
 
-		if (c != nullptr)
-			c->modified = true;
-	}
+	if (c3 != nullptr)
+		c3->modified = true;
 
-	if (w.z >= CHUNK_SIZE)
-	{
-		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
+	Chunk* c4 = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
 
-		if (c != nullptr)
-			c->modified = true;
-	}
+	if (c4 != nullptr)
+		c4->modified = true;
 }
 
 void Chunk::ModifyBlock(float x, float y, float z, int id)
@@ -1089,8 +1077,6 @@ void Chunk::DrawShadows()
 
 void Chunk::UpdateChunk(int tick)
 {
-	bool wasModified = modified;
-
 	if (modified)
 	{
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
@@ -1103,7 +1089,7 @@ void Chunk::UpdateChunk(int tick)
 
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		std::shared_ptr<subChunk>sbc = subChunks[i];
+		std::shared_ptr<subChunk> sbc = subChunks[i];
 
 		if (sbc == nullptr)
 			continue;
@@ -1117,8 +1103,7 @@ void Chunk::UpdateChunk(int tick)
 				if (b == nullptr)
 					continue;
 
-				if (!b->Update(tick))
-					keepUpdating = true;
+				b->Update(tick);
 			}
 		}
 	}

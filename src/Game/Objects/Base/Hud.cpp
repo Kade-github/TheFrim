@@ -437,4 +437,6 @@ void Hud::MouseClick(int button, glm::vec2 pos)
 			_exiting = true;
 		}
 	}
+
+	inv->MouseClick(button, pos);
 }

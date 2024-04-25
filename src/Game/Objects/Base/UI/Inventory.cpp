@@ -9,7 +9,6 @@ Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
 {
 	player = _player;
 	order = 100;
-
 }
 
 void Inventory::SetCrafting()
