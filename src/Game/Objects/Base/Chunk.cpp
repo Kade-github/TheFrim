@@ -930,6 +930,9 @@ void Chunk::SetShadowBuffer()
 
 void Chunk::Init()
 {
+    if (inited)
+        return;
+    inited = true;
 	right = WorldManager::instance->GetChunk(position.x + CHUNK_SIZE, position.z);
 	left = WorldManager::instance->GetChunk(position.x - CHUNK_SIZE, position.z);
 	front = WorldManager::instance->GetChunk(position.x, position.z + CHUNK_SIZE);
@@ -959,11 +962,17 @@ void Chunk::Destroy()
 	glDeleteVertexArrays(1, &SHADOWVAO);
 	glDeleteBuffers(1, &SHADOWVBO);
 	glDeleteBuffers(1, &SHADOWEBO);
+
+    glDeleteVertexArrays(1, &TRANSPARENTVAO);
+    glDeleteBuffers(1, &TRANSPARENTVBO);
+    glDeleteBuffers(1, &TRANSPARENTEBO);
+
+    inited = false;
 }
 
 void Chunk::Unload()
 {
-	DestroySubChunks();
+	Destroy();
 
 	vertices.clear();
 	indices.clear();

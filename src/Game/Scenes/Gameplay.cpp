@@ -264,6 +264,7 @@ void Gameplay::QueueLoad(Chunk* c)
 
 	loadPool.detach_task([c]()
 		{
+
 			c->CreateSubChunks();
 
 			c->RenderSubChunks();
@@ -488,14 +489,10 @@ void Gameplay::UpdateChunks()
 
 		if (distance < camera->cameraFar)
 		{
-			if (c->id < 0)
-			{
-				c->id = 1;
-				c->Init();
-			}
 
 			if (!c->isLoaded)
 			{
+                c->Init();
 				QueueLoad(c);
 				return;
 			}

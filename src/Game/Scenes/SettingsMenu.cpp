@@ -56,7 +56,7 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(fov);
 
-	float renderDistancePerc = Settings::instance->renderDistance / 1.0f;
+	float renderDistancePerc = Settings::instance->renderDistance;
 
 	if (renderDistancePerc < 0.1f)
 		renderDistancePerc = 0.1f;
@@ -74,7 +74,7 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(renderDistance);
 
-	float fogDistancePerc = Settings::instance->fogDistance / 2.0f;
+	float fogDistancePerc = Settings::instance->fogDistance;
 
 	if (fogDistancePerc < 0.1f)
 		fogDistancePerc = 0.1f;
@@ -122,9 +122,9 @@ void SettingsMenu::Draw()
 	else
 		back->selected = false;
 
-	Settings::instance->fov = fov->value * 140;
+	Settings::instance->fov = fov->value * 140.0f;
 	Settings::instance->renderDistance = renderDistance->value * 2.0f;
-	Settings::instance->fogDistance = fogDistance->value * 1.2f;
+	Settings::instance->fogDistance = fogDistance->value * 2.0f;
 
 	Scene::Draw();
 }

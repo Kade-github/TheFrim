@@ -35,7 +35,7 @@ class Chunk : public GameObject
     std::vector<GameObject::VVertex> shadowVertices;
     std::vector<unsigned int> shadowIndices;
 
-    void CreateFaces(Block* b);
+    void CreateFaces(std::shared_ptr<Block> b);
 
     void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
     bool keepUpdating = false;
@@ -43,6 +43,7 @@ class Chunk : public GameObject
     int shadowSize = 0;
     int size = 0;
 public:
+    bool inited = false;
     bool isBeingLoaded = false;
     bool isShadowLoaded = false;
 
@@ -90,7 +91,7 @@ public:
 
     void ModifyBlock(float x, float y, float z, int id);
 
-    void PlaceBlock(float x, float y, float z, std::shared_ptr<Block>b);
+    void PlaceBlock(float x, float y, float z, std::shared_ptr<Block> b);
 
     void RenderSubChunk(std::shared_ptr<subChunk> c);
     void RenderSubChunks();
@@ -112,7 +113,7 @@ public:
     void SetShadowBuffer();
 
     void Init();
-    void Destroy();
+    void Destroy() override;
 
     void Unload();
 
