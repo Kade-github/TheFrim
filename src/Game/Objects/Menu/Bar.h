@@ -12,6 +12,7 @@ public:
     bool selected = false;
 
     Bar(glm::vec3 _pos, std::string text);
+    ~Bar();
 
     void SetText(std::string text);
 

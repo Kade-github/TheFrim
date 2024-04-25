@@ -23,3 +23,7 @@ void Bar::Draw()
 	label->Draw();
     draws = { draws[0], label->draws[0]};
 }
+
+Bar::~Bar() {
+    delete label;
+}

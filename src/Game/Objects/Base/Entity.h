@@ -31,6 +31,7 @@ public:
 	float pitch = 0;
 
 	Entity(glm::vec3 pos);
+    ~Entity();
 
 	void Footstep();
 

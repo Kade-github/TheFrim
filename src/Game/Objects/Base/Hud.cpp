@@ -334,6 +334,8 @@ Hud::~Hud()
 	}
 
 	armor.clear();
+
+    delete hand;
 }
 
 void Hud::Draw()

@@ -242,3 +242,15 @@ void Worlds::OnScroll(double x, double y)
 
 	SetScroll();
 }
+
+void Worlds::Destroy() {
+    for (auto w : worldObjects)
+    {
+        c2d->RemoveObject(w);
+        delete w;
+    }
+
+    worldObjects.clear();
+
+    Scene::Destroy();
+}

@@ -42,6 +42,8 @@ public:
 	void Draw() override;
 	void MouseClick(int button, glm::vec2 mPos) override;
 	void OnScroll(double x, double y) override;
+
+    void Destroy() override;
 };
 
 

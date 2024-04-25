@@ -34,3 +34,8 @@ void InputBar::RemoveText()
 	if (text.size() > 0)
 		text.pop_back();
 }
+
+InputBar::~InputBar()
+{
+    delete _text;
+}

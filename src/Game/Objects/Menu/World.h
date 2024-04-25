@@ -19,16 +19,7 @@ class World : public Sprite2D
 public:
 	World(glm::vec3 _pos);
 
-	~World()
-	{
-		delete label_name;
-		delete label_seed;
-
-		delete selectWorld;
-		delete deleteWorld;
-
-		delete worldThumbnail;
-	}
+	~World();
 
 	void SetName(std::string _name);
 	void SetSeed(std::string _seed);

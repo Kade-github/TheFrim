@@ -15,6 +15,7 @@ public:
 	int maxChars = 26;
 
 	InputBar(glm::vec3 _pos);
+    ~InputBar();
 
 	void Draw() override;
 

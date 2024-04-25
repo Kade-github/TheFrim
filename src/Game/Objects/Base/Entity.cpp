@@ -476,3 +476,7 @@ void Entity::Draw()
 	if (drawShadow)
 		shadow->Draw();
 }
+
+Entity::~Entity() {
+    delete shadow;
+}

@@ -73,3 +73,14 @@ void World::Draw()
 	draws.push_back(deleteWorld->draws[0]);
 	draws.push_back(deleteWorld->draws[1]);
 }
+
+World::~World()
+{
+    delete label_name;
+    delete label_seed;
+
+    delete selectWorld;
+    delete deleteWorld;
+
+    delete worldThumbnail;
+}
