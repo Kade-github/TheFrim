@@ -475,11 +475,13 @@ void Gameplay::UpdateChunks()
 	if (Settings::instance->fogDistance >= 2.0)
 		fog = 10000;
 
+	float fovModifier = Settings::instance->fov / 75.0f;
+
 	for (Chunk* c : allChunks)
 	{
-		glm::vec3 fakePos = glm::vec3(c->position.x, player->position.y, c->position.z);
+		glm::vec3 fakePosC = glm::vec3(c->position.x, 0, c->position.z);
 
-		float distance = glm::distance(player->position, fakePos);
+		float distance = glm::distance(fakePos, fakePosC);
 
 		if (distance < camera->cameraFar)
 		{
@@ -495,9 +497,9 @@ void Gameplay::UpdateChunks()
 				return;
 			}
 
-			float angle = camera->YawAngleTo(fakePos);
+			float angle = camera->YawAngleTo(fakePosC);
 
-			if ((angle <= 220 || distance <= 32) && distance <= fog + 32)
+			if ((angle <= (180 * fovModifier) || distance <= 32) && distance <= fog + 32)
 			{
 				if (!c->isRendered || c->pleaseRender)
 				{
@@ -575,7 +577,7 @@ void Gameplay::KeyPress(int key)
 	if (key == GLFW_KEY_F11)
 	{
 		Camera* camera = Game::instance->GetCamera();
-		player->Launch(camera->cameraFront, 10.0f);
+		player->Launch(camera->position - camera->cameraFront, 10.0f);
 	}
 
 	if (key == GLFW_KEY_F12)

@@ -166,6 +166,8 @@ void WorldManager::CheckGeneratedRegions()
 
 WorldManager::~WorldManager()
 {
+	_generatedRegions.clear();
+	regions.clear();
 	instance = nullptr;
 }
 

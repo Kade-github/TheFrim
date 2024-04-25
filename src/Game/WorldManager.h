@@ -27,6 +27,11 @@ public:
 
 	Region() = default;
 
+	~Region()
+	{
+		chunks.clear();
+	}
+
 	Data::Chunk GetChunkData(int x, int z)
 	{
 		return data.getChunk(x, z);

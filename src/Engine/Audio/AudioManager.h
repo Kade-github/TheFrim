@@ -30,6 +30,11 @@ public:
 	float length = 0.0f;
 	float pitch = 1.0f;
 
+	~Channel()
+	{
+		Free();
+	}
+
 	Channel(std::string path, std::string _name, bool autoFree = false) {
 		_path = path;
 		name = _name;
@@ -250,9 +255,6 @@ public:
 
 	~AudioManager()
 	{
-		for (int i = 0; i < channels.size(); i++)
-			channels[i].Free();
-
 		channels.clear();
 
 		BASS_Free();
@@ -285,7 +287,6 @@ public:
 					channels.erase(channels.begin() + i);
 					break;
 				}
-				channels[i].Free();
 				channels.erase(channels.begin() + i);
 				break;
 			}

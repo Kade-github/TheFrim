@@ -1101,29 +1101,24 @@ void Chunk::UpdateChunk(int tick)
 		modified = false;
 	}
 
-	if (wasModified || keepUpdating)
+	for (int i = 0; i < subChunks.size(); i++)
 	{
-		if (keepUpdating)
-			keepUpdating = false;
-		for (int i = 0; i < subChunks.size(); i++)
+		std::shared_ptr<subChunk>sbc = subChunks[i];
+
+		if (sbc == nullptr)
+			continue;
+
+		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
-			std::shared_ptr<subChunk>sbc = subChunks[i];
-
-			if (sbc == nullptr)
-				continue;
-
-			for (int x = 0; x < CHUNK_SIZE; x++)
+			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				for (int z = 0; z < CHUNK_SIZE; z++)
-				{
-					Block* b = sbc->blocks[x][z];
+				Block* b = sbc->blocks[x][z];
 
-					if (b == nullptr)
-						continue;
+				if (b == nullptr)
+					continue;
 
-					if (!b->Update(tick))
-						keepUpdating = true;
-				}
+				if (!b->Update(tick))
+					keepUpdating = true;
 			}
 		}
 	}
