@@ -56,13 +56,13 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(fov);
 
-	float renderDistancePerc = Settings::instance->renderDistance / 1.0f;
+	float renderDistancePerc = Settings::instance->renderDistance / 2.0f;
 
 	if (renderDistancePerc < 0.1f)
 		renderDistancePerc = 0.1f;
 
-	if (renderDistancePerc > 2.0f)
-		renderDistancePerc = 2.0f;
+	if (renderDistancePerc > 1.0f)
+		renderDistancePerc = 1.0f;
 
 	renderDistance = new DragBar(glm::vec3(0, 0, 0), "Render Distance", renderDistancePerc);
 
@@ -79,8 +79,8 @@ void SettingsMenu::Create()
 	if (fogDistancePerc < 0.1f)
 		fogDistancePerc = 0.1f;
 
-	if (fogDistancePerc > 2.0f)
-		fogDistancePerc = 2.0f;
+	if (fogDistancePerc > 1.0f)
+		fogDistancePerc = 1.0f;
 
 	fogDistance = new DragBar(glm::vec3(0, 0, 0), "Fog Distance", fogDistancePerc);
 
@@ -122,10 +122,6 @@ void SettingsMenu::Draw()
 	else
 		back->selected = false;
 
-	Settings::instance->fov = fov->value * 140;
-	Settings::instance->renderDistance = renderDistance->value * 2.0f;
-	Settings::instance->fogDistance = fogDistance->value * 1.2f;
-
 	Scene::Draw();
 }
 
@@ -161,4 +157,15 @@ void SettingsMenu::Resize(float _w, float _h)
 {
 	if (c2d != nullptr)
 		c2d->Resize();
+}
+
+void SettingsMenu::Destroy()
+{
+	Settings::instance->fov = fov->value * 140;
+	Settings::instance->renderDistance = renderDistance->value * 2.0f;
+	Settings::instance->fogDistance = fogDistance->value * 2.0f;
+
+
+	Settings::instance->Save();
+	Scene::Destroy();
 }

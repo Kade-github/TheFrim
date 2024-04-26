@@ -382,7 +382,10 @@ void Gameplay::UpdateChunks()
 				{
 					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 					toLoadedRegion.push_back(pos);
-					wm->LoadRegion(pos.x, pos.y);
+					loadPool.detach_task([this, pos]()
+						{
+							wm->LoadRegion(pos.x, pos.y);
+						});
 
 					// Queue load for edge chunks
 
@@ -403,7 +406,11 @@ void Gameplay::UpdateChunks()
 				{
 					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 					toLoadedRegion.push_back(pos);
-					wm->LoadRegion(pos.x, pos.y);
+					loadPool.detach_task([this, pos]()
+						{
+							wm->LoadRegion(pos.x, pos.y);
+						});
+
 
 					// Queue load for edge chunks
 
@@ -424,7 +431,10 @@ void Gameplay::UpdateChunks()
 				{
 					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 					toLoadedRegion.push_back(pos);
-					wm->LoadRegion(pos.x, pos.y);
+					loadPool.detach_task([this, pos]()
+						{
+							wm->LoadRegion(pos.x, pos.y);
+						});
 
 					// Queue load for edge chunks
 
@@ -445,7 +455,10 @@ void Gameplay::UpdateChunks()
 				{
 					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
 					toLoadedRegion.push_back(pos);
-					wm->LoadRegion(pos.x, pos.y);
+					loadPool.detach_task([this, pos]()
+						{
+							wm->LoadRegion(pos.x, pos.y);
+						});
 
 					// Queue load for edge chunks
 
@@ -479,8 +492,6 @@ void Gameplay::UpdateChunks()
 	if (Settings::instance->fogDistance >= 2.0)
 		fog = 10000;
 
-	float fovModifier = Settings::instance->fov / 75.0f;
-
 	for (Chunk* c : allChunks)
 	{
 		glm::vec3 fakePosC = glm::vec3(c->position.x, 0, c->position.z);
@@ -503,7 +514,7 @@ void Gameplay::UpdateChunks()
 
 			float angle = camera->YawAngleTo(fakePosC);
 
-			if ((angle <= (180 * fovModifier) || distance <= 32) && distance <= fog + 32)
+			if ((angle <= 260 || distance <= 32) && distance <= fog + 32)
 			{
 				if (!c->isRendered || c->pleaseRender)
 				{
