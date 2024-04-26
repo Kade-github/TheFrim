@@ -771,6 +771,7 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 		source = std::string(dataOne.value) == "true";
 
 		block = new Water(position + glm::vec3(x, y, z), std::stoi(dataTwo.value), source);
+		block->data = data;
 		break;
 	case CRAFTINGTABLE:
 		block = new CraftingTable(position + glm::vec3(x, y, z));
@@ -838,14 +839,17 @@ void Chunk::DestroySubChunk(std::shared_ptr<subChunk>c)
 
 void Chunk::DestroySubChunks()
 {
+	chunkMutex.lock();
 	for (int i = CHUNK_HEIGHT; i > -1; i--)
 		DestroySubChunk(i);
 
 	subChunks.clear();
+	chunkMutex.unlock();
 }
 
 void Chunk::CreateSubChunks()
 {
+	chunkMutex.lock();
 	subChunks.clear();
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
@@ -854,6 +858,8 @@ void Chunk::CreateSubChunks()
 		if (sbc != nullptr)
 			subChunks.push_back(sbc);
 	}
+
+	chunkMutex.unlock();
 }
 
 void Chunk::SetBuffer()
@@ -1078,24 +1084,35 @@ void Chunk::UpdateChunk(int tick)
 		modified = false;
 	}
 
-	for (int i = 0; i < subChunks.size(); i++)
+	// try lock
+	if (subChunks.size() == 0)
+		return;
+
+	// try lock
+
+	if (chunkMutex.try_lock())
 	{
-		std::shared_ptr<subChunk> sbc = subChunks[i];
-
-		if (sbc == nullptr)
-			continue;
-
-		for (int x = 0; x < CHUNK_SIZE; x++)
+		for (int i = 0; i < subChunks.size(); i++)
 		{
-			for (int z = 0; z < CHUNK_SIZE; z++)
+			std::shared_ptr<subChunk> sbc = subChunks[i];
+
+			if (sbc == nullptr)
+				continue;
+
+			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
-				Block* b = sbc->blocks[x][z];
+				for (int z = 0; z < CHUNK_SIZE; z++)
+				{
+					Block* b = sbc->blocks[x][z];
 
-				if (b == nullptr)
-					continue;
+					if (b == nullptr)
+						continue;
 
-				b->Update(tick);
+					b->Update(tick);
+				}
 			}
 		}
+
+		chunkMutex.unlock();
 	}
 }

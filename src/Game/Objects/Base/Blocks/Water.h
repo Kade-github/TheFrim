@@ -7,6 +7,10 @@ class Water : public Block
 {
 public:
 	Chunk* currentChunk;
+	Chunk* left;
+	Chunk* right;
+	Chunk* front;
+	Chunk* back;
 
 	int strength = 8;
 	bool source = false;

@@ -14,12 +14,15 @@ Water::Water(glm::vec3 _position, int strength, bool isSource) : Block(_position
 	this->strength = strength;
 	source = isSource;
 
-	data.tags.clear();
-
-	data.AddTag("strength", std::to_string(strength));
-	data.AddTag("source", isSource ? "true" : "false");
-
 	currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
+
+	if (currentChunk == nullptr)
+		return;
+
+	left = WorldManager::instance->GetChunk(currentChunk->position.x - CHUNK_SIZE - 1, currentChunk->position.z);
+	right = WorldManager::instance->GetChunk(currentChunk->position.x + CHUNK_SIZE - 1, currentChunk->position.z);
+	front = WorldManager::instance->GetChunk(currentChunk->position.x, currentChunk->position.z + CHUNK_SIZE - 1);
+	back = WorldManager::instance->GetChunk(currentChunk->position.x, currentChunk->position.z - CHUNK_SIZE - 1);
 }
 
 std::vector<glm::vec3> Water::GetFreeSpaces(glm::vec3 _pos)
@@ -69,13 +72,7 @@ std::vector<glm::vec3> Water::GetFreeSpaces(glm::vec3 _pos)
 
 bool Water::DoesBlockExist(glm::vec3 _pos)
 {
-	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
-
-	if (c == nullptr)
-		return true;
-
-	int type = c->GetBlock(_pos.x, _pos.y, _pos.z);
-	return type > 0 && type != WATER;
+	return true;
 }
 
 void Water::PlaceWater(glm::vec3 _pos, int _strength)
@@ -86,13 +83,10 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 	if (_strength <= 0)
 		return;
 
+	if (DoesBlockExist(_pos))
+		return;
+
 	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
-
-	if (c == nullptr)
-		return;
-
-	if (c->DoesBlockExist(_pos.x, _pos.y, _pos.z))
-		return;
 
 	Data::BlockData d = data;
 	d.tags.clear();

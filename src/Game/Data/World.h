@@ -44,8 +44,9 @@ namespace Data
 		MSGPACK_DEFINE_ARRAY(name, value);
 	};
 
-	struct BlockData
+	class BlockData
 	{
+	public:
 		uint8_t x = 0, y = 0, z = 0;
 		uint8_t type = 0;
 
@@ -89,8 +90,9 @@ namespace Data
 
 	};
 
-	struct DataChunk
+	class DataChunk
 	{
+	public:
 		std::vector<BlockData> blocks = {};
 
 		~DataChunk()

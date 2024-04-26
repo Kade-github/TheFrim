@@ -536,12 +536,13 @@ void Gameplay::UpdateChunks()
 			if (c->isLoaded)
 			{
 				UnloadChunk(c);
+				break;
 			}
 		}
 
 		// Chunk updates
 
-		if (c->isLoaded && !hud->GamePaused)
+		if (c->isLoaded && !hud->GamePaused && !c->isBeingLoaded)
 		{
 			chunksLoaded++;
 			c->UpdateChunk(ticks);

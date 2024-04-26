@@ -39,8 +39,8 @@ struct BlockFace {
 
 	~BlockFace()
 	{
-		vertices.clear();
-		indices.clear();
+		vertices = {};
+		indices = {};
 	}
 
 	bool operator==(const BlockFace& other) const

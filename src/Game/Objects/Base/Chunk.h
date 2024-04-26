@@ -19,6 +19,7 @@ public:
 
 class Chunk : public GameObject
 {
+    std::mutex chunkMutex;
     unsigned int VAO, VBO, EBO;
 
     unsigned int TRANSPARENTVAO, TRANSPARENTVBO, TRANSPARENTEBO;

@@ -50,11 +50,6 @@ public:
 		_file << log << std::endl;
 
 		_file.flush();
-
-		logs.push_back(log);
-
-		if (logs.size() > 30)
-			logs.erase(logs.begin());
 	}
 
 };

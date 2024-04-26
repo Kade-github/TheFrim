@@ -295,35 +295,50 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			if (rY > CHUNK_HEIGHT - 1)
 				rY = CHUNK_HEIGHT - 1;
 
+			bool isCave = false;
+
 			for (int _y = rY; _y > -1; _y--)
 			{
-				if (_y == rY) // grass or sand
+				// check if we're a cave
+
+				const double caveNoise = perlin.normalizedOctave3D(worldX * scale, _y * scale, worldZ * scale, 2, 0.3);
+
+				if (caveNoise < 0.5)
 				{
-					if (rY <= staticWaterLevel)
-						chunk.bChunk.blocks[_x][_z][_y] = SAND;
-					else
-						chunk.bChunk.blocks[_x][_z][_y] = GRASS;
+
+					if (_y == rY) // grass or sand
+					{
+						if (rY <= staticWaterLevel)
+							chunk.bChunk.blocks[_x][_z][_y] = SAND;
+						else
+							chunk.bChunk.blocks[_x][_z][_y] = GRASS;
+					}
+					else if (_y > rY - 5) // dirt or sand
+					{
+						if (rY <= staticWaterLevel)
+							chunk.bChunk.blocks[_x][_z][_y] = SAND;
+						else
+							chunk.bChunk.blocks[_x][_z][_y] = DIRT;
+					}
+					else // stone
+						chunk.bChunk.blocks[_x][_z][_y] = STONE;
 				}
-				else if (_y > rY - 5) // dirt or sand
+				else
 				{
-					if (rY <= staticWaterLevel)
-						chunk.bChunk.blocks[_x][_z][_y] = SAND;
-					else
-						chunk.bChunk.blocks[_x][_z][_y] = DIRT;
+					isCave = true;
+					chunk.bChunk.blocks[_x][_z][_y] = 0;
 				}
-				else // stone
-					chunk.bChunk.blocks[_x][_z][_y] = STONE;
 
 				if (_y == 0)
 					chunk.bChunk.blocks[_x][_z][_y] = BEDROCK;
 			}
 
-			if (rY < staticWaterLevel)
+			if (rY < staticWaterLevel && !isCave)
 			{
 				for (int _y = staticWaterLevel; _y > rY; _y--)
 				{
 					if (chunk.bChunk.blocks[_x][_z][_y] != 0)
-						break;
+						continue;
 
 					chunk.bChunk.blocks[_x][_z][_y] = WATER;
 				}
