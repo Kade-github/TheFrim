@@ -206,37 +206,28 @@ void Gameplay::Draw()
 
 	// Draw chunks (regular)
 
-	for (Region& r : wm->regions)
+	for (Chunk* c : allChunks)
 	{
-		for (Chunk* c : r.chunks)
-		{
-			if (c->isRendered)
-				c->DrawRegular();
-		}
+		if (c->isRendered)
+			c->DrawRegular();
 	}
 
 	// Draw chunks (shadow)
 
-	for (Region& r : wm->regions)
+	for (Chunk* c : allChunks)
 	{
-		for (Chunk* c : r.chunks)
-		{
-			if (c->isRendered)
-				c->DrawShadows();
-		}
+		if (c->isRendered)
+			c->DrawShadows();
 	}
 
 	Scene::Draw();
 
 	// Draw chunks (transparent)
 
-	for (Region& r : wm->regions)
+	for (Chunk* c : allChunks)
 	{
-		for (Chunk* c : r.chunks)
-		{
-			if (c->isRendered)
-				c->DrawTransparent();
-		}
+		if (c->isRendered)
+			c->DrawTransparent();
 	}
 
 	player->Draw();
@@ -313,14 +304,8 @@ void Gameplay::UpdateChunks()
 {
 	Camera* camera = Game::instance->GetCamera();
 
-	wm->CheckGeneratedRegions();
-
 	static std::vector<glm::vec2> toLoadedRegion = {};
 
-	std::vector<Chunk*> allChunks;
-
-	if (!hud->GamePaused)
-		ticks++;
 
 	regionsLoaded = 0;
 
@@ -328,14 +313,31 @@ void Gameplay::UpdateChunks()
 
 	float regionSize = (CHUNK_SIZE * REGION_SIZE);
 
-	for (Region& r : wm->regions)
+	int regionsSize = 0;
+
+	if (wm->generateMutex.try_lock())
 	{
+		if (!hud->GamePaused)
+			ticks++;
+
+		regionsSize = wm->regions.size();
+
+		allChunks.clear();
+
+		wm->CheckGeneratedRegions();
+		wm->generateMutex.unlock();
+	}
+
+
+	for (int i = 0; i < regionsSize; i++)
+	{
+		wm->generateMutex.lock();
+		Region& r = wm->regions[i];
+		wm->generateMutex.unlock();
 		if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)) != toLoadedRegion.end())
 		{
 			toLoadedRegion.erase(std::remove(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)), toLoadedRegion.end());
 		}
-
-		allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
 
 		float distanceToCenter = glm::distance(fakePos, glm::vec3(r.startX + (regionSize / 2), 0, r.startZ + (regionSize / 2)));
 
@@ -364,6 +366,8 @@ void Gameplay::UpdateChunks()
 
 			break;
 		}
+
+		allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
 
 		r.loaded = true;
 		regionsLoaded++;
@@ -471,6 +475,7 @@ void Gameplay::UpdateChunks()
 		}
 	}
 
+
 	// sort chunks by distance
 
 	std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
@@ -553,6 +558,7 @@ void Gameplay::UpdateChunks()
 			chunksRendered++;
 		}
 	}
+
 }
 
 void Gameplay::UnloadChunk(Chunk* c)

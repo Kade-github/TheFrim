@@ -3,6 +3,7 @@
 
 #include <glm/glm.hpp>
 #include <vector>
+#include "Objects/Base/Chunk.h"
 
 struct Light {
 	glm::vec3 position;
@@ -57,7 +58,7 @@ public:
 		}
 	}
 
-	int GetLightLevel(glm::vec3 pos);
+	int GetLightLevel(Chunk* c, glm::vec3 pos);
 
 };
 

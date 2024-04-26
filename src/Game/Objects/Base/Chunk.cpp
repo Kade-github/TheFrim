@@ -609,7 +609,7 @@ void Chunk::RenderSubChunkShadow(std::shared_ptr<subChunk>sbc)
 			{
 				// check light
 
-				int light = LightingManager::GetInstance()->GetLightLevel(block->position + f.vertices[0].normal);
+				int light = LightingManager::GetInstance()->GetLightLevel(this, block->position + f.vertices[0].normal);
 
 				if (light < 10)
 				{

@@ -162,11 +162,9 @@ void LightingManager::RemoveLight(glm::vec3 pos)
 
 	RefreshShadows();
 }
-int LightingManager::GetLightLevel(glm::vec3 pos)
+int LightingManager::GetLightLevel(Chunk* c, glm::vec3 pos)
 {
 	int level = sun.strength;
-
-	Chunk* c = WorldManager::instance->GetChunk(pos.x, pos.z);
 
 	if (c == nullptr)
 		return 0;

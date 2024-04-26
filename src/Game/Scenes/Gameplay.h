@@ -34,6 +34,8 @@ public:
 
 	BS::thread_pool loadPool;
 
+	std::vector<Chunk*> allChunks;
+
 	Gameplay(WorldManager* _wm);
 
 	void Create() override;

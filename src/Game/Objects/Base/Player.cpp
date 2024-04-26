@@ -285,18 +285,26 @@ void Player::Draw()
 	else if (!_inInventory && !Hud::GamePaused)
 	{
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
-			camera->position += camera->cameraFront * 0.05f;
+			position += camera->cameraFront * 0.25f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
-			camera->position -= camera->cameraFront * 0.05f;
+			position -= camera->cameraFront * 0.25f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
-			camera->position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
+			position -= glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.25f;
 
 		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
-			camera->position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.05f;
+			position += glm::normalize(glm::cross(camera->cameraFront, camera->cameraUp)) * 0.25f;
+
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS)
+			position.y += 0.25f;
+
+		if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS)
+			position.y -= 0.25f;
 
 		shadow->Draw();
+
+		camera->position = position;
 	}
 
 	if (!freeCam)

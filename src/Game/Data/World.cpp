@@ -295,15 +295,18 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			if (rY > CHUNK_HEIGHT - 1)
 				rY = CHUNK_HEIGHT - 1;
 
-			bool isCave = false;
-
 			for (int _y = rY; _y > -1; _y--)
 			{
 				// check if we're a cave
 
-				const double caveNoise = perlin.normalizedOctave3D(worldX * scale, _y * scale, worldZ * scale, 2, 0.3);
+				double caveNoise = perlin.normalizedOctave3D(worldX * scale, _y * scale, worldZ * scale, 6, 1.0);
 
-				if (caveNoise < 0.5)
+
+				if (caveNoise <= 0.6)
+					caveNoise = 0;
+
+
+				if (caveNoise <= 0)
 				{
 
 					if (_y == rY) // grass or sand
@@ -325,7 +328,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 				}
 				else
 				{
-					isCave = true;
+					Game::instance->log->Write("Cave block at " + std::to_string(worldX) + " " + std::to_string(_y) + " " + std::to_string(worldZ));
 					chunk.bChunk.blocks[_x][_z][_y] = 0;
 				}
 
@@ -333,7 +336,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 					chunk.bChunk.blocks[_x][_z][_y] = BEDROCK;
 			}
 
-			if (rY < staticWaterLevel && !isCave)
+			if (rY < staticWaterLevel)
 			{
 				for (int _y = staticWaterLevel; _y > rY; _y--)
 				{
