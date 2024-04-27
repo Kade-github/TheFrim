@@ -258,10 +258,17 @@ void Data::World::saveRegion(Region r)
 
 void Data::Chunk::placeStone(int x, int y, int z, float multiplier)
 {
-	double coalNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 2, 0.5)) * multiplier);
-	double ironNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.02, z * 0.002, 2, 0.5)) * multiplier);
-	double diamondNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 2, 0.5)) * multiplier);
-	double goldNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 2, 0.5)) * multiplier);
+	float m = multiplier;
+
+	if (y <= 25)
+		m *= 1.5f;
+	else if (y <= 40)
+		m *= 1.25;
+
+	double coalNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
+	double ironNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.02, z * 0.002, 10, 0.5)) * m);
+	double diamondNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
+	double goldNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
 
 	if (coalNoise >= 0.4 && amountOfBlockInRadius(x, y, z, COAL_ORE, 16) < 8)
 	{
@@ -269,7 +276,7 @@ void Data::Chunk::placeStone(int x, int y, int z, float multiplier)
 	}
 	else if (ironNoise >= 0.5 && amountOfBlockInRadius(x, y, z, IRON_ORE, 16) < 4)
 		placeBlock(x, y, z, IRON_ORE);
-	else if (diamondNoise >= 0.7 && y <= 40 && amountOfBlockInRadius(x, y, z, DIAMOND_ORE, 24) < 4)
+	else if (diamondNoise >= 0.5 && y <= 40 && amountOfBlockInRadius(x, y, z, DIAMOND_ORE, 24) < 4)
 		placeBlock(x, y, z, DIAMOND_ORE);
 	else if (goldNoise >= 0.5 && y <= 50 && amountOfBlockInRadius(x, y, z, GOLD_ORE, 16) < 4)
 		placeBlock(x, y, z, GOLD_ORE);
@@ -352,8 +359,9 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 				}
 				else
 				{
-					for (int i = 0; i < 6; i++)
-						chunk.placeStone(_x, rY - i, _z);
+					for (int i = 0; i < 3; i++)
+						chunk.placeStone(_x, (rY - 3) - i, _z);
+
 					chunk.bChunk.blocks[_x][_z][_y] = 0;
 					inCave = true;
 				}
