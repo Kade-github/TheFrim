@@ -45,6 +45,7 @@ public:
 	std::vector<Sprite2D*> hotbar;
 	std::vector<ItemUI*> hotbarItems;
 	std::vector<Sprite2D*> hearts;
+	std::vector<Sprite2D*> air;
 	std::vector<Sprite2D*> armor;
 
 	void InventoryShown(bool s);
@@ -56,6 +57,8 @@ public:
 
 	void UpdateHotbar();
 	void UpdateHearts();
+	void ClearAir();
+	void UpdateAir();
 	void UpdateArmor();
 
 	Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d);

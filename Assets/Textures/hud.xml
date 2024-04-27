@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="hud.png" width="384" height="256" scale="1" format="RGBA8888">
-  <sprite n="hud_armor" x="0" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="hud_heart" x="128" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="hud_heart_empty" x="0" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="hud_heart_half" x="128" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="hud_slot" x="256" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="hud_slot_selected" x="256" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+<TextureAtlas imagePath="hud.png" width="384" height="384" scale="1" format="RGBA8888">
+  <sprite n="hud_air_empty" x="0" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="hud_air_full" x="128" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="hud_armor" x="0" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="hud_heart" x="128" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="hud_heart_empty" x="256" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="hud_heart_half" x="256" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="hud_slot" x="0" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="hud_slot_selected" x="128" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
 </TextureAtlas>

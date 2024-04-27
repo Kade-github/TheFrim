@@ -174,6 +174,45 @@ void Hud::UpdateHearts()
 	_heartUpdate = glfwGetTime();
 }
 
+void Hud::ClearAir()
+{
+	for (auto h : air)
+	{
+		c2d->RemoveObject(h);
+		delete h;
+	}
+
+	air.clear();
+}
+
+void Hud::UpdateAir()
+{
+	ClearAir();
+
+	float airProgress = player->playerData.air;
+
+	for (int i = 0; i < (int)(PLAYER_MAX_AIR); i++)
+	{
+		Sprite2D* s = new Sprite2D(h, glm::vec3(0, 0, 0));
+
+		s->width = 72;
+		s->height = 72;
+
+		s->position = glm::vec3(((c2d->_w - 162) / 2) - (i * (s->width / 2)), s->height + 144, 0);
+
+		float rI = 9.0f - (float)i;
+
+		if (airProgress <= rI) // empty heart
+			s->src = h->spriteSheet.GetUVFlip("hud_air_empty");
+		else // full heart
+			s->src = h->spriteSheet.GetUVFlip("hud_air_full");
+
+		s->order = 1;
+		air.push_back(s);
+		c2d->AddObject(s);
+	}
+}
+
 void Hud::UpdateArmor()
 {
 }
@@ -334,6 +373,8 @@ Hud::~Hud()
 		c2d->RemoveObject(h);
 		delete h;
 	}
+
+	ClearAir();
 
 	armor.clear();
 

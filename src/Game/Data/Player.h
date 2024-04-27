@@ -7,6 +7,7 @@
 #include <msgpack.hpp>
 
 #define PLAYER_MAX_HEALTH 10.0f
+#define PLAYER_MAX_AIR 10.0f
 
 #define PLAYER_INVENTORY_WIDTH 9
 #define PLAYER_INVENTORY_HEIGHT 4
@@ -333,6 +334,7 @@ namespace Data
 		uint8_t selectedSlot = 0;
 
 		float health = PLAYER_MAX_HEALTH;
+        float air = PLAYER_MAX_AIR;
 
 		InventoryItem inventory[PLAYER_INVENTORY_WIDTH][PLAYER_INVENTORY_HEIGHT] = {};
 

@@ -307,6 +307,56 @@ void Player::Draw()
 		camera->position = position;
 	}
 
+	if (isOnGround && jumpedFrom > -1)
+	{
+		float distance = jumpedFrom - position.y;
+
+		float fallDamage = (distance - 2) / 2;
+
+		// round to nearest half or whole
+
+		fallDamage = floor((fallDamage * 2) + 0.5f) / 2;
+
+		if (distance < 4)
+			fallDamage = 0;
+
+		if (fallDamage > 0 && !inWater)
+			Hurt(fallDamage);
+
+		jumpedFrom = -1;
+	}
+	else if (!isOnGround && jumpedFrom <= -1)
+	{
+		jumpedFrom = position.y;
+	}
+
+	if (topWater)
+		playerData.air -= Game::instance->deltaTime;
+	else
+		playerData.air += Game::instance->deltaTime;
+
+	if (playerData.air <= 0)
+	{
+		playerData.air = 2;
+		Hurt(0.5f);
+	}
+
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	if (playerData.air < 10.0f)
+	{
+		if ((int)playerData.air != lastAirUpdate)
+		{
+			lastAirUpdate = (int)playerData.air;
+			scene->hud->UpdateAir();
+		}
+	}
+	else
+	{
+		if (scene->hud->air.size() != 0)
+			scene->hud->ClearAir();
+	}
+
 	if (!freeCam)
 	{
 		glm::vec3 storedPos = position;

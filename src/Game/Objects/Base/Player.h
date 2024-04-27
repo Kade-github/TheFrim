@@ -16,6 +16,9 @@ class Player : public Entity
 	float headBop = 0;
 	float _shake = 0;
 
+	float jumpedFrom = -1;
+	int lastAirUpdate = 10;
+
 	BlockFace selectedFace;
 
 	void DrawBlockBreak(BlockFace f);
