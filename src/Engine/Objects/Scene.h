@@ -34,6 +34,7 @@ public:
 
 	std::vector<GameObject*> objects = {};
 	std::vector<GameObject*> delayedObjects = {};
+	std::vector<GameObject*> delayedRemoveObjects = {};
 
 
 	virtual void MouseMove(float x, float y) {};
@@ -49,6 +50,12 @@ public:
 	{
 		object->delayed = true;
 		delayedObjects.push_back(object);
+	}
+
+	void DelayedRemoveObject(GameObject* object)
+	{
+		object->delayed = true;
+		delayedRemoveObjects.push_back(object);
 	}
 
 	void AddObject(GameObject* object)
@@ -103,6 +110,17 @@ public:
 		}
 
 		delayedObjects.clear();
+
+		for (int i = 0; i < delayedRemoveObjects.size(); i++)
+		{
+			if (delayedRemoveObjects[i] != nullptr)
+			{
+				delayedRemoveObjects[i]->delayed = false;
+				RemoveObject(delayedRemoveObjects[i]);
+			}
+		}
+
+		delayedRemoveObjects.clear();
 	}
 };
 

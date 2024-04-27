@@ -479,7 +479,9 @@ void Player::Draw()
 						scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5, 0.5, 0.5), item);
 					}
 
+					c->chunkMutex.lock();
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
+					c->chunkMutex.unlock();
 
 					selectedBlock = nullptr;
 				}
@@ -567,7 +569,6 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 				if (item.type != Data::ITEM_NULL && item.placeable)
 				{
 					Block* b = c->CreateBlock(x, y, z, item.type, Data::BlockData());
-
 					c->PlaceBlock(x, y, z, b);
 
 					if (item.count == 1)

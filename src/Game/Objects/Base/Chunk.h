@@ -19,7 +19,6 @@ public:
 
 class Chunk : public GameObject
 {
-    std::mutex chunkMutex;
     unsigned int VAO, VBO, EBO;
 
     unsigned int TRANSPARENTVAO, TRANSPARENTVBO, TRANSPARENTEBO;
@@ -44,6 +43,7 @@ class Chunk : public GameObject
     int shadowSize = 0;
     int size = 0;
 public:
+    std::mutex chunkMutex;
     bool inited = false;
     bool isBeingLoaded = false;
     bool isShadowLoaded = false;

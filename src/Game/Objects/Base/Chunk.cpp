@@ -326,8 +326,6 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	if (w.z > CHUNK_SIZE - 1)
 		return;
 
-	chunkMutex.lock();
-
 	if (id <= 0) // destroyed block
 	{
 		myData.removeBlockData(w.x, w.y, w.z);
@@ -335,8 +333,6 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	}
 	else
 		myData.placeBlock(w.x, w.y, w.z, id);
-
-	chunkMutex.unlock();
 
 	modified = true;
 

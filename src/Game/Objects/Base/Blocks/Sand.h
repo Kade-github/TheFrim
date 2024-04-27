@@ -2,16 +2,15 @@
 #define _SANDBLOCK_H
 
 #include "../Block.h"
+#include "../Chunk.h"
 
 class Sand : public Block
 {
 public:
-	Sand(glm::vec3 _position) : Block(_position, BlockType::SAND) {
-		position = _position;
+	bool falling = false;
+	Chunk* currentChunk;
 
-		soundType = SoundType::S_SAND;
-		toughness = 1.4;
-	}
+	Sand(glm::vec3 _position);
 
 	BlockFace CreateFrontFace() override
 	{
@@ -76,6 +75,8 @@ public:
 
 		return BlockFace(bottomVertices, { 0, 1, 3, 1, 2, 3 });
 	}
+
+	bool Update(int tick) override;
 };
 
 #endif
