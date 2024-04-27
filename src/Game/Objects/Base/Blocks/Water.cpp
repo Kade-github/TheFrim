@@ -15,56 +15,42 @@ Water::Water(glm::vec3 _position, int strength, bool isSource) : Block(_position
 	source = isSource;
 
 	currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
-
-	if (currentChunk == nullptr)
-		return;
-
-	left = WorldManager::instance->GetChunk(currentChunk->position.x - CHUNK_SIZE - 1, currentChunk->position.z);
-	right = WorldManager::instance->GetChunk(currentChunk->position.x + CHUNK_SIZE - 1, currentChunk->position.z);
-	front = WorldManager::instance->GetChunk(currentChunk->position.x, currentChunk->position.z + CHUNK_SIZE - 1);
-	back = WorldManager::instance->GetChunk(currentChunk->position.x, currentChunk->position.z - CHUNK_SIZE - 1);
 }
 
 std::vector<glm::vec3> Water::GetFreeSpaces(glm::vec3 _pos)
 {
 	std::vector<glm::vec3> freeSpaces = {};
 
-	if (source)
+	if (!DoesBlockExist(_pos + glm::vec3(0, -1, 0)))
 	{
-		if (!DoesBlockExist(_pos + glm::vec3(0, 0, 1)))
-			freeSpaces.push_back(_pos + glm::vec3(0, 0, 1));
-
-		if (!DoesBlockExist(_pos + glm::vec3(0, 0, -1)))
-			freeSpaces.push_back(_pos + glm::vec3(0, 0, -1));
-
-		if (!DoesBlockExist(_pos + glm::vec3(1, 0, 0)))
-			freeSpaces.push_back(_pos + glm::vec3(1, 0, 0));
-
-		if (!DoesBlockExist(_pos + glm::vec3(-1, 0, 0)))
-			freeSpaces.push_back(_pos + glm::vec3(-1, 0, 0));
-
-		if (!DoesBlockExist(_pos + glm::vec3(0, -1, 0)))
+		if (!lastWaterBlocked)
 			freeSpaces.push_back(_pos + glm::vec3(0, -1, 0));
 	}
-	else
+	else if (!lastWaterBlocked)
 	{
-		if (!DoesBlockExist(_pos + glm::vec3(0, -1, 0)))
+		if (!DoesBlockExist(_pos + glm::vec3(0, 0, 1)))
 		{
-			freeSpaces.push_back(_pos + glm::vec3(0, -1, 0));
-			return freeSpaces;
+			if (!lastWaterBlocked)
+				freeSpaces.push_back(_pos + glm::vec3(0, 0, 1));
 		}
 
-		if (!DoesBlockExist(_pos + glm::vec3(0, 0, 1)))
-			freeSpaces.push_back(_pos + glm::vec3(0, 0, 1));
-
-		if (!DoesBlockExist(_pos + glm::vec3(0, 0, -1)))
-			freeSpaces.push_back(_pos + glm::vec3(0, 0, -1));
-
 		if (!DoesBlockExist(_pos + glm::vec3(1, 0, 0)))
-			freeSpaces.push_back(_pos + glm::vec3(1, 0, 0));
+		{
+			if (!lastWaterBlocked)
+				freeSpaces.push_back(_pos + glm::vec3(1, 0, 0));
+		}
 
 		if (!DoesBlockExist(_pos + glm::vec3(-1, 0, 0)))
-			freeSpaces.push_back(_pos + glm::vec3(-1, 0, 0));
+		{
+			if (!lastWaterBlocked)
+				freeSpaces.push_back(_pos + glm::vec3(-1, 0, 0));
+		}
+
+		if (!DoesBlockExist(_pos + glm::vec3(0, 0, -1)))
+		{
+			if (!lastWaterBlocked)
+				freeSpaces.push_back(_pos + glm::vec3(0, 0, -1));
+		}
 	}
 
 	return freeSpaces;
@@ -72,10 +58,27 @@ std::vector<glm::vec3> Water::GetFreeSpaces(glm::vec3 _pos)
 
 bool Water::DoesBlockExist(glm::vec3 _pos)
 {
+	lastWaterBlocked = false;
+
+	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
+
+	if (c == nullptr)
+		return true;
+
+	glm::vec3 rPos = _pos - c->position;
+
+	int b = c->GetBlock(rPos.x, rPos.y, rPos.z);
+
+	if (b <= 0)
+		return false;
+
+	if (b == WATER)
+		lastWaterBlocked = true;
+
 	return true;
 }
 
-void Water::PlaceWater(glm::vec3 _pos, int _strength)
+void Water::PlaceWater(Chunk* c, glm::vec3 _pos, int _strength)
 {
 	if (_pos.y < position.y)
 		_strength += 2;
@@ -83,10 +86,8 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 	if (_strength <= 0)
 		return;
 
-	if (DoesBlockExist(_pos))
+	if (c == nullptr)
 		return;
-
-	Chunk* c = WorldManager::instance->GetChunk(_pos.x, _pos.z);
 
 	Data::BlockData d = data;
 	d.tags.clear();
@@ -102,8 +103,6 @@ void Water::PlaceWater(glm::vec3 _pos, int _strength)
 	b->strength = _strength;
 
 	b->data = d;
-
-	Game::instance->log->Write((source ? "[Source Block] [" : " [") + std::to_string(strength) + "] Placed water at " + std::to_string(_pos.x) + ", " + std::to_string(_pos.y) + ", " + std::to_string(_pos.z));
 
 	c->PlaceBlock(_pos.x, _pos.y, _pos.z, b);
 
@@ -124,7 +123,7 @@ bool Water::Update(int tick) // water functionality
 	{
 		Chunk* c = WorldManager::instance->GetChunk(freeSpace.x, freeSpace.z);
 
-		PlaceWater(freeSpace, strength - 1);
+		PlaceWater(c, freeSpace, strength - 1);
 	}
 
 	return true;

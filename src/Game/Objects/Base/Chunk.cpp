@@ -324,6 +324,8 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	if (w.z > CHUNK_SIZE - 1)
 		return;
 
+	chunkMutex.lock();
+
 	if (id <= 0) // destroyed block
 	{
 		myData.removeBlockData(w.x, w.y, w.z);
@@ -331,6 +333,8 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	}
 	else
 		myData.placeBlock(w.x, w.y, w.z, id);
+
+	chunkMutex.unlock();
 
 	modified = true;
 
@@ -359,6 +363,7 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 
 	myData.addBlockData(b->data, w.x, w.y, w.z);
 	myData.placeBlock(w.x, w.y, w.z, b->type);
+
 
 	modified = true;
 
@@ -503,6 +508,7 @@ void Chunk::RenderSubChunks()
 	transparentVertices.clear();
 	transparentIndices.clear();
 
+	chunkMutex.lock();
 	for (int i = 0; i < subChunks.size(); i++)
 	{
 		std::shared_ptr<subChunk>sbc = subChunks[i];
@@ -511,6 +517,7 @@ void Chunk::RenderSubChunks()
 
 		RenderSubChunk(sbc);
 	}
+	chunkMutex.unlock();
 }
 
 glm::vec3 Chunk::WorldToChunk(glm::vec3 pos)
@@ -647,7 +654,7 @@ void Chunk::RenderSubChunksShadow()
 {
 	shadowVertices.clear();
 	shadowIndices.clear();
-
+	chunkMutex.lock();
 	for (int i = 0; i < subChunks.size(); i++)
 	{
 		std::shared_ptr<subChunk> sbc = subChunks[i];
@@ -656,6 +663,7 @@ void Chunk::RenderSubChunksShadow()
 
 		RenderSubChunkShadow(sbc);
 	}
+	chunkMutex.unlock();
 }
 
 std::shared_ptr<subChunk>Chunk::CreateSubChunk(int y)
@@ -801,7 +809,7 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 		block = new Dirt(position + glm::vec3(x, y, z));
 		break;
 	}
-
+	block->chunkPosition = glm::vec3(x, y, z);
 	block->t = txp;
 
 	return block;
@@ -849,9 +857,9 @@ void Chunk::DestroySubChunks()
 
 void Chunk::CreateSubChunks()
 {
-	chunkMutex.lock();
-	subChunks.clear();
+	DestroySubChunks();
 
+	chunkMutex.lock();
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
 		std::shared_ptr<subChunk> sbc = CreateSubChunk(y);
@@ -1074,7 +1082,7 @@ void Chunk::DrawShadows()
 
 void Chunk::UpdateChunk(int tick)
 {
-	if (modified)
+	if (modified && tick % 4 == 0)
 	{
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
@@ -1084,11 +1092,8 @@ void Chunk::UpdateChunk(int tick)
 		modified = false;
 	}
 
-	// try lock
 	if (subChunks.size() == 0)
 		return;
-
-	// try lock
 
 	if (chunkMutex.try_lock())
 	{

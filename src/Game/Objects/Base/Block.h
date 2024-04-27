@@ -88,6 +88,7 @@ class Block
 public:
 	Data::BlockData data;
 	glm::vec3 position;
+	glm::vec3 chunkPosition;
 	BlockType type;
 
 	bool changedBlocks = false;

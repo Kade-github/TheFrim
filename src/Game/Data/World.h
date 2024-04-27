@@ -77,7 +77,7 @@ namespace Data
 
 		void SetTag(std::string name, std::string value)
 		{
-			for (DataTag t : tags)
+			for (DataTag& t : tags)
 			{
 				if (t.name == name)
 				{
@@ -128,13 +128,27 @@ namespace Data
 			bChunk.blocks[x][z][y] = 0;
 		}
 
+		void setBlockData(int x, int y, int z, BlockData b)
+		{
+			for (int i = 0; i < data.blocks.size(); i++)
+			{
+				if (data.blocks[i].x == x && data.blocks[i].y == y && data.blocks[i].z == z)
+				{
+					data.blocks[i] = b;
+					return;
+				}
+			}
+
+			addBlockData(b, x, y, z);
+		}
+
 		BlockData getBlockData(int x, int y, int z)
 		{
-			for (BlockData b : data.blocks)
+			for (int i = 0; i < data.blocks.size(); i++)
 			{
-				if (b.x == x && b.y == y && b.z == z)
+				if (data.blocks[i].x == x && data.blocks[i].y == y && data.blocks[i].z == z)
 				{
-					return b;
+					return data.blocks[i];
 				}
 			}
 
