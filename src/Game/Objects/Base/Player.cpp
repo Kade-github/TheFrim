@@ -279,8 +279,6 @@ void Player::Draw()
 			if (strafeVelocity < -sp)
 				strafeVelocity = -sp;
 		}
-
-		Entity::Draw(); // physics
 	}
 	else if (!_inInventory && !Hud::GamePaused)
 	{
@@ -330,31 +328,34 @@ void Player::Draw()
 		jumpedFrom = position.y;
 	}
 
-	if (topWater)
-		playerData.air -= Game::instance->deltaTime;
-	else
-		playerData.air += Game::instance->deltaTime;
-
-	if (playerData.air <= 0)
+	if (!Hud::GamePaused)
 	{
-		playerData.air = 2;
-		Hurt(0.5f);
-	}
+		if (topWater)
+			playerData.air -= Game::instance->deltaTime;
+		else
+			playerData.air += Game::instance->deltaTime;
 
-	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
-
-	if (playerData.air < 10.0f)
-	{
-		if ((int)playerData.air != lastAirUpdate)
+		if (playerData.air <= 0)
 		{
-			lastAirUpdate = (int)playerData.air;
-			scene->hud->UpdateAir();
+			playerData.air = 2;
+			Hurt(0.5f);
 		}
-	}
-	else
-	{
-		if (scene->hud->air.size() != 0)
-			scene->hud->ClearAir();
+
+		Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+		if (playerData.air < 10.0f)
+		{
+			if ((int)playerData.air != lastAirUpdate)
+			{
+				lastAirUpdate = (int)playerData.air;
+				scene->hud->UpdateAir();
+			}
+		}
+		else
+		{
+			if (scene->hud->air.size() != 0)
+				scene->hud->ClearAir();
+		}
 	}
 
 	if (!freeCam)
@@ -478,6 +479,9 @@ void Player::Draw()
 					break;
 			}
 
+			if (topWater)
+				toughness *= 0.5f;
+
 			selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * toughness;
 
 			if (selectedBlock->breakProgress >= 1)
@@ -559,9 +563,6 @@ void Player::Draw()
 				{
 					BlockFace f = faces[i];
 
-					for (int j = 0; j < f.vertices.size(); j++)
-						f.vertices[j].position += f.vertices[j].normal * 0.01f;
-
 					DrawBlockBreak(f);
 				}
 
@@ -573,6 +574,9 @@ void Player::Draw()
 			selectedBlock->breakProgress = 0;
 		}
 	}
+
+	if (!freeCam)
+		Entity::Draw(); // physics
 }
 
 void Player::MouseClick(int button, glm::vec2 mPos)
