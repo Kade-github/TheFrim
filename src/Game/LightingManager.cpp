@@ -47,7 +47,7 @@ void LightingManager::SunColor()
 
 	int playerY = gp->player->position.y;
 	Chunk* c = WorldManager::instance->GetChunk(gp->player->position.x, gp->player->position.z);
-	int highestBlock = c->GetHighestBlock(gp->player->position.x, gp->player->position.z);
+	int highestBlock = c->GetHighestBlock(gp->player->position.x, gp->player->position.z, true);
 
 	float angle = sun.angle;
 

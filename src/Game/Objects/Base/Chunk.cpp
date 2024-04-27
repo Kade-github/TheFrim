@@ -102,14 +102,16 @@ int Chunk::GetHighestBlock(float x, float z, bool water)
 
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
+		int data = myData.bChunk.blocks[(int)_x][(int)_z][y];
+
 		if (!water)
 		{
-			if (myData.bChunk.blocks[(int)_x][(int)_z][y] > 0)
+			if (data > 0)
 				return y;
 		}
 		else
 		{
-			if (myData.bChunk.blocks[(int)_x][(int)_z][y] > 0 && myData.bChunk.blocks[(int)_x][(int)_z][y] != WATER)
+			if (data > 0 && data != WATER && data != LEAVES)
 				return y;
 		}
 	}
