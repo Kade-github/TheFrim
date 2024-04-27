@@ -602,14 +602,14 @@ void Chunk::RenderSubChunkShadow(std::shared_ptr<subChunk>sbc)
 			if (block == nullptr)
 				continue;
 
-			if (block->transparent)
+			if (block->transparent || block->faces.size() == 0)
 				continue;
 
 			for (BlockFace f : block->faces)
 			{
 				// check light
 
-				int light = LightingManager::GetInstance()->GetLightLevel(this, block->position + f.vertices[0].normal);
+				int light = LightingManager::GetInstance()->GetLightLevel(block->position + f.vertices[0].normal);
 
 				if (light < 10)
 				{

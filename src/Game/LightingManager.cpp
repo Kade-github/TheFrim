@@ -36,9 +36,18 @@ bool IsLightBlocked(glm::vec3 start, glm::vec3 end)
 
 void LightingManager::SunColor()
 {
+	static float caveLerp = 0;
 	glm::vec3 peak = glm::vec3(0.64f, 0.7f, 0.7f);
 	glm::vec3 dawn = glm::vec3(0.42f, 0.43f, 0.56f);
 	glm::vec3 night = glm::vec3(0.05f, 0.06f, 0.09f);
+
+	glm::vec3 cave = glm::vec3(0.1f, 0.1f, 0.1f);
+
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+	int playerY = gp->player->position.y;
+	Chunk* c = WorldManager::instance->GetChunk(gp->player->position.x, gp->player->position.z);
+	int highestBlock = c->GetHighestBlock(gp->player->position.x, gp->player->position.z);
 
 	float angle = sun.angle;
 
@@ -99,6 +108,22 @@ void LightingManager::SunColor()
 			sun.strength = std::lerp(2, 5, p);
 		}
 	}
+
+	if (playerY < highestBlock)
+	{
+		float distance = std::abs((float)highestBlock - (float)playerY);
+		float mixProgress = distance / 10.0f;
+
+		if (mixProgress > 1)
+			mixProgress = 1;
+
+		if (caveLerp < 1)
+			caveLerp += Game::instance->deltaTime;
+
+		sun.color = glm::mix(sun.color, cave, std::lerp(0, mixProgress, caveLerp));
+	}
+	else if (caveLerp > 0)
+		caveLerp -= Game::instance->deltaTime;
 
 	glClearColor(sun.color.x, sun.color.y, sun.color.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -162,9 +187,11 @@ void LightingManager::RemoveLight(glm::vec3 pos)
 
 	RefreshShadows();
 }
-int LightingManager::GetLightLevel(Chunk* c, glm::vec3 pos)
+int LightingManager::GetLightLevel(glm::vec3 pos)
 {
 	int level = sun.strength;
+
+	Chunk* c = WorldManager::instance->GetChunk(pos.x, pos.z);
 
 	if (c == nullptr)
 		return 0;

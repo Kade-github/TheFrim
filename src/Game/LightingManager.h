@@ -58,7 +58,7 @@ public:
 		}
 	}
 
-	int GetLightLevel(Chunk* c, glm::vec3 pos);
+	int GetLightLevel(glm::vec3 pos);
 
 };
 

@@ -154,6 +154,7 @@ void WorldManager::CreateChunks(Region& r)
 
 void WorldManager::CheckGeneratedRegions()
 {
+	generateMutex.lock();
 	if (_generatedRegions.size() != 0)
 	{
 		for (Region r : _generatedRegions)
@@ -161,6 +162,7 @@ void WorldManager::CheckGeneratedRegions()
 
 		_generatedRegions.clear();
 	}
+	generateMutex.unlock();
 }
 
 WorldManager::~WorldManager()
@@ -338,12 +340,18 @@ Chunk* WorldManager::GetChunk(float x, float z)
 		return nullptr;
 
 
+	generateMutex.lock();
 
 	for (auto& c : r.chunks)
 	{
 		if (c->IsInChunk(x, z))
+		{
+			generateMutex.unlock();
 			return c;
+		}
 	}
+
+	generateMutex.unlock();
 
 	return nullptr;
 

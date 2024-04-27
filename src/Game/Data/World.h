@@ -161,6 +161,40 @@ namespace Data
 				}
 			}
 		}
+
+		int amountOfBlockInRadius(int x, int y, int z, int type, int radius)
+		{
+			int amount = 0;
+
+			int startY = y + radius;
+
+			if (startY > CHUNK_HEIGHT)
+				startY = CHUNK_HEIGHT;
+
+			int endY = y - radius;
+
+			if (endY < 0)
+				endY = 0;
+
+			for (int i = 0; i < CHUNK_SIZE; i++)
+			{
+				for (int j = 0; j < CHUNK_SIZE; j++)
+				{
+					for (int k = startY; k > endY - 1; k--)
+					{
+						if (bChunk.blocks[i][j][k] == type)
+						{
+							if (abs(i - x) < radius && abs(j - z) < radius && abs(k - y) < radius)
+								amount++;
+						}
+					}
+				}
+			}
+
+			return amount;
+		}
+
+		void placeStone(int x, int y, int z, float multiplier = 1.0f);
 		
 
 		MSGPACK_DEFINE_ARRAY(bChunk, x, z, data);
@@ -222,6 +256,7 @@ namespace Data
 		Region getRegion(int x, int z);
 
 		Region generateRegion(int x, int z);
+
 
 		void saveRegion(Region r);
 

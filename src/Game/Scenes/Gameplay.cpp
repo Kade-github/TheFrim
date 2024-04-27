@@ -306,7 +306,6 @@ void Gameplay::UpdateChunks()
 
 	static std::vector<glm::vec2> toLoadedRegion = {};
 
-
 	regionsLoaded = 0;
 
 	glm::vec3 fakePos = glm::vec3(player->position.x, 0, player->position.z);
@@ -314,6 +313,8 @@ void Gameplay::UpdateChunks()
 	float regionSize = (CHUNK_SIZE * REGION_SIZE);
 
 	int regionsSize = 0;
+
+	wm->CheckGeneratedRegions();
 
 	if (wm->generateMutex.try_lock())
 	{
@@ -324,10 +325,8 @@ void Gameplay::UpdateChunks()
 
 		allChunks.clear();
 
-		wm->CheckGeneratedRegions();
 		wm->generateMutex.unlock();
 	}
-
 
 	for (int i = 0; i < regionsSize; i++)
 	{

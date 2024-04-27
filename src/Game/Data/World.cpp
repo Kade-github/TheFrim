@@ -256,6 +256,27 @@ void Data::World::saveRegion(Region r)
 	}
 }
 
+void Data::Chunk::placeStone(int x, int y, int z, float multiplier)
+{
+	double coalNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 2, 0.5)) * multiplier);
+	double ironNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.02, z * 0.002, 2, 0.5)) * multiplier);
+	double diamondNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 2, 0.5)) * multiplier);
+	double goldNoise = std::abs((perlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 2, 0.5)) * multiplier);
+
+	if (coalNoise >= 0.4 && amountOfBlockInRadius(x, y, z, COAL_ORE, 16) < 8)
+	{
+		placeBlock(x, y, z, COAL_ORE);
+	}
+	else if (ironNoise >= 0.5 && amountOfBlockInRadius(x, y, z, IRON_ORE, 16) < 4)
+		placeBlock(x, y, z, IRON_ORE);
+	else if (diamondNoise >= 0.7 && y <= 40 && amountOfBlockInRadius(x, y, z, DIAMOND_ORE, 24) < 4)
+		placeBlock(x, y, z, DIAMOND_ORE);
+	else if (goldNoise >= 0.5 && y <= 50 && amountOfBlockInRadius(x, y, z, GOLD_ORE, 16) < 4)
+		placeBlock(x, y, z, GOLD_ORE);
+	else
+		placeBlock(x, y, z, STONE);
+}
+
 Data::Chunk Data::Region::generateChunk(int x, int z)
 {
 	Chunk chunk;
@@ -295,14 +316,17 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 			if (rY > CHUNK_HEIGHT - 1)
 				rY = CHUNK_HEIGHT - 1;
 
+			bool inCave = false;
+
 			for (int _y = rY; _y > -1; _y--)
 			{
 				// check if we're a cave
 
 				double caveNoise = perlin.normalizedOctave3D(worldX * scale, _y * scale, worldZ * scale, 6, 1.0);
 
-
-				if (caveNoise <= 0.6)
+				if (_y <= 128)
+					caveNoise *= 2.0;
+				if (caveNoise <= 0.4)
 					caveNoise = 0;
 
 
@@ -324,12 +348,14 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 							chunk.bChunk.blocks[_x][_z][_y] = DIRT;
 					}
 					else // stone
-						chunk.bChunk.blocks[_x][_z][_y] = STONE;
+						chunk.placeStone(_x, _y, _z, inCave ? 3.0f : 1.0f);
 				}
 				else
 				{
-					Game::instance->log->Write("Cave block at " + std::to_string(worldX) + " " + std::to_string(_y) + " " + std::to_string(worldZ));
+					for (int i = 0; i < 6; i++)
+						chunk.placeStone(_x, rY - i, _z);
 					chunk.bChunk.blocks[_x][_z][_y] = 0;
+					inCave = true;
 				}
 
 				if (_y == 0)
