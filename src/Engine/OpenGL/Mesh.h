@@ -34,6 +34,8 @@ public:
 	std::vector<unsigned int> indices;
 	std::vector<Texture*>      textures;
 
+	std::string name;
+
 	unsigned int VAO;
 
 	glm::vec3 position;
@@ -44,7 +46,7 @@ public:
 	Mesh(std::vector<Vertex> vertices, std::vector<unsigned int> indices, std::vector<Texture*> textures);
 
 	// render the mesh
-	void Draw(unsigned int shaderId);
+	void Draw();
 };
 
 #endif

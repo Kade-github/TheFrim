@@ -8,10 +8,12 @@
 #include "../Objects/Base/Hud.h"
 #include "../WorldManager.h"
 #include "../DroppedItemManager.h"
+#include <OpenGL/Model.h>
 
 class Gameplay : public Scene
 {
 public:
+	Model* test;
 	bool showHud = true;
 	DroppedItemManager* dim;
 	WorldManager* wm;

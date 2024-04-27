@@ -15,9 +15,7 @@
 class Model
 {
 public:
-
-    // model data 
-    std::vector<Texture*> textures_loaded;	// stores all the textures loaded so far, optimization to make sure textures aren't loaded more than once.
+    glm::vec3 position = glm::vec3(0, 0, 0);
     std::vector<Mesh>    meshes;
     std::string directory;
     std::string path;
@@ -28,12 +26,14 @@ public:
         this->path = path;
         loadModel(path);
     }
+
+    void Draw();
 private:
 
     void loadModel(std::string path);
     void processNode(aiNode* node, const aiScene* scene);
     Mesh processMesh(aiMesh* mesh, const aiScene* scene);
-    std::vector<Texture*> loadMaterialTextures(aiMaterial* mat, aiTextureType type, std::string typeName);
+
 };
 
 #endif

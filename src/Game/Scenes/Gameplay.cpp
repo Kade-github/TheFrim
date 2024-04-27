@@ -89,6 +89,8 @@ void Gameplay::Create()
 	MusicManager::GetInstance()->nextTrack = glfwGetTime() + 45.0f; // start at 45 seconds
 
 	LightingManager::GetInstance()->sun.angle = wm->_world.sunAngle;
+
+	test = new Model("Assets/Models/torchfrim.obj");
 }
 
 void Gameplay::Draw()
@@ -221,6 +223,18 @@ void Gameplay::Draw()
 	}
 
 	Scene::Draw();
+	test->position = player->position + glm::vec3(2, 2, 2);
+
+	glm::mat4 m = glm::mat4(1.0f);
+
+	m = glm::translate(m, test->position);
+
+	Game::instance->shader->Bind();
+	Game::instance->shader->SetUniformMat4f("model", glm::value_ptr(m));
+
+	test->Draw();
+
+	Game::instance->shader->Unbind();
 
 	// Draw chunks (transparent)
 
