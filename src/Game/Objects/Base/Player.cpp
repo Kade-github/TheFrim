@@ -332,7 +332,7 @@ void Player::Draw()
 	{
 		if (topWater)
 			playerData.air -= Game::instance->deltaTime;
-		else
+		else if (playerData.air < 10.0f)
 			playerData.air += Game::instance->deltaTime;
 
 		if (playerData.air <= 0)
