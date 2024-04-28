@@ -323,7 +323,7 @@ void Gameplay::UpdateChunks()
 
 		regionsSize = wm->regions.size();
 
-		allChunks.clear();
+		//allChunks.clear();
 
 		wm->generateMutex.unlock();
 	}
@@ -335,6 +335,7 @@ void Gameplay::UpdateChunks()
 		wm->generateMutex.unlock();
 		if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)) != toLoadedRegion.end())
 		{
+			r.loaded = false;
 			toLoadedRegion.erase(std::remove(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)), toLoadedRegion.end());
 		}
 
@@ -353,7 +354,10 @@ void Gameplay::UpdateChunks()
 					c->myData = {};
 					delete c;
 				}
+
+				allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
 			}
+
 
 			r.chunks = {};
 
@@ -366,7 +370,8 @@ void Gameplay::UpdateChunks()
 			break;
 		}
 
-		allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
+		if (!r.loaded)
+			allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
 
 		r.loaded = true;
 		regionsLoaded++;

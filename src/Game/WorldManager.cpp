@@ -158,8 +158,10 @@ void WorldManager::CheckGeneratedRegions()
 	if (_generatedRegions.size() != 0)
 	{
 		for (Region r : _generatedRegions)
+		{
+			r.loaded = false;
 			regions.push_back(r);
-
+		}
 		_generatedRegions.clear();
 	}
 	generateMutex.unlock();
