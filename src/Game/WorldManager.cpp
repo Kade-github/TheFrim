@@ -280,6 +280,14 @@ void WorldManager::LoadRegion(int x, int z)
 	Game::instance->log->Write("Loaded region " + std::to_string(x) + ", " + std::to_string(z));
 }
 
+Region& WorldManager::GetOrLoadRegion(int x, int z)
+{
+	if (!isRegionLoaded(x, z))
+		LoadRegion(x, z);
+
+	return GetRegion(x, z);
+}
+
 void WorldManager::SaveRegion(int x, int z)
 {
 	Region& r = GetRegion(x, z);

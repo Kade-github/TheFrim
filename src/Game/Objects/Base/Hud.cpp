@@ -52,6 +52,10 @@ void Hud::ShowPauseMenu(bool s)
 
 	Game::instance->SetLockedCursor(!s);
 
+	pauseHeader->text = "Game Paused";
+
+	resume->SetText("Resume");
+
 	if (s)
 	{
 		pauseBackground->color = glm::vec4(1, 1, 1, 0.5);
@@ -66,6 +70,27 @@ void Hud::ShowPauseMenu(bool s)
 		title->color = glm::vec4(1, 1, 1, 0);
 		pauseHeader->color = glm::vec4(1, 1, 1, 0);
 	}
+}
+
+void Hud::ShowDeathScreen()
+{
+	GamePaused = true;
+
+	Game::instance->SetLockedCursor(false);
+
+	resume->color = glm::vec4(1, 1, 1, 1);
+	title->color = glm::vec4(1, 1, 1, 1);
+	pauseHeader->color = glm::vec4(1, 1, 1, 1);
+
+	pauseHeader->text = "You Died!";
+
+	// show death overlay
+
+	deathOverlay->color.a = 0.5f;
+
+	// change text for resume
+
+	resume->SetText("Respawn");
 }
 
 void Hud::SetSelected(int s)
@@ -235,6 +260,13 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	waterOverlay->width = c2d->_w;
 	waterOverlay->height = c2d->_h;
 
+	deathOverlay = new Sprite2D("Assets/Textures/deadOverlay.png", glm::vec3(0, 0, 0));
+
+	deathOverlay->width = c2d->_w;
+	deathOverlay->height = c2d->_h;
+
+	deathOverlay->color.a = 0;
+
 	hand = new Sprite3D(hn, glm::vec3(0, 0, 0));
 	hand->flipHorizontal = true;
 	hand->depth = false;
@@ -254,7 +286,7 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 	crosshair = new Sprite2D("Assets/Textures/crosshair.png", glm::vec3(c2d->_w / 2, c2d->_h / 2, 0));
 
 	c2d->AddObject(waterOverlay);
-
+	c2d->AddObject(deathOverlay);
 	waterOverlay->order = 1;
 	waterOverlay->color.a = 0;
 
@@ -394,6 +426,12 @@ void Hud::Draw()
 			waterOverlay->color.a -= 10.0f * Game::instance->deltaTime;
 	}
 
+	if (GamePaused)
+	{
+		pauseHeader->position.x = (c2d->_w / 2) - (pauseHeader->width / 2);
+		pauseHeader->position.y = resume->position.y + resume->height + 100;
+	}
+
 	hand->Draw();
 
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
@@ -471,13 +509,24 @@ void Hud::MouseClick(int button, glm::vec2 pos)
 	{
 		if (Collision2D::PointInRect(pos, resume->position, glm::vec2(resume->width, resume->height)))
 		{
-			MusicManager::GetInstance()->PlaySFX("select");
-			ShowPauseMenu(false);
+			if (deathOverlay->color.a < 0.5f)
+			{
+				MusicManager::GetInstance()->PlaySFX("select");
+				ShowPauseMenu(false);
+			}
+			else
+			{
+				player->wasDead = true;
+				player->dead = false;
+				deathOverlay->color.a = 0.0f;
+				ShowPauseMenu(false);
+			}
 		}
 		else if (Collision2D::PointInRect(pos, title->position, glm::vec2(title->width, title->height)))
 		{
 			MusicManager::GetInstance()->PlaySFX("select");
 			player->TogglePauseMenu();
+			
 			WorldManager::instance->SetPlayerPosition(player->position);
 			WorldManager::instance->SaveWorldNow();
 			_exiting = true;

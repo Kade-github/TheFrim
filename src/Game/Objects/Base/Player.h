@@ -19,6 +19,8 @@ class Player : public Entity
 	float jumpedFrom = -1;
 	int lastAirUpdate = 10;
 
+	bool goToTop = false;
+
 	BlockFace selectedFace;
 
 	void DrawBlockBreak(BlockFace f);
@@ -32,6 +34,9 @@ class Player : public Entity
 public:
 	Data::Player playerData;
 	Block* selectedBlock = nullptr;
+
+	bool wasDead = false;
+	bool dead = false;
 
 	float jumpCooldown = 0;
 

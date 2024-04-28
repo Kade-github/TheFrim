@@ -178,6 +178,22 @@ Player::Player(glm::vec3 pos) : Entity(pos)
 
 void Player::Draw()
 {
+	if (goToTop)
+	{
+		Chunk* c = WorldManager::instance->GetChunk(position.x, position.z);
+
+		if (c != nullptr)
+		{
+			int y = c->GetHighestBlock(position.x, position.z);
+
+			if (y != -1)
+			{
+				position.y = y + 1;
+				goToTop = false;
+			}
+		}
+	}
+
 	Camera* camera = Game::instance->GetCamera();
 	float p = camera->pitch;
 
@@ -213,6 +229,72 @@ void Player::Draw()
 			p = -89.0f;
 
 		yaw += xoffset;
+
+		if (wasDead && playerData.health <= 0) // respawn
+		{
+			playerData.health = PLAYER_MAX_HEALTH;
+			playerData.air = PLAYER_MAX_AIR;
+
+			Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+			scene->hud->UpdateHearts();
+			scene->hud->UpdateAir();
+
+			goToTop = true;
+			wasDead = false;
+			position = glm::vec3(0, 100, 0);
+			return;
+		}
+
+		if (playerData.health <= 0 && !dead) // die
+		{
+			dead = true;
+			// drop all items
+
+			for (int i = 0; i < PLAYER_INVENTORY_WIDTH; i++)
+			{
+				for (int j = 0; j < PLAYER_INVENTORY_HEIGHT; j++)
+				{
+					Data::InventoryItem item = playerData.inventory[i][j];
+
+					if (item.type != Data::ITEM_NULL)
+					{
+						Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+						float rX = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+						float rY = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+						float rZ = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+
+						scene->dim->SpawnItem(position + glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(rX, rY, rZ), item, 10.0f, 1.0f);
+					}
+					playerData.inventory[i][j] = {};
+				}
+			}
+
+			// drop all armor
+
+			for (int i = 0; i < 3; i++)
+			{
+				Data::InventoryItem item = playerData.armor[i];
+
+				if (item.type != Data::ITEM_NULL)
+				{
+					Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+					float rX = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+					float rY = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+					float rZ = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+
+					scene->dim->SpawnItem(position + glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(rX, rY, rZ), item, 10.0f, 1.0f);
+				}
+				playerData.armor[i] = {};
+			}
+
+			Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+			scene->hud->ShowDeathScreen();
+			scene->hud->UpdateHotbar();
+		}
 	}
 
 	bool moving = false;

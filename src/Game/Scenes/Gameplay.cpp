@@ -93,6 +93,28 @@ void Gameplay::Create()
 
 void Gameplay::Draw()
 {
+	// CHUNK UPDATES
+	float currentTime = glfwGetTime();
+	if (std::abs(currentTime - lastUpdate) >= 0.05f) // 20 times a second
+	{
+		UpdateChunks();
+
+		lastUpdate = currentTime;
+	}
+
+	if (lastSecond < currentTime)
+	{
+		tps = ticks - lastTickSecond;
+		lastTickSecond = ticks;
+		lastSecond = currentTime + 1.0f;
+
+		tickTimes.push_back(tps);
+
+		if (tickTimes.size() > 10)
+			tickTimes.erase(tickTimes.begin());
+	}
+
+
 	LightingManager::GetInstance()->SunUpdate();
 	LightingManager::GetInstance()->SunColor();
 
@@ -147,26 +169,6 @@ void Gameplay::Draw()
 		Chunk* c = wm->GetChunk(player->position.x, player->position.z);
 
 		player->position.y = c->GetHighestBlock(player->position.x, player->position.z);
-	}
-
-	float currentTime = glfwGetTime();
-	if (std::abs(currentTime - lastUpdate) >= 0.05f) // 20 times a second
-	{
-		UpdateChunks();
-
-		lastUpdate = currentTime;
-	}
-
-	if (lastSecond < currentTime)
-	{
-		tps = ticks - lastTickSecond;
-		lastTickSecond = ticks;
-		lastSecond = currentTime + 1.0f;
-
-		tickTimes.push_back(tps);
-
-		if (tickTimes.size() > 10)
-			tickTimes.erase(tickTimes.begin());
 	}
 
 	float realTPS = 0;
@@ -316,6 +318,8 @@ void Gameplay::UpdateChunks()
 
 	wm->CheckGeneratedRegions();
 
+	wm->GetOrLoadRegion(player->position.x, player->position.z); // always load the current region
+
 	if (wm->generateMutex.try_lock())
 	{
 		if (!hud->GamePaused)
@@ -357,7 +361,6 @@ void Gameplay::UpdateChunks()
 
 				allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
 			}
-
 
 			r.chunks = {};
 

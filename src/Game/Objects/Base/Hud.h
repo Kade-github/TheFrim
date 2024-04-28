@@ -22,6 +22,7 @@ private:
 
 	Sprite2D* pauseBackground;
 	Sprite2D* waterOverlay;
+	Sprite2D* deathOverlay;
 
 	Bar* resume;
 	Bar* title;
@@ -52,6 +53,7 @@ public:
 	void ShowCraftingTable(bool s);
 
 	void ShowPauseMenu(bool s);
+	void ShowDeathScreen();
 
 	void SetSelected(int s);
 

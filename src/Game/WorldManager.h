@@ -84,6 +84,7 @@ public:
 	bool IsRegionGenerated(int x, int z);
 	bool isRegionLoaded(float x, float z);
 	void LoadRegion(int x, int z);
+	Region& GetOrLoadRegion(int x, int z);
 
 	void SaveRegion(int x, int z);
 	void SaveRegion(Region& r);
