@@ -11,7 +11,7 @@ void CraftingManager::Init()
 {
 	Recipes.clear();
 
-	#pragma region Recipes
+#pragma region Recipes
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_WOODENPLANKS, 4),
@@ -27,7 +27,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 
 	AddRecipe({
@@ -44,7 +44,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_CRAFTINGTABLE, 1),
@@ -60,7 +60,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_WOODEN_AXE, 1),
@@ -76,7 +76,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_WOODEN_PICKAXE, 1),
@@ -92,7 +92,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_WOODEN_SWORD, 1),
@@ -108,7 +108,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_WOODEN_SHOVEL, 1),
@@ -124,7 +124,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_STONE_AXE, 1),
@@ -140,7 +140,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_STONE_PICKAXE, 1),
@@ -156,7 +156,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_STONE_SWORD, 1),
@@ -172,7 +172,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_STONE_SHOVEL, 1),
@@ -188,7 +188,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_IRON_AXE, 1),
@@ -204,7 +204,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_IRON_PICKAXE, 1),
@@ -220,7 +220,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_IRON_SWORD, 1),
@@ -236,7 +236,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_IRON_SHOVEL, 1),
@@ -252,7 +252,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_GOLD_AXE, 1),
@@ -268,7 +268,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_GOLD_PICKAXE, 1),
@@ -284,7 +284,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_GOLD_SWORD, 1),
@@ -300,7 +300,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_GOLD_SHOVEL, 1),
@@ -316,7 +316,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_DIAMOND_AXE, 1),
@@ -332,7 +332,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_DIAMOND_PICKAXE, 1),
@@ -348,7 +348,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_DIAMOND_SWORD, 1),
@@ -364,7 +364,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_DIAMOND_SHOVEL, 1),
@@ -380,7 +380,7 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
 	AddRecipe({
 		Data::InventoryItem(Data::ITEM_TORCH, 4),
@@ -396,9 +396,25 @@ void CraftingManager::Init()
 			}
 		},
 		true
-	});
+		});
 
-	#pragma endregion
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_FURNACE, 4),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)}
+			}
+		},
+		true
+		});
+
+#pragma endregion
 
 }
 
@@ -409,7 +425,7 @@ void CraftingManager::AddRecipe(CraftingRecipe recipe)
 
 Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3])
 {
-	for(int i = 0; i < Recipes.size(); i++)
+	for (int i = 0; i < Recipes.size(); i++)
 	{
 		CraftingRecipe recipe = Recipes[i];
 		if (!recipe.IsMatch(ingredients))
@@ -427,17 +443,17 @@ Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3]
 		}
 		return Recipes[i].result;
 	}
-	return Data::InventoryItem();	
-	
+	return Data::InventoryItem();
+
 }
 
 bool CraftingRecipe::IsMatch(Data::InventoryItem ingredients[3][3])
 {
-	for(int i = 0; i < 3; i++)
+	for (int i = 0; i < 3; i++)
 	{
-		for(int j = 0; j < 3; j++)
+		for (int j = 0; j < 3; j++)
 		{
-			if(ingredients[i][j].type != this->ingredients[i][j].type || ingredients[i][j].count < this->ingredients[i][j].count)
+			if (ingredients[i][j].type != this->ingredients[i][j].type || ingredients[i][j].count < this->ingredients[i][j].count)
 				return false;
 		}
 	}

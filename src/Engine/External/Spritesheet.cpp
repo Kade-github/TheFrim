@@ -60,12 +60,6 @@ glm::vec4 SpriteSheet::GetUV(std::string s) const
 	float w = (float)sprite.width / (float)width;
 	float h = (float)sprite.height / (float)height;
 
-	x += 0.001f;
-	y += 0.001f;
-
-	w -= 0.002f;
-	h -= 0.002f;
-
 	return glm::vec4(x, y, w, h);
 }
 
@@ -83,12 +77,6 @@ glm::vec4 SpriteSheet::GetUVFlip(std::string s) const
 
 	float w = (float)sprite.width / (float)width;
 	float h = (float)sprite.height / (float)height;
-
-	x += 0.001f;
-	y += 0.001f;
-
-	w -= 0.002f;
-	h -= 0.002f;
 
 	return glm::vec4(x, y + h, w, -h);
 }
