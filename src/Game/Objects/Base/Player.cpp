@@ -499,6 +499,7 @@ void Player::Draw()
 					if (selectedBlock->type == LEAVES)
 						giveItem = false;
 
+
 					if (selectedBlock->soundType == S_STONE)
 					{
 						float breakingPower = item.breakingPower;
@@ -522,15 +523,29 @@ void Player::Draw()
 					{
 						Data::InventoryItem item = { selectedBlock->type, 1 };
 
-						if (selectedBlock->type == STONE)
-							item = { COBBLESTONE, 1 };
-
-						if (selectedBlock->type == GRASS)
+						switch (selectedBlock->type)
+						{
+						case GRASS:
 							item = { DIRT, 1 };
+							break;
+						case STONE:
+							item = { COBBLESTONE, 1 };
+							break;
+						case COAL_ORE:
+							item = { Data::ITEM_COAL, 1 };
+							break;
+						case DIAMOND_ORE:
+							item = { Data::ITEM_DIAMOND, 1 };
+							break;
+						}
 
 						Gameplay* scene = (Gameplay*)Game::instance->currentScene;
 
-						scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5, 0.5, 0.5), item);
+						float rX = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+						float rY = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+						float rZ = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+
+						scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(rX,rY,rZ), item, 10.0f, 1.0f);
 					}
 
 					c->chunkMutex.lock();
@@ -562,6 +577,9 @@ void Player::Draw()
 				for (int i = 0; i < faces.size(); i++)
 				{
 					BlockFace f = faces[i];
+
+					for (int j = 0; j < f.vertices.size(); j++)
+						f.vertices[j].position += f.vertices[j].normal * 0.03f;
 
 					DrawBlockBreak(f);
 				}

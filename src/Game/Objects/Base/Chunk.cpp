@@ -1080,7 +1080,7 @@ void Chunk::DrawShadows()
 
 void Chunk::UpdateChunk(int tick)
 {
-	if (modified && tick % 4 == 0)
+	if (modified)
 	{
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 

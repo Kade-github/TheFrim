@@ -11,7 +11,7 @@ public:
 
 	~DroppedItemManager();
 
-	void SpawnItem(glm::vec3 pos, glm::vec3 front, Data::InventoryItem i);
+	void SpawnItem(glm::vec3 pos, glm::vec3 front, Data::InventoryItem i, float force = 20.0f, float upForce = 0.0f);
 	void SpawnItem(glm::vec3 pos, Data::InventoryItem i);
 
 	void AddItem(DroppedItem* item);

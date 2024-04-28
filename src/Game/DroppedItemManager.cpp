@@ -12,14 +12,14 @@ DroppedItemManager::~DroppedItemManager()
 	items.clear();
 }
 
-void DroppedItemManager::SpawnItem(glm::vec3 pos, glm::vec3 front, Data::InventoryItem i)
+void DroppedItemManager::SpawnItem(glm::vec3 pos, glm::vec3 front, Data::InventoryItem i, float force, float upForce)
 {
 	Texture* t = Texture::createWithImageExtra("Assets/Textures/items.png", "nonFlipped"); // grab from cache
 	t->spriteSheet.Load("Assets/Textures/items.xml", t->width, t->height);
 
 	DroppedItem* item = new DroppedItem(pos, t, i);
 
-	item->Launch(front, 20.0f, 0.0f);
+	item->Launch(front, force, upForce);
 
 	AddItem(item);
 }
