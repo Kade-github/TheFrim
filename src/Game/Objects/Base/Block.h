@@ -7,6 +7,8 @@
 #include "../../Data/World.h"
 #include <OpenGL/Texture.h>
 
+#include <OpenGL/Model.h>
+
 struct BlockFace {
 	glm::vec3 position;
 	glm::vec3 sum;
@@ -91,6 +93,8 @@ public:
 	glm::vec3 chunkPosition;
 	BlockType type;
 
+	Model m;
+
 	bool changedBlocks = false;
 
 	bool transparent = false;
@@ -127,6 +131,8 @@ public:
 	BlockFace BreakRightFace();
 	BlockFace BreakTopFace();
 	BlockFace BreakBottomFace();
+
+	virtual void LoadModel() {};
 
 	~Block();
 

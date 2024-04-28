@@ -13,7 +13,6 @@
 class Gameplay : public Scene
 {
 public:
-	Model* test;
 	bool showHud = true;
 	DroppedItemManager* dim;
 	WorldManager* wm;

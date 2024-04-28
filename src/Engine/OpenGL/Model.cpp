@@ -1,4 +1,5 @@
 #include "Model.h"
+#include <Game.h>
 
 void Model::loadModel(std::string path)
 {
@@ -37,7 +38,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
     // data to fill
     vector<Vertex> vertices;
     vector<unsigned int> indices;
-    vector<Texture*> textures;
 
     // walk through each of the mesh's vertices
     for (unsigned int i = 0; i < mesh->mNumVertices; i++)
@@ -49,14 +49,6 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
         vector.y = mesh->mVertices[i].y;
         vector.z = mesh->mVertices[i].z;
         vertex.position = vector;
-        // normals
-        if (mesh->HasNormals())
-        {
-            vector.x = mesh->mNormals[i].x;
-            vector.y = mesh->mNormals[i].y;
-            vector.z = mesh->mNormals[i].z;
-            vertex.normal = vector;
-        }
         // texture coordinates
         if (mesh->mTextureCoords[0]) // does the mesh contain texture coordinates?
         {
@@ -83,12 +75,40 @@ Mesh Model::processMesh(aiMesh* mesh, const aiScene* scene)
 
     // return a mesh object created from the extracted mesh data
 
-    Mesh m = Mesh(vertices, indices, textures);
+    Mesh m = Mesh(vertices, indices);
     m.name = mesh->mName.C_Str();
     return m;
 }
+
+void Model::LoadUVMap(std::string path)
+{
+    ClearUVMaps();
+
+    Texture* uvMap = Texture::createWithImage("Assets/Textures/" + path + ".png");
+
+    for (int i = 0; i < meshes.size(); i++)
+    {
+        meshes[i].uv = uvMap;
+    }
+}
+
 void Model::Draw()
 {
+    Game::instance->shader->Bind();
+
     for (unsigned int i = 0; i < meshes.size(); i++)
-		meshes[i].Draw();
+    {
+        Mesh& mesh = meshes[i];
+
+        glm::mat4 model = glm::mat4(1.0f);
+
+        model = glm::translate(model, position + mesh.position);
+        model = glm::rotate(model, glm::radians(angle + mesh.angle), mesh.axis);
+        model = glm::scale(model, scale * mesh.scale);
+
+        Game::instance->shader->SetUniformMat4f("model", &model[0][0]);
+
+        mesh.Draw();
+    }
+    Game::instance->shader->Unbind();
 }

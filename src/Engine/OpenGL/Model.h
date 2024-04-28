@@ -16,6 +16,9 @@ class Model
 {
 public:
     glm::vec3 position = glm::vec3(0, 0, 0);
+    glm::vec3 rotateAxis = glm::vec3(0, 0, 0);
+    glm::vec3 scale = glm::vec3(1, 1, 1);
+    float angle = 0.0f;
     std::vector<Mesh>    meshes;
     std::string directory;
     std::string path;
@@ -26,6 +29,37 @@ public:
         this->path = path;
         loadModel(path);
     }
+
+    Model()
+    {
+
+    }
+
+    Mesh& GetMesh(int index)
+    {
+		return meshes[index];
+	}
+
+    Mesh& GetMesh(std::string name)
+    {
+        for (int i = 0; i < meshes.size(); i++)
+        {
+            if (meshes[i].name == name)
+            {
+				return meshes[i];
+            }
+        }
+    }
+
+    void ClearUVMaps()
+    {
+        for (int i = 0; i < meshes.size(); i++)
+        {
+            meshes[i].uv = nullptr;
+		}
+	}
+
+    void LoadUVMap(std::string path);
 
     void Draw();
 private:
