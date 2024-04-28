@@ -21,6 +21,7 @@
 #include "Blocks/IronOre.h"
 #include "Blocks/GoldOre.h"
 #include "Blocks/DiamondOre.h"
+#include "Blocks/NullBlock.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -803,8 +804,11 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 	case DIAMOND_ORE:
 		block = new DiamondOre(position + glm::vec3(x, y, z));
 		break;
-	default:
+	case DIRT:
 		block = new Dirt(position + glm::vec3(x, y, z));
+		break;
+	default:
+		block = new NullBlock(position + glm::vec3(x, y, z));
 		break;
 	}
 	block->chunkPosition = glm::vec3(x, y, z);

@@ -81,7 +81,7 @@ void Hud::SetSelected(int s)
 	}
 	else
 	{
-		hand->src = i->spriteSheet.GetUVFlip("hand");
+		hand->src = {};
 		hand->UpdateSprite();
 	}
 }

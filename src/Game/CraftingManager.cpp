@@ -34,10 +34,10 @@ void CraftingManager::Init()
 		Data::InventoryItem(Data::ITEM_STICK, 4),
 		{
 			{
-				{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 2)},{},{}
+				{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 1)},{},{}
 			},
 			{
-				{},{},{}
+				{Data::InventoryItem(Data::ITEM_WOODENPLANKS, 1)},{},{}
 			},
 			{
 				{},{},{}
@@ -121,6 +121,278 @@ void CraftingManager::Init()
 			},
 			{
 				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_STONE_AXE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},	{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_STONE_PICKAXE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_STONE_SWORD, 1),
+		{
+			{
+				{},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_STONE_SHOVEL, 1),
+		{
+			{
+				{},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_IRON_AXE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)},{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)},{}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},	{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_IRON_PICKAXE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)},{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)},{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_IRON_SWORD, 1),
+		{
+			{
+				{},{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_IRON_SHOVEL, 1),
+		{
+			{
+				{},{Data::InventoryItem(Data::ITEM_IRON_INGOT, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_GOLD_AXE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)},{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)},{}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},	{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_GOLD_PICKAXE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)},{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)},{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_GOLD_SWORD, 1),
+		{
+			{
+				{},{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_GOLD_SHOVEL, 1),
+		{
+			{
+				{},{Data::InventoryItem(Data::ITEM_GOLD_INGOT, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_DIAMOND_AXE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_DIAMOND, 1)},{Data::InventoryItem(Data::ITEM_DIAMOND, 1)},{}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_DIAMOND, 1)},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},	{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_DIAMOND_PICKAXE, 1),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_DIAMOND, 1)},{Data::InventoryItem(Data::ITEM_DIAMOND, 1)},{Data::InventoryItem(Data::ITEM_DIAMOND, 1)}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_DIAMOND_SWORD, 1),
+		{
+			{
+				{},{Data::InventoryItem(Data::ITEM_DIAMOND, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_DIAMOND, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_DIAMOND_SHOVEL, 1),
+		{
+			{
+				{},{Data::InventoryItem(Data::ITEM_DIAMOND, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			},
+			{
+				{},{Data::InventoryItem(Data::ITEM_STICK, 1)},{}
+			}
+		},
+		true
+	});
+
+	AddRecipe({
+		Data::InventoryItem(Data::ITEM_TORCH, 4),
+		{
+			{
+				{Data::InventoryItem(Data::ITEM_COAL, 1)},{},{}
+			},
+			{
+				{Data::InventoryItem(Data::ITEM_STICK, 1)},{},{}
+			},
+			{
+				{},{},{}
 			}
 		},
 		true

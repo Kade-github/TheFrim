@@ -53,6 +53,7 @@ struct BlockFace {
 
 enum BlockType
 {
+	NULLBLOCK = -1,
 	DIRT = 1,
 	GRASS = 2,
 	STONE = 3,

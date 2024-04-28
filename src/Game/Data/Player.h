@@ -67,6 +67,7 @@ namespace Data
 		ITEM_IRON_INGOT = 150,
 		ITEM_GOLD_INGOT = 151,
 		ITEM_DIAMOND = 152,
+        ITEM_TORCH = 153,
 	};
 
 	struct NBT {
@@ -283,6 +284,10 @@ namespace Data
                 break;
             case ITEM_DIAMOND:
                 tag = "item_diamond";
+                break;
+            case ITEM_TORCH:
+                tag = "item_torch";
+                placeable = true;
                 break;
             default:
                 stackable = false;

@@ -20,10 +20,11 @@
   <sprite n="grassSide" x="512" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="iron_ore" x="512" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="leaves" x="512" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="sand" x="0" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="shadow" x="128" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="stone" x="256" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="water" x="384" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="wood" x="512" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="woodenPlank" x="640" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="null" x="0" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="sand" x="128" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="shadow" x="256" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="stone" x="384" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="water" x="512" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="wood" x="640" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="woodenPlank" x="640" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
 </TextureAtlas>

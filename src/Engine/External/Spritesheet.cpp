@@ -39,7 +39,10 @@ const Sprite SpriteSheet::GetSprite(std::string s) const
 		}
 	}
 
-	return Sprite();
+	if (s == "null")
+		return Sprite{ "null", 0, 0, 0, 0 };
+
+	return GetSprite("null");
 }
 
 glm::vec4 SpriteSheet::GetUV(std::string s) const
