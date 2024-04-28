@@ -20,6 +20,8 @@ class LightingManager
 {
 	static LightingManager* instance;
 	LightingManager() {}
+	bool nextFrameRefresh = false;
+
 public:
 	std::vector<Light> lights;
 

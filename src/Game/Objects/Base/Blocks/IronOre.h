@@ -1,12 +1,12 @@
-#ifndef _COALOREBLOCK_H
-#define _COALOREBLOCK_H
+#ifndef _IRONOREBLOCK_H
+#define _IRONOREBLOCK_H
 
 #include "../Block.h"
 
-class CoalOre : public Block
+class IronOre : public Block
 {
 public:
-	CoalOre(glm::vec3 _position) : Block(_position, BlockType::COAL_ORE) {
+	IronOre(glm::vec3 _position) : Block(_position, BlockType::IRON_ORE) {
 		position = _position;
 
 		soundType = SoundType::S_STONE;
@@ -15,7 +15,7 @@ public:
 
 	BlockFace CreateFrontFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUVFlip("coal_ore");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("iron_ore");
 
 		std::vector<GameObject::VVertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, side);
 
@@ -24,7 +24,7 @@ public:
 
 	BlockFace CreateBackFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUVFlip("coal_ore");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("iron_ore");
 
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
@@ -38,7 +38,7 @@ public:
 
 	BlockFace CreateLeftFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUVFlip("coal_ore");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("iron_ore");
 
 		std::vector<GameObject::VVertex> leftVertices = CreateQuad(position + glm::vec3(1, 0, 0), glm::vec3(0, 1, 1), 0, side);
 
@@ -49,7 +49,7 @@ public:
 	{
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
-		glm::vec4 side = t->spriteSheet.GetUVFlip("coal_ore");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("iron_ore");
 
 		std::vector<GameObject::VVertex> rightVertices = CreateQuad(position, glm::vec3(0, 1, 1), 0, side);
 
@@ -61,7 +61,7 @@ public:
 
 	BlockFace CreateTopFace() override
 	{
-		glm::vec4 dirt = t->spriteSheet.GetUVFlip("coal_ore");
+		glm::vec4 dirt = t->spriteSheet.GetUVFlip("iron_ore");
 
 		std::vector<GameObject::VVertex> topVertices = CreateQuad(position + glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), 1, dirt);
 
@@ -70,7 +70,7 @@ public:
 
 	BlockFace CreateBottomFace() override
 	{
-		glm::vec4 dirt = t->spriteSheet.GetUVFlip("coal_ore");
+		glm::vec4 dirt = t->spriteSheet.GetUVFlip("iron_ore");
 
 		std::vector<GameObject::VVertex> bottomVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 0, 0), -1, dirt);
 

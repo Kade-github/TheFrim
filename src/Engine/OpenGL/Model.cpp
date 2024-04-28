@@ -84,11 +84,11 @@ void Model::LoadUVMap(std::string path)
 {
     ClearUVMaps();
 
-    Texture* uvMap = Texture::createWithImage("Assets/Textures/" + path + ".png");
+    uv = Texture::createWithImage("Assets/Textures/" + path + ".png");
 
     for (int i = 0; i < meshes.size(); i++)
     {
-        meshes[i].uv = uvMap;
+        meshes[i].uv = uv;
     }
 }
 
@@ -103,7 +103,7 @@ void Model::Draw()
         glm::mat4 model = glm::mat4(1.0f);
 
         model = glm::translate(model, position + mesh.position);
-        model = glm::rotate(model, glm::radians(angle + mesh.angle), mesh.axis);
+        model = glm::rotate(model, glm::radians(angle + mesh.angle), rotateAxis);
         model = glm::scale(model, scale * mesh.scale);
 
         Game::instance->shader->SetUniformMat4f("model", &model[0][0]);

@@ -25,9 +25,9 @@ void Entity::Footstep()
 
 	if (c->DoesBlockExist(position.x, y, position.z))
 	{
-		std::shared_ptr<subChunk> sb = c->GetSubChunk(y);
+		subChunk& sb = c->GetSubChunk(y);
 
-		if (sb == nullptr)
+		if (sb.y == -1)
 			return;
 
 		glm::vec3 _world = c->WorldToChunk(position);
@@ -37,7 +37,7 @@ void Entity::Footstep()
 		if (_world.z == 16)
 			_world.z = 15;
 
-		Block* b = sb->getBlock(_world.x, _world.z);
+		Block* b = sb.getBlock(_world.x, _world.z);
 
 		if (b != nullptr)
 		{
@@ -127,7 +127,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			if (currentChunk != nullptr)
 			{
 				int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
-				hit = type > 0 && type != WATER;
+				hit = type > 0 && type != WATER && type != TORCH;
 			}
 
 			if (hit)
@@ -160,7 +160,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 			if (currentChunk != nullptr)
 			{
 				int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
-				hit = type > 0 && type != WATER;
+				hit = type > 0 && type != WATER && type != TORCH;
 			}
 
 			if (hit)
@@ -231,7 +231,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 			ray.y = rp.y + (diff.y * progress);
 
 			int type = currentChunk->GetBlock(ray.x, ray.y, ray.z);
-			hit = type > 0 && type != WATER;
+			hit = type > 0 && type != WATER && type != TORCH;
 
 			if (hit)
 			{

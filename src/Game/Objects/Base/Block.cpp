@@ -69,6 +69,33 @@ BlockFace Block::CreateBottomFace()
 	return BlockFace(bottomVertices, { 0, 1, 3, 1, 2, 3 });
 }
 
+std::vector<GameObject::VVertex> Block::GetModelVertices()
+{
+	std::vector<GameObject::VVertex> vertices = {};
+	for (Mesh& mesh : m->meshes)
+	{
+		for (Vertex& vertex : mesh.vertices)
+		{
+			GameObject::VVertex v = GameObject::VVertex(vertex.position, vertex.texCoords);
+			vertices.push_back(v);
+		}
+	}
+
+	return vertices;
+}
+
+std::vector<unsigned int> Block::GetModelIndices()
+{
+	std::vector<unsigned int> indices = {};
+	for (Mesh& mesh : m->meshes)
+	{
+		for (unsigned int index : mesh.indices)
+			indices.push_back(index);
+	}
+
+	return indices;
+}
+
 BlockFace Block::BreakFrontFace()
 {
 	std::vector<GameObject::VVertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, GetBreakUV());

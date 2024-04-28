@@ -19,11 +19,13 @@ public:
 
 class Chunk : public GameObject
 {
-    unsigned int VAO, VBO, EBO;
+    unsigned int VAO = -1, VBO = -1, EBO = -1;
 
-    unsigned int TRANSPARENTVAO, TRANSPARENTVBO, TRANSPARENTEBO;
+    unsigned int TRANSPARENTVAO = -1, TRANSPARENTVBO = -1, TRANSPARENTEBO = -1;
 
-    unsigned int SHADOWVAO, SHADOWVBO, SHADOWEBO;
+    unsigned int SHADOWVAO = -1, SHADOWVBO = -1, SHADOWEBO = -1;
+
+
     Texture* txp;
 
     std::vector<GameObject::VVertex> vertices;
@@ -34,6 +36,8 @@ class Chunk : public GameObject
 
     std::vector<GameObject::VVertex> shadowVertices;
     std::vector<unsigned int> shadowIndices;
+
+    std::vector<Block*> models;
 
     void CreateFaces(Block* b);
 
@@ -63,9 +67,9 @@ public:
     Chunk* front = nullptr;
     Chunk* back = nullptr;
 
-    std::vector<std::shared_ptr<subChunk>> subChunks;
+    std::vector<subChunk> subChunks;
 
-    std::shared_ptr<subChunk> GetSubChunk(int y);
+    subChunk& GetSubChunk(int y);
 
     Data::Chunk GetChunkData();
 
@@ -94,17 +98,17 @@ public:
 
     void PlaceBlock(float x, float y, float z, Block* b);
 
-    void RenderSubChunk(std::shared_ptr<subChunk> c);
+    void RenderSubChunk(subChunk& c);
     void RenderSubChunks();
 
-    void RenderSubChunkShadow(std::shared_ptr<subChunk> c);
+    void RenderSubChunkShadow(subChunk& c);
     void RenderSubChunksShadow();
 
-    std::shared_ptr<subChunk> CreateSubChunk(int y);
+    subChunk CreateSubChunk(int y);
     Block* CreateBlock(int x, int y, int z, int id, Data::BlockData data);
 
     void DestroySubChunk(int y);
-    void DestroySubChunk(std::shared_ptr<subChunk> c);
+    void DestroySubChunk(subChunk& c);
     void DestroySubChunks();
     
     void CreateSubChunks();
@@ -119,6 +123,7 @@ public:
     void Unload();
 
     void DrawRegular();
+    void DrawModels();
     void DrawTransparent();
     void DrawShadows();
 

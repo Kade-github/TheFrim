@@ -97,6 +97,8 @@ void Gameplay::Draw()
 	float currentTime = glfwGetTime();
 	if (std::abs(currentTime - lastUpdate) >= 0.05f) // 20 times a second
 	{
+		LightingManager::GetInstance()->SunUpdate();
+
 		UpdateChunks();
 
 		lastUpdate = currentTime;
@@ -114,8 +116,6 @@ void Gameplay::Draw()
 			tickTimes.erase(tickTimes.begin());
 	}
 
-
-	LightingManager::GetInstance()->SunUpdate();
 	LightingManager::GetInstance()->SunColor();
 
 	wm->_world.sunAngle = LightingManager::GetInstance()->sun.angle;
@@ -189,7 +189,27 @@ void Gameplay::Draw()
 	{
 		c2d->DrawDebugText("Subchunks in chunk: " + std::to_string(currentChunk->subChunks.size()), glm::vec2(4, 76), 24);
 		if (player->selectedBlock != nullptr)
-			c2d->DrawDebugText("Selected Block: " + std::to_string(player->selectedBlock->position.x) + ", " + std::to_string(player->selectedBlock->position.y) + ", " + std::to_string(player->selectedBlock->position.z), glm::vec2(4, 100), 24);
+		{
+			std::string facing_string = "N/A";
+
+			if (player->selectedFace.vertices.size() != 0)
+			{
+				if (player->selectedFace.vertices[0].normal == glm::vec3(0, 1, 0))
+					facing_string = "Top";
+				if (player->selectedFace.vertices[0].normal == glm::vec3(0,-1,0))
+					facing_string = "Bottom";
+				if (player->selectedFace.vertices[0].normal == glm::vec3(0,0,1))
+					facing_string = "Front";
+				if (player->selectedFace.vertices[0].normal == glm::vec3(0,0,-1))
+					facing_string = "Back";
+				if (player->selectedFace.vertices[0].normal == glm::vec3(1,0,0))
+					facing_string = "Right";
+				if (player->selectedFace.vertices[0].normal == glm::vec3(-1,0,0))
+					facing_string = "Left";
+			}
+
+			c2d->DrawDebugText("Selected Block: " + std::to_string(player->selectedBlock->position.x) + ", " + std::to_string(player->selectedBlock->position.y) + ", " + std::to_string(player->selectedBlock->position.z) + " | Facing: " + facing_string, glm::vec2(4, 100), 24);
+		}
 	}
 
 	c2d->DrawDebugText("Player Velocity: " + StringTools::ToTheDecimial(player->forwardVelocity, 2) + ", " + StringTools::ToTheDecimial(player->strafeVelocity, 2) + ", " + StringTools::ToTheDecimial(player->downVelocity, 2), glm::vec2(4, 124), 24);
@@ -211,7 +231,10 @@ void Gameplay::Draw()
 	for (Chunk* c : allChunks)
 	{
 		if (c->isRendered)
+		{
 			c->DrawRegular();
+			c->DrawModels();
+		}
 	}
 
 	// Draw chunks (shadow)

@@ -39,12 +39,13 @@
   <sprite n="item_stone_pick" x="768" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_stone_shovel" x="768" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_stone_sword" x="768" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_uncooked_pork" x="768" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood" x="768" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood_axe" x="768" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood_pick" x="896" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood_shovel" x="896" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood_sword" x="896" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wooden_planks" x="896" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="null" x="896" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_torch" x="768" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_uncooked_pork" x="768" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood" x="768" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood_axe" x="896" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood_pick" x="896" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood_shovel" x="896" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood_sword" x="896" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wooden_planks" x="896" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="null" x="896" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
 </TextureAtlas>

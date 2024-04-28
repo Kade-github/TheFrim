@@ -194,6 +194,9 @@ void Player::Draw()
 		}
 	}
 
+	if (instantBreak)
+		playerData.health = 90000;
+
 	Camera* camera = Game::instance->GetCamera();
 	float p = camera->pitch;
 
@@ -489,6 +492,7 @@ void Player::Draw()
 	camera->SetDirection();
 
 	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
+
 	bool hit = RayTo(ray, true);
 	if (hit)
 	{
@@ -496,14 +500,65 @@ void Player::Draw()
 
 		if (c != nullptr)
 		{
-			std::shared_ptr<subChunk> sb = c->GetSubChunk(ray.y);
+			subChunk& sb = c->GetSubChunk(ray.y);
 
-			if (sb != nullptr)
+			if (sb.y != -1)
 			{
 
 				glm::vec3 _world = c->WorldToChunk(ray);
 
-				selectedBlock = sb->getBlock(_world.x, _world.z);
+				selectedBlock = sb.getBlock(_world.x, _world.z);
+
+				if (selectedBlock != nullptr)
+				{
+					// get the closest face
+
+					bool stop = false;
+
+					for (BlockFace f : selectedBlock->faces)
+					{
+						if (stop)
+							break;
+
+						float dist = 0;
+
+						if (f.vertices.size() == 0)
+							continue;
+
+						switch (f.type)
+						{
+						case 0:
+						case 1:
+							dist = abs(f.vertices[0].position.y - ray.y);
+							if (dist < 0.1f)
+							{
+								selectedFace = f;
+								stop = true;
+							}
+							break;
+						case 2:
+						case 3:
+							dist = abs(f.vertices[0].position.x - ray.x);
+							if (dist < 0.1f)
+							{
+								selectedFace = f;
+								stop = true;
+							}
+							break;
+						case 4:
+						case 5:
+							dist = abs(f.vertices[0].position.z - ray.z);
+							if (dist < 0.1f)
+							{
+								selectedFace = f;
+								stop = true;
+							}
+							break;
+						}
+					}
+				}
+				else
+					selectedBlock = nullptr;
 
 			}
 			else
@@ -564,6 +619,12 @@ void Player::Draw()
 			if (topWater)
 				toughness *= 0.5f;
 
+			if (instantBreak)
+			{
+				toughness = 1000.0f;
+				correctTool = true;
+			}
+
 			selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * toughness;
 
 			if (selectedBlock->breakProgress >= 1)
@@ -578,28 +639,35 @@ void Player::Draw()
 				{
 					bool giveItem = true;
 
-					if (selectedBlock->type == LEAVES)
-						giveItem = false;
-
-
-					if (selectedBlock->soundType == S_STONE)
+					switch (selectedBlock->type)
 					{
-						float breakingPower = item.breakingPower;
-
+					case LEAVES:
 						giveItem = false;
+						break;
+					case TORCH:
+						giveItem = true;
+						break;
+					}
 
+					switch(selectedBlock->soundType)
+					{ 
+					case S_STONE:
 						if (correctTool)
 						{
 							switch (selectedBlock->type)
 							{
 							case STONE:
 							case COBBLESTONE:
-								if (breakingPower >= 2)
+								if (item.breakingPower >= 2)
 									giveItem = true;
 								break;
 							}
 						}
+						break;
 					}
+
+					if (instantBreak)
+						giveItem = true;
 					
 					if (giveItem)
 					{
@@ -722,7 +790,33 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 				if (item.type != Data::ITEM_NULL && item.placeable)
 				{
-					Block* b = c->CreateBlock(x, y, z, item.type, Data::BlockData());
+
+					Data::BlockData d = Data::BlockData();
+					if (item.type == Data::ITEM_TORCH)
+					{
+						if (selectedBlock->type == TORCH) // can't place torch on torch
+							return;
+
+						if (selectedFace.vertices.size() != 0)
+						{
+							if (selectedFace.vertices[0].normal == glm::vec3(0, 1, 0))
+								d.AddTag("facing", "0");
+							else if (selectedFace.vertices[0].normal == glm::vec3(0, -1, 0))
+								return;
+							else if (selectedFace.vertices[0].normal == glm::vec3(1, 0, 0))
+								d.AddTag("facing", "1");
+							else if (selectedFace.vertices[0].normal == glm::vec3(-1, 0, 0))
+								d.AddTag("facing", "2");
+							else if (selectedFace.vertices[0].normal == glm::vec3(0, 0, -1))
+								d.AddTag("facing", "3");
+							else if (selectedFace.vertices[0].normal == glm::vec3(0, 0, 1))
+								d.AddTag("facing", "4");
+						}
+						else
+							d.AddTag("facing", "0");
+					}
+
+					Block* b = c->CreateBlock(x, y, z, item.type, d);
 					c->PlaceBlock(x, y, z, b);
 
 					if (item.count == 1)
@@ -823,6 +917,9 @@ void Player::KeyPress(int key)
 			ToggleInventory();
 		else
 			TogglePauseMenu();
+		break;
+	case GLFW_KEY_H:
+		instantBreak = !instantBreak;
 		break;
 	}
 

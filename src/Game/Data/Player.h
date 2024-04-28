@@ -38,6 +38,7 @@ namespace Data
         ITEM_IRON_ORE = 16,
         ITEM_GOLD_ORE = 17,
         ITEM_DIAMOND_ORE = 18,
+        ITEM_TORCH = 19,
 
 		// items (127-255)
 
@@ -67,7 +68,6 @@ namespace Data
 		ITEM_IRON_INGOT = 150,
 		ITEM_GOLD_INGOT = 151,
 		ITEM_DIAMOND = 152,
-        ITEM_TORCH = 153,
 	};
 
 	struct NBT {

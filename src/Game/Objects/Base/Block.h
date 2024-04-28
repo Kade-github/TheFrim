@@ -72,6 +72,7 @@ enum BlockType
 	IRON_ORE = 16,
 	GOLD_ORE = 17,
 	DIAMOND_ORE = 18,
+	TORCH = 19,
 };
 
 enum SoundType {
@@ -94,11 +95,14 @@ public:
 	glm::vec3 chunkPosition;
 	BlockType type;
 
-	Model m;
+	bool collidable = true;
+
+	Model* m = nullptr;
 
 	bool changedBlocks = false;
 
 	bool transparent = false;
+	bool isModel = false;
 	bool isInteractable = false;
 
 	float breakProgress = 0;
@@ -126,6 +130,9 @@ public:
 	virtual BlockFace CreateTopFace();
 	virtual BlockFace CreateBottomFace();
 
+	std::vector<GameObject::VVertex> GetModelVertices();
+	std::vector<unsigned int> GetModelIndices();
+
 	BlockFace BreakFrontFace();
 	BlockFace BreakBackFace();
 	BlockFace BreakLeftFace();
@@ -134,6 +141,9 @@ public:
 	BlockFace BreakBottomFace();
 
 	virtual void LoadModel() {};
+	virtual void Mo() {};
+
+	virtual void Destroy() {};
 
 	~Block();
 

@@ -23,6 +23,8 @@ public:
     std::string directory;
     std::string path;
 
+    Texture* uv = nullptr;
+
     // constructor, expects a filepath to a 3D model.
     Model(std::string const& path)
     {

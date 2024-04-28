@@ -22,6 +22,7 @@
 #include "Blocks/GoldOre.h"
 #include "Blocks/DiamondOre.h"
 #include "Blocks/NullBlock.h"
+#include "Blocks/Torch.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -112,7 +113,7 @@ int Chunk::GetHighestBlock(float x, float z, bool water)
 		}
 		else
 		{
-			if (data > 0 && data != WATER && data != LEAVES)
+			if (data > 0 && data != WATER && data != LEAVES && data != TORCH)
 				return y;
 		}
 	}
@@ -389,22 +390,22 @@ void Chunk::CreateFaces(Block* b)
 
 	int t = GetBlock(x, y + 1, z);
 	// in our chunk
-	if (t > 0 && ((t != WATER && t != GLASS) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
 		top = false;
 	t = GetBlock(x, y - 1, z);
-	if (t > 0 && ((t != WATER && t != GLASS) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
 		bottom = false;
 	t = GetBlockInterchunk(x + 1, y, z);
-	if (t > 0 && ((t != WATER && t != GLASS) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
 		left = false;
 	t = GetBlockInterchunk(x - 1, y, z);
-	if (t > 0 && ((t != WATER && t != GLASS) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
 		right = false;
 	t = GetBlockInterchunk(x, y, z - 1);
-	if (t > 0 && ((t != WATER && t != GLASS) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
 		front = false;
 	t = GetBlockInterchunk(x, y, z + 1);
-	if (t > 0 && ((t != WATER && t != GLASS) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
 		back = false;
 
 	// create faces
@@ -416,6 +417,9 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateTopFace();
 		f.type = 0;
 		ApplyNormal(f.vertices, glm::vec3(0, 1.0f, 0));
+		f.position = f.vertices[1].position;
+		// center
+		f.position += (f.vertices[1].position - f.vertices[2].position) / 2.0f;
 		b->faces.push_back(f);
 	}
 
@@ -425,6 +429,9 @@ void Chunk::CreateFaces(Block* b)
 		f.type = 1;
 
 		ApplyNormal(f.vertices, glm::vec3(0, -1.0f, 0));
+		f.position = f.vertices[1].position;
+		// center
+		f.position += (f.vertices[1].position - f.vertices[2].position) / 2.0f;
 		b->faces.push_back(f);
 	}
 
@@ -433,6 +440,9 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateLeftFace();
 		f.type = 2;
 		ApplyNormal(f.vertices, glm::vec3(1.0f, 0, 0));
+		f.position = f.vertices[1].position;
+		// center
+		f.position += (f.vertices[1].position - f.vertices[2].position) / 2.0f;
 		b->faces.push_back(f);
 	}
 
@@ -441,6 +451,9 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateRightFace();
 		f.type = 3;
 		ApplyNormal(f.vertices, glm::vec3(-1.0f, 0, 0));
+		f.position = f.vertices[1].position;
+		// center
+		f.position += (f.vertices[1].position - f.vertices[2].position) / 2.0f;
 		b->faces.push_back(f);
 	}
 
@@ -449,6 +462,9 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateFrontFace();
 		f.type = 4;
 		ApplyNormal(f.vertices, glm::vec3(0, 0, -1.0f));
+		f.position = f.vertices[1].position;
+		// center
+		f.position += (f.vertices[1].position - f.vertices[2].position) / 2.0f;
 		b->faces.push_back(f);
 	}
 
@@ -457,22 +473,31 @@ void Chunk::CreateFaces(Block* b)
 		BlockFace f = b->CreateBackFace();
 		f.type = 5;
 		ApplyNormal(f.vertices, glm::vec3(0, 0, 1.0f));
+		f.position = f.vertices[1].position;
+		// center
+		f.position += (f.vertices[1].position - f.vertices[2].position) / 2.0f;
 		b->faces.push_back(f);
 	}
 }
 
-void Chunk::RenderSubChunk(std::shared_ptr<subChunk>sbc)
+void Chunk::RenderSubChunk(subChunk& sbc)
 {
-	if (sbc == nullptr)
+	if (sbc.y == -1)
 		return;
 
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-            Block* block = sbc->getBlock(x, z);
+            Block* block = sbc.getBlock(x, z);
 			if (block == nullptr)
 				continue;
+
+			if (block->isModel)
+			{
+				models.push_back(block);
+				continue;
+			}
 
 			if (block->transparent)
 			{
@@ -507,11 +532,13 @@ void Chunk::RenderSubChunks()
 	transparentVertices.clear();
 	transparentIndices.clear();
 
+	models.clear();
+
 	chunkMutex.lock();
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		std::shared_ptr<subChunk>sbc = subChunks[i];
-		if (sbc == nullptr)
+		subChunk& sbc = subChunks[i];
+		if (sbc.y == -1)
 			continue;
 
 		RenderSubChunk(sbc);
@@ -531,19 +558,21 @@ Chunk::Chunk(Texture* _txp, glm::vec3 _pos) : GameObject(_pos)
 	txp = _txp;
 }
 
-std::shared_ptr<subChunk>Chunk::GetSubChunk(int y)
+subChunk& Chunk::GetSubChunk(int y)
 {
+	static subChunk s;
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		std::shared_ptr<subChunk>sbc = subChunks[i];
+		subChunk& sbc = subChunks[i];
 
-		if (sbc == nullptr)
+		if (sbc.y == -1)
 			continue;
 
-		if (sbc->y == y)
+		if (sbc.y == y)
 			return sbc;
 	}
-	return nullptr;
+	s.y = -1;
+	return s;
 }
 
 Data::Chunk Chunk::GetChunkData()
@@ -554,9 +583,9 @@ Data::Chunk Chunk::GetChunkData()
 
 	for (int y = 0; y < CHUNK_HEIGHT; y++)
 	{
-		std::shared_ptr<subChunk>sbc = GetSubChunk(y);
+		subChunk& sbc = GetSubChunk(y);
 
-		if (sbc == nullptr) // not loaded
+		if (sbc.y == -1) // not loaded
 		{
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
@@ -570,8 +599,8 @@ Data::Chunk Chunk::GetChunkData()
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				if (sbc->blocks[x][z] != nullptr)
-					c.bChunk.blocks[x][z][y] = sbc->blocks[x][z]->type;
+				if (sbc.blocks[x][z] != nullptr)
+					c.bChunk.blocks[x][z][y] = sbc.blocks[x][z]->type;
 				else
 					c.bChunk.blocks[x][z][y] = 0;
 			}
@@ -595,20 +624,23 @@ bool Chunk::IsInChunk(float x, float z)
 }
 
 
-void Chunk::RenderSubChunkShadow(std::shared_ptr<subChunk>sbc)
+void Chunk::RenderSubChunkShadow(subChunk& sbc)
 {
-	if (sbc == nullptr)
+	if (sbc.y == -1)
 		return;
 
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			Block* block = sbc->getBlock(x, z);
+			Block* block = sbc.getBlock(x, z);
 			if (block == nullptr)
 				continue;
 
 			if (block->transparent || block->faces.size() == 0)
+				continue;
+
+			if (block->isModel)
 				continue;
 
 			for (BlockFace f : block->faces)
@@ -628,7 +660,7 @@ void Chunk::RenderSubChunkShadow(std::shared_ptr<subChunk>sbc)
 					else if (light > 1)
 						shadowUV = block->t->spriteSheet.GetUVFlip("Shadow75");
 					else
-						shadowUV = block->t->spriteSheet.GetUVFlip("Shadow");
+						shadowUV = block->t->spriteSheet.GetUVFlip("shadow");
 
 					std::vector<GameObject::VVertex> sV = f.vertices;
 
@@ -656,8 +688,8 @@ void Chunk::RenderSubChunksShadow()
 	chunkMutex.lock();
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		std::shared_ptr<subChunk> sbc = subChunks[i];
-		if (sbc == nullptr)
+		subChunk& sbc = subChunks[i];
+		if (sbc.y == -1)
 			continue;
 
 		RenderSubChunkShadow(sbc);
@@ -665,11 +697,11 @@ void Chunk::RenderSubChunksShadow()
 	chunkMutex.unlock();
 }
 
-std::shared_ptr<subChunk>Chunk::CreateSubChunk(int y)
+subChunk Chunk::CreateSubChunk(int y)
 {
-	std::shared_ptr<subChunk> sbc = std::make_shared<subChunk>();
+	subChunk sbc;
 
-	sbc->y = y;
+	sbc.y = y;
 
 	bool isOccluded = true;
 
@@ -719,7 +751,7 @@ std::shared_ptr<subChunk>Chunk::CreateSubChunk(int y)
 
 				Block* b = CreateBlock(x, y, z, id, data);
 
-				sbc->blocks[x][z] = b;
+				sbc.blocks[x][z] = b;
 				hasBlocks = true;
 			}
 		}
@@ -727,13 +759,13 @@ std::shared_ptr<subChunk>Chunk::CreateSubChunk(int y)
 	else
 	{
 		DestroySubChunk(sbc);
-		return nullptr;
+		return {};
 	}
 
 	if (!hasBlocks)
 	{
 		DestroySubChunk(sbc);
-		return nullptr;
+		return {};
 	}
 
 	return sbc;
@@ -807,6 +839,10 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 	case DIRT:
 		block = new Dirt(position + glm::vec3(x, y, z));
 		break;
+	case TORCH:
+		block = new Torch(position + glm::vec3(x, y, z));
+		block->data = data;
+		break;
 	default:
 		block = new NullBlock(position + glm::vec3(x, y, z));
 		break;
@@ -819,30 +855,31 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 
 void Chunk::DestroySubChunk(int y)
 {
-	std::shared_ptr<subChunk> sbc = GetSubChunk(y);
+	subChunk& sbc = GetSubChunk(y);
 
-	if (sbc == nullptr)
+	if (sbc.y == -1)
 		return;
 
 	DestroySubChunk(sbc);
 }
 
-void Chunk::DestroySubChunk(std::shared_ptr<subChunk>c)
+void Chunk::DestroySubChunk(subChunk& c)
 {
 	for (int x = 0; x < CHUNK_SIZE; x++)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-			Block* b = c->blocks[x][z];
+			Block* b = c.blocks[x][z];
 
 			if (b == nullptr) {
-                c->blocks[x][z] = nullptr;
+                c.blocks[x][z] = nullptr;
                 continue;
             }
 
 			b->faces.clear();
+			b->Destroy();
 			delete b;
-			c->blocks[x][z] = nullptr;
+			c.blocks[x][z] = nullptr;
 		}
 	}
 }
@@ -852,6 +889,8 @@ void Chunk::DestroySubChunks()
 	chunkMutex.lock();
 	for (int i = CHUNK_HEIGHT; i > -1; i--)
 		DestroySubChunk(i);
+
+	models.clear();
 
 	subChunks.clear();
 	chunkMutex.unlock();
@@ -864,8 +903,8 @@ void Chunk::CreateSubChunks()
 	chunkMutex.lock();
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
-		std::shared_ptr<subChunk> sbc = CreateSubChunk(y);
-		if (sbc != nullptr)
+		subChunk sbc = CreateSubChunk(y);
+		if (sbc.y != -1)
 			subChunks.push_back(sbc);
 	}
 
@@ -892,6 +931,14 @@ void Chunk::SetBuffer()
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
+
+	// load models
+
+	for (int i = 0; i < models.size(); i++)
+	{
+		Block* b = models[i];
+		b->LoadModel();
+	}
 
 	size = indices.size();
 }
@@ -960,6 +1007,7 @@ void Chunk::Init()
 	glGenVertexArrays(1, &SHADOWVAO);
 	glGenBuffers(1, &SHADOWVBO);
 	glGenBuffers(1, &SHADOWEBO);
+
 }
 
 void Chunk::Destroy()
@@ -976,6 +1024,11 @@ void Chunk::Destroy()
 	glDeleteVertexArrays(1, &SHADOWVAO);
 	glDeleteBuffers(1, &SHADOWVBO);
 	glDeleteBuffers(1, &SHADOWEBO);
+
+	glDeleteVertexArrays(1, &TRANSPARENTVAO);
+	glDeleteBuffers(1, &TRANSPARENTVBO);
+	glDeleteBuffers(1, &TRANSPARENTEBO);
+
 }
 
 void Chunk::Unload()
@@ -990,6 +1043,8 @@ void Chunk::Unload()
 
 	shadowVertices.clear();
 	shadowIndices.clear();
+
+	models.clear();
 
 	size = 0;
 	shadowSize = 0;
@@ -1022,6 +1077,28 @@ void Chunk::DrawRegular()
 	s->Unbind();
 
 	glBindVertexArray(0);
+
+	glDisable(GL_CULL_FACE);
+}
+
+void Chunk::DrawModels()
+{
+	if (!isRendered || models.size() == 0)
+		return;
+
+	glEnable(GL_DEPTH_CLAMP);
+	glEnable(GL_CULL_FACE);
+
+	for (int i = 0; i < models.size(); i++)
+	{
+		Block* b = models[i];
+		if (b != nullptr && b->m != nullptr)
+		{
+			b->m->position = b->position;
+			b->Mo();
+			b->m->Draw();
+		}
+	}
 
 	glDisable(GL_CULL_FACE);
 }
@@ -1101,16 +1178,16 @@ void Chunk::UpdateChunk(int tick)
 	{
 		for (int i = 0; i < subChunks.size(); i++)
 		{
-			std::shared_ptr<subChunk> sbc = subChunks[i];
+			subChunk& sbc = subChunks[i];
 
-			if (sbc == nullptr)
+			if (sbc.y != -1)
 				continue;
 
 			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
 				for (int z = 0; z < CHUNK_SIZE; z++)
 				{
-					Block* b = sbc->blocks[x][z];
+					Block* b = sbc.blocks[x][z];
 
 					if (b == nullptr)
 						continue;

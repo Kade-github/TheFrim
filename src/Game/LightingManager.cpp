@@ -137,6 +137,12 @@ void LightingManager::SunUpdate()
 	if (Hud::GamePaused)
 		return;
 
+	if (nextFrameRefresh)
+	{
+		RefreshShadows();
+		nextFrameRefresh = false;
+	}
+
 	static float lastSunStrength = 10;
 
 	sun.angle += Game::instance->deltaTime * 0.25;
@@ -146,7 +152,7 @@ void LightingManager::SunUpdate()
 
 	if (std::abs(lastSunStrength - sun.strength) >= 2)
 	{
-		RefreshShadows();
+		nextFrameRefresh = true;
 		lastSunStrength = sun.strength;
 	}
 }
@@ -173,7 +179,7 @@ void LightingManager::AddLight(glm::vec3 pos, int strength)
 {
 	lights.push_back({ glm::vec3((int)pos.x, (int)pos.y, (int)pos.z), strength});
 
-	RefreshShadows();
+	nextFrameRefresh = true;
 }
 
 void LightingManager::RemoveLight(glm::vec3 pos)
@@ -187,7 +193,7 @@ void LightingManager::RemoveLight(glm::vec3 pos)
 		}
 	}
 
-	RefreshShadows();
+	nextFrameRefresh = true;
 }
 int LightingManager::GetLightLevel(glm::vec3 pos)
 {
@@ -265,6 +271,9 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 		level -= (int)((oChunkHighest - pos.y));
 	}
 
+	if (level < 2)
+		level = 2;
+
 	for (int i = 0; i < lights.size(); i++)
 	{
 		float distance = glm::distance(lights[i].position, pos);
@@ -281,9 +290,6 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 			}
 		}
 	}
-
-	if (level < 2)
-		level = 2;
 
 	return level;
 }
