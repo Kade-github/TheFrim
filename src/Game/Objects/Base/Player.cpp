@@ -4,7 +4,7 @@
 #include <glm/gtx/rotate_vector.hpp>
 #include "../../LightingManager.h"
 #include <Helpers/StringTools.h>
-
+#include "../../MusicManager.h"
 
 bool firstMouse = false;
 
@@ -18,6 +18,7 @@ void Player::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 n
 
 void Player::Hurt(float damage)
 {
+	MusicManager::GetInstance()->PlaySFX("hurt", "hurtSFX");
 	playerData.health -= damage;
 
 	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
@@ -403,8 +404,13 @@ void Player::Draw()
 		if (distance < 4)
 			fallDamage = 0;
 
+
+
 		if (fallDamage > 0 && !inWater)
+		{
+			MusicManager::GetInstance()->PlaySFX("fall", "fallSFX");
 			Hurt(fallDamage);
+		}
 
 		jumpedFrom = -1;
 	}

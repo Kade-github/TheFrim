@@ -93,16 +93,19 @@ void Gameplay::Create()
 
 void Gameplay::Draw()
 {
+	LightingManager::GetInstance()->SunUpdate();
+
 	// CHUNK UPDATES
 	float currentTime = glfwGetTime();
 	if (std::abs(currentTime - lastUpdate) >= 0.05f) // 20 times a second
 	{
-		LightingManager::GetInstance()->SunUpdate();
 
 		UpdateChunks();
 
 		lastUpdate = currentTime;
 	}
+
+
 
 	if (lastSecond < currentTime)
 	{
@@ -350,8 +353,6 @@ void Gameplay::UpdateChunks()
 
 		regionsSize = wm->regions.size();
 
-		//allChunks.clear();
-
 		wm->generateMutex.unlock();
 	}
 
@@ -370,34 +371,42 @@ void Gameplay::UpdateChunks()
 
 		if (distanceToCenter > camera->cameraFar * 3.0f && r.loaded)
 		{
-			wm->SaveRegion(r.startX, r.startZ);
-
-			// unload
-			for (Chunk* c : r.chunks)
-			{
-				if (c->isLoaded)
+			loadPool.detach_task([&]()
 				{
-					UnloadChunk(c);
-					c->myData = {};
-					delete c;
-				}
+					wm->generateMutex.lock();
+					wm->SaveRegion(r.startX, r.startZ);
 
-				allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
-			}
+					// unload
+					for (Chunk* c : r.chunks)
+					{
+						if (c->isLoaded)
+						{
+							UnloadChunk(c);
+							c->myData = {};
+							delete c;
+						}
 
-			r.chunks = {};
+						allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
+					}
+					
+					r.chunks.clear();
 
-			r.loaded = false;
+					r.loaded = false;
 
-			wm->regions.erase(std::remove(wm->regions.begin(), wm->regions.end(), r), wm->regions.end());
-
+					wm->regions.erase(std::remove(wm->regions.begin(), wm->regions.end(), r), wm->regions.end());
+					wm->generateMutex.unlock();
+				});
 			Game::instance->log->Write("Unloading region: " + std::to_string(r.startX) + ", " + std::to_string(r.startZ));
 
 			break;
 		}
 
 		if (!r.loaded)
+		{
+			wm->generateMutex.lock();
 			allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
+			wm->generateMutex.unlock();
+		}
 
 		r.loaded = true;
 		regionsLoaded++;
@@ -508,85 +517,90 @@ void Gameplay::UpdateChunks()
 
 	// sort chunks by distance
 
-	std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
-		{
-			glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
-			glm::vec3 fakePosB = glm::vec3(b->position.x, camera->position.y, b->position.z);
-
-			float distanceA = glm::distance(camera->position, fakePosA);
-			float distanceB = glm::distance(camera->position, fakePosB);
-
-			return distanceA < distanceB;
-		});
-
-	chunksLoaded = 0;
-	chunksRendered = 0;
-
-	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
-
-	if (Settings::instance->fogDistance >= 2.0)
-		fog = 10000;
-
-	for (Chunk* c : allChunks)
+	if (wm->generateMutex.try_lock())
 	{
-		glm::vec3 fakePosC = glm::vec3(c->position.x, 0, c->position.z);
+		std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
+			{
+				glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
+				glm::vec3 fakePosB = glm::vec3(b->position.x, camera->position.y, b->position.z);
 
-		float distance = glm::distance(fakePos, fakePosC);
+				float distanceA = glm::distance(camera->position, fakePosA);
+				float distanceB = glm::distance(camera->position, fakePosB);
 
-		if (distance < camera->cameraFar)
+				return distanceA < distanceB;
+			});
+
+		chunksLoaded = 0;
+		chunksRendered = 0;
+
+		int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
+
+		if (Settings::instance->fogDistance >= 2.0)
+			fog = 10000;
+
+		for (Chunk* c : allChunks)
 		{
-			if (c->id < 0)
-			{
-				c->id = 1;
-				c->Init();
-			}
+			glm::vec3 fakePosC = glm::vec3(c->position.x, 0, c->position.z);
 
-			if (!c->isLoaded)
-			{
-				QueueLoad(c);
-				return;
-			}
+			float distance = glm::distance(fakePos, fakePosC);
 
-			float angle = camera->YawAngleTo(fakePosC);
-
-			if ((angle <= 260 || distance <= 32) && distance <= fog + 32)
+			if (distance < camera->cameraFar)
 			{
-				if (!c->isRendered || c->pleaseRender)
+				if (c->id < 0)
 				{
-					c->pleaseRender = false;
-					c->SetBuffer();
-					c->SetTransparentBuffer();
-					c->SetShadowBuffer();
+					c->id = 1;
+					c->Init();
 				}
-				c->isRendered = true;
+
+				if (!c->isLoaded)
+				{
+					QueueLoad(c);
+					wm->generateMutex.unlock();
+					return;
+				}
+
+				float angle = camera->YawAngleTo(fakePosC);
+
+				if ((angle <= 260 || distance <= 32) && distance <= fog + 32)
+				{
+					if (!c->isRendered || c->pleaseRender)
+					{
+						c->pleaseRender = false;
+						c->SetBuffer();
+						c->SetTransparentBuffer();
+						c->SetShadowBuffer();
+					}
+					c->isRendered = true;
+				}
+				else
+				{
+					if (c->isRendered)
+						c->isRendered = false;
+				}
 			}
 			else
 			{
-				if (c->isRendered)
-					c->isRendered = false;
+				if (c->isLoaded)
+				{
+					UnloadChunk(c);
+					break;
+				}
 			}
-		}
-		else
-		{
-			if (c->isLoaded)
+
+			// Chunk updates
+
+			if (c->isLoaded && !hud->GamePaused && !c->isBeingLoaded)
 			{
-				UnloadChunk(c);
-				break;
+				chunksLoaded++;
+				c->UpdateChunk(ticks);
+			}
+
+			if (c->isRendered)
+			{
+				chunksRendered++;
 			}
 		}
-
-		// Chunk updates
-
-		if (c->isLoaded && !hud->GamePaused && !c->isBeingLoaded)
-		{
-			chunksLoaded++;
-			c->UpdateChunk(ticks);
-		}
-
-		if (c->isRendered)
-		{
-			chunksRendered++;
-		}
+		wm->generateMutex.unlock();
 	}
 
 }
