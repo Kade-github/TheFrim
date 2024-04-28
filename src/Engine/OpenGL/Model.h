@@ -51,6 +51,7 @@ public:
         }
     }
 
+
     void ClearUVMaps()
     {
         for (int i = 0; i < meshes.size(); i++)
