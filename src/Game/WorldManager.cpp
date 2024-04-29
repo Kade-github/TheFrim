@@ -244,16 +244,13 @@ void WorldManager::LoadWorld()
 
 Region& WorldManager::GetRegion(float x, float z)
 {
-	generateMutex.lock();
 	for (auto& r : regions)
 	{
 		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)
 		{
-			generateMutex.unlock();
 			return r;
 		}
 	}
-	generateMutex.unlock();
 
 	return regions[0];
 }
@@ -297,7 +294,6 @@ void WorldManager::SaveRegion(int x, int z)
 
 void WorldManager::SaveRegion(Region& r)
 {
-	generateMutex.lock();
 	for (auto& c : r.chunks)
 	{
 		Data::Chunk* cD = r.GetChunkDataRef(c->position.x, c->position.z);
@@ -310,24 +306,17 @@ void WorldManager::SaveRegion(Region& r)
 	}
 
 	_world.saveRegion(r.data);
-
-	generateMutex.unlock();
 }
 
 bool WorldManager::isRegionLoaded(float x, float z)
 {
-	generateMutex.lock();
-	for (auto& r : regions)
-	{
-		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)
-		{
-			generateMutex.unlock();
-			return true;
-		}
-	}
-	generateMutex.unlock();
+    for (auto &r: regions)
+        if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z) {
+            return true;
+        }
 
-	return false;
+
+    return false;
 }
 
 void WorldManager::SaveWorld()
@@ -370,19 +359,19 @@ Chunk* WorldManager::GetChunk(float x, float z)
 Data::Chunk WorldManager::GetChunkData(float x, float z)
 {
 	if (!isRegionLoaded(x, z))
-		return Data::Chunk();
+		return {};
 
 	Region& r = GetRegion(x, z);
 
-	if (r.chunks.size() == 0)
-		return Data::Chunk();
+	if (r.chunks.empty())
+		return {};
 
 	return r.GetChunkData(x, z);
 }
 
 glm::vec3 WorldManager::GetPlayerPosition()
 {
-	return glm::vec3(_world.p.x, _world.p.y, _world.p.z);
+	return {_world.p.x, _world.p.y, _world.p.z};
 }
 
 void WorldManager::SetPlayerPosition(glm::vec3 pos)
