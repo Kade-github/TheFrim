@@ -82,8 +82,6 @@ void Gameplay::Create()
 
 	celestialMoon->depth = false;
 
-	loadPool.reset(std::thread::hardware_concurrency() * 3.14f);
-
 	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
 
 	MusicManager::GetInstance()->nextTrack = glfwGetTime() + 45.0f; // start at 45 seconds
@@ -733,6 +731,8 @@ void Gameplay::Destroy()
 
 		r.chunks.clear();
 	}
+
+    allChunks.clear();
 
 	wm->regions.clear();
 

@@ -24,7 +24,7 @@ public:
 	float renderHeight = 0;
 
 	BoxUI(glm::vec3 _pos, int _w, int _h);
-	~BoxUI();
+	void Destroy() override;
 
 	void SetBox();
 

@@ -22,6 +22,7 @@ void Game::CaptureScreen()
 	stbi_h::stbi_save_png(_screenshotPath.c_str(), 256, 256, 3, data2, 0);
 
 	delete[] data;
+    delete[] data2;
 }
 
 Game::Game(std::string title, std::string version)

@@ -499,7 +499,8 @@ void Hud::Draw()
 	{
 		// exit
 
-		Game::instance->SwitchScene(new MainMenu());
+        MainMenu* m = new MainMenu();
+		Game::instance->SwitchScene(m);
 	}
 }
 

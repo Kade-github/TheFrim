@@ -17,12 +17,7 @@ BoxUI::BoxUI(glm::vec3 _pos, int _w, int _h) : GameObject2D(_pos)
 	SetBox();
 }
 
-BoxUI::~BoxUI()
-{
-	for (int i = 0; i < back.size(); i++)
-		delete back[i];
-	back.clear();
-}
+
 
 void BoxUI::SetBox()
 {
@@ -222,4 +217,11 @@ void BoxUI::Draw()
 				draws.push_back(f->draws[j]);
 		}
 	}
+}
+
+void BoxUI::Destroy() {
+    for (auto & i : back)
+        delete i;
+    back.clear();
+    GameObject::Destroy();
 }

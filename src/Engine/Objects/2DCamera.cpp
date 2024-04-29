@@ -366,9 +366,7 @@ void Camera2D::Destroy()
 	glDeleteVertexArrays(1, &s_vao);
 
 	delete s;
-
-	if (t != NULL)
-		delete t;
+    delete t;
 
 	delete debugText;
 
