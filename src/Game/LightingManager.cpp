@@ -111,21 +111,32 @@ void LightingManager::SunColor()
 		}
 	}
 
-	if (playerY < highestBlock)
-	{
-		float distance = std::abs((float)highestBlock - (float)playerY);
-		float mixProgress = distance / 10.0f;
+    float distance = (float)highestBlock - (float)playerY;
 
-		if (mixProgress > 1)
-			mixProgress = 1;
+    float mixProgress = distance / 5.0f;
+
+    if (mixProgress > 1.0f)
+        mixProgress = 1.0f;
+
+    if (mixProgress < 0.0f)
+        mixProgress = 0.0f;
+
+    static float lastMax = 0.0f;
+
+	if (mixProgress > 0)
+	{
 
 		if (caveLerp < 1)
 			caveLerp += Game::instance->deltaTime;
 
 		sun.color = glm::mix(sun.color, cave, std::lerp(0, mixProgress, caveLerp));
+        lastMax = mixProgress;
 	}
-	else if (caveLerp > 0)
-		caveLerp -= Game::instance->deltaTime;
+	else if (caveLerp > 0) {
+        caveLerp -= Game::instance->deltaTime;
+
+        sun.color = glm::mix(sun.color, cave, std::lerp(0, lastMax, caveLerp));
+    }
 
 	glClearColor(sun.color.x, sun.color.y, sun.color.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
@@ -159,7 +170,7 @@ void LightingManager::SunUpdate()
 
 void LightingManager::RefreshShadows()
 {
-	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+	auto gp = (Gameplay*)Game::instance->currentScene;
 	// Get all regions
 
 	for (auto& r : WorldManager::instance->regions)
