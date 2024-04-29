@@ -1163,11 +1163,11 @@ void Chunk::UpdateChunk(int tick)
 {
 	if (modified)
 	{
-		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+		auto gp = (Gameplay*)Game::instance->currentScene;
 
 		gp->QueueLoadBlocks(this);
 
-		gp->QueueShadow(this);
+		LightingManager::GetInstance()->nextFrameRefresh = true;
 		modified = false;
 	}
 
