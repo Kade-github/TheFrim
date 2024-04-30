@@ -88,6 +88,8 @@ void MusicManager::PlayMusic(std::string path)
 
 	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
 
+	c.CreateFX();
+
 	c.Play();
 
 	_fadeTime = 0;
@@ -164,6 +166,8 @@ void MusicManager::PlaySFX(std::string path, std::string customName)
 	std::string rPath = "Assets/Sfx/" + path + ".ogg";
 
 	Channel& c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);
+
+	c.CreateFX();
 
 	c.Play();
 }
@@ -285,7 +289,6 @@ void MusicManager::Update()
 		if (t > 1 && !dontFree)
 		{
 			_fadeDuration = 0;
-			t = 1;
 
 			FreeMusic();
 

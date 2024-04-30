@@ -8,6 +8,7 @@
 
 #include <string>
 #include <vector>
+#include <glfw/glfw3.h>
 
 class Channel {
 	std::string _path;
@@ -15,6 +16,8 @@ class Channel {
 	void CheckError();
 public:
 	bool autoFree = false;
+
+	float lifeTime = 0;
 
 	std::vector<unsigned int> fxHandles = {};
 
@@ -36,19 +39,24 @@ public:
 	}
 
 	Channel(std::string path, std::string _name, bool autoFree = false) {
+
+		if (path == "NaA")
+		{
+			return;
+		}
+
+		lifeTime = glfwGetTime();
+
 		_path = path;
 		name = _name;
 
-		this->autoFree = autoFree;
-		
-		auto flags = BASS_STREAM_PRESCAN | BASS_SAMPLE_FLOAT;
+		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, BASS_STREAM_PRESCAN | BASS_SAMPLE_FLOAT);
 
-		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, flags);
+		CheckError();
 
 		decode = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, BASS_STREAM_DECODE | BASS_SAMPLE_FLOAT);
 
-		if (BASS_ErrorGetCode() != 0)
-			id = -1;
+		CheckError();
 
 		if (IsLoaded())
 			length = BASS_ChannelBytes2Seconds(id, BASS_ChannelGetLength(id, BASS_POS_BYTE));
@@ -262,7 +270,7 @@ public:
 
 	Channel& CreateChannel(std::string path, std::string name, bool autoFree = false)
 	{
-        static Channel theC = Channel("", "", false);
+        static Channel theC = Channel("NaA", "", false);
         theC.id = -1;
 
 		Channel c = Channel(path, name, autoFree);
@@ -273,10 +281,10 @@ public:
         if (channels.empty())
             return theC;
 
-		return channels[channels.size() - 1];
+		return channels.back();
 	}
 
-	void RemoveChannel(Channel c)
+	void RemoveChannel(Channel& c)
 	{
 		for (int i = 0; i < channels.size(); i++)
 		{
@@ -295,7 +303,7 @@ public:
 
 	Channel& GetChannel(unsigned long id)
 	{
-		static Channel c("", "", false);
+		static Channel c("NaA", "", false);
 
 		c.isFreed = true;
 		c.id = -1;
@@ -318,7 +326,7 @@ public:
 
 	Channel& GetChannel(std::string name)
 	{
-		static Channel c("", "", false);
+		static Channel c("NaA", "", false);
 
 		c.isFreed = true;
 		c.id = -1;
@@ -341,11 +349,12 @@ public:
 
 	void RemoveStagnentChannels()
 	{
+		float time = glfwGetTime();
 		for (int i = 0; i < channels.size(); i++)
 		{
 			Channel& c = channels[i];
 
-			if (c.autoFree && !c.isFreed && !c.IsPlaying())
+			if (c.autoFree && !c.isFreed && !c.IsPlaying() && c.lifeTime + c.length < time)
 			{
 				RemoveChannel(c);
 				break;

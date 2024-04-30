@@ -244,13 +244,16 @@ void WorldManager::LoadWorld()
 
 Region& WorldManager::GetRegion(float x, float z)
 {
-	for (auto& r : regions)
+	generateMutex.lock();
+	for (auto&& r : regions)
 	{
 		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)
 		{
+			generateMutex.unlock();
 			return r;
 		}
 	}
+	generateMutex.unlock();
 
 	return regions[0];
 }
@@ -341,7 +344,7 @@ Chunk* WorldManager::GetChunk(float x, float z)
 
 	generateMutex.lock();
 
-	for (auto& c : r.chunks)
+	for (auto&& c : r.chunks)
 	{
 		if (c->IsInChunk(x, z))
 		{
