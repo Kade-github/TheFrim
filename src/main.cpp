@@ -1,7 +1,3 @@
-#define _CRTDBG_MAP_ALLOC
-#include <stdlib.h>
-#include <crtdbg.h>
-
 #include "Game/Scenes/MainMenu.h"
 #include <thread>
 
@@ -12,7 +8,6 @@
 
 int main()
 {
-	_CrtSetReportMode(_CRT_WARN, _CRTDBG_MODE_DEBUG);
 
 	Game game("The Frim", "0.0.4");
 
@@ -225,8 +220,6 @@ int main()
 	Settings::instance->Save();
 
 	game.Destroy();
-
-	_CrtDumpMemoryLeaks();
 
 	glfwTerminate();
 
