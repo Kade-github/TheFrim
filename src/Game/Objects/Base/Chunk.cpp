@@ -1180,7 +1180,7 @@ void Chunk::UpdateChunk(int tick)
 		{
 			subChunk& sbc = subChunks[i];
 
-			if (sbc.y != -1)
+			if (sbc.y == -1)
 				continue;
 
 			for (int x = 0; x < CHUNK_SIZE; x++)

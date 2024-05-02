@@ -1,5 +1,7 @@
 #include "Torch.h"
 #include "../../../LightingManager.h"
+#include "../../../Scenes/Gameplay.h"
+#include <Game.h>
 
 Torch::Torch(glm::vec3 _position) : Block(_position, BlockType::TORCH)
 {
@@ -12,6 +14,8 @@ Torch::Torch(glm::vec3 _position) : Block(_position, BlockType::TORCH)
 	collidable = false;
 
 	LightingManager::GetInstance()->AddLight(position, 10);
+
+	currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
 }
 
 
@@ -64,5 +68,60 @@ void Torch::Mo()
 			m.angle = 0;
 			break;
 		}
+		_facing = face;
 	}
+}
+
+bool Torch::Update(int tick)
+{
+	if (broken)
+		return true;
+
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+	Data::InventoryItem i(Data::ITEM_TORCH, 1);
+	switch (_facing)
+	{
+	case 0:
+		if (currentChunk->GetBlock(position.x, position.y - 1, position.z) == 0)
+		{
+			currentChunk->ModifyBlock(chunkPosition.x, chunkPosition.y, chunkPosition.z, 0);
+			gp->dim->SpawnItem(position + glm::vec3(0.5f,0.5f,0.5f), i);
+			broken = true;
+		}
+		break;
+	case 1:
+		if (currentChunk->GetBlock(position.x - 1, position.y, position.z) == 0)
+		{
+			currentChunk->ModifyBlock(chunkPosition.x, chunkPosition.y, chunkPosition.z, 0);
+			gp->dim->SpawnItem(position + glm::vec3(0.5f, 0.5f, 0.5f), i);
+			broken = true;
+		}
+		break;
+	case 2:
+		if (currentChunk->GetBlock(position.x + 1, position.y, position.z) == 0)
+		{
+			currentChunk->ModifyBlock(chunkPosition.x, chunkPosition.y, chunkPosition.z, 0);
+			gp->dim->SpawnItem(position + glm::vec3(0.5f, 0.5f, 0.5f), i);
+			broken = true;
+		}
+		break;
+	case 3:
+		if (currentChunk->GetBlock(position.x, position.y, position.z + 1) == 0)
+		{
+			currentChunk->ModifyBlock(chunkPosition.x, chunkPosition.y, chunkPosition.z, 0);
+			gp->dim->SpawnItem(position + glm::vec3(0.5f, 0.5f, 0.5f), i);
+			broken = true;
+		}
+		break;
+	case 4:
+		if (currentChunk->GetBlock(position.x, position.y, position.z - 1) == 0)
+		{
+			currentChunk->ModifyBlock(chunkPosition.x, chunkPosition.y, chunkPosition.z, 0);
+			gp->dim->SpawnItem(position + glm::vec3(0.5f, 0.5f, 0.5f), i);
+			broken = true;
+		}
+		break;
+	}
+
+	return true;
 }

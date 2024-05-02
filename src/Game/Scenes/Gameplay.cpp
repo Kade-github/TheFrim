@@ -197,15 +197,15 @@ void Gameplay::Draw()
 			{
 				if (player->selectedFace.vertices[0].normal == glm::vec3(0, 1, 0))
 					facing_string = "Top";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(0,-1,0))
+				if (player->selectedFace.vertices[0].normal == glm::vec3(0, -1, 0))
 					facing_string = "Bottom";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(0,0,1))
+				if (player->selectedFace.vertices[0].normal == glm::vec3(0, 0, 1))
 					facing_string = "Front";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(0,0,-1))
+				if (player->selectedFace.vertices[0].normal == glm::vec3(0, 0, -1))
 					facing_string = "Back";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(1,0,0))
+				if (player->selectedFace.vertices[0].normal == glm::vec3(1, 0, 0))
 					facing_string = "Right";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(-1,0,0))
+				if (player->selectedFace.vertices[0].normal == glm::vec3(-1, 0, 0))
 					facing_string = "Left";
 			}
 
@@ -347,15 +347,12 @@ void Gameplay::UpdateChunks()
 
 	wm->GetOrLoadRegion(player->position.x, player->position.z); // always load the current region
 
-	if (wm->generateMutex.try_lock())
-	{
-		if (!hud->GamePaused)
-			ticks++;
 
-		regionsSize = wm->regions.size();
+	if (!hud->GamePaused)
+		ticks++;
 
-		wm->generateMutex.unlock();
-	}
+	regionsSize = wm->regions.size();
+
 
 	for (int i = 0; i < regionsSize; i++)
 	{
@@ -389,7 +386,7 @@ void Gameplay::UpdateChunks()
 
 						allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
 					}
-					
+
 					r.chunks.clear();
 
 					r.loaded = false;
@@ -735,7 +732,7 @@ void Gameplay::Destroy()
 		r.chunks.clear();
 	}
 
-    allChunks.clear();
+	allChunks.clear();
 
 	wm->regions.clear();
 
