@@ -112,10 +112,9 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
 
-	c.SetVolume(0);
-
 	c.CreateFX();
 
+	c.SetVolume(0);
 	c.Play();
 
 	_fadeTime = glfwGetTime();

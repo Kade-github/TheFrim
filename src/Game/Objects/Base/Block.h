@@ -97,7 +97,7 @@ public:
 
 	bool collidable = true;
 
-	Model* m = nullptr;
+	Model m;
 
 	bool changedBlocks = false;
 

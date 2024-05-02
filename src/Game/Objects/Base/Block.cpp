@@ -72,7 +72,7 @@ BlockFace Block::CreateBottomFace()
 std::vector<GameObject::VVertex> Block::GetModelVertices()
 {
 	std::vector<GameObject::VVertex> vertices = {};
-	for (Mesh& mesh : m->meshes)
+	for (Mesh& mesh : m.meshes)
 	{
 		for (Vertex& vertex : mesh.vertices)
 		{
@@ -87,7 +87,7 @@ std::vector<GameObject::VVertex> Block::GetModelVertices()
 std::vector<unsigned int> Block::GetModelIndices()
 {
 	std::vector<unsigned int> indices = {};
-	for (Mesh& mesh : m->meshes)
+	for (Mesh& mesh : m.meshes)
 	{
 		for (unsigned int index : mesh.indices)
 			indices.push_back(index);

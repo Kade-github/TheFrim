@@ -244,17 +244,13 @@ void WorldManager::LoadWorld()
 
 Region& WorldManager::GetRegion(float x, float z)
 {
-	generateMutex.lock();
 	for (auto&& r : regions)
 	{
 		if (r.startX <= x && r.startZ <= z && r.endX > x && r.endZ > z)
 		{
-			generateMutex.unlock();
 			return r;
 		}
 	}
-	generateMutex.unlock();
-
 	return regions[0];
 }
 

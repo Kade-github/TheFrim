@@ -302,7 +302,10 @@ void Gameplay::QueueLoadBlocks(Chunk* c)
 		{
 			c->CreateSubChunks();
 			c->RenderSubChunks();
-			c->pleaseRender = true;
+			if (!c->isShadowLoaded)
+			{
+				c->pleaseRender = true;
+			}
 			c->isBeingLoaded = false;
 		});
 }

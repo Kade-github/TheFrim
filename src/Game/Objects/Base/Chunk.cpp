@@ -932,13 +932,18 @@ void Chunk::SetBuffer()
 
 	glBindVertexArray(0);
 
-	// load models
+	if (modelsPresent.size() != 0)
+		modelsPresent.clear();
 
-	for (int i = 0; i < models.size(); i++)
+	for (auto block : models)
 	{
-		Block* b = models[i];
-		b->LoadModel();
+		block->LoadModel();
+		block->m.position = block->position;
+		block->Mo();
+		modelsPresent.push_back(block->m);
 	}
+
+	models.clear();
 
 	size = indices.size();
 }
@@ -1045,6 +1050,7 @@ void Chunk::Unload()
 	shadowIndices.clear();
 
 	models.clear();
+	modelsPresent.clear();
 
 	size = 0;
 	shadowSize = 0;
@@ -1083,21 +1089,17 @@ void Chunk::DrawRegular()
 
 void Chunk::DrawModels()
 {
-	if (!isRendered || models.size() == 0)
+	if (!isRendered || modelsPresent.size() == 0)
 		return;
 
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);
 
-	for (int i = 0; i < models.size(); i++)
+	for (int i = 0; i < modelsPresent.size(); i++)
 	{
-		Block* b = models[i];
-		if (b != nullptr && b->m != nullptr)
-		{
-			b->m->position = b->position;
-			b->Mo();
-			b->m->Draw();
-		}
+		auto&& m = modelsPresent[i];
+
+		m.Draw();
 	}
 
 	glDisable(GL_CULL_FACE);
@@ -1167,7 +1169,7 @@ void Chunk::UpdateChunk(int tick)
 
 		gp->QueueLoadBlocks(this);
 
-		LightingManager::GetInstance()->nextFrameRefresh = true;
+		gp->QueueShadow(this);
 		modified = false;
 	}
 

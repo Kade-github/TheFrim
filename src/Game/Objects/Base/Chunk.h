@@ -38,7 +38,7 @@ class Chunk : public GameObject
     std::vector<unsigned int> shadowIndices;
 
     std::vector<Block*> models;
-
+    std::vector<Model> modelsPresent;
     void CreateFaces(Block* b);
 
     void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);

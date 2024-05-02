@@ -60,9 +60,6 @@ public:
 
 		if (IsLoaded())
 			length = BASS_ChannelBytes2Seconds(id, BASS_ChannelGetLength(id, BASS_POS_BYTE));
-
-
-		BASS_ChannelSetSync(id, BASS_SYNC_END, 0, Channel::EndSync, NULL);
 	}
 
 	bool IsLoaded()
