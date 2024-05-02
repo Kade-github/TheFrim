@@ -19,12 +19,15 @@ public:
 	Data::InventoryItem stored_crafting[3][3];
 	Data::InventoryItem output;
 
+	Data::BlockData furnace;
+
 	Data::InventoryItem stored;
 
 	bool shown = false;
 
 	Inventory(glm::vec3 _pos, Player* _player);
 
+	bool isFurnace = false;
 	bool isThreeByThree = false;
 	bool isArmor = false;
 
@@ -38,6 +41,8 @@ public:
 	void CreateTwoByTwoCrafting();
 
 	void CreateThreeByThreeCrafting();
+
+	void CreateFurnace();
 
 	void UpdateInventory(bool dontRemoveOutput = false);
 

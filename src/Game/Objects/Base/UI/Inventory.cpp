@@ -73,6 +73,7 @@ void Inventory::CreateInventory()
 {
 	ClearSlots();
 
+	isFurnace = false;
 	isThreeByThree = false;
 	isArmor = false;
 
@@ -151,6 +152,23 @@ void Inventory::CreateThreeByThreeCrafting()
 	// output
 
 	AddSlot(7.5f, PLAYER_INVENTORY_HEIGHT + 3, 90); // 90
+}
+
+void Inventory::CreateFurnace()
+{
+	int i = 48;
+
+	isFurnace = true;
+
+	// two slots
+
+	AddSlot(3.5, PLAYER_INVENTORY_HEIGHT + 1.5, i); // 48
+
+	AddSlot(3.5, PLAYER_INVENTORY_HEIGHT + 3.5, i + 1); // 49
+
+	// output
+
+	AddSlot(6.5f, PLAYER_INVENTORY_HEIGHT + 2.5, 90); // 90
 }
 
 void Inventory::UpdateInventory(bool dontRemoveOutput)

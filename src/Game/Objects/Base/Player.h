@@ -48,6 +48,7 @@ public:
 
 	void ToggleInventory();
 	void ToggleCraftingTable();
+	void ToggleFurnace();
 
 	void TogglePauseMenu();
 

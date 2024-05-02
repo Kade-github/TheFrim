@@ -46,6 +46,25 @@ void Hud::ShowCraftingTable(bool s)
 	inv->UpdateInventory();
 }
 
+void Hud::ShowFurnace(bool s)
+{
+	if (inv->shown && s)
+		return;
+
+	Game::instance->SetLockedCursor(!s);
+
+	if (!s)
+		inv->Close();
+	else
+	{
+		inv->CreateInventory();
+		inv->CreateFurnace();
+	}
+
+	inv->shown = s;
+	inv->UpdateInventory();
+}
+
 void Hud::ShowPauseMenu(bool s)
 {
 	GamePaused = s;

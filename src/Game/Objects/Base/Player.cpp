@@ -75,6 +75,18 @@ void Player::ToggleCraftingTable()
 	scene->hud->ShowCraftingTable(_inInventory);
 }
 
+void Player::ToggleFurnace()
+{
+	_inInventory = !_inInventory;
+
+	if (!_inInventory)
+		firstMouse = true;
+
+	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+	scene->hud->ShowFurnace(_inInventory);
+}
+
 void Player::TogglePauseMenu()
 {
 	Gameplay* scene = (Gameplay*)Game::instance->currentScene;

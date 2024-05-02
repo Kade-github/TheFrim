@@ -23,6 +23,7 @@
 #include "Blocks/DiamondOre.h"
 #include "Blocks/NullBlock.h"
 #include "Blocks/Torch.h"
+#include "Blocks/Furnace.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -841,6 +842,10 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 		break;
 	case TORCH:
 		block = new Torch(position + glm::vec3(x, y, z));
+		block->data = data;
+		break;
+	case FURNACE:
+		block = new Furnace(position + glm::vec3(x, y, z));
 		block->data = data;
 		break;
 	default:

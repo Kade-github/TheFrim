@@ -51,7 +51,7 @@ public:
 
 	void InventoryShown(bool s);
 	void ShowCraftingTable(bool s);
-
+	void ShowFurnace(bool s);
 	void ShowPauseMenu(bool s);
 	void ShowDeathScreen();
 

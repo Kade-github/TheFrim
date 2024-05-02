@@ -399,7 +399,7 @@ void CraftingManager::Init()
 		});
 
 	AddRecipe({
-		Data::InventoryItem(Data::ITEM_FURNACE, 4),
+		Data::InventoryItem(Data::ITEM_FURNACE, 1),
 		{
 			{
 				{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)},{Data::InventoryItem(Data::ITEM_COBBLESTONE, 1)}
