@@ -6,15 +6,7 @@
 class Torch : public Block
 {
 public:
-	Torch(glm::vec3 _position) : Block(_position, BlockType::TORCH) {
-		position = _position;
-
-		soundType = SoundType::S_STONE;
-		toughness = 9.0f;
-		isModel = true;
-		transparent = true;
-		collidable = false;
-	}
+	Torch(glm::vec3 _position);
 
 	void Destroy() override;
 

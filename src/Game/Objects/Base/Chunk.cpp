@@ -943,8 +943,6 @@ void Chunk::SetBuffer()
 		modelsPresent.push_back(block->m);
 	}
 
-	models.clear();
-
 	size = indices.size();
 }
 
