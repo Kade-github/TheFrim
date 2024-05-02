@@ -77,12 +77,20 @@ namespace Data
 
 		void SetTag(std::string name, std::string value)
 		{
+			bool set = false;
 			for (DataTag& t : tags)
 			{
 				if (t.name == name)
 				{
 					t.SetValue(value);
+					set = true;
+					break;
 				}
+			}
+
+			if (!set)
+			{
+				AddTag(name, value);
 			}
 		}
 

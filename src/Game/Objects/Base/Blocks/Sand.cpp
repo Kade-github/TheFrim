@@ -15,6 +15,9 @@ Sand::Sand(glm::vec3 _position) : Block(_position, BlockType::SAND)
 
 bool Sand::Update(int tick)
 {
+	if (currentChunk == nullptr)
+		return true;
+
 	if (currentChunk->GetBlock(position.x, position.y - 1, position.z) == 0 && !falling)
 	{
 		falling = true;

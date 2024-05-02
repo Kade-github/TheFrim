@@ -169,6 +169,22 @@ void Inventory::CreateFurnace()
 	// output
 
 	AddSlot(6.5f, PLAYER_INVENTORY_HEIGHT + 2.5, 90); // 90
+
+	if (player->selectedBlock != nullptr)
+	{
+		furnace = player->selectedBlock->data;
+
+		if (!furnace.GetTag("cooking").IsReal())
+			return;
+
+
+		std::string cookingTag = furnace.GetTag("cooking").value;
+		std::string cookingCount = furnace.GetTag("cooking_count").value;
+		std::string fuelTag = furnace.GetTag("fuel").value;
+
+		furnace_cooking = Data::InventoryItem(std::stoi(cookingTag), std::stoi(cookingCount));
+		furnace_fuel = Data::InventoryItem(std::stoi(fuelTag), std::stoi(furnace.GetTag("fuel_count").value));
+	}
 }
 
 void Inventory::UpdateInventory(bool dontRemoveOutput)
@@ -320,14 +336,75 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 		}
 	}
 
+	// furnace
+
+	if (isFurnace)
+	{
+		Data::InventoryItem& item = furnace_cooking;
+
+		if (item.type != Data::ItemType::ITEM_NULL)
+		{
+			BoxSlot& sl = GetSlot(49);
+
+			if (sl.id != -1)
+			{
+				glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
+
+				ItemUI* s = new ItemUI(item.tag, pos, i, item.count);
+
+				s->id = sl.id;
+
+				s->width = 32;
+				s->height = 32;
+
+				sl.front = s;
+			}
+		}
+
+		item = furnace_fuel;
+
+		if (item.type != Data::ItemType::ITEM_NULL)
+		{
+			BoxSlot& sl = GetSlot(48);
+
+			if (sl.id != -1)
+			{
+				glm::vec3 pos = position + glm::vec3(64 * sl.x, 64 * sl.y, 0);
+
+				ItemUI* s = new ItemUI(item.tag, pos, i, item.count);
+
+				s->id = sl.id;
+
+				s->width = 32;
+				s->height = 32;
+
+				sl.front = s;
+			}
+		}
+	}
+
 	// output
 
-	SetCrafting();
+	if (!isFurnace)
+	{
+		SetCrafting();
 
-	Data::InventoryItem out = CraftingManager::GetInstance()->Craft(stored_crafting);
+		Data::InventoryItem out = CraftingManager::GetInstance()->Craft(stored_crafting);
 
-	if (out.type != Data::ItemType::ITEM_NULL)
-		output = out;
+		if (out.type != Data::ItemType::ITEM_NULL)
+			output = out;
+	}
+	else
+	{
+		std::string out = furnace.GetTag("output").value;
+		std::string outCount = furnace.GetTag("outputCount").value;
+
+		if (out != "-1" && out != "data")
+		{
+			output = Data::InventoryItem(std::stoi(out), 1);
+			output.count = std::stoi(outCount);
+		}
+	}
 
 	BoxSlot& sl = GetSlot(90);
 
@@ -344,9 +421,6 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 		sl.front = s;
 	}
-
-
-
 }
 
 glm::vec2 Inventory::ConvertToSlotPos(std::string tag_id)
@@ -411,6 +485,10 @@ Data::InventoryItem* Inventory::GetItem(int id, glm::vec2 pos)
 		return &player->playerData.inventory[(int)pos.x][(int)pos.y];
 	else if (id < 39)
 		return &player->playerData.armor[id - 36];
+	else if (id == 49)
+		return &furnace_cooking;
+	else if (id == 48)
+		return &furnace_fuel;
 	else if (id < 90)
 		return &crafting[id - 39];
 	else if (id == 90)
@@ -471,6 +549,19 @@ void Inventory::Close()
 	delete _draggingItem;
 	_draggingItem = nullptr;
 
+	if (isFurnace && player->selectedBlock != nullptr)
+	{
+		// save the data
+		Chunk* c = WorldManager::instance->GetChunk(player->selectedBlock->position.x, player->selectedBlock->position.z);
+
+		int x = player->selectedBlock->position.x;
+		int y = player->selectedBlock->position.y;
+		int z = player->selectedBlock->position.z;
+
+		c->myData.setBlockData(x, y, z, furnace);
+		player->selectedBlock->data = furnace;
+	}
+
 	gp->hud->UpdateHotbar();
 }
 
@@ -504,6 +595,15 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 		if (sSlot.id == 90 && endItem->type != Data::ItemType::ITEM_NULL && !endItem->stackable) // can't move to output
 			return false;
 
+		if (s.id == 48) // fuel
+		{
+			if (startItem->type == Data::ItemType::ITEM_NULL)
+				return false;
+
+			if (startItem->type != Data::ItemType::ITEM_COAL)
+				return false;
+		}
+
 		// check if we can move it to that slot (armor)
 
 		if (s.id >= 36 && s.id < 39)
@@ -514,6 +614,21 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 		}
 
 		ApplyMove(startItem, endItem);
+
+		if (s.id == 48 || s.id == 49)
+		{
+			furnace.SetTag("cooking", std::to_string(furnace_cooking.type));
+			furnace.SetTag("cooking_count", std::to_string(furnace_cooking.count));
+			furnace.SetTag("fuel", std::to_string(furnace_fuel.type));
+			furnace.SetTag("fuel_count", std::to_string(furnace_fuel.count));
+			furnace.SetTag("ticksLeft", "-1"); // this tells the furnace to set its own tick timer
+		}
+
+		if (s.id == 90 && isFurnace)
+		{
+			furnace.SetTag("output", std::to_string(output.type));
+			furnace.SetTag("outputCount", std::to_string(output.count));
+		}
 	}
 	else
 	{

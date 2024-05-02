@@ -19,6 +19,9 @@ public:
 	Data::InventoryItem stored_crafting[3][3];
 	Data::InventoryItem output;
 
+	Data::InventoryItem furnace_cooking;
+	Data::InventoryItem furnace_fuel;
+
 	Data::BlockData furnace;
 
 	Data::InventoryItem stored;
