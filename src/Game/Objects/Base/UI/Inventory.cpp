@@ -73,6 +73,9 @@ void Inventory::CreateInventory()
 {
 	ClearSlots();
 
+	furnace_cooking = {};
+	furnace_fuel = {};
+
 	isFurnace = false;
 	isThreeByThree = false;
 	isArmor = false;
@@ -340,7 +343,7 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 	if (isFurnace)
 	{
-		Data::InventoryItem& item = furnace_cooking;
+		Data::InventoryItem item = furnace_cooking;
 
 		if (item.type != Data::ItemType::ITEM_NULL)
 		{
@@ -399,7 +402,7 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 		std::string out = furnace.GetTag("output").value;
 		std::string outCount = furnace.GetTag("outputCount").value;
 
-		if (out != "-1" && out != "data")
+		if (out != "-1" && out != "data" && outCount != "data")
 		{
 			output = Data::InventoryItem(std::stoi(out), 1);
 			output.count = std::stoi(outCount);
@@ -630,7 +633,7 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 			furnace.SetTag("outputCount", std::to_string(output.count));
 		}
 	}
-	else
+	else if (startSlot != nullptr)
 	{
 		glm::vec2 start = ConvertToSlotPos(startSlot->tag_id);
 

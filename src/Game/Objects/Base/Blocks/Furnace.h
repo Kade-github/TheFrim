@@ -80,6 +80,9 @@ public:
 
 	void OnInteract() override;
 
+	int GetTicksForItem(int item);
+	int GetOutputForItem(int item);
+
 	bool Update(int tick) override;
 };
 

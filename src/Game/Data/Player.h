@@ -349,7 +349,7 @@ namespace Data
 			return { "", "" };
 		}
 
-        MSGPACK_DEFINE_ARRAY(type, count, nbt, tag, durability, placeable, equipable, stackable, armor, armorSlot, damage);
+        MSGPACK_DEFINE_ARRAY(type, count, nbt, tag, durability, placeable, equipable, stackable, armor, armorSlot, damage, breakingPower);
 	};
 
 	struct Player
