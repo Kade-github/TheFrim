@@ -174,9 +174,9 @@ void Gameplay::Draw()
 
 	float realTPS = 0;
 
-	for (int i = 0; i < tickTimes.size(); i++)
+	for (float tickTime : tickTimes)
 	{
-		realTPS += tickTimes[i];
+		realTPS += tickTime;
 	}
 
 	realTPS /= tickTimes.size();

@@ -443,7 +443,7 @@ Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3]
 		}
 		return Recipes[i].result;
 	}
-	return Data::InventoryItem();
+	return {};
 
 }
 

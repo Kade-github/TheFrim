@@ -446,7 +446,6 @@ void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2
 
 		*item1 = *item2;
 		*item2 = temp;
-
 	}
 	else
 	{

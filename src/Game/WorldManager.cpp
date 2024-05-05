@@ -184,7 +184,6 @@ void WorldManager::GenerateRegion(int x, int z)
 	CreateChunks(reg);
 
 	{
-		const std::lock_guard<std::mutex> g(generateMutex);
 		_generatedRegions.push_back(reg);
 	}
 
