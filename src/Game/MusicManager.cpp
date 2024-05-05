@@ -71,9 +71,12 @@ void MusicManager::GenerateAmbientTrackList()
 
 bool MusicManager::ChannelIsPlaying(std::string name)
 {
-	Channel& c = Game::instance->audioManager->GetChannel(name);
+	Channel* c = Game::instance->audioManager->GetChannel(name);
 
-	return c.IsPlaying();
+	if (c == nullptr)
+		return false;
+
+	return c->IsPlaying();
 }
 
 void MusicManager::PlayMusic(std::string path)
@@ -82,15 +85,23 @@ void MusicManager::PlayMusic(std::string path)
 	if (currentSong == rPath)
 		return;
 
+	Game::instance->log->Write("Playing: " + rPath);
+
 	FreeMusic();
 
 	currentSong = rPath;
 
-	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
+	Channel* c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
 
-	c.CreateFX();
+	if (c == nullptr)
+	{
+		Game::instance->log->Write("Failed to play: " + rPath);
+		return;
+	}
 
-	c.Play();
+	c->CreateFX();
+
+	c->Play();
 
 	_fadeTime = 0;
 	_fadeDuration = 0;
@@ -106,16 +117,24 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 	if (currentSong == rPath)
 		return;
 
+	Game::instance->log->Write("Playing: " + rPath);
+
 	FreeMusic();
 
 	currentSong = rPath;
 
-	Channel& c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
+	Channel* c = Game::instance->audioManager->CreateChannel(rPath, currentSong, true);
 
-	c.CreateFX();
+	if (c == nullptr)
+	{
+		Game::instance->log->Write("Failed to play: " + rPath);
+		return;
+	}
 
-	c.SetVolume(0);
-	c.Play();
+	c->CreateFX();
+
+	c->SetVolume(0);
+	c->Play();
 
 	_fadeTime = glfwGetTime();
 	_fadeDuration = fadeDuration;
@@ -124,7 +143,7 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	int min = 120; // 2 minutes
 
-	nextTrack = glfwGetTime() + c.length + min;
+	nextTrack = glfwGetTime() + c->length + min;
 
 	std::uniform_int_distribution<int> distribution(min, 320); // 5 minute max
 
@@ -136,23 +155,32 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 void MusicManager::SetReverb(float room, float damp, float wet)
 {
-	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+	Channel* c = Game::instance->audioManager->GetChannel(currentSong);
 
-	c.SetReverb(room, damp, wet);
+	if (c == nullptr)
+		return;
+
+	c->SetReverb(room, damp, wet);
 }
 
 void MusicManager::SetCompression(float threshold, float ratio, float attack, float release)
 {
-	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+	Channel* c = Game::instance->audioManager->GetChannel(currentSong);
 
-	c.SetCompression(threshold, ratio, attack, release, -4.0f);
+	if (c == nullptr)
+		return;
+
+	c->SetCompression(threshold, ratio, attack, release, -4.0f);
 }
 
 void MusicManager::RemoveFXs()
 {
-	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+	Channel* c = Game::instance->audioManager->GetChannel(currentSong);
 
-	c.RemoveFXHandles();
+	if (c == nullptr)
+		return;
+
+	c->RemoveFXHandles();
 }
 
 void MusicManager::Set3DPosition(glm::vec3 pos, glm::vec3 front, glm::vec3 top)
@@ -164,22 +192,28 @@ void MusicManager::PlaySFX(std::string path, std::string customName)
 {
 	std::string rPath = "Assets/Sfx/" + path + ".ogg";
 
-	Channel& c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);
+	Channel* c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);
 
-	c.CreateFX();
+	if (c == nullptr)
+		return;
 
-	c.Play();
+	c->CreateFX();
+
+	c->Play();
 }
 
 void MusicManager::PlaySFX(std::string path, glm::vec3 from, float pitch, std::string customName)
 {
 	std::string rPath = "Assets/Sfx/" + path + ".ogg";
 
-	Channel& c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);
+	Channel* c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);
 
-	c.CreateFX();
+	if (c == nullptr)
+		return;
 
-	c.SetPitch(pitch);
+	c->CreateFX();
+
+	c->SetPitch(pitch);
 
 	BASS_3DVECTOR pos;
 
@@ -187,11 +221,11 @@ void MusicManager::PlaySFX(std::string path, glm::vec3 from, float pitch, std::s
 
 	glm::vec3 _currentPos = { pos.x, pos.y, pos.z };
 
-	c.Set3DDistanceFactor(glm::distance(from, _currentPos));
+	c->Set3DDistanceFactor(glm::distance(from, _currentPos));
 
 	Game::instance->audioManager->Apply3D();
 
-	c.Play();
+	c->Play();
 }
 
 void MusicManager::FadeOut(float duration)
@@ -199,11 +233,14 @@ void MusicManager::FadeOut(float duration)
 	if (currentSong == "")
 		return;
 
-	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+	Channel* c = Game::instance->audioManager->GetChannel(currentSong);
+
+	if (c == nullptr)
+		return;
 
 	_fadeTime = glfwGetTime();
 	_fadeDuration = -duration;
-	_startVolume = c.volume;
+	_startVolume = c->volume;
 
 	dontFree = false;
 
@@ -214,15 +251,18 @@ void MusicManager::FadeTo(float volume, float duration)
 	if (currentSong == "")
 		return;
 
-	Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+	Channel* c = Game::instance->audioManager->GetChannel(currentSong);
+
+	if (c == nullptr)
+		return;
 
 	_fadeTime = glfwGetTime();
 	_fadeDuration = duration;
-	_startVolume = c.volume;
+	_startVolume = c->volume;
 
 	dontFree = true;
 
-	c.SetVolume(volume);
+	c->SetVolume(volume);
 }
 
 void MusicManager::PlayNext()
@@ -276,9 +316,12 @@ void MusicManager::Update()
 			t = 1;
 		}
 
-		Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+		Channel* c = Game::instance->audioManager->GetChannel(currentSong);
 
-		c.SetVolume(t);
+		if (c == nullptr)
+			return;
+
+		c->SetVolume(t);
 	}
 
 	if (_fadeDuration < 0)
@@ -294,8 +337,11 @@ void MusicManager::Update()
 			return;
 		}
 
-		Channel& c = Game::instance->audioManager->GetChannel(currentSong);
+		Channel* c = Game::instance->audioManager->GetChannel(currentSong);
 
-		c.SetVolume(_startVolume - t);
+		if (c == nullptr)
+			return;
+
+		c->SetVolume(_startVolume - t);
 	}
 }

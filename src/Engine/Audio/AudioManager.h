@@ -21,8 +21,6 @@ public:
 
 	std::vector<unsigned int> fxHandles = {};
 
-	static void EndSync(HSYNC handle, DWORD channel, DWORD data, void* user);
-
 	std::string name;
 	unsigned long id = -1;
 	unsigned long decode = -1;
@@ -117,16 +115,15 @@ public:
 		if (!IsLoaded())
 			return;
 
-		float v = vol;
+		float systemVolume = BASS_GetVolume();
+
+		float v = fmin(systemVolume, vol);
 
 		if (vol <= 0)
 			v = 0;
 
 		if (vol >= 1)
 			v = 1;
-
-		if (vol >= 0.1f)
-			vol = sqrt(vol);
 
 		BASS_ChannelSetAttribute(id, BASS_ATTRIB_VOL, v);
 
@@ -235,6 +232,9 @@ public:
 
 	void Free()
 	{
+		if (isFreed)
+			return;
+
 		if (IsLoaded())
 		{
 			RemoveFXHandles();
@@ -250,7 +250,7 @@ public:
 
 class AudioManager {
 public:
-	std::vector<Channel> channels;
+	std::vector<Channel*> channels;
 
 	AudioManager()
 	{
@@ -265,51 +265,44 @@ public:
 		BASS_Free();
 	}
 
-	Channel& CreateChannel(std::string path, std::string name, bool autoFree = false)
+	Channel* CreateChannel(std::string path, std::string name, bool autoFree = false)
 	{
-        static Channel theC = Channel("NaA", "", false);
-        theC.id = -1;
+  
+		Channel* c = new Channel(path, name, autoFree);
 
-		Channel c = Channel(path, name, autoFree);
+		channels.push_back(c);
 
-		if (c.IsLoaded())
-			channels.push_back(c);
+		if (channels.empty())
+			return nullptr;
 
-        if (channels.empty())
-            return theC;
-
-		return channels.back();
+		return c;
 	}
 
-	void RemoveChannel(Channel& c)
+	void RemoveChannel(Channel* c)
 	{
 		for (int i = 0; i < channels.size(); i++)
 		{
-			if (channels[i].id == c.id)
+			if (channels[i]->id == c->id)
 			{
-				if (channels[i].isFreed)
+				if (channels[i]->isFreed)
 				{
 					channels.erase(channels.begin() + i);
 					break;
 				}
 				channels.erase(channels.begin() + i);
+				delete c;
 				break;
 			}
 		}
 	}
 
-	Channel& GetChannel(unsigned long id)
+	Channel* GetChannel(unsigned long id)
 	{
-		static Channel c("NaA", "", false);
-
-		c.isFreed = true;
-		c.id = -1;
-
 		for (int i = 0; i < channels.size(); i++)
 		{
-			if (channels[i].id == id)
+			if (channels[i]->id == id)
 			{
-				if (channels[i].autoFree && !channels[i].IsPlaying())
+				if (channels[i]->autoFree && !channels[i]->IsPlaying())
 				{
 					RemoveChannel(channels[i]);
 					break;
@@ -318,21 +311,16 @@ public:
 			}
 		}
 
-		return c;
+		return nullptr;
 	}
 
-	Channel& GetChannel(std::string name)
+	Channel* GetChannel(std::string name)
 	{
-		static Channel c("NaA", "", false);
-
-		c.isFreed = true;
-		c.id = -1;
-
 		for (int i = 0; i < channels.size(); i++)
 		{
-			if (channels[i].name == name)
+			if (channels[i]->name == name)
 			{
-				if (channels[i].autoFree && !channels[i].IsPlaying())
+				if (channels[i]->autoFree && !channels[i]->IsPlaying())
 				{
 					RemoveChannel(channels[i]);
 					break;
@@ -341,7 +329,7 @@ public:
 			}
 		}
 
-		return c;
+		return nullptr;
 	}
 
 	void RemoveStagnentChannels()
@@ -349,9 +337,9 @@ public:
 		float time = glfwGetTime();
 		for (int i = 0; i < channels.size(); i++)
 		{
-			Channel& c = channels[i];
+			Channel* c = channels[i];
 
-			if (c.autoFree && !c.isFreed && !c.IsPlaying() && c.lifeTime + c.length < time)
+			if (!c->isFreed && !c->IsPlaying() && c->lifeTime + c->length < time)
 			{
 				RemoveChannel(c);
 				break;
