@@ -46,7 +46,9 @@ void DroppedItem::Draw()
 	sprite->position = position;
 	sprite->rotateAxis = rotateAxis;
 	sprite->angle = angle;
-	sprite->Draw();
 
 	Entity::Draw();
+
+	sprite->Draw();
+
 }

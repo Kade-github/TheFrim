@@ -185,39 +185,6 @@ void Gameplay::Draw()
 
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
 	c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
-	c2d->DrawDebugText("Player in water: " + std::to_string(player->inWater), glm::vec2(4, 52), 24);
-	if (currentChunk != nullptr)
-	{
-		c2d->DrawDebugText("Subchunks in chunk: " + std::to_string(currentChunk->subChunks.size()), glm::vec2(4, 76), 24);
-		if (player->selectedBlock != nullptr)
-		{
-			std::string facing_string = "N/A";
-
-			if (player->selectedFace.vertices.size() != 0)
-			{
-				if (player->selectedFace.vertices[0].normal == glm::vec3(0, 1, 0))
-					facing_string = "Top";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(0, -1, 0))
-					facing_string = "Bottom";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(0, 0, 1))
-					facing_string = "Front";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(0, 0, -1))
-					facing_string = "Back";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(1, 0, 0))
-					facing_string = "Right";
-				if (player->selectedFace.vertices[0].normal == glm::vec3(-1, 0, 0))
-					facing_string = "Left";
-			}
-
-			c2d->DrawDebugText("Selected Block: " + std::to_string(player->selectedBlock->position.x) + ", " + std::to_string(player->selectedBlock->position.y) + ", " + std::to_string(player->selectedBlock->position.z) + " | Facing: " + facing_string, glm::vec2(4, 100), 24);
-		}
-	}
-
-	c2d->DrawDebugText("Player Velocity: " + StringTools::ToTheDecimial(player->forwardVelocity, 2) + ", " + StringTools::ToTheDecimial(player->strafeVelocity, 2) + ", " + StringTools::ToTheDecimial(player->downVelocity, 2), glm::vec2(4, 124), 24);
-
-	c2d->DrawDebugText("Chunks Loaded/Rendered: " + std::to_string(chunksLoaded) + "/" + std::to_string(chunksRendered), glm::vec2(4, 148), 24);
-
-	c2d->DrawDebugText("Regions Loaded: " + std::to_string(regionsLoaded), glm::vec2(4, 172), 24);
 
 	MusicManager::GetInstance()->Set3DPosition(camera->position, camera->cameraFront, camera->cameraUp);
 
