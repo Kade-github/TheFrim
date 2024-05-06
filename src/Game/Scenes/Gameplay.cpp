@@ -598,6 +598,15 @@ void Gameplay::KeyPress(int key)
 			UnloadChunk(c);
 	}
 
+	if (key == GLFW_KEY_O)
+	{
+		Data::InventoryItem i(Data::ITEM_COAL, 64);
+		Data::InventoryItem i2(Data::ITEM_IRON_ORE, 64);
+
+		player->playerData.GiveItem(i);
+		player->playerData.GiveItem(i2);
+	}
+
 
 	if (key == GLFW_KEY_F7)
 		player->freeCam = !player->freeCam;

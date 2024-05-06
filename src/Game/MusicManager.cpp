@@ -10,7 +10,10 @@ void MusicManager::FreeMusic()
 	if (currentSong == "")
 		return;
 
-	Game::instance->audioManager->RemoveChannel(Game::instance->audioManager->GetChannel(currentSong));
+	Channel* c = Game::instance->audioManager->GetChannel(currentSong);
+
+	if (c != nullptr)
+		Game::instance->audioManager->RemoveChannel(c);
 
 	currentSong = "";
 
