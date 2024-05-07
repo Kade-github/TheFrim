@@ -320,6 +320,8 @@ void Player::Draw()
 	if (inWater)
 		sp = speed / 2;
 
+    bool hasLandedThisFrame = false;
+
 	if (!freeCam)
 	{
 		if (!_inInventory && !Hud::GamePaused)
@@ -362,6 +364,7 @@ void Player::Draw()
 				downVelocity = jumpStrength;
 				if (topWater)
 					downVelocity = jumpStrength / 2;
+                hasLandedThisFrame = true;
 				isOnGround = false;
 			}
 
@@ -403,7 +406,7 @@ void Player::Draw()
 		camera->position = position;
 	}
 
-	if (isOnGround && jumpedFrom > -1)
+	if ((isOnGround || hasLandedThisFrame) && jumpedFrom > -1)
 	{
 		float distance = jumpedFrom - position.y;
 
@@ -426,7 +429,7 @@ void Player::Draw()
 
 		jumpedFrom = -1;
 	}
-	else if (!isOnGround && jumpedFrom <= -1)
+	else if (!(isOnGround || hasLandedThisFrame) && jumpedFrom <= -1)
 	{
 		jumpedFrom = position.y;
 	}

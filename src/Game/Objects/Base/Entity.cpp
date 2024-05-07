@@ -349,7 +349,7 @@ void Entity::Draw()
 {
 	// water check
 
-	glm::vec3 ray = position + glm::vec3(0, 0.1, 0);
+	glm::vec3 ray = position - glm::vec3(0, 0.2, 0);
 	glm::vec3 ray2 = position - glm::vec3(0, 0.8, 0);
 
 	topWater = RayToIncludeWater(ray, true);
