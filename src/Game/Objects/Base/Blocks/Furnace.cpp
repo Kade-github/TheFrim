@@ -1,4 +1,4 @@
-#include "Furnace.h"
+    #include "Furnace.h"
 #include "../../../Scenes/Gameplay.h"
 #include <Game.h>
 
