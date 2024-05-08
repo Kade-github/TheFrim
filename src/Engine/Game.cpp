@@ -189,6 +189,10 @@ void Game::Render()
 	}
 
 	deltaTime = currentFrame - lastFrame;
+
+	if (deltaTime > 0.5f)
+		deltaTime = 0.0f;
+
 	lastFrame = currentFrame;
 
 	if (_takeScreenshot)

@@ -56,11 +56,16 @@ bool Furnace::Update(int tick)
 
 		int ticksForItem = GetTicksForItem(itemType);
 
+		ticksNeeded = ticksForItem;
+	
+
 		data.SetTag("ticksLeft", std::to_string(ticksForItem));
 		return true;
 	}
 
 	ticks--;
+
+	tickPerc = 1.0f - ((float)ticks / (float)ticksNeeded);
 
 	if (ticks == 0)
 	{
@@ -120,8 +125,10 @@ bool Furnace::Update(int tick)
 		{
 			gp->hud->inv->CreateInventory();
 			gp->hud->inv->CreateFurnace();
+			gp->hud->inv->UpdateInventory();
 		}
 
+		tickPerc = 0.0f;
 		data.SetTag("ticksLeft", "-1");
 	}
 	else

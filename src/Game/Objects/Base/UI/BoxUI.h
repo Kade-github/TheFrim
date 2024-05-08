@@ -39,6 +39,8 @@ public:
 	BoxSlot& GetSlot(glm::vec2 pos);
 	BoxSlot& GetSlot(int id);
 
+	glm::vec2 GetSlotPos(glm::vec2 pos);
+
 	Sprite2D* GetFront(glm::vec2 pos);
 
 	void Draw() override;

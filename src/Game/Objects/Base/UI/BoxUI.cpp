@@ -176,6 +176,11 @@ BoxSlot& BoxUI::GetSlot(int id)
 	return nslot;
 }
 
+glm::vec2 BoxUI::GetSlotPos(glm::vec2 pos)
+{
+	return position + glm::vec3(64 * pos.x, 64 * pos.y, 0);
+}
+
 Sprite2D* BoxUI::GetFront(glm::vec2 pos)
 {
 	BoxSlot& slot = GetSlot(pos);

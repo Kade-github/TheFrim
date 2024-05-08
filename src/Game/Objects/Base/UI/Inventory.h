@@ -13,6 +13,8 @@ class Inventory : public BoxUI
 	int _draggingSlot = -1;
 	ItemUI* _draggingItem = nullptr;
 
+	Sprite2D* furnace_progress = nullptr;
+
 public:
 
 	Data::InventoryItem crafting[9]; 

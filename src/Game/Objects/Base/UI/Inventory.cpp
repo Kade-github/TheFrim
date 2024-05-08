@@ -3,6 +3,7 @@
 #include <Game.h>
 #include "../../../CraftingManager.h"
 #include "../../../Scenes/Gameplay.h"
+#include "../Blocks/Furnace.h"
 
 
 Inventory::Inventory(glm::vec3 _pos, Player* _player) : BoxUI(_pos, 11, 10)
@@ -165,17 +166,25 @@ void Inventory::CreateFurnace()
 
 	// two slots
 
-	AddSlot(3.5, PLAYER_INVENTORY_HEIGHT + 1.5, i); // 48
+	AddSlot(3.5f, PLAYER_INVENTORY_HEIGHT + 1.5f, i); // 48
 
-	AddSlot(3.5, PLAYER_INVENTORY_HEIGHT + 3.5, i + 1); // 49
+	AddSlot(3.5f, PLAYER_INVENTORY_HEIGHT + 3.5f, i + 1); // 49
 
 	// output
 
-	AddSlot(6.5f, PLAYER_INVENTORY_HEIGHT + 2.5, 90); // 90
+	AddSlot(6.5f, PLAYER_INVENTORY_HEIGHT + 2.5f, 90); // 90
 
 	if (player->selectedBlock != nullptr)
 	{
 		furnace = player->selectedBlock->data;
+
+
+		furnace_progress = new Sprite2D("Assets/Textures/ui_sheet.png", { GetSlotPos(glm::vec2(5.0f, PLAYER_INVENTORY_HEIGHT + 2.5)), 0 });
+
+		furnace_progress->width = 64;
+		furnace_progress->height = 64;
+
+		furnace_progress->src = furnace_progress->t->spriteSheet.GetUV("progress_0");
 
 		if (!furnace.GetTag("cooking").IsReal())
 			return;
@@ -617,19 +626,25 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 
 		ApplyMove(startItem, endItem);
 
-		if (s.id == 48 || s.id == 49)
+		if (s.id == 48 || s.id == 49 || sSlot.id == 48 || sSlot.id == 49)
 		{
 			furnace.SetTag("cooking", std::to_string(furnace_cooking.type));
 			furnace.SetTag("cooking_count", std::to_string(furnace_cooking.count));
 			furnace.SetTag("fuel", std::to_string(furnace_fuel.type));
 			furnace.SetTag("fuel_count", std::to_string(furnace_fuel.count));
 			furnace.SetTag("ticksLeft", "-1"); // this tells the furnace to set its own tick timer
+
+			if (player->selectedBlock != nullptr)
+				player->selectedBlock->data = furnace;
 		}
 
-		if (s.id == 90 && isFurnace)
+		if (sSlot.id == 90 && isFurnace)
 		{
 			furnace.SetTag("output", std::to_string(output.type));
 			furnace.SetTag("outputCount", std::to_string(output.count));
+
+			if (player->selectedBlock != nullptr)
+				player->selectedBlock->data = furnace;
 		}
 	}
 	else if (startSlot != nullptr)
@@ -815,6 +830,27 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 				endItem->count++;
 			}
 
+			if (s.id == 48 || s.id == 49 || sSlot.id == 48 || sSlot.id == 49)
+			{
+				furnace.SetTag("cooking", std::to_string(furnace_cooking.type));
+				furnace.SetTag("cooking_count", std::to_string(furnace_cooking.count));
+				furnace.SetTag("fuel", std::to_string(furnace_fuel.type));
+				furnace.SetTag("fuel_count", std::to_string(furnace_fuel.count));
+				furnace.SetTag("ticksLeft", "-1"); // this tells the furnace to set its own tick timer
+
+				if (player->selectedBlock != nullptr)
+					player->selectedBlock->data = furnace;
+			}
+
+			if (sSlot.id == 90 && isFurnace)
+			{
+				furnace.SetTag("output", std::to_string(output.type));
+				furnace.SetTag("outputCount", std::to_string(output.count));
+
+				if (player->selectedBlock != nullptr)
+					player->selectedBlock->data = furnace;
+			}
+
 			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
 			if (stored.count <= 0)
@@ -867,6 +903,41 @@ void Inventory::Draw()
 
 		for(auto& d : _draggingItem->draws)
 			draws.push_back(d);
+	}
+
+	if (isFurnace)
+	{
+		Block* selectedBlock = player->selectedBlock;
+		if (furnace_progress != nullptr && selectedBlock != nullptr)
+		{
+			Furnace* f = (Furnace*)selectedBlock;
+			float progress = f->tickPerc;
+
+			int p = 0;
+
+			// evenly split among 6 images
+
+			if (progress <= 0.f)
+				p = 0;
+			else if (progress < 0.166f)
+				p = 1;
+			else if (progress < 0.333f)
+				p = 2;
+			else if (progress < 0.5f)
+				p = 3;
+			else if (progress < 0.666f)
+				p = 4;
+			else if (progress < 0.833f)
+				p = 5;
+			else
+				p = 6;
+
+			furnace_progress->src = furnace_progress->t->spriteSheet.GetUV("progress_" + std::to_string(p));
+			furnace_progress->Draw();
+
+			for (auto& d : furnace_progress->draws)
+				draws.push_back(d);
+		}
 	}
 
 }

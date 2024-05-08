@@ -44,6 +44,7 @@ void Hud::ShowCraftingTable(bool s)
 
 	inv->shown = s;
 	inv->UpdateInventory();
+	GamePaused = false;
 }
 
 void Hud::ShowFurnace(bool s)
@@ -63,6 +64,7 @@ void Hud::ShowFurnace(bool s)
 
 	inv->shown = s;
 	inv->UpdateInventory();
+	GamePaused = false;
 }
 
 void Hud::ShowPauseMenu(bool s)

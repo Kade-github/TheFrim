@@ -5,7 +5,10 @@
 
 class Furnace : public Block
 {
+	int ticksNeeded = -1;
 public:
+	float tickPerc = 0.0f;
+
 	Furnace(glm::vec3 _position) : Block(_position, BlockType::FURNACE) {
 		position = _position;
 
