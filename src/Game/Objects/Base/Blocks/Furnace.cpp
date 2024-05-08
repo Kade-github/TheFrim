@@ -15,6 +15,12 @@ int Furnace::GetTicksForItem(int item)
 	{
 	case Data::ITEM_COBBLESTONE:
 		return 10;
+	case Data::ITEM_IRON_ORE:
+		return 20;
+	case Data::ITEM_GOLD_ORE:
+		return 20;
+	case Data::ITEM_RUINED_DEBRIS:
+		return 45;
 	default:
 		return -1;
 	}
@@ -26,6 +32,23 @@ int Furnace::GetOutputForItem(int item)
 	{
 		case Data::ITEM_COBBLESTONE:
 			return Data::ITEM_STONE;
+		case Data::ITEM_IRON_ORE:
+			return Data::ITEM_IRON_INGOT;
+		case Data::ITEM_GOLD_ORE:
+			return Data::ITEM_GOLD_INGOT;
+		case Data::ITEM_RUINED_DEBRIS:
+		{
+			int random = rand() % 100;
+
+			if (random < 25)
+				return Data::ITEM_IRON_ORE;
+			else if (random < 75)
+				return Data::ITEM_GOLD_ORE;
+			else if (random < 90)
+				return Data::ITEM_DIAMOND;
+			else
+				return Data::ITEM_COAL;
+		}
 		default:
 			return Data::ITEM_NULL;
 	}
@@ -68,7 +91,6 @@ bool Furnace::Update(int tick)
 
 		ticksNeeded = ticksForItem;
 	
-
 		data.SetTag("ticksLeft", std::to_string(ticksNeeded));
 		return true;
 	}
