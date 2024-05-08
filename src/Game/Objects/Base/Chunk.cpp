@@ -24,6 +24,9 @@
 #include "Blocks/NullBlock.h"
 #include "Blocks/Torch.h"
 #include "Blocks/Furnace.h"
+#include "Blocks/RuinedCobblestone.h"
+#include "Blocks/RuinedDebris.h"
+#include "Blocks/ReinforcedIronBlock.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -490,7 +493,7 @@ void Chunk::RenderSubChunk(subChunk& sbc)
 	{
 		for (int z = 0; z < CHUNK_SIZE; z++)
 		{
-            Block* block = sbc.getBlock(x, z);
+			Block* block = sbc.getBlock(x, z);
 			if (block == nullptr)
 				continue;
 
@@ -848,6 +851,15 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 		block = new Furnace(position + glm::vec3(x, y, z));
 		block->data = data;
 		break;
+	case RUINED_COBBLESTONE:
+		block = new RuinedCobblestone(position + glm::vec3(x, y, z));
+		break;
+	case RUINED_DEBRIS:
+		block = new RuinedDebris(position + glm::vec3(x, y, z));
+		break;
+	case REINFORCED_IRON_BLOCK:
+		block = new ReinforcedIronBlock(position + glm::vec3(x, y, z));
+		break;
 	default:
 		block = new NullBlock(position + glm::vec3(x, y, z));
 		break;
@@ -877,9 +889,9 @@ void Chunk::DestroySubChunk(subChunk& c)
 			Block* b = c.blocks[x][z];
 
 			if (b == nullptr) {
-                c.blocks[x][z] = nullptr;
-                continue;
-            }
+				c.blocks[x][z] = nullptr;
+				continue;
+			}
 
 			b->faces.clear();
 			b->Destroy();

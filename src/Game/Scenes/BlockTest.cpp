@@ -11,6 +11,18 @@
 #include "../Objects/Base/Blocks/Water.h"
 #include "../Objects/Base/Blocks/CraftingTable.h"
 #include "../Objects/Base/Blocks/WoodenPlanks.h"
+#include "../Objects/Base/Blocks/Glass.h"
+#include "../Objects/Base/Blocks/Bedrock.h"
+#include "../Objects/Base/Blocks/CoalOre.h"
+#include "../Objects/Base/Blocks/IronOre.h"
+#include "../Objects/Base/Blocks/GoldOre.h"
+#include "../Objects/Base/Blocks/DiamondOre.h"
+#include "../Objects/Base/Blocks/Furnace.h"
+#include "../Objects/Base/Blocks/NullBlock.h"
+#include "../Objects/Base/Blocks/RuinedCobblestone.h"
+#include "../Objects/Base/Blocks/RuinedDebris.h"
+#include "../Objects/Base/Blocks/ReinforcedIronBlock.h"
+
 
 BlockTest::BlockTest()
 {
@@ -38,7 +50,7 @@ void BlockTest::ChangeBlock()
 		block = new Leaves(glm::vec3());
 		break;
 	case SAND:
-		block = new Sand(glm::vec3());
+		block = new Sand(glm::vec3(), false);
 		break;
 	case CRAFTINGTABLE:
 		block = new CraftingTable(glm::vec3());
@@ -46,8 +58,41 @@ void BlockTest::ChangeBlock()
 	case WOODENPLANKS:
 		block = new WoodenPlank(glm::vec3());
 		break;
-	default:
+	case GLASS:
+		block = new Glass(glm::vec3());
+		break;
+	case BEDROCK:
+		block = new Bedrock(glm::vec3());
+		break;
+	case COAL_ORE:
+		block = new CoalOre(glm::vec3());
+		break;
+	case IRON_ORE:
+		block = new IronOre(glm::vec3());
+		break;
+	case GOLD_ORE:
+		block = new GoldOre(glm::vec3());
+		break;
+	case DIAMOND_ORE:
+		block = new DiamondOre(glm::vec3());
+		break;
+	case DIRT:
 		block = new Dirt(glm::vec3());
+		break;
+	case FURNACE:
+		block = new Furnace(glm::vec3());
+		break;
+	case RUINED_COBBLESTONE:
+		block = new RuinedCobblestone(glm::vec3());
+		break;
+	case RUINED_DEBRIS:
+		block = new RuinedDebris(glm::vec3());
+		break;
+	case REINFORCED_IRON_BLOCK:
+		block = new ReinforcedIronBlock(glm::vec3());
+		break;
+	default:
+		block = new NullBlock(glm::vec3());
 		break;
 	}
 
@@ -101,6 +146,12 @@ void BlockTest::Draw()
 
 	glm::vec2 mousePos = Game::instance->GetCursorPos(false);
 
+	Game::instance->shader->Bind();
+
+	glm::mat4 project = cam->GetProjectionMatrix();
+
+	Game::instance->shader->SetUniformMat4f("projection", glm::value_ptr(project));
+	Game::instance->shader->SetUniformMat4f(5, glm::value_ptr(project));
 
 	float x = mousePos.x;
 	float y = mousePos.y;

@@ -1,21 +1,21 @@
-#ifndef _SANDBLOCK_H
-#define _SANDBLOCK_H
+#ifndef _REINFORCEDIRONBLOCK_H
+#define _REINFORCEDIRONBLOCK_H
 
 #include "../Block.h"
-#include "../Chunk.h"
 
-class Sand : public Block
+class ReinforcedIronBlock : public Block
 {
 public:
-	bool falling = false;
-	bool func = true;
-	Chunk* currentChunk;
+	ReinforcedIronBlock(glm::vec3 _position) : Block(_position, BlockType::REINFORCED_IRON_BLOCK) {
+		position = _position;
 
-	Sand(glm::vec3 _position, bool functional = true);
+		soundType = SoundType::S_STONE;
+		toughness = 0.1f;
+	}
 
 	BlockFace CreateFrontFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUVFlip("sand");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("reinforced_iron_block");
 
 		std::vector<GameObject::VVertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, side);
 
@@ -24,7 +24,7 @@ public:
 
 	BlockFace CreateBackFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUVFlip("sand");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("reinforced_iron_block");
 
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
@@ -38,7 +38,7 @@ public:
 
 	BlockFace CreateLeftFace() override
 	{
-		glm::vec4 side = t->spriteSheet.GetUVFlip("sand");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("reinforced_iron_block");
 
 		std::vector<GameObject::VVertex> leftVertices = CreateQuad(position + glm::vec3(1, 0, 0), glm::vec3(0, 1, 1), 0, side);
 
@@ -49,7 +49,7 @@ public:
 	{
 		std::vector<unsigned int> indices = { 0, 1, 3, 1, 2, 3 };
 
-		glm::vec4 side = t->spriteSheet.GetUVFlip("sand");
+		glm::vec4 side = t->spriteSheet.GetUVFlip("reinforced_iron_block");
 
 		std::vector<GameObject::VVertex> rightVertices = CreateQuad(position, glm::vec3(0, 1, 1), 0, side);
 
@@ -61,7 +61,7 @@ public:
 
 	BlockFace CreateTopFace() override
 	{
-		glm::vec4 dirt = t->spriteSheet.GetUVFlip("sand");
+		glm::vec4 dirt = t->spriteSheet.GetUVFlip("reinforced_iron_block");
 
 		std::vector<GameObject::VVertex> topVertices = CreateQuad(position + glm::vec3(0, 1, 0), glm::vec3(1, 0, 0), 1, dirt);
 
@@ -70,14 +70,12 @@ public:
 
 	BlockFace CreateBottomFace() override
 	{
-		glm::vec4 dirt = t->spriteSheet.GetUVFlip("sand");
+		glm::vec4 dirt = t->spriteSheet.GetUVFlip("reinforced_iron_block");
 
 		std::vector<GameObject::VVertex> bottomVertices = CreateQuad(position + glm::vec3(0, 0, 1), glm::vec3(1, 0, 0), -1, dirt);
 
 		return BlockFace(bottomVertices, { 0, 1, 3, 1, 2, 3 });
 	}
-
-	bool Update(int tick) override;
 };
 
 #endif

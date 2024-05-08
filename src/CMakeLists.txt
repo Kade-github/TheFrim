@@ -66,7 +66,10 @@ glad.c
 
 "app.rc" "Game/Objects/Base/Blocks/Water.cpp" "Game/Objects/Base/Blocks/Bedrock.h" "Game/Objects/Base/Blocks/IronOre.h" "Game/Objects/Base/Blocks/CoalOre.h" "Game/Objects/Base/Blocks/GoldOre.h" "Game/Objects/Base/Blocks/DiamondOre.h"
 		Engine/Helpers/Performance.h
- "Game/Objects/Base/FallingBlock.h" "Game/Objects/Base/FallingBlock.cpp" "Game/Objects/Base/Blocks/Sand.cpp" "Game/Objects/Base/Blocks/NullBlock.h" "Game/Objects/Base/Blocks/Torch.h"  "Game/Objects/Base/Blocks/Torch.cpp" "Game/Objects/Base/Blocks/Furnace.h" "Game/Objects/Base/Blocks/Furnace.cpp")
+ "Game/Objects/Base/FallingBlock.h" "Game/Objects/Base/FallingBlock.cpp" "Game/Objects/Base/Blocks/Sand.cpp" "Game/Objects/Base/Blocks/NullBlock.h" "Game/Objects/Base/Blocks/Torch.h"  "Game/Objects/Base/Blocks/Torch.cpp" "Game/Objects/Base/Blocks/Furnace.h" "Game/Objects/Base/Blocks/Furnace.cpp"
+
+ "Game/Objects/Base/Blocks/RuinedCobblestone.h"
+ "Game/Objects/Base/Blocks/RuinedDebris.h" "Game/Objects/Base/Blocks/ReinforcedIronBlock.h")
 
 link_directories(bassLibrary)
 

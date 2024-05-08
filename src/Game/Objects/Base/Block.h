@@ -73,6 +73,10 @@ enum BlockType
 	GOLD_ORE = 17,
 	DIAMOND_ORE = 18,
 	TORCH = 19,
+	RUINED_COBBLESTONE = 20,
+	RUINED_DEBRIS = 21,
+	ROCKET = 22,
+	REINFORCED_IRON_BLOCK = 23
 };
 
 enum SoundType {

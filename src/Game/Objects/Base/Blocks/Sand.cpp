@@ -3,18 +3,24 @@
 #include "../FallingBlock.h"
 #include <Game.h>
 
-Sand::Sand(glm::vec3 _position) : Block(_position, BlockType::SAND)
+Sand::Sand(glm::vec3 _position, bool functional) : Block(_position, BlockType::SAND)
 {
 	position = _position;
 
 	soundType = SoundType::S_SAND;
 	toughness = 1.4;
 
-	currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
+	func = functional;
+
+	if (func)
+		currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
 }
 
 bool Sand::Update(int tick)
 {
+	if (!func)
+		return true;
+
 	if (currentChunk == nullptr)
 		return true;
 
