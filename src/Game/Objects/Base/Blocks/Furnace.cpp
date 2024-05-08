@@ -42,14 +42,14 @@ int Furnace::GetOutputForItem(int item)
 	{
 		int random = rand() % 100;
 
-		if (random < 25)
-			return Data::ITEM_IRON_ORE;
-		else if (random < 75)
-			return Data::ITEM_GOLD_ORE;
-		else if (random < 90)
-			return Data::ITEM_DIAMOND;
-		else
+		if (random < 30)
 			return Data::ITEM_COAL;
+		else if (random < 60)
+			return Data::ITEM_IRON_ORE;
+		else if (random < 90)
+			return Data::ITEM_GOLD_ORE;
+		else
+			return Data::ITEM_DIAMOND;
 	}
 	case Data::ITEM_SAND:
 		return Data::ITEM_GLASS;
@@ -119,8 +119,13 @@ bool Furnace::Update(int tick)
 
 		int output = GetOutputForItem(itemType);
 
-		if (output == Data::ITEM_NULL)
+		Data::DataTag out = data.GetTag("output");
+
+		if (output == Data::ITEM_NULL || !out.IsReal())
 			return true;
+
+		if (output != std::stoi(out.value) && std::stoi(out.value) != -1)
+			return true; // wait for the output to be taken
 
 		int outputCount = data.GetTag("outputCount").IsReal() ? std::stoi(data.GetTag("outputCount").value) : 0;
 
