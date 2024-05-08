@@ -38,18 +38,28 @@ bool Furnace::Update(int tick)
 
 	Data::DataTag ticksLeft = data.GetTag("ticksLeft");
 
+	tickPerc = 0.0f;
+
 	if (!ticksLeft.IsReal())
 		return true;
 
 	int ticks = std::stoi(ticksLeft.value);
 
-	if (ticks <= -1)
+	if (ticksNeeded <= -1)
 	{
 		// decide how long it should take
 
 		Data::DataTag cooking = data.GetTag("cooking");
 
 		if (!cooking.IsReal())
+			return true;
+
+		Data::DataTag fuel = data.GetTag("fuel");
+
+		if (!fuel.IsReal())
+			return true;
+
+		if (std::stoi(fuel.value) != Data::ITEM_COAL && std::stoi(fuel.value) != Data::ITEM_CONDENSED_COAL)
 			return true;
 
 		int itemType = std::stoi(cooking.value);
@@ -59,13 +69,16 @@ bool Furnace::Update(int tick)
 		ticksNeeded = ticksForItem;
 	
 
-		data.SetTag("ticksLeft", std::to_string(ticksForItem));
+		data.SetTag("ticksLeft", std::to_string(ticksNeeded));
 		return true;
 	}
+	else
+	{
+		ticks--;
+		tickPerc = 1.0f - ((float)ticks / (float)ticksNeeded);
+	}
 
-	ticks--;
 
-	tickPerc = 1.0f - ((float)ticks / (float)ticksNeeded);
 
 	if (ticks == 0)
 	{
@@ -128,6 +141,7 @@ bool Furnace::Update(int tick)
 			gp->hud->inv->UpdateInventory();
 		}
 
+		ticksNeeded = -1;
 		tickPerc = 0.0f;
 		data.SetTag("ticksLeft", "-1");
 	}

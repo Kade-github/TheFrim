@@ -194,6 +194,12 @@ void Inventory::CreateFurnace()
 		std::string cookingCount = furnace.GetTag("cooking_count").value;
 		std::string fuelTag = furnace.GetTag("fuel").value;
 
+		int cTag = std::stoi(cookingTag);
+		int fTag = std::stoi(fuelTag);
+
+		if (cTag == -1 || fTag == -1)
+			return;
+
 		furnace_cooking = Data::InventoryItem(std::stoi(cookingTag), std::stoi(cookingCount));
 		furnace_fuel = Data::InventoryItem(std::stoi(fuelTag), std::stoi(furnace.GetTag("fuel_count").value));
 	}
@@ -571,6 +577,8 @@ void Inventory::Close()
 
 		c->myData.setBlockData(x, y, z, furnace);
 		player->selectedBlock->data = furnace;
+
+		output = {};
 	}
 
 	gp->hud->UpdateHotbar();
@@ -710,9 +718,16 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 
 			*it = {};
 
+
 			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
 			gp->hud->UpdateHotbar();
+
+			if (isFurnace && sSlot.id == 90)
+			{
+				output = {};
+				RemoveFront(90);
+			}
 
 
 			Texture* _t = Texture::createWithImage("Assets/Textures/items.png", false); // grab from cache

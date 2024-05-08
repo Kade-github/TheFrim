@@ -1,4 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Free texture packer v0.6.7 http://free-tex-packer.com
+Format:
+n  => name
+x  => x pos
+y  => y pos
+w  => width
+h  => height
+pX => x pos of the pivot point
+pY => y pos of the pivot point
+oX => x-corner offset
+oY => y-corner offset
+oW => original width
+oH => original height
+r => 'y' if sprite is rotated-->
 <TextureAtlas imagePath="ui_sheet.png" width="320" height="256" scale="1" format="RGBA8888">
   <sprite n="bottom" x="0" y="0" w="64" h="64" pX="0.5" pY="0.5"/>
   <sprite n="box_slot" x="64" y="0" w="64" h="64" pX="0.5" pY="0.5"/>
