@@ -184,8 +184,11 @@ void Gameplay::Draw()
 	Chunk* currentChunk = wm->GetChunk(player->position.x, player->position.z);
 
 	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
-	c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
-
+	
+	if (!Hud::GamePaused)
+		c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
+	else
+		c2d->DrawDebugText("Game Paused", glm::vec2(4, 28), 24);
 	MusicManager::GetInstance()->Set3DPosition(camera->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();

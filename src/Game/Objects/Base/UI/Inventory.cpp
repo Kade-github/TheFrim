@@ -536,7 +536,7 @@ void Inventory::Close()
 
 	// give back output
 
-	if (output.type != Data::ItemType::ITEM_NULL)
+	if (output.type != Data::ItemType::ITEM_NULL && !isFurnace)
 	{
 		if (!player->playerData.GiveItem(output)) // inventory full, so drop it
 		{
@@ -640,7 +640,8 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 			furnace.SetTag("cooking_count", std::to_string(furnace_cooking.count));
 			furnace.SetTag("fuel", std::to_string(furnace_fuel.type));
 			furnace.SetTag("fuel_count", std::to_string(furnace_fuel.count));
-			furnace.SetTag("ticksLeft", "-1"); // this tells the furnace to set its own tick timer
+			if (sSlot.id != 48)
+				furnace.SetTag("ticksLeft", "-1"); // this tells the furnace to set its own tick timer
 
 			if (player->selectedBlock != nullptr)
 				player->selectedBlock->data = furnace;
@@ -851,7 +852,8 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 				furnace.SetTag("cooking_count", std::to_string(furnace_cooking.count));
 				furnace.SetTag("fuel", std::to_string(furnace_fuel.type));
 				furnace.SetTag("fuel_count", std::to_string(furnace_fuel.count));
-				furnace.SetTag("ticksLeft", "-1"); // this tells the furnace to set its own tick timer
+				if (sSlot.id != 48)
+					furnace.SetTag("ticksLeft", "-1"); // this tells the furnace to set its own tick timer
 
 				if (player->selectedBlock != nullptr)
 					player->selectedBlock->data = furnace;

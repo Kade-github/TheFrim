@@ -74,7 +74,7 @@ bool Furnace::Update(int tick)
 
 	int ticks = std::stoi(ticksLeft.value);
 
-	if (ticksNeeded <= -1)
+	if (ticksNeeded <= -1 || ticks < 0)
 	{
 		// decide how long it should take
 
@@ -90,6 +90,36 @@ bool Furnace::Update(int tick)
 
 		if (std::stoi(fuel.value) != Data::ITEM_COAL && std::stoi(fuel.value) != Data::ITEM_CONDENSED_COAL)
 			return true;
+
+		bool update = false;
+
+		int fuelCount = data.GetTag("fuel_count").IsReal() ? std::stoi(data.GetTag("fuel_count").value) : 0;
+
+		if (fuelCount > 0)
+		{
+			fuelCount--;
+			data.SetTag("fuel_count", std::to_string(fuelCount));
+			update = true;
+		}
+
+		if (fuelCount == 0)
+		{
+			data.SetTag("fuel", "-1");
+			data.SetTag("fuel_count", "0");
+			update = true;
+		}
+
+		if (update)
+		{
+			Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+			if (gp->hud->inv->shown && gp->hud->inv->isFurnace)
+			{
+				gp->hud->inv->CreateInventory();
+				gp->hud->inv->CreateFurnace();
+				gp->hud->inv->UpdateInventory();
+			}
+		}
 
 		int itemType = std::stoi(cooking.value);
 
@@ -108,7 +138,7 @@ bool Furnace::Update(int tick)
 
 
 
-	if (ticks == 0)
+	if (ticks <= 0)
 	{
 		Data::DataTag cooking = data.GetTag("cooking");
 
@@ -121,10 +151,10 @@ bool Furnace::Update(int tick)
 
 		Data::DataTag out = data.GetTag("output");
 
-		if (output == Data::ITEM_NULL || !out.IsReal())
+		if (output == Data::ITEM_NULL)
 			return true;
 
-		if (output != std::stoi(out.value) && std::stoi(out.value) != -1)
+		if (out.IsReal() && output != std::stoi(out.value) && std::stoi(out.value) != 0)
 			return true; // wait for the output to be taken
 
 		int outputCount = data.GetTag("outputCount").IsReal() ? std::stoi(data.GetTag("outputCount").value) : 0;
@@ -143,23 +173,12 @@ bool Furnace::Update(int tick)
 			data.SetTag("outputCount", "1");
 		}
 
-		int fuelCount = data.GetTag("fuelCount").IsReal() ? std::stoi(data.GetTag("fuelCount").value) : 0;
-
-		if (fuelCount > 0)
-		{
-			fuelCount--;
-			data.SetTag("fuelCount", std::to_string(fuelCount));
-		}
-
-		if (fuelCount == 0)
-			data.SetTag("fuel", "-1");
-
-		int cookingCount = data.GetTag("cookingCount").IsReal() ? std::stoi(data.GetTag("cookingCount").value) : 0;
+		int cookingCount = data.GetTag("cooking_count").IsReal() ? std::stoi(data.GetTag("cooking_count").value) : 0;
 
 		if (cookingCount > 0)
 		{
 			cookingCount--;
-			data.SetTag("cookingCount", std::to_string(cookingCount));
+			data.SetTag("cooking_count", std::to_string(cookingCount));
 		}
 
 		if (cookingCount == 0)
