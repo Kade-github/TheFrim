@@ -70,11 +70,11 @@ bool Furnace::Update(int tick)
 	tickPerc = 0.0f;
 
 	if (!ticksLeft.IsReal())
-		return true;
+	{
+		ticksLeft.Assemble("ticksLeft", "-1");
+	}
 
-	int ticks = std::stoi(ticksLeft.value);
-
-	if (ticksNeeded <= -1 || ticks < 0)
+	if (ticksNeeded <= -1)
 	{
 		// decide how long it should take
 
@@ -126,6 +126,7 @@ bool Furnace::Update(int tick)
 		int ticksForItem = GetTicksForItem(itemType);
 
 		ticksNeeded = ticksForItem;
+		ticks = ticksForItem;
 
 		data.SetTag("ticksLeft", std::to_string(ticksNeeded));
 		return true;

@@ -6,6 +6,7 @@
 class Furnace : public Block
 {
 	int ticksNeeded = -1;
+	int ticks = -1;
 public:
 	float tickPerc = 0.0f;
 
@@ -15,6 +16,12 @@ public:
 		soundType = SoundType::S_STONE;
 		toughness = 0.3f;
 		isInteractable = true;
+
+		if (data.GetTag("ticksLeft").IsReal())
+		{
+			ticksNeeded = std::stoi(data.GetTag("ticksLeft").value);
+			ticks = ticksNeeded;
+		}
 	}
 
 	BlockFace CreateFrontFace() override
