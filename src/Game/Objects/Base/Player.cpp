@@ -770,7 +770,7 @@ void Player::Draw()
 
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
-	if (_inInventory && !Hud::GamePaused)
+	if (_inInventory || Hud::GamePaused)
 		return;
 
 	Camera* camera = Game::instance->GetCamera();
