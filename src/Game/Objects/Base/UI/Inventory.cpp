@@ -566,8 +566,6 @@ void Inventory::Close()
 	delete _draggingItem;
 	_draggingItem = nullptr;
 
-	gp->hud->UpdateHotbar();
-
 	if (isFurnace && player->selectedBlock != nullptr)
 	{
 		// save the data
@@ -581,7 +579,12 @@ void Inventory::Close()
 		player->selectedBlock->data = furnace;
 
 		output = {};
+
+		isFurnace = false;
 	}
+
+	gp->hud->UpdateHotbar();
+
 }
 
 bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
