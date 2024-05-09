@@ -669,24 +669,19 @@ void Player::Draw()
                         {
                             case STONE:
                             case COBBLESTONE:
-                                if (item.breakingPower >= 2)
-                                    giveItem = true;
+                                giveItem = item.breakingPower >= 2;
                                 break;
                             case IRON_ORE:
-                                if (item.breakingPower >= 4)
-                                    giveItem = true;
+                                giveItem = item.breakingPower >= 4;
                                 break;
                             case GOLD_ORE:
-                                if (item.breakingPower >= 6)
-                                    giveItem = true;
+                                giveItem = item.breakingPower >= 6;
                                 break;
                             case DIAMOND_ORE:
-                                if (item.breakingPower >= 6)
-                                    giveItem = true;
+                                giveItem = item.breakingPower >= 6;
                                 break;
                             case RUINED_DEBRIS:
-                                if (item.breakingPower >= 2)
-                                    giveItem = true;
+                                giveItem = item.breakingPower >= 2;
                                 break;
                         }
                     }
