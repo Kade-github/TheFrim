@@ -645,8 +645,58 @@ void Player::Draw()
 				toughness = 1000.0f;
 				correctTool = true;
 			}
+            bool giveItem = true;
 
-			selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * toughness;
+            switch (selectedBlock->type)
+            {
+                case LEAVES:
+                    giveItem = false;
+                    break;
+                case TORCH:
+                    giveItem = true;
+                    break;
+            }
+
+            if (instantBreak)
+                giveItem = true;
+
+            switch(selectedBlock->soundType)
+            {
+                case S_STONE:
+                    if (correctTool)
+                    {
+                        switch (selectedBlock->type)
+                        {
+                            case STONE:
+                            case COBBLESTONE:
+                                if (item.breakingPower >= 2)
+                                    giveItem = true;
+                                break;
+                            case IRON_ORE:
+                                if (item.breakingPower >= 4)
+                                    giveItem = true;
+                                break;
+                            case GOLD_ORE:
+                                if (item.breakingPower >= 6)
+                                    giveItem = true;
+                                break;
+                            case DIAMOND_ORE:
+                                if (item.breakingPower >= 6)
+                                    giveItem = true;
+                                break;
+                            case RUINED_DEBRIS:
+                                if (item.breakingPower >= 2)
+                                    giveItem = true;
+                                break;
+                        }
+                    }
+                    break;
+            }
+
+            if (!giveItem)
+                toughness *= 0.5f;
+
+            selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * toughness;
 
 			if (selectedBlock->breakProgress >= 1)
 			{
@@ -658,38 +708,8 @@ void Player::Draw()
 
 				if (c != nullptr)
 				{
-					bool giveItem = true;
 
-					switch (selectedBlock->type)
-					{
-					case LEAVES:
-						giveItem = false;
-						break;
-					case TORCH:
-						giveItem = true;
-						break;
-					}
 
-					switch(selectedBlock->soundType)
-					{ 
-					case S_STONE:
-						if (correctTool)
-						{
-							switch (selectedBlock->type)
-							{
-							case STONE:
-							case COBBLESTONE:
-								if (item.breakingPower >= 2)
-									giveItem = true;
-								break;
-							}
-						}
-						break;
-					}
-
-					if (instantBreak)
-						giveItem = true;
-					
 					if (giveItem)
 					{
 						Data::InventoryItem item = { selectedBlock->type, 1 };
