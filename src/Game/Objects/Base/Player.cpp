@@ -716,7 +716,7 @@ void Player::Draw()
 						float rY = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
 						float rZ = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
 
-						scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(rX,rY,rZ), item, 10.0f, 1.0f);
+						scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(rX, rY, rZ), item, 10.0f, 1.0f);
 					}
 
 					c->chunkMutex.lock();
