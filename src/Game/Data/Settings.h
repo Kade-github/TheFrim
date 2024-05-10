@@ -24,7 +24,7 @@ public:
 	void Load();
 	void Save();
 
-	MSGPACK_DEFINE_ARRAY(fov, renderDistance, fogDistance, vsync, fullscreen);
+	MSGPACK_DEFINE_ARRAY(fov, renderDistance, fogDistance, vsync, fullscreen, masterVolume);
 };
 
 #endif

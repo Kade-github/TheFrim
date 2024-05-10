@@ -421,8 +421,8 @@ void Player::Draw()
 
 		// factor in boots
 
-		if (playerData.armor[3].armor > 0)
-			fallDamage -= (float)playerData.armor[3].armor / 2.0f;
+		if (playerData.armor[2].armor > 0)
+			fallDamage -= (float)playerData.armor[2].armor / 2.0f;
 
 		if (fallDamage > 0 && !inWater)
 		{

@@ -77,28 +77,6 @@ int main()
 			{
 				if (action == GLFW_PRESS)
 				{
-					switch (key)
-					{
-					case GLFW_KEY_F4:
-						if (Game::instance->isFullscreen)
-						{
-							glfwSetWindowMonitor(window, NULL, 40, 40, 1920, 1080, 0);
-							Game::instance->isFullscreen = false;
-						}
-						else
-						{
-							GLFWmonitor* monitor = glfwGetPrimaryMonitor();
-							const GLFWvidmode* mode = glfwGetVideoMode(monitor);
-							glfwSetWindowMonitor(window, monitor, 0, 0, mode->width, mode->height, mode->refreshRate);
-
-							Game::instance->GetCamera()->width = mode->width;
-							Game::instance->GetCamera()->height = mode->height;
-
-							Game::instance->isFullscreen = true;
-						}
-						break;
-					}
-
 					Game::instance->KeyPress(key);
 				}
 				else if (action == GLFW_RELEASE)
