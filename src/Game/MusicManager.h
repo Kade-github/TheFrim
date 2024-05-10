@@ -20,6 +20,8 @@ class MusicManager
 public:
 	float nextTrack = 0.0f;
 
+	float ourVolume = 1.0f;
+
 	static MusicManager* GetInstance()
 	{
 		static MusicManager instance;

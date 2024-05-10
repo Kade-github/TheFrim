@@ -114,10 +114,7 @@ public:
 	{
 		if (!IsLoaded())
 			return;
-
-		float systemVolume = BASS_GetVolume();
-
-		float v = fmin(systemVolume, vol);
+		float v = vol;
 
 		if (vol <= 0)
 			v = 0;

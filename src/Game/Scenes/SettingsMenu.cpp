@@ -38,17 +38,14 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(fullscreen);
 
-	float fovPerc = Settings::instance->fov / 140;
-
-	if (fovPerc < 0.1f)
-		fovPerc = 0.1f;
-
-	if (fovPerc > 1.0f)
-		fovPerc = 1.0f;
+	float fovPerc = Settings::instance->fov;
 
 	fov = new DragBar(glm::vec3(0, 0, 0), "FOV", fovPerc);
 
 	fov->max = 140;
+	fov->min = 70;
+
+	fov->UpdateBar();
 
 	fov->position = glm::vec3(c2d->_w / 2, c2d->_h / 2, 0);
 
@@ -56,17 +53,14 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(fov);
 
-	float renderDistancePerc = Settings::instance->renderDistance / 2.0f;
-
-	if (renderDistancePerc < 0.1f)
-		renderDistancePerc = 0.1f;
-
-	if (renderDistancePerc > 1.0f)
-		renderDistancePerc = 1.0f;
+	float renderDistancePerc = Settings::instance->renderDistance;
 
 	renderDistance = new DragBar(glm::vec3(0, 0, 0), "Render Distance", renderDistancePerc);
 
 	renderDistance->max = 2.0f;
+	renderDistance->min = 0.1f;
+
+	renderDistance->UpdateBar();
 
 	renderDistance->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 100, 0);
 
@@ -74,17 +68,14 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(renderDistance);
 
-	float fogDistancePerc = Settings::instance->fogDistance / 2.0f;
-
-	if (fogDistancePerc < 0.1f)
-		fogDistancePerc = 0.1f;
-
-	if (fogDistancePerc > 1.0f)
-		fogDistancePerc = 1.0f;
+	float fogDistancePerc = Settings::instance->fogDistance;
 
 	fogDistance = new DragBar(glm::vec3(0, 0, 0), "Fog Distance", fogDistancePerc);
 
 	fogDistance->max = 2.0;
+	fogDistance->min = 0.1f;
+
+	fogDistance->UpdateBar();
 
 	fogDistance->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 200, 0);
 
@@ -92,9 +83,22 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(fogDistance);
 
+	masterVolume = new DragBar(glm::vec3(0, 0, 0), "Master Volume", Settings::instance->masterVolume);
+
+	masterVolume->max = 1.0f;
+	masterVolume->min = 0.0f;
+
+	masterVolume->UpdateBar();
+
+	masterVolume->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 300, 0);
+
+	masterVolume->position -= glm::vec3(masterVolume->width / 2, 0, 0);
+
+	c2d->AddObject(masterVolume);
+
 	back = new Bar(glm::vec3(0, 0, 0), "Back");
 
-	back->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 300, 0);
+	back->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 - 400, 0);
 
 	back->position -= glm::vec3(back->width / 2, 0, 0);
 
@@ -106,6 +110,8 @@ void SettingsMenu::Draw()
 	MusicManager::GetInstance()->Update();
 
 	glm::vec2 mPos = Game::instance->GetCursorPos();
+
+	Settings::instance->masterVolume = masterVolume->value;
 
 	if (mPos.x > vsync->position.x && mPos.x < vsync->position.x + vsync->width && mPos.y > vsync->position.y && mPos.y < vsync->position.y + vsync->height)
 		vsync->selected = true;
@@ -161,9 +167,9 @@ void SettingsMenu::Resize(float _w, float _h)
 
 void SettingsMenu::Destroy()
 {
-	Settings::instance->fov = fov->value * 140;
-	Settings::instance->renderDistance = renderDistance->value * 2.0f;
-	Settings::instance->fogDistance = fogDistance->value * 2.0f;
+	Settings::instance->fov = fov->value;
+	Settings::instance->renderDistance = renderDistance->value;
+	Settings::instance->fogDistance = fogDistance->value;
 
 
 	Settings::instance->Save();

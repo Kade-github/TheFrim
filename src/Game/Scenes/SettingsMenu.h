@@ -19,6 +19,7 @@ public:
 	DragBar* fov;
 	DragBar* renderDistance;
 	DragBar* fogDistance;
+	DragBar* masterVolume;
 
 	Bar* back;
 

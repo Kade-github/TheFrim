@@ -3,7 +3,7 @@
 
 #include <filesystem>
 #include <bass.h>
-
+#include "Data/Settings.h"
 
 void MusicManager::FreeMusic()
 {
@@ -298,6 +298,13 @@ void MusicManager::Update()
 
 	if (glfwGetTime() > nextTrack)
 		PlayNext();
+
+	if (ourVolume != Settings::instance->masterVolume)
+	{
+		ourVolume = Settings::instance->masterVolume;
+
+		BASS_SetVolume(ourVolume);
+	}
 
 	if (Game::instance->audioManager->channels.size() == 0)
 		return;

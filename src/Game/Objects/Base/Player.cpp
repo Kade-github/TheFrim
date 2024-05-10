@@ -419,7 +419,10 @@ void Player::Draw()
 		if (distance < 4)
 			fallDamage = 0;
 
+		// factor in boots
 
+		if (playerData.armor[3].armor > 0)
+			fallDamage -= (float)playerData.armor[3].armor / 2.0f;
 
 		if (fallDamage > 0 && !inWater)
 		{

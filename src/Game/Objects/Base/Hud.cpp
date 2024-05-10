@@ -260,6 +260,33 @@ void Hud::UpdateAir()
 
 void Hud::UpdateArmor()
 {
+	for (auto h : armor)
+	{
+		c2d->RemoveObject(h);
+		delete h;
+	}
+
+	armor.clear();
+
+	int armorProgress = 0;
+
+	armorProgress = player->playerData.armor[0].armor + player->playerData.armor[1].armor + player->playerData.armor[2].armor + player->playerData.armor[3].armor;
+
+	for (int i = 0; i < armorProgress; i++)
+	{
+		Sprite2D* s = new Sprite2D(h, glm::vec3(0, 0, 0));
+
+		s->width = 72;
+		s->height = 72;
+
+		s->position = glm::vec3(((c2d->_w - 162) / 2) - (i * (s->width / 2)), s->height + 216, 0);
+
+		s->src = h->spriteSheet.GetUVFlip("hud_armor");
+
+		s->order = 1;
+		armor.push_back(s);
+		c2d->AddObject(s);
+	}
 }
 
 Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
