@@ -21,7 +21,6 @@ public:
 
 	Bar* selectWorld;
 	Bar* settings;
-    Bar* blockTest;
 	Bar* exit;
 
 	void Create() override;

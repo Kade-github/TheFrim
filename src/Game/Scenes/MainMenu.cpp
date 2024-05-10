@@ -4,7 +4,6 @@
 #include <cmath>
 #include <Helpers/Collision2D.h>
 #include "../MusicManager.h"
-#include "BlockTest.h"
 #include "../CraftingManager.h"
 
 void MainMenu::Create()
@@ -54,21 +53,6 @@ void MainMenu::Create()
 
 	c2d->AddObject(exit);
 
-    blockTest = new Bar(glm::vec3(0, 0, 0), "Block Test");
-
-    blockTest->Resize((blockTest->width * 1.5) - 100, blockTest->height * 1.5);
-
-    blockTest->position.x = c2d->_w - (blockTest->width + 100);
-    blockTest->position.y = c2d->_h - 850;
-
-    c2d->AddObject(blockTest);
-
-	if (!MusicManager::GetInstance()->IsPlaying())
-	{
-		MusicManager::GetInstance()->GenerateTrackList();
-		MusicManager::GetInstance()->PlayMusic("thefrim", 4);
-	}
-
 	Game::instance->SetLockedCursor(false);
 }
 
@@ -113,7 +97,6 @@ void MainMenu::Draw()
 			selectWorld->selected = true;
 			settings->selected = false;
 			exit->selected = false;
-            blockTest->selected = false;
 			mouseSelected = true;
 		}
 		else if (Collision2D::PointInRect(mPos, settings->position, glm::vec2{ settings->width, settings->height }))
@@ -122,7 +105,6 @@ void MainMenu::Draw()
 			selectWorld->selected = false;
 			settings->selected = true;
 			exit->selected = false;
-            blockTest->selected = false;
 			mouseSelected = true;
 		}
 		else if (Collision2D::PointInRect(mPos, exit->position, glm::vec2{ exit->width, exit->height }))
@@ -131,18 +113,8 @@ void MainMenu::Draw()
 			selectWorld->selected = false;
 			settings->selected = false;
 			exit->selected = true;
-            blockTest->selected = false;
 			mouseSelected = true;
 		}
-        else if (Collision2D::PointInRect(mPos, blockTest->position, glm::vec2{ blockTest->width, blockTest->height }))
-        {
-            selectedIndex = 3;
-            selectWorld->selected = false;
-            settings->selected = false;
-            exit->selected = false;
-            blockTest->selected = true;
-            mouseSelected = true;
-        }
 		else if (mouseSelected)
 		{
 			selectedIndex = -1;
@@ -170,11 +142,6 @@ void MainMenu::MouseClick(int button, glm::vec2 mPos)
 			MusicManager::GetInstance()->PlaySFX("select");
 			Game::instance->SwitchScene(new SettingsMenu());
 		}
-        else if (blockTest->selected)
-        {
-            MusicManager::GetInstance()->PlaySFX("select");
-            Game::instance->SwitchScene(new BlockTest());
-        }
 		else if (exit->selected)
 			glfwSetWindowShouldClose(Game::instance->GetWindow(), true);
 	}
