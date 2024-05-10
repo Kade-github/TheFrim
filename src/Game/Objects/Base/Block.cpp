@@ -172,11 +172,11 @@ void Block::Draw(std::vector<GameObject::VVertex>& verts, std::vector<unsigned i
 
 int Block::GetBreakTexture()
 {
-	if (breakProgress < 0.2f)
+	if (breakProgress < 0.25f)
 		return 0;
-	else if (breakProgress < 0.45f)
+	else if (breakProgress < 0.5f)
 		return 1;
-	else if (breakProgress < 0.7f)
+	else if (breakProgress < 0.75f)
 		return 2;
 	else
 		return 3;

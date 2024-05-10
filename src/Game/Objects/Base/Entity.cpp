@@ -16,9 +16,6 @@ Entity::Entity(glm::vec3 pos) : GameObject(pos)
 void Entity::Footstep()
 {
 	Chunk* c = WorldManager::instance->GetChunk(position.x, position.z);
-
-	float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
-
 	// get block under player
 
 	int y = (int)position.y - 2;
@@ -39,20 +36,30 @@ void Entity::Footstep()
 
 		Block* b = sb.getBlock(_world.x, _world.z);
 
-		if (b != nullptr)
+		FootstepSound(b);
+	}
+}
+
+void Entity::FootstepSound(Block* b, std::string append, float pitchAdd)
+{
+	float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
+
+	if (pitchAdd != 0)
+		pitch = 1.0f + (pitchAdd / 100.0f);
+
+	if (b != nullptr)
+	{
+		switch (b->soundType)
 		{
-			switch (b->soundType)
-			{
-			case SoundType::S_GRASS:
-				MusicManager::GetInstance()->PlaySFX("grass_sfx", position, pitch, "walk");
-				break;
-			case SoundType::S_STONE:
-				MusicManager::GetInstance()->PlaySFX("stone_sfx", position, pitch, "walk");
-				break;
-			case SoundType::S_WOOD:
-				MusicManager::GetInstance()->PlaySFX("wood_sfx", position, pitch, "walk");
-				break;
-			}
+		case SoundType::S_GRASS:
+			MusicManager::GetInstance()->PlaySFX("grass_sfx", position, pitch, "walk" + append);
+			break;
+		case SoundType::S_STONE:
+			MusicManager::GetInstance()->PlaySFX("stone_sfx", position, pitch, "walk" + append);
+			break;
+		case SoundType::S_WOOD:
+			MusicManager::GetInstance()->PlaySFX("wood_sfx", position, pitch, "walk" + append);
+			break;
 		}
 	}
 }

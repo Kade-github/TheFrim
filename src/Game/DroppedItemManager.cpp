@@ -1,6 +1,7 @@
 #include "DroppedItemManager.h"
 #include <Game.h>
 #include "Scenes/Gameplay.h"
+#include "MusicManager.h"
 
 DroppedItemManager::~DroppedItemManager()
 {
@@ -94,6 +95,10 @@ void DroppedItemManager::Update()
 			Data::InventoryItem it = item->item;
 
 			player->playerData.GiveItem(it);
+
+			float pitch = 1.0f + ((rand() % 50) - 50) / 100.0f;
+
+			MusicManager::GetInstance()->PlaySFX("item_pickup", item->position, pitch, "pickup" + std::to_string(item->position.x + item->position.y + item->position.z));
 
 			g->hud->UpdateHotbar();
 			

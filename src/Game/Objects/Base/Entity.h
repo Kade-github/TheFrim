@@ -3,6 +3,7 @@
 
 #include <Objects/GameObject.h>
 #include <Objects/3DSprite.h>
+#include "Block.h"
 
 class Entity : public GameObject
 {
@@ -34,6 +35,7 @@ public:
     ~Entity();
 
 	void Footstep();
+	void FootstepSound(Block* b, std::string appendName = "", float pitchAdd = 0);
 
 	void Launch(glm::vec3 direction, float force);
 	void Launch(glm::vec3 direction, float force, float upForce);

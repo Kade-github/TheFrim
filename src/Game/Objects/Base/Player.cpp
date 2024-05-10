@@ -528,10 +528,25 @@ void Player::Draw()
 
 				glm::vec3 _world = c->WorldToChunk(ray);
 
-				selectedBlock = sb.getBlock(_world.x, _world.z);
+				Block* next = sb.getBlock(_world.x, _world.z);
 
 				if (selectedBlock != nullptr)
 				{
+					if (next != nullptr && next->position != selectedBlock->position)
+					{
+						selectedBlock->breakProgress = 0;
+						lastBreakSfx = 0;
+					}
+				}
+				else
+				{
+					lastBreakSfx = 0;
+				}
+
+				if (next != nullptr)
+				{
+					selectedBlock = next;
+
 					// get the closest face
 
 					bool stop = false;
@@ -691,7 +706,47 @@ void Player::Draw()
             if (!giveItem)
                 toughness *= 0.5f;
 
+			int p = std::max((int)(selectedBlock->breakProgress * 100),0);
+
+			if (lastBreakSfx == 0)
+			{
+				if (std::abs(glfwGetTime() - breakCooldown) > 0.1)
+				{
+					int rander = (rand() % 1000);
+					FootstepSound(selectedBlock, std::to_string(lastBreakSfx + rander), -30);
+				}
+
+				lastBreakSfx = 1;
+			}
+
+			if (p > 25 && lastBreakSfx == 1)
+			{
+				int rander = (rand() % 1000);
+				FootstepSound(selectedBlock, std::to_string(lastBreakSfx + rander), -20);
+
+				lastBreakSfx = 25;
+			}
+
+
+			if (p > 50 && lastBreakSfx == 25)
+			{
+				int rander = (rand() % 1000);
+				FootstepSound(selectedBlock, std::to_string(lastBreakSfx + rander), -10);
+
+				lastBreakSfx = 50;
+			}
+
+			if (p > 75 && lastBreakSfx == 50)
+			{
+				int rander = (rand() % 1000);
+				FootstepSound(selectedBlock, std::to_string(lastBreakSfx + rander), 0);
+
+				lastBreakSfx = 75;
+			}
+
             selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * toughness;
+
+
 
 			if (selectedBlock->breakProgress >= 1)
 			{
@@ -733,6 +788,13 @@ void Player::Draw()
 
 						scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(rX, rY, rZ), item, 10.0f, 1.0f);
 					}
+
+					int rander = (rand() % 1000);
+					FootstepSound(selectedBlock, std::to_string(lastBreakSfx + rander), 40);
+
+					lastBreakSfx = 100;
+
+					breakCooldown = glfwGetTime();
 
 					c->chunkMutex.lock();
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
@@ -776,6 +838,7 @@ void Player::Draw()
 		else if (selectedBlock != nullptr)
 		{
 			selectedBlock->breakProgress = 0;
+			lastBreakSfx = 0;
 		}
 	}
 
