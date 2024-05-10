@@ -95,10 +95,12 @@ void Gameplay::Draw()
 
 	// CHUNK UPDATES
 	float currentTime = glfwGetTime();
+	bool shouldUpdate = false;
 	if (std::abs(currentTime - lastUpdate) >= 0.05f) // 20 times a second
 	{
 
 		UpdateChunks();
+		shouldUpdate = true;
 
 		lastUpdate = currentTime;
 	}
@@ -235,7 +237,8 @@ void Gameplay::Draw()
 		c2d->Draw();
 	}
 
-	dim->Update(); // these use delayed 
+	if (shouldUpdate)
+		dim->Update(); // these use delayed 
 
 	if (camera->vertices.size() != 0)
 		camera->DebugDraws();

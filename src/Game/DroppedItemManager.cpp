@@ -55,10 +55,8 @@ void DroppedItemManager::RemoveItem(DroppedItem* item)
 		{
 			items.erase(items.begin() + i);
 			Gameplay* g = (Gameplay*)Game::instance->currentScene;
-			g->RemoveObject(item);
+			g->DelayedRemoveObject(item);
 
-			delete item;
-			item = nullptr;
 			break;
 		}
 	}
@@ -73,6 +71,17 @@ void DroppedItemManager::Update()
 	for (int i = 0; i < items.size(); i++)
 	{
 		DroppedItem* item = items[i];
+
+		if (item == nullptr)
+		{
+			Gameplay* g = (Gameplay*)Game::instance->currentScene;
+			g->DelayedRemoveObject(item);
+
+			items.erase(items.begin() + i);
+			Update();
+			break;
+		}
+
 
 		float time = glfwGetTime() - item->lifeTime;
 
@@ -94,15 +103,17 @@ void DroppedItemManager::Update()
 		{
 			Data::InventoryItem it = item->item;
 
-			player->playerData.GiveItem(it);
+			if (player->playerData.GiveItem(it))
+			{
 
-			float pitch = 1.0f + ((rand() % 50) - 50) / 100.0f;
+				float pitch = 1.0f + ((rand() % 50) - 50) / 100.0f;
 
-			MusicManager::GetInstance()->PlaySFX("item_pickup", item->position, pitch, "pickup" + std::to_string(item->position.x + item->position.y + item->position.z));
+				MusicManager::GetInstance()->PlaySFX("item_pickup", item->position, pitch, "pickup" + std::to_string(item->position.x + item->position.y + item->position.z));
 
-			g->hud->UpdateHotbar();
-			
-			RemoveItem(item);
+				g->hud->UpdateHotbar();
+
+				RemoveItem(item);
+			}
 			break;
 		}
 

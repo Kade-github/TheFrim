@@ -439,6 +439,8 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 		sl.front = s;
 	}
+
+	Draw();
 }
 
 glm::vec2 Inventory::ConvertToSlotPos(std::string tag_id)

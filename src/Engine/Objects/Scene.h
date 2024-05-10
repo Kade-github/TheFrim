@@ -117,6 +117,8 @@ public:
 			{
 				delayedRemoveObjects[i]->delayed = false;
 				RemoveObject(delayedRemoveObjects[i]);
+
+				delete delayedRemoveObjects[i];
 			}
 		}
 
