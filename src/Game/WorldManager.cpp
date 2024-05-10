@@ -97,13 +97,7 @@ void WorldManager::CreateWorld(std::string _seed, std::string _name)
 
 	// Generate regions
 
-	for(int i = -1; i < 2; i++)
-		for (int j = -1; j < 2; j++)
-		{
-			_generatePool.detach_task([i, j]() {
-				instance->GenerateRegion(i, j);
-			});
-		}
+	LoadWorld();
 }
 
 bool WorldManager::IsRegionGenerated(int x, int z)
@@ -225,20 +219,46 @@ void WorldManager::LoadWorld()
 	int playerX = _world.p.x;
 	int playerZ = _world.p.z;
 
+	int x = playerX / (CHUNK_SIZE * REGION_SIZE);
+	int z = playerZ / (CHUNK_SIZE * REGION_SIZE);
+
 	// initial
-	_generatePool.detach_task([&, playerX, playerZ]() {
-		int x = playerX / (CHUNK_SIZE * REGION_SIZE);
-		int z = playerZ / (CHUNK_SIZE * REGION_SIZE);
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x,z);
+	});
+
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x + 1, z);
+	});
+
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x - 1, z);
+	});
+
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x, z + 1);
+	});
+
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x, z - 1);
+	});
+
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x + 1, z + 1);
+	});
+
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x - 1, z - 1);
+	});
+
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x + 1, z - 1);
+	});
+
+	_generatePool.detach_task([&, x, z]() {
 		instance->LoadRegion(x - 1, z + 1);
 	});
+
 
 }
 

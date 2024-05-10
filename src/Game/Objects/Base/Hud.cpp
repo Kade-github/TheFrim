@@ -23,8 +23,7 @@ void Hud::InventoryShown(bool s)
 
 	inv->shown = s;
 	inv->UpdateInventory();
-
-	GamePaused = s;
+	GamePaused = false;
 }
 
 void Hud::ShowCraftingTable(bool s)
