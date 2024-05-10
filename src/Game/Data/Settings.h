@@ -16,7 +16,7 @@ public:
 
 	float fogDistance = 1.0f;
 
-	float masterVolume = 0.4f;
+	float masterVolume = 0.2f;
 
 	bool vsync = true;
 	bool fullscreen = false;

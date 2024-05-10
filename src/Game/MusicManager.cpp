@@ -52,6 +52,9 @@ void MusicManager::GenerateTrackList()
 
 		if (p.find(".mp3") != std::string::npos)
 		{
+			if (p.find("thefrim") != std::string::npos)
+				continue;
+
 			p = p.substr(path.size(), p.size() - path.size() - 4);
 			trackList.push_back(p);
 		}
@@ -299,11 +302,14 @@ void MusicManager::Update()
 	if (glfwGetTime() > nextTrack)
 		PlayNext();
 
-	if (ourVolume != Settings::instance->masterVolume)
-	{
-		ourVolume = Settings::instance->masterVolume;
+	float systemVol = BASS_GetVolume();
 
-		BASS_SetVolume(ourVolume);
+	float mV = std::min(Settings::instance->masterVolume, systemVol);
+
+	if (mV != ourVolume)
+	{
+		ourVolume = mV;
+		Game::instance->audioManager->SetVolume(ourVolume);
 	}
 
 	if (Game::instance->audioManager->channels.size() == 0)

@@ -83,7 +83,7 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(fogDistance);
 
-	masterVolume = new DragBar(glm::vec3(0, 0, 0), "Master Volume", Settings::instance->masterVolume);
+	masterVolume = new DragBar(glm::vec3(0, 0, 0), "Music Volume", Settings::instance->masterVolume);
 
 	masterVolume->max = 1.0f;
 	masterVolume->min = 0.0f;
@@ -148,7 +148,10 @@ void SettingsMenu::MouseClick(int button, glm::vec2 mPos)
 			fullscreen->SetText("Fullscreen: " + std::string(Settings::instance->fullscreen ? "on" : "off"));
 		}
 		else if (back->selected)
+		{
+			MusicManager::GetInstance()->PlaySFX("select");
 			Game::instance->SwitchScene(new MainMenu());
+		}
 	}
 
 	c2d->MouseClick(button, mPos);

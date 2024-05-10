@@ -10,6 +10,7 @@
 class MainMenu : public Scene
 {
 public:
+	static bool firstStart;
 	Camera2D* c2d;
 
 	Sprite2D* background;

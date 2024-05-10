@@ -6,8 +6,15 @@
 #include "../MusicManager.h"
 #include "../CraftingManager.h"
 
+bool MainMenu::firstStart = true;
+
 void MainMenu::Create()
 {
+	if (firstStart)
+	{
+		MusicManager::GetInstance()->PlayMusic("thefrim", 5.0);
+	}
+	firstStart = false;
 	CraftingManager::GetInstance()->Init();
 
 	c2d = new Camera2D(glm::vec3(0, 0, 0));

@@ -27,7 +27,9 @@ public:
 
 	bool isFreed = false;
 
+	float mixVolume = 1.0f;
 	float volume = 1.0f;
+	float realVolume = 1.0f;
 	float length = 0.0f;
 	float pitch = 1.0f;
 
@@ -48,6 +50,7 @@ public:
 		_path = path;
 		name = _name;
 
+
 		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, BASS_STREAM_PRESCAN | BASS_SAMPLE_FLOAT);
 
 		CheckError();
@@ -57,7 +60,9 @@ public:
 		CheckError();
 
 		if (IsLoaded())
+		{
 			length = BASS_ChannelBytes2Seconds(id, BASS_ChannelGetLength(id, BASS_POS_BYTE));
+		}
 	}
 
 	bool IsLoaded()
@@ -122,7 +127,9 @@ public:
 		if (vol >= 1)
 			v = 1;
 
-		BASS_ChannelSetAttribute(id, BASS_ATTRIB_VOL, v);
+		realVolume = fmin(mixVolume, v);
+
+		BASS_ChannelSetAttribute(id, BASS_ATTRIB_VOL, realVolume);
 
 		CheckError();
 
@@ -249,6 +256,8 @@ class AudioManager {
 public:
 	std::vector<Channel*> channels;
 
+	float volume = 1.0f;
+
 	AudioManager()
 	{
 		BASS_Init(-1, 44100, 0, 0, NULL);
@@ -271,6 +280,9 @@ public:
 
 		if (channels.empty())
 			return nullptr;
+
+		c->mixVolume = fmin(BASS_GetVolume(), volume);
+		c->SetVolume(c->volume);
 
 		return c;
 	}
@@ -341,6 +353,26 @@ public:
 				RemoveChannel(c);
 				break;
 			}
+		}
+	}
+
+	void SetVolume(float vol)
+	{
+		if (vol <= 0)
+			vol = 0;
+
+		if (vol >= 1)
+			vol = 1;
+
+		volume = vol;
+
+		for (int i = 0; i < channels.size(); i++)
+		{
+			Channel* c = channels[i];
+
+			c->mixVolume = fmin(BASS_GetVolume(), vol);
+
+			c->SetVolume(c->volume);
 		}
 	}
 
