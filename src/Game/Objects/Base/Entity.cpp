@@ -51,6 +51,7 @@ void Entity::FootstepSound(Block* b, std::string append, float pitchAdd)
 	{
 		switch (b->soundType)
 		{
+		case SoundType::S_SAND:
 		case SoundType::S_GRASS:
 			MusicManager::GetInstance()->PlaySFX("grass_sfx", position, pitch, "walk" + append);
 			break;
