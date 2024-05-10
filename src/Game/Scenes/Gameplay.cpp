@@ -237,7 +237,7 @@ void Gameplay::Draw()
 		c2d->Draw();
 	}
 
-	if (shouldUpdate)
+	if (shouldUpdate && !hud->GamePaused)
 		dim->Update(); // these use delayed 
 
 	if (camera->vertices.size() != 0)

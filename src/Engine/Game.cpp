@@ -210,6 +210,7 @@ void Game::Render()
 			delete currentScene;
 		}
 		currentScene = toScene;
+		TextureCache::Clear();
 		CreateScene();
 		toScene = nullptr;
 		switchScene = false;
