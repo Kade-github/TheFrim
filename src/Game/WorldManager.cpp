@@ -320,8 +320,8 @@ void WorldManager::SaveRegion(Region& r)
 
 		if (cD != nullptr)
 		{
-			cD->bChunk = c->myData.bChunk;
-			cD->data = c->myData.data;
+			Data::Chunk& cData = *cD;
+			cData = c->GetChunkData();
 		}
 	}
 

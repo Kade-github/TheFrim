@@ -780,7 +780,6 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 	Block* block;
 	Data::DataTag dataOne;
 	Data::DataTag dataTwo;
-
 	bool source = false;
 
 	switch (id)
@@ -894,6 +893,10 @@ void Chunk::DestroySubChunk(subChunk& c)
 			}
 
 			b->faces.clear();
+			if (b->data.tags.size() > 0)
+			{
+				myData.setBlockData(b->chunkPosition.x, b->chunkPosition.y, b->chunkPosition.z, b->data);
+			}
 			b->Destroy();
 			delete b;
 			c.blocks[x][z] = nullptr;

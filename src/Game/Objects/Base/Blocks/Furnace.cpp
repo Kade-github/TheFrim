@@ -1,6 +1,8 @@
 #include "Furnace.h"
 #include "../../../Scenes/Gameplay.h"
 #include <Game.h>
+#include "../../../LightingManager.h"
+
 
 void Furnace::OnInteract()
 {
@@ -62,6 +64,28 @@ int Furnace::GetOutputForItem(int item)
 
 bool Furnace::Update(int tick)
 {
+	if (check)
+	{
+		if (data.GetTag("ticksLeft").IsReal())
+		{
+			int left = std::stoi(data.GetTag("ticksLeft").value);
+
+			if (left >= 0)
+			{
+				cookingType = std::stoi(data.GetTag("cooking").value);
+				ticksNeeded = GetTicksForItem(cookingType);
+				ticks = left;
+
+				if (!light)
+				{
+					LightingManager::GetInstance()->AddLight(position, 10);
+				}
+				light = true;
+			}
+		}
+		check = false;
+	}
+
 	if (tick % 20 != 0)
 		return true;
 
@@ -71,7 +95,8 @@ bool Furnace::Update(int tick)
 
 	if (!ticksLeft.IsReal())
 	{
-		ticksLeft.Assemble("ticksLeft", "-1");
+		data.AddTag("ticksLeft", "-1");
+		return true;
 	}
 
 	if (ticksNeeded <= -1 && ticks <= -1)
@@ -207,12 +232,26 @@ bool Furnace::Update(int tick)
 		ticksNeeded = -1;
 		ticks = -1;
 		tickPerc = 0.0f;
+		if (light)
+			LightingManager::GetInstance()->RemoveLight(position);
+		light = false;
 		data.SetTag("ticksLeft", "-1");
 	}
 	else
 	{
+		if (!light)
+		{
+			LightingManager::GetInstance()->AddLight(position, 10);
+		}
+		light = true;
 		data.SetTag("ticksLeft", std::to_string(ticks));
 	}
 
 	return true;
+}
+
+void Furnace::Destroy()
+{
+	if (light)
+		LightingManager::GetInstance()->RemoveLight(position);
 }

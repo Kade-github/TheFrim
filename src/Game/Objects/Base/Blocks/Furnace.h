@@ -2,14 +2,19 @@
 #define _FURNACEBLOCK_H
 
 #include "../Block.h"
-
+#include "../../../WorldManager.h"
 class Furnace : public Block
 {
+	bool check = true;
+	Chunk* currentChunk = nullptr;
+public:
+	float tickPerc = 0.0f;
+
 	int ticksNeeded = -1;
 	int ticks = -1;
 	int cookingType = -1;
-public:
-	float tickPerc = 0.0f;
+
+	bool light = false;
 
 	Furnace(glm::vec3 _position) : Block(_position, BlockType::FURNACE) {
 		position = _position;
@@ -18,11 +23,7 @@ public:
 		toughness = 0.3f;
 		isInteractable = true;
 
-		if (data.GetTag("ticksLeft").IsReal())
-		{
-			ticksNeeded = std::stoi(data.GetTag("ticksLeft").value);
-			ticks = ticksNeeded;
-		}
+		currentChunk = WorldManager::instance->GetChunk(position.x, position.z);
 	}
 
 	BlockFace CreateFrontFace() override
@@ -95,6 +96,8 @@ public:
 	int GetOutputForItem(int item);
 
 	bool Update(int tick) override;
+
+	void Destroy() override;
 };
 
 #endif

@@ -608,9 +608,10 @@ void Gameplay::KeyPress(int key)
 	{
 		Data::InventoryItem i(Data::ITEM_COAL, 64);
 		Data::InventoryItem i2(Data::ITEM_IRON_ORE, 64);
-
+		Data::InventoryItem i3(Data::ITEM_FURNACE, 1);
 		player->playerData.GiveItem(i);
 		player->playerData.GiveItem(i2);
+		player->playerData.GiveItem(i3);
 	}
 
 

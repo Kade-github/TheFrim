@@ -573,9 +573,17 @@ void Inventory::Close()
 		// save the data
 		Chunk* c = WorldManager::instance->GetChunk(player->selectedBlock->position.x, player->selectedBlock->position.z);
 
-		int x = player->selectedBlock->position.x;
-		int y = player->selectedBlock->position.y;
-		int z = player->selectedBlock->position.z;
+		int x = player->selectedBlock->chunkPosition.x;
+		int y = player->selectedBlock->chunkPosition.y;
+		int z = player->selectedBlock->chunkPosition.z;
+
+		furnace.SetTag("cooking", std::to_string(furnace_cooking.type));
+		furnace.SetTag("cooking_count", std::to_string(furnace_cooking.count));
+		furnace.SetTag("fuel", std::to_string(furnace_fuel.type));
+		furnace.SetTag("fuel_count", std::to_string(furnace_fuel.count));
+
+		furnace.SetTag("output", std::to_string(output.type));
+		furnace.SetTag("outputCount", std::to_string(output.count));
 
 		c->myData.setBlockData(x, y, z, furnace);
 		player->selectedBlock->data = furnace;
