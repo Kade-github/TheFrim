@@ -7,11 +7,14 @@
 
 class Entity : public GameObject
 {
+	int lightUpdate = 0;
 public:
 	Sprite3D* shadow;
 	
 	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
+
+	int lightLevel = 10;
 
 	bool isCreature = true;
 

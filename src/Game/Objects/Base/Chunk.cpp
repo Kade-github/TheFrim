@@ -1097,6 +1097,7 @@ void Chunk::DrawRegular()
 	glBindVertexArray(VAO); // regular faces
 	txp->Bind();
 	s->Bind();
+	s->SetUniform1f("lightLevel", 10.0f);
 
 	glm::mat4 model = glm::mat4(1.0f);
 
@@ -1146,6 +1147,7 @@ void Chunk::DrawTransparent()
 	glBindVertexArray(TRANSPARENTVAO); // transparent faces
 	txp->Bind();
 	s->Bind();
+	s->SetUniform1f("lightLevel", 10.0f);
 
 	glm::mat4 model = glm::mat4(1.0f);
 
@@ -1169,13 +1171,14 @@ void Chunk::DrawShadows()
 		return;
 
 	Shader* s = Game::instance->shader;
-
+	
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);
 
 	glBindVertexArray(SHADOWVAO); // shadow faces
 	txp->Bind();
 	s->Bind();
+	s->SetUniform1f("lightLevel", 10.0f);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SHADOWEBO);
 

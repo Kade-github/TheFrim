@@ -69,11 +69,11 @@ glad.c
  "Game/Objects/Base/FallingBlock.h" "Game/Objects/Base/FallingBlock.cpp" "Game/Objects/Base/Blocks/Sand.cpp" "Game/Objects/Base/Blocks/NullBlock.h" "Game/Objects/Base/Blocks/Torch.h"  "Game/Objects/Base/Blocks/Torch.cpp" "Game/Objects/Base/Blocks/Furnace.h" "Game/Objects/Base/Blocks/Furnace.cpp"
 
  "Game/Objects/Base/Blocks/RuinedCobblestone.h"
- "Game/Objects/Base/Blocks/RuinedDebris.h" "Game/Objects/Base/Blocks/ReinforcedIronBlock.h")
+ "Game/Objects/Base/Blocks/RuinedDebris.h" "Game/Objects/Base/Blocks/ReinforcedIronBlock.h" "Game/Objects/Base/Zombie.h" "Game/Objects/Base/AI.h" "Game/Objects/Base/AI.cpp")
 
 link_directories(bassLibrary)
 
-add_executable(TheFrim ${SOURCE_FILES})
+add_executable(TheFrim ${SOURCE_FILES} "Game/Objects/Base/Zombie.cpp")
 
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"

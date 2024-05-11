@@ -14,6 +14,24 @@ void Model::loadModel(std::string path)
     directory = path.substr(0, path.find_last_of('/'));
 
     processNode(scene->mRootNode, scene);
+
+    // get names from the file
+
+    std::fstream file;
+
+    file.open(path);
+
+    std::string line;
+    int i = 0;
+    while (std::getline(file, line))
+    {
+        if (line.find("o ") != std::string::npos)
+        {
+			std::string name = line.substr(2, line.size() - 2);
+            meshes[i].name = name;
+            i++;
+		}
+	}
 }
 
 void Model::processNode(aiNode* node, const aiScene* scene)
@@ -103,7 +121,7 @@ void Model::Draw()
         glm::mat4 model = glm::mat4(1.0f);
 
         model = glm::translate(model, position + mesh.position);
-        model = glm::rotate(model, glm::radians(angle + mesh.angle), rotateAxis);
+        model = glm::rotate(model, glm::radians(angle + mesh.angle), mesh.axis);
         model = glm::scale(model, scale * mesh.scale);
 
         Game::instance->shader->SetUniformMat4f("model", &model[0][0]);

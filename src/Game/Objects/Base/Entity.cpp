@@ -3,6 +3,7 @@
 #include "../../Scenes/Gameplay.h"
 #include "../../WorldManager.h"
 #include "../../MusicManager.h"
+#include "../../LightingManager.h"
 
 Entity::Entity(glm::vec3 pos) : GameObject(pos)
 {
@@ -365,6 +366,13 @@ void Entity::Draw()
 		inWater = topWater || RayToIncludeWater(ray2, true);
 	else
 		inWater = topWater;
+
+	if (glfwGetTime() - lightUpdate > 0.1)
+	{
+		lightUpdate = glfwGetTime();
+
+		lightLevel = LightingManager::GetInstance()->GetLightLevel(position);
+	}
 
 	if (!Hud::GamePaused)
 	{

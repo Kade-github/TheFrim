@@ -41,6 +41,16 @@ void DroppedItem::Draw()
 
 	Entity::Draw();
 
+	Game::instance->shader->Bind();
+
+	Game::instance->shader->SetUniform1f("lightLevel", (float)lightLevel);
+
 	sprite->Draw();
+
+	Game::instance->shader->Bind();
+
+	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
+
+	Game::instance->shader->Unbind();
 
 }

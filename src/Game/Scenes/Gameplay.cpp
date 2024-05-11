@@ -7,6 +7,7 @@
 #include "../MusicManager.h"
 #include "../Data/Settings.h"
 #include "../CraftingManager.h"
+#include "../Objects/Base/Zombie.h"
 
 glm::vec3 rotate(const glm::vec3& v, const glm::vec3& k, float theta)
 {
@@ -163,6 +164,7 @@ void Gameplay::Draw()
 	Game::instance->shader->SetUniform3f("CameraPos", camera->position.x, camera->position.y, camera->position.z);
 	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);
 	Game::instance->shader->SetUniform1f("FogFar", fog);
+	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
 
 
 	Game::instance->shader->Unbind();
@@ -597,12 +599,13 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_O)
 	{
-		Data::InventoryItem i(Data::ITEM_GOLD_HELMET, 1);
-		Data::InventoryItem i2(Data::ITEM_GOLD_CHESTPLATE, 1);
-		Data::InventoryItem i3(Data::ITEM_GOLD_BOOTS, 1);
-		player->playerData.GiveItem(i);
-		player->playerData.GiveItem(i2);
-		player->playerData.GiveItem(i3);
+		// Spawn a zombie
+
+		Zombie* z = new Zombie(player->position + glm::vec3(0, 4, 0));
+
+		z->order = 2;
+
+		AddObject(z);
 	}
 
 
