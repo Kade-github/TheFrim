@@ -709,6 +709,9 @@ void Player::Draw()
             if (!giveItem)
                 toughness *= 0.5f;
 
+			if (!correctTool)
+				toughness *= 0.5f;
+
 			int p = std::max((int)(selectedBlock->breakProgress * 100),0);
 
 			if (lastBreakSfx == 0)

@@ -273,7 +273,7 @@ void Hud::UpdateArmor()
 
 	armorProgress = player->playerData.armor[0].armor + player->playerData.armor[1].armor + player->playerData.armor[2].armor;
 
-	float lastHotbarX = hotbar.back()->position.x;
+	float lastHotbarX = hotbar.back()->position.x + 32;
 	int realI = 0;
 	int up = 0;
 	for (int i = 0; i < armorProgress; i++)
