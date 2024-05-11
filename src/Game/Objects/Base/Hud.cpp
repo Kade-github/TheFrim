@@ -285,10 +285,10 @@ void Hud::UpdateArmor()
 
 		int rI = realI;
 
-		s->position = glm::vec3(lastHotbarX - (realI * ((s->width + 6) / 2)), s->height + 72, 0);
+		s->position = glm::vec3(lastHotbarX - (realI * ((s->width + 12) / 2)), s->height + 72, 0);
 
 		for(int j = 0; j < up; j++)
-			s->position.y += 72;
+			s->position.y += 36;
 
 		realI = rI;
 
@@ -297,8 +297,8 @@ void Hud::UpdateArmor()
 			rI -= 8;
 			realI = rI;
 
-			s->position.y += 72; 
-			s->position.x = lastHotbarX - (rI * ((s->width + 6) / 2));
+			s->position.y += 36; 
+			s->position.x = lastHotbarX - (rI * ((s->width + 12) / 2));
 			up++;
 
 		}
