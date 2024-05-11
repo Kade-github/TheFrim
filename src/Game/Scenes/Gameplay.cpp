@@ -9,6 +9,8 @@
 #include "../CraftingManager.h"
 #include "../Objects/Base/Zombie.h"
 
+Zombie* testZomb = nullptr;
+
 glm::vec3 rotate(const glm::vec3& v, const glm::vec3& k, float theta)
 {
 	float cos_theta = cos(theta);
@@ -104,6 +106,19 @@ void Gameplay::Draw()
 		shouldUpdate = true;
 
 		lastUpdate = currentTime;
+
+		if (testZomb != nullptr && ticks % 5 == 0)
+		{
+			static glm::vec3 lastPos = glm::vec3((int)player->position.x, (int)player->position.y, (int)player->position.z);
+
+			glm::vec3 currentPos = glm::vec3((int)player->position.x, (int)player->position.y, (int)player->position.z);
+
+			if (lastPos != currentPos)
+			{
+				testZomb->MoveTo(player->position);
+				lastPos = currentPos;
+			}
+		}
 	}
 
 
@@ -165,6 +180,7 @@ void Gameplay::Draw()
 	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);
 	Game::instance->shader->SetUniform1f("FogFar", fog);
 	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
+
 
 
 	Game::instance->shader->Unbind();
@@ -601,13 +617,13 @@ void Gameplay::KeyPress(int key)
 	{
 		// Spawn a zombie
 
-		Zombie* z = new Zombie(player->position + glm::vec3(0, 4, 0));
+		testZomb = new Zombie(player->position + glm::vec3(0, 4, 0));
 
-		z->order = 2;
+		testZomb->order = 2;
 
-		AddObject(z);
+		AddObject(testZomb);
+
 	}
-
 
 	if (key == GLFW_KEY_F7)
 		player->freeCam = !player->freeCam;

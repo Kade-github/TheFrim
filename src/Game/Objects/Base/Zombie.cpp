@@ -26,6 +26,16 @@ Zombie::Zombie(glm::vec3 pos) : AI(pos)
 	leftArm.position += glm::vec3(0.5, 0.5, 0);
 	rightArm.position += glm::vec3(0.5, 0.5, 0);
 
+	torso = &m.GetMesh("Torso");
+
+	torso->axis = glm::vec3(0, 1, 0);
+
+	head = &m.GetMesh("Head");
+	leftLeg = &m.GetMesh("LeftLeg");
+	rightLeg = &m.GetMesh("RightLeg");
+
+	speed = 3.5f;
+
 }
 
 void Zombie::Draw()
@@ -37,13 +47,13 @@ void Zombie::Draw()
 
 	Game::instance->shader->Bind();
 
-	Game::instance->shader->SetUniform1f("lightLevel", (float)lightLevel);
+	//Game::instance->shader->SetUniform1f("lightLevel", (float)lightLevel);
 
 	m.Draw();
 
 	Game::instance->shader->Bind();
 
-	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
+	//Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
 
 	Game::instance->shader->Unbind();
 

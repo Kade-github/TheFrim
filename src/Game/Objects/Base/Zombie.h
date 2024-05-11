@@ -11,6 +11,11 @@ public:
 
 	Zombie(glm::vec3 pos);
 
+	Mesh* torso;
+	Mesh* head;
+	Mesh* leftLeg;
+	Mesh* rightLeg;
+
 	void Draw() override;
 };
 

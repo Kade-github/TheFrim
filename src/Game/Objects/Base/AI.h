@@ -5,6 +5,11 @@
 
 class AI : public Entity
 {
+	bool DoesBlockExist(glm::vec3 pos);
+	bool CheckBlock(glm::vec3 from, glm::vec3 pos);
+
+	bool nextPath = false;
+
 public:
 	AI(glm::vec3 pos) : Entity(pos) {}
 

@@ -32,7 +32,7 @@ unsigned int Shader::GetUniformLocation(const std::string& name)
     GLint uniform_loc = glGetUniformLocation(program, name.c_str());
     if (uniform_loc == -1)
     {
-        std::cout << "Uniform " << name << " not found" << std::endl;
+        //std::cout << "Uniform " << name << " not found" << std::endl;
         return -1;
     }
     uniform_map[name] = uniform_loc;
@@ -47,6 +47,8 @@ unsigned int Shader::GetUniformLocation(const std::string& name)
 void Shader::SetUniform1i(const std::string& name, int value)
 { 
     SETUNIFORM_GET_LOC_ID();
+    if (loc_id == -1)
+        return;
     glUniform1i(loc_id, value);
 }
 

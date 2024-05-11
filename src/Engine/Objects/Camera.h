@@ -25,6 +25,8 @@ public:
 
 	float cameraFar = 100.0f;
 
+	glm::vec3 scale = glm::vec3(1, 1, 1);
+
 	Camera();
 
 	~Camera();
@@ -41,7 +43,7 @@ public:
 
 	float fov = 75.0f;
 
-	void DrawDebugCube(glm::vec3 pos);
+	void DrawDebugCube(glm::vec3 pos, glm::vec3 scale = glm::vec3(1,1,1));
 
 	void DebugDraws();
 
