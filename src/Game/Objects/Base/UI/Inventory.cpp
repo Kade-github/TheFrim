@@ -641,6 +641,9 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 
 		if (s.id == 48 || s.id == 49 || sSlot.id == 48 || sSlot.id == 49)
 		{
+			if (player->selectedBlock != nullptr)
+				furnace = player->selectedBlock->data;
+
 			furnace.SetTag("cooking", std::to_string(furnace_cooking.type));
 			furnace.SetTag("cooking_count", std::to_string(furnace_cooking.count));
 			furnace.SetTag("fuel", std::to_string(furnace_fuel.type));
@@ -652,6 +655,9 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 
 		if (sSlot.id == 90 && isFurnace)
 		{
+			if (player->selectedBlock != nullptr)
+				furnace = player->selectedBlock->data;
+
 			furnace.SetTag("output", std::to_string(output.type));
 			furnace.SetTag("outputCount", std::to_string(output.count));
 
@@ -851,6 +857,9 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 
 			if (s.id == 48 || s.id == 49 || sSlot.id == 48 || sSlot.id == 49)
 			{
+				if (player->selectedBlock != nullptr)
+					furnace = player->selectedBlock->data;
+
 				furnace.SetTag("cooking", std::to_string(furnace_cooking.type));
 				furnace.SetTag("cooking_count", std::to_string(furnace_cooking.count));
 				furnace.SetTag("fuel", std::to_string(furnace_fuel.type));
@@ -862,6 +871,9 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 
 			if (sSlot.id == 90 && isFurnace)
 			{
+				if (player->selectedBlock != nullptr)
+					furnace = player->selectedBlock->data;
+
 				furnace.SetTag("output", std::to_string(output.type));
 				furnace.SetTag("outputCount", std::to_string(output.count));
 

@@ -96,7 +96,7 @@ namespace Data {
 	};
 
 	struct InventoryItem {
-		std::string tag;
+		std::string tag = "item_null";
 
 		bool stackable = true;
 		bool equipable = false;
@@ -483,7 +483,7 @@ namespace Data {
 							continue;
 
 						if (i.type == item.type) {
-							if (i.count < 64) {
+							if (i.count + item.count < 64) {
 								i.count += item.count;
 								return true;
 							}

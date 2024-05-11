@@ -74,7 +74,7 @@ bool Furnace::Update(int tick)
 		ticksLeft.Assemble("ticksLeft", "-1");
 	}
 
-	if (ticksNeeded <= -1)
+	if (ticksNeeded <= -1 && ticks <= -1)
 	{
 		// decide how long it should take
 
@@ -93,6 +93,13 @@ bool Furnace::Update(int tick)
 
 		bool update = false;
 
+		int cookingCount = data.GetTag("cooking_count").IsReal() ? std::stoi(data.GetTag("cooking_count").value) : 0;
+
+		cookingType = std::stoi(cooking.value);
+
+		if (cookingCount == 0 || cookingType == Data::ITEM_NULL)
+			return true;
+
 		int fuelCount = data.GetTag("fuel_count").IsReal() ? std::stoi(data.GetTag("fuel_count").value) : 0;
 
 		if (fuelCount > 0)
@@ -106,6 +113,20 @@ bool Furnace::Update(int tick)
 		{
 			data.SetTag("fuel", "-1");
 			data.SetTag("fuel_count", "0");
+			update = true;
+		}
+
+	
+		if (cookingCount > 0)
+		{
+			cookingCount--;
+			data.SetTag("cooking_count", std::to_string(cookingCount));
+			update = true;
+		}
+
+		if (cookingCount == 0)
+		{
+			data.SetTag("cooking", "-1");
 			update = true;
 		}
 
@@ -141,12 +162,7 @@ bool Furnace::Update(int tick)
 
 	if (ticks <= 0)
 	{
-		Data::DataTag cooking = data.GetTag("cooking");
-
-		if (!cooking.IsReal())
-			return true;
-
-		int itemType = std::stoi(cooking.value);
+		int itemType = cookingType;
 
 		int output = GetOutputForItem(itemType);
 
@@ -162,9 +178,14 @@ bool Furnace::Update(int tick)
 
 		bool wasEmpty = data.GetTag("output").IsReal() ? false : true;
 
-		data.SetTag("output", std::to_string(output));
+		int o = 0;
 
 		if (!wasEmpty)
+			o = std::stoi(data.GetTag("output").value);
+
+		data.SetTag("output", std::to_string(output));
+
+		if (!wasEmpty && o != 0)
 		{
 			outputCount++;
 			data.SetTag("outputCount", std::to_string(outputCount));
@@ -173,17 +194,6 @@ bool Furnace::Update(int tick)
 		{
 			data.SetTag("outputCount", "1");
 		}
-
-		int cookingCount = data.GetTag("cooking_count").IsReal() ? std::stoi(data.GetTag("cooking_count").value) : 0;
-
-		if (cookingCount > 0)
-		{
-			cookingCount--;
-			data.SetTag("cooking_count", std::to_string(cookingCount));
-		}
-
-		if (cookingCount == 0)
-			data.SetTag("cooking", "-1");
 
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
@@ -195,6 +205,7 @@ bool Furnace::Update(int tick)
 		}
 
 		ticksNeeded = -1;
+		ticks = -1;
 		tickPerc = 0.0f;
 		data.SetTag("ticksLeft", "-1");
 	}

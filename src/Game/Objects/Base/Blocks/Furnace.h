@@ -7,6 +7,7 @@ class Furnace : public Block
 {
 	int ticksNeeded = -1;
 	int ticks = -1;
+	int cookingType = -1;
 public:
 	float tickPerc = 0.0f;
 
