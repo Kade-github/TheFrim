@@ -344,7 +344,6 @@ void Gameplay::UpdateChunks()
 		{
 			loadPool.detach_task([&]()
 				{
-					wm->generateMutex.lock();
 					wm->SaveRegion(r.startX, r.startZ);
 
 					// unload
@@ -365,7 +364,6 @@ void Gameplay::UpdateChunks()
 					r.loaded = false;
 
 					wm->regions.erase(std::remove(wm->regions.begin(), wm->regions.end(), r), wm->regions.end());
-					wm->generateMutex.unlock();
 				});
 			Game::instance->log->Write("Unloading region: " + std::to_string(r.startX) + ", " + std::to_string(r.startZ));
 
@@ -374,9 +372,7 @@ void Gameplay::UpdateChunks()
 
 		if (!r.loaded)
 		{
-			wm->generateMutex.lock();
 			allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
-			wm->generateMutex.unlock();
 		}
 
 		r.loaded = true;
@@ -488,90 +484,85 @@ void Gameplay::UpdateChunks()
 
 	// sort chunks by distance
 
-	if (wm->generateMutex.try_lock())
-	{
-		std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
-			{
-				glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
-				glm::vec3 fakePosB = glm::vec3(b->position.x, camera->position.y, b->position.z);
-
-				float distanceA = glm::distance(camera->position, fakePosA);
-				float distanceB = glm::distance(camera->position, fakePosB);
-
-				return distanceA < distanceB;
-			});
-
-		chunksLoaded = 0;
-		chunksRendered = 0;
-
-		int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
-
-		if (Settings::instance->fogDistance >= 2.0)
-			fog = 10000;
-
-		for (Chunk* c : allChunks)
+	std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
 		{
-			glm::vec3 fakePosC = glm::vec3(c->position.x, 0, c->position.z);
+			glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
+			glm::vec3 fakePosB = glm::vec3(b->position.x, camera->position.y, b->position.z);
 
-			float distance = glm::distance(fakePos, fakePosC);
+			float distanceA = glm::distance(camera->position, fakePosA);
+			float distanceB = glm::distance(camera->position, fakePosB);
 
-			if (distance < camera->cameraFar)
+			return distanceA < distanceB;
+		});
+
+	chunksLoaded = 0;
+	chunksRendered = 0;
+
+	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
+
+	if (Settings::instance->fogDistance >= 2.0)
+		fog = 10000;
+
+	for (Chunk* c : allChunks)
+	{
+		glm::vec3 fakePosC = glm::vec3(c->position.x, 0, c->position.z);
+
+		float distance = glm::distance(fakePos, fakePosC);
+
+		if (distance < camera->cameraFar)
+		{
+			if (c->id < 0)
 			{
-				if (c->id < 0)
-				{
-					c->id = 1;
-					c->Init();
-				}
+				c->id = 1;
+				c->Init();
+			}
 
-				if (!c->isLoaded)
-				{
-					QueueLoad(c);
-					wm->generateMutex.unlock();
-					return;
-				}
+			if (!c->isLoaded)
+			{
+				QueueLoad(c);
+				return;
+			}
 
-				float angle = camera->YawAngleTo(fakePosC);
+			float angle = camera->YawAngleTo(fakePosC);
 
-				if ((angle <= 260 || distance <= 32) && distance <= fog + 32)
+			if ((angle <= 260 || distance <= 32) && distance <= fog + 32)
+			{
+				if (!c->isRendered || c->pleaseRender)
 				{
-					if (!c->isRendered || c->pleaseRender)
-					{
-						c->pleaseRender = false;
-						c->SetBuffer();
-						c->SetTransparentBuffer();
-						c->SetShadowBuffer();
-					}
-					c->isRendered = true;
+					c->pleaseRender = false;
+					c->SetBuffer();
+					c->SetTransparentBuffer();
+					c->SetShadowBuffer();
 				}
-				else
-				{
-					if (c->isRendered)
-						c->isRendered = false;
-				}
+				c->isRendered = true;
 			}
 			else
 			{
-				if (c->isLoaded)
-				{
-					UnloadChunk(c);
-					break;
-				}
-			}
-
-			// Chunk updates
-
-			if (c->isLoaded && !hud->GamePaused && !c->isBeingLoaded)
-			{
-				chunksLoaded++;
-				c->UpdateChunk(ticks);
-			}
-
-			if (c->isRendered)
-			{
-				chunksRendered++;
+				if (c->isRendered)
+					c->isRendered = false;
 			}
 		}
-		wm->generateMutex.unlock();
+		else
+		{
+			if (c->isLoaded)
+			{
+				UnloadChunk(c);
+				break;
+			}
+		}
+
+		// Chunk updates
+
+		if (c->isLoaded && !hud->GamePaused && !c->isBeingLoaded)
+		{
+			chunksLoaded++;
+			c->UpdateChunk(ticks);
+		}
+
+		if (c->isRendered)
+		{
+			chunksRendered++;
+		}
 	}
 
 }

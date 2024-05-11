@@ -106,6 +106,7 @@ bool WorldManager::IsRegionGenerated(int x, int z)
 
 	bool loaded = false;
 	{	
+		const std::lock_guard<std::mutex> g(generateMutex);
 		for (auto& r : regions)
 		{
 			if (r.startX == x && r.startZ == z)
@@ -122,6 +123,7 @@ bool WorldManager::IsRegionGenerated(int x, int z)
 
 	if (!loaded)
 	{
+		const std::lock_guard<std::mutex> g(generateMutex);
 		Data::Region r = _world.getRegion(x, z);
 
 		if (r.startX == 0 && r.startZ == 0 && r.endX == 0 && r.endZ == 0)
@@ -178,6 +180,7 @@ void WorldManager::GenerateRegion(int x, int z)
 	CreateChunks(reg);
 
 	{
+		const std::lock_guard<std::mutex> g(generateMutex);
 		_generatedRegions.push_back(reg);
 	}
 
