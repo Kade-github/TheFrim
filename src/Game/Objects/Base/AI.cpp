@@ -42,10 +42,6 @@ void AI::MoveTo(glm::vec3 pos)
 {
 	target = glm::vec3((int)pos.x, (int)pos.y, (int)pos.z);
 
-	// center target
-
-	target += glm::vec3(0.5, 0, 0.5);
-
 	// get the path to the target
 
 	path.clear();

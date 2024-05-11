@@ -9,7 +9,7 @@ uniform sampler2D ourTexture;
 uniform vec3 CameraPos;
 uniform float FogFar;
 uniform vec3 FogColor;
-uniform float lightLevel = 10;
+uniform float lightLevel;
 float FogMin = 0.0;
 
 float getFogFactor(float d)
