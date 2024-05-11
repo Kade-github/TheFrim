@@ -388,6 +388,16 @@ void Chunk::CreateFaces(Block* b)
 	bool front = true;
 	bool back = true;
 
+	if (b->type == FURNACE)
+	{
+		Furnace* f = (Furnace*)b;
+
+		Data::DataTag t = b->data.GetTag("ticksLeft");
+
+		if (t.IsReal() && std::stoi(t.value) >= 0)
+			f->light = true;
+	}
+
 	int x = b->position.x - position.x;
 	int y = b->position.y;
 	int z = b->position.z - position.z;

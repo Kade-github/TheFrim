@@ -76,10 +76,7 @@ bool Furnace::Update(int tick)
 				ticksNeeded = GetTicksForItem(cookingType);
 				ticks = left;
 
-				if (!light)
-				{
-					LightingManager::GetInstance()->AddLight(position, 10);
-				}
+				LightingManager::GetInstance()->AddLight(position, 10);
 				light = true;
 			}
 		}
@@ -233,7 +230,10 @@ bool Furnace::Update(int tick)
 		ticks = -1;
 		tickPerc = 0.0f;
 		if (light)
+		{
 			LightingManager::GetInstance()->RemoveLight(position);
+			currentChunk->modified = true;
+		}
 		light = false;
 		data.SetTag("ticksLeft", "-1");
 	}
@@ -242,6 +242,7 @@ bool Furnace::Update(int tick)
 		if (!light)
 		{
 			LightingManager::GetInstance()->AddLight(position, 10);
+			currentChunk->modified = true;
 		}
 		light = true;
 		data.SetTag("ticksLeft", std::to_string(ticks));

@@ -30,6 +30,9 @@ public:
 	{
 		glm::vec4 side = t->spriteSheet.GetUVFlip("furnace");
 
+		if (light)
+			side = t->spriteSheet.GetUVFlip("furnace_burning");
+
 		std::vector<GameObject::VVertex> frontVertices = CreateQuad(position, glm::vec3(1, 1, 0), 0, side);
 
 		return BlockFace(frontVertices, { 0, 1, 3, 1, 2, 3 });
