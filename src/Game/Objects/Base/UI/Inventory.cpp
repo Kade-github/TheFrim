@@ -500,10 +500,11 @@ void Inventory::ApplyMove(Data::InventoryItem* item1, Data::InventoryItem* item2
 
 Data::InventoryItem* Inventory::GetItem(int id, glm::vec2 pos)
 {
+	int armorId = 2 - (id - 36);
 	if (id < 36)
 		return &player->playerData.inventory[(int)pos.x][(int)pos.y];
 	else if (id < 39)
-		return &player->playerData.armor[id - 36];
+		return &player->playerData.armor[armorId];
 	else if (id == 49)
 		return &furnace_cooking;
 	else if (id == 48)
@@ -640,7 +641,7 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 
 		if (s.id >= 36 && s.id < 39)
 		{
-			int slot = s.id - 36;
+			int slot = 2 - (s.id - 36);
 			if (!startItem->equipable || slot != startItem->armorSlot)
 				return false;
 		}

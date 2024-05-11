@@ -597,9 +597,9 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_O)
 	{
-		Data::InventoryItem i(Data::ITEM_COAL, 64);
-		Data::InventoryItem i2(Data::ITEM_IRON_ORE, 64);
-		Data::InventoryItem i3(Data::ITEM_FURNACE, 1);
+		Data::InventoryItem i(Data::ITEM_IRON_HELMET, 1);
+		Data::InventoryItem i2(Data::ITEM_IRON_CHESTPLATE, 1);
+		Data::InventoryItem i3(Data::ITEM_IRON_BOOTS, 1);
 		player->playerData.GiveItem(i);
 		player->playerData.GiveItem(i2);
 		player->playerData.GiveItem(i3);

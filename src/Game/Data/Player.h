@@ -361,11 +361,13 @@ namespace Data {
 			case ITEM_IRON_CHESTPLATE:
 				tag = "item_iron_chestplate";
 				armor = 6;
+				armorSlot = 1;
 				equipable = true;
 				break;
 			case ITEM_IRON_BOOTS:
 				tag = "item_iron_boots";
 				armor = 2;
+				armorSlot = 2;
 				equipable = true;
 				break;
 			case ITEM_GOLD_HELMET:
@@ -376,10 +378,12 @@ namespace Data {
 			case ITEM_GOLD_CHESTPLATE:
 				tag = "item_gold_chestplate";
 				armor = 8;
+				armorSlot = 1;
 				equipable = true;
 				break;
 			case ITEM_GOLD_BOOTS:
 				tag = "item_gold_boots";
+				armorSlot = 2;
 				armor = 3;
 				equipable = true;
 				break;
@@ -391,10 +395,12 @@ namespace Data {
 			case ITEM_DIAMOND_CHESTPLATE:
 				tag = "item_diamond_chestplate";
 				armor = 10;
+				armorSlot = 1;
 				equipable = true;
 				break;
 			case ITEM_DIAMOND_BOOTS:
 				tag = "item_diamond_boots";
+				armorSlot = 2;
 				armor = 4;
 				equipable = true;
 				break;
