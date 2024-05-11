@@ -177,6 +177,7 @@ void Hud::UpdateHotbar()
 	}
 
 	inv->UpdateInventory();
+	UpdateArmor();
 
 	SetSelected(selected);
 }
@@ -270,8 +271,11 @@ void Hud::UpdateArmor()
 
 	int armorProgress = 0;
 
-	armorProgress = player->playerData.armor[0].armor + player->playerData.armor[1].armor + player->playerData.armor[2].armor + player->playerData.armor[3].armor;
+	armorProgress = player->playerData.armor[0].armor + player->playerData.armor[1].armor + player->playerData.armor[2].armor;
 
+	float lastHotbarX = hotbar.back()->position.x;
+	int realI = 0;
+	int up = 0;
 	for (int i = 0; i < armorProgress; i++)
 	{
 		Sprite2D* s = new Sprite2D(h, glm::vec3(0, 0, 0));
@@ -279,13 +283,33 @@ void Hud::UpdateArmor()
 		s->width = 72;
 		s->height = 72;
 
-		s->position = glm::vec3(((c2d->_w - 162) / 2) - (i * (s->width / 2)), s->height + 216, 0);
+		int rI = realI;
+
+		s->position = glm::vec3(lastHotbarX - (realI * ((s->width + 6) / 2)), s->height + 72, 0);
+
+		for(int j = 0; j < up; j++)
+			s->position.y += 72;
+
+		realI = rI;
+
+		while(rI % 8 == 0 && rI != 0)
+		{
+			rI -= 8;
+			realI = rI;
+
+			s->position.y += 72; 
+			s->position.x = lastHotbarX - (rI * ((s->width + 6) / 2));
+			up++;
+
+		}
+
 
 		s->src = h->spriteSheet.GetUVFlip("hud_armor");
 
-		s->order = 1;
+		s->order = 0;
 		armor.push_back(s);
 		c2d->AddObject(s);
+		realI++;
 	}
 }
 
@@ -416,7 +440,6 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 
 	UpdateHotbar();
 	UpdateHearts();
-	UpdateArmor();
 
 	hand->position = player->position;
 }
