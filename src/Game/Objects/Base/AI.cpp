@@ -62,14 +62,10 @@ void AI::MoveTo(glm::vec3 pos)
 		{
 			if (p.x < pos.x && CheckBlock(position, glm::vec3(p.x + 1, p.y, p.z)))
 			{
-				if (DoesBlockExist(glm::vec3(p.x + 1, p.y - 1, p.z)))
-					path.push_back(glm::vec3(p.x + 1, p.y, p.z));
 				p.x += 1;
 			}
 			else if (p.x > pos.x && CheckBlock(position, glm::vec3(p.x - 1, p.y, p.z)))
 			{
-				if (DoesBlockExist(glm::vec3(p.x - 1, p.y - 1, p.z)))
-					path.push_back(glm::vec3(p.x - 1, p.y, p.z));
 				p.x -= 1;
 			}
 			else
@@ -101,14 +97,10 @@ void AI::MoveTo(glm::vec3 pos)
 		{
 			if (p.z < pos.z && CheckBlock(position, glm::vec3(p.x, p.y, p.z + 1)))
 			{
-				if (DoesBlockExist(glm::vec3(p.x, p.y - 1, p.z + 1)))
-					path.push_back(glm::vec3(p.x, p.y, p.z + 1));
 				p.z += 1;
 			}
 			else if (p.z > pos.z && CheckBlock(position, glm::vec3(p.x, p.y, p.z - 1)))
 			{
-				if (DoesBlockExist(glm::vec3(p.x, p.y - 1, p.z - 1)))
-					path.push_back(glm::vec3(p.x, p.y, p.z - 1));
 				p.z -= 1;
 			}
 			else
@@ -117,13 +109,11 @@ void AI::MoveTo(glm::vec3 pos)
 
 				if (p.z < pos.z && !CheckBlock(position, glm::vec3(p.x, p.y, p.z + 1)) && CheckBlock(position, glm::vec3(p.x, p.y + 1, p.z + 1)))
 				{
-					path.push_back(glm::vec3(p.x, p.y + 1, p.z + 1));
 					p.y += 1;
 					p.z += 1;
 				}
 				else if (p.z > pos.z && !CheckBlock(position, glm::vec3(p.x, p.y, p.z - 1)) && CheckBlock(position, glm::vec3(p.x, p.y + 1, p.z - 1)))
 				{
-					path.push_back(glm::vec3(p.x, p.y + 1, p.z - 1));
 					p.y += 1;
 					p.z -= 1;
 				}
@@ -139,6 +129,10 @@ void AI::MoveTo(glm::vec3 pos)
 		{
 			path.push_back(glm::vec3(p.x, p.y - 1, p.z));
 			p.y -= 1;
+		}
+		else
+		{
+			path.push_back(glm::vec3(p.x, p.y, p.z));
 		}
 
 		d = glm::distance(target, p);
@@ -198,6 +192,14 @@ void AI::Draw()
 	if (inWater)
 		sp = speed / 2;
 
+	if (debug) // draw the path
+	{
+		Camera* c = Game::instance->GetCamera();
+
+		for (auto p : path)
+			c->DrawDebugCube(p, glm::vec3(0.25f, 0.25f, 0.25f));
+	}
+
 	if (path.size() != 0)
 	{
 		glm::vec3 p = path[0];
@@ -209,6 +211,11 @@ void AI::Draw()
 		glm::vec3 direction = glm::normalize(p - position);
 
 		yaw = glm::degrees(atan2(direction.z, direction.x));
+
+		glm::vec3 directionToTarget = glm::normalize(target - position);
+
+		aiYaw = glm::degrees(atan2(directionToTarget.z, directionToTarget.x));
+		aiPitch = glm::degrees(asin(directionToTarget.y));
 
 
 		SetDirection();
@@ -225,7 +232,7 @@ void AI::Draw()
 
 		// check if we are at the target
 
-		if (dist <= 0.1f)
+		if (dist <= 0.5f)
 		{
 			nextPath = true;
 			path.erase(path.begin());

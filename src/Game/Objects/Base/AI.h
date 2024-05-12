@@ -11,6 +11,11 @@ class AI : public Entity
 	bool nextPath = false;
 
 public:
+	bool debug = false;
+
+	float aiYaw = 0;
+	float aiPitch = 0;
+
 	AI(glm::vec3 pos) : Entity(pos) {}
 
 	std::vector<glm::vec3> path;

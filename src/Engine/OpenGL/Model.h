@@ -16,7 +16,7 @@ class Model
 {
 public:
     glm::vec3 position = glm::vec3(0, 0, 0);
-    glm::vec3 rotateAxis = glm::vec3(0, 0, 0);
+    glm::vec3 rotateAxis = glm::vec3(0, 1, 0);
     glm::vec3 scale = glm::vec3(1, 1, 1);
     float angle = 0.0f;
     std::vector<Mesh>    meshes;

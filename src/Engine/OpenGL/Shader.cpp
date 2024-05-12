@@ -19,6 +19,7 @@ void Shader::Bind()
 void Shader::Unbind()
 {
     glUseProgram(0);
+    uniform_map.clear();
 }
 
 unsigned int Shader::GetUniformLocation(const std::string& name)

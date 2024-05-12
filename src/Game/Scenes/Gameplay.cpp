@@ -107,7 +107,7 @@ void Gameplay::Draw()
 
 		lastUpdate = currentTime;
 
-		if (testZomb != nullptr && ticks % 5 == 0)
+		if (testZomb != nullptr && ticks % 15 == 0)
 		{
 			static glm::vec3 lastPos = glm::vec3((int)player->position.x, (int)player->position.y, (int)player->position.z);
 

@@ -121,8 +121,18 @@ void Model::Draw()
         glm::mat4 model = glm::mat4(1.0f);
 
         model = glm::translate(model, position + mesh.position);
-        model = glm::rotate(model, glm::radians(angle + mesh.angle), mesh.axis);
-        model = glm::scale(model, scale * mesh.scale);
+
+        // rotate the mesh by the model's rotation
+
+        model = glm::rotate(model, glm::radians(angle), rotateAxis);
+
+        model = glm::rotate(model, glm::radians(mesh.angle), mesh.axis);
+
+        model = glm::scale(model, mesh.scale);
+
+
+        
+        model = glm::scale(model, scale);
 
         Game::instance->shader->SetUniformMat4f("model", &model[0][0]);
 
