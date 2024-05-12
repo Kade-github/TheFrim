@@ -33,17 +33,17 @@ void main()
 
     if (FogFar < 1000)
     {
-	    FragColor = mix(color, vec4(FogColor, 1.0), fogFactor);
-
         // darken based on the light level
 
         float light = max(0.5, lightLevel / 10.0);
 
-	    FragColor = vec4(FragColor.rgb * light, FragColor.a);
+	    FragColor = mix(color, vec4(0.0, 0.0, 0.0, color.a), 1.0 - light);
 
         // Mix in redness
 
-        FragColor = mix(FragColor, vec4(1.0, 0.0, 0.0, 1.0), redness);
+        FragColor = mix(FragColor, vec4(1.0, 0.0, 0.0, FragColor.a), redness);
+
+	    FragColor = mix(FragColor, vec4(FogColor, 1.0), fogFactor);
     }
     else
 		FragColor = color;

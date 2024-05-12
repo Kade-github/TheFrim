@@ -30,9 +30,11 @@ void Player::Hurt(float damage, glm::vec3 from)
 	// knockback
 	if (from.y > 0)
 	{
-		glm::vec3 dir = glm::normalize(position - from);
+		Camera* c = Game::instance->GetCamera();
 
-		Launch(dir, 30.0f, 2.0f);
+		glm::vec3 dir = glm::normalize((position + c->cameraFront) - from);
+
+		Launch(dir, 50.0f, 2.0f);
 	}
 }
 
