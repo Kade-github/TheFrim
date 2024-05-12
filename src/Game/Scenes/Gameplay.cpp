@@ -159,7 +159,6 @@ void Gameplay::Draw()
 	glm::mat4 project = camera->GetProjectionMatrix();
 
 	Game::instance->shader->SetUniformMat4f("projection", glm::value_ptr(project));
-	Game::instance->shader->SetUniformMat4f(5, glm::value_ptr(project));
 
 	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
 
@@ -170,8 +169,7 @@ void Gameplay::Draw()
 	Game::instance->shader->SetUniform3f("FogColor", LightingManager::GetInstance()->sun.color.x, LightingManager::GetInstance()->sun.color.y, LightingManager::GetInstance()->sun.color.z);
 	Game::instance->shader->SetUniform1f("FogFar", fog);
 	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
-
-
+	Game::instance->shader->SetUniform1f("redness", 0.0f);
 
 	Game::instance->shader->Unbind();
 

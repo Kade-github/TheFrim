@@ -10,6 +10,7 @@ uniform vec3 CameraPos;
 uniform float FogFar;
 uniform vec3 FogColor;
 uniform float lightLevel;
+uniform float redness;
 float FogMin = 0.0;
 
 float getFogFactor(float d)
@@ -39,6 +40,10 @@ void main()
         float light = max(0.5, lightLevel / 10.0);
 
 	    FragColor = vec4(FragColor.rgb * light, FragColor.a);
+
+        // Mix in redness
+
+        FragColor = mix(FragColor, vec4(1.0, 0.0, 0.0, 1.0), redness);
     }
     else
 		FragColor = color;

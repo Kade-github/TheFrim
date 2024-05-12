@@ -19,11 +19,12 @@ void Shader::Bind()
 void Shader::Unbind()
 {
     glUseProgram(0);
-    uniform_map.clear();
 }
 
 unsigned int Shader::GetUniformLocation(const std::string& name)
 {
+    
+
     //Use previously defined location
     auto key_loc = uniform_map.find(name);
     if (key_loc != uniform_map.end())
@@ -36,6 +37,19 @@ unsigned int Shader::GetUniformLocation(const std::string& name)
         //std::cout << "Uniform " << name << " not found" << std::endl;
         return -1;
     }
+
+    // check for duplicates
+
+    for (auto& [key, value] : uniform_map)
+	{
+		if (value == uniform_loc)
+		{
+			std::cout << "Duplicate uniform location for " << name << std::endl;
+            uniform_map.erase(key);
+			return uniform_loc;
+		}
+	}
+
     uniform_map[name] = uniform_loc;
     return uniform_loc;
 }
