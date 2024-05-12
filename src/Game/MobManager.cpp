@@ -57,7 +57,7 @@ void MobManager::Update()
 	Camera* cam = Game::instance->GetCamera();
 
 	// spawn mobs around player
-	if (glfwGetTime() - lastWave > 30 && mobs.size() < 30)
+	if (glfwGetTime() - lastWave > 30 && mobs.size() < 45)
 	{
 		lastWave = glfwGetTime();
 
@@ -121,6 +121,41 @@ void MobManager::Update()
 		}
 		else if (angle > 100)
 			mob->lastSeen = glfwGetTime();
-			
+
+		if (mob->dead)
+		{
+			// drops
+
+			switch (mob->type)
+			{
+				case AI_Type::TZombie:
+				{
+					int r = rand() % 100;
+
+					if (r < 15)
+					{
+						Data::InventoryItem it{ Data::ITEM_GOLD_INGOT, 1 };
+
+						gp->dim->SpawnItem(mob->position, it);
+					}
+					else if (r < 45)
+					{
+						Data::InventoryItem it{ Data::ITEM_IRON_INGOT, 1 };
+
+						gp->dim->SpawnItem(mob->position, it);
+					}
+					break;
+				}
+				case AI_Type::TPig:
+					int count = rand() % 3 + 1;
+
+					Data::InventoryItem it{ Data::ITEM_UNCOOKED_PORK, count };
+
+					gp->dim->SpawnItem(mob->position, it);
+					break;
+			}
+
+			RemoveMob(mob);
+		}
 	}
 }

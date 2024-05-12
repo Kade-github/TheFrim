@@ -15,8 +15,10 @@ class AI : public Entity
 
 	bool nextPath = false;
 	float lastPosition = 0;
-
+	float damageCooldown = 0.0f;
 public:
+	float redness = 0.0f;
+	bool dead = false;
 	bool debug = false;
 	float lastSeen = 0;
 
@@ -37,6 +39,10 @@ public:
 	void MoveTo(glm::vec3 pos);
 
 	void MoveToRandom();
+
+	void Hurt(float damage, glm::vec3 from);
+
+	bool IsPositionInMe(glm::vec3 pos);
 
 	void Draw() override;
 };

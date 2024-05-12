@@ -4,6 +4,7 @@
 #include "../../WorldManager.h"
 #include "../../MusicManager.h"
 #include "../../LightingManager.h"
+#include "../../MobManager.h"
 
 Entity::Entity(glm::vec3 pos) : GameObject(pos)
 {
@@ -71,15 +72,12 @@ void Entity::Launch(glm::vec3 direction, float force)
 {
 	downVelocity += force;
 
-	forwardVelocity += direction.x * force;
-	strafeVelocity += direction.z * force;
+	forwardVelocity += direction.z * force;
 }
 
 void Entity::Launch(glm::vec3 direction, float force, float upForce)
 {
-	forwardVelocity += direction.x * force;
-	strafeVelocity += direction.z * force;
-
+	forwardVelocity += direction.z * force;
 	downVelocity += upForce;
 }
 
@@ -292,12 +290,27 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 
 	glm::vec3 start = position;
 
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+	std::vector<AI*> mobs = gp->mm->mobs;
+
 	while (progress < 1)
 	{
 		glm::vec3 lastRay = ray;
 		ray = start + (diff * progress);
 		if (inside)
+		{
 			lastRay = ray;
+
+			for (int i = 0; i < mobs.size(); i++)
+			{
+				if (mobs[i]->IsPositionInMe(ray))
+				{
+					to = lastRay;
+					return false;
+				}
+			}
+		}
 		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 		if (c != nullptr)
@@ -434,20 +447,10 @@ void Entity::Draw()
 
 		position = motion;
 
-		if (isCreature)
-		{
-			if (forwardVelocity != 0)
-				forwardVelocity *= 0.8;
-			if (strafeVelocity != 0)
-				strafeVelocity *= 0.8;
-		}
-		else
-		{
-			if (forwardVelocity != 0)
-				forwardVelocity *= 0.95;
-			if (strafeVelocity != 0)
-				strafeVelocity *= 0.95;
-		}
+		if (forwardVelocity != 0)
+			forwardVelocity *= 0.92;
+		if (strafeVelocity != 0)
+			strafeVelocity *= 0.95;
 
 		if (forwardVelocity <= 0.01 && forwardVelocity >= -0.01)
 			forwardVelocity = 0;

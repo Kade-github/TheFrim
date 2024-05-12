@@ -16,7 +16,7 @@ void Player::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 n
 		v.normal = normal;
 }
 
-void Player::Hurt(float damage)
+void Player::Hurt(float damage, glm::vec3 from)
 {
 	MusicManager::GetInstance()->PlaySFX("hurt", "hurtSFX");
 	playerData.health -= damage;
@@ -26,6 +26,14 @@ void Player::Hurt(float damage)
 	scene->hud->UpdateHearts();
 
 	CameraShake(0.25f);
+
+	// knockback
+	if (from.y > 0)
+	{
+		glm::vec3 dir = glm::normalize(from - position);
+
+		Launch(dir, 20.0f, 2.0f);
+	}
 }
 
 void Player::Heal(float amount)
@@ -184,6 +192,7 @@ void Player::RenderBreak()
 
 Player::Player(glm::vec3 pos) : Entity(pos)
 {
+	speed = 0.7f;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -322,34 +331,37 @@ void Player::Draw()
 
     bool hasLandedThisFrame = false;
 
+	float ourForward = 0;
+	float ourStrafe = 0;
+
 	if (!freeCam)
 	{
 		if (!_inInventory && !Hud::GamePaused)
 		{
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
 			{
-				forwardVelocity += sp;
+				ourForward += sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_S) == GLFW_PRESS)
 			{
-				forwardVelocity -= sp;
+				ourForward -= sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_A) == GLFW_PRESS)
 			{
-				strafeVelocity -= sp;
+				ourStrafe -= sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_D) == GLFW_PRESS)
 			{
-				strafeVelocity += sp;
+				ourStrafe += sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
 			} 
@@ -368,17 +380,9 @@ void Player::Draw()
 				isOnGround = false;
 			}
 
-			if (forwardVelocity > sp)
-				forwardVelocity = sp;
 
-			if (forwardVelocity < -sp)
-				forwardVelocity = -sp;
-
-			if (strafeVelocity > sp)
-				strafeVelocity = sp;
-
-			if (strafeVelocity < -sp)
-				strafeVelocity = -sp;
+			forwardVelocity += ourForward;
+			strafeVelocity += ourStrafe;
 		}
 	}
 	else if (!_inInventory && !Hud::GamePaused)
@@ -517,6 +521,8 @@ void Player::Draw()
 
 	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
 
+	AI* selectedEntity = nullptr;
+
 	bool hit = RayTo(ray, true);
 	if (hit)
 	{
@@ -607,7 +613,23 @@ void Player::Draw()
 			selectedBlock = nullptr;
 	}
 	else
+	{
 		selectedBlock = nullptr;
+
+		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+		std::vector<AI*> mobs = gp->mm->mobs;
+
+		for (AI* mob : mobs)
+		{
+			if (mob->IsPositionInMe(ray))
+			{
+				selectedEntity = mob;
+				break;
+			}
+		}
+
+	}
 
 
 	vertices.clear();
@@ -615,6 +637,11 @@ void Player::Draw()
 
 	if (!_inInventory && !Hud::GamePaused)
 	{
+		if (selectedEntity != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
+		{
+			selectedEntity->Hurt(1.0f, position);
+		}
+
 		if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
 			Gameplay* scene = (Gameplay*)Game::instance->currentScene;
@@ -943,12 +970,6 @@ void Player::KeyPress(int key)
 	Camera* c = Game::instance->GetCamera();
 	Data::InventoryItem item;
 	int selected = 0;
-
-	if (key == GLFW_KEY_F1) // place light
-		LightingManager::GetInstance()->AddLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z), 12);
-
-	if (key == GLFW_KEY_F2) // remove light
-		LightingManager::GetInstance()->RemoveLight(glm::vec3((int)position.x, (int)position.y + 2, (int)position.z));
 
 	// select hotbar
 

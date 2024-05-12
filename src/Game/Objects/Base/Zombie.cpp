@@ -43,7 +43,7 @@ Zombie::Zombie(glm::vec3 pos) : AI(pos)
 	leftLeg->axis = glm::vec3(0, 0, 1);
 	rightLeg->axis = glm::vec3(0, 0, 1);
 
-	speed = 3.5f;
+	speed = 0.4f;
 
 	rotateAxis = glm::vec3(0, 1, 0);
 
@@ -62,9 +62,23 @@ void Zombie::Draw()
 		target = position;
 	}
 
-	if (!Hud::GamePaused)
+
+	if (!Hud::GamePaused) // animation stuff
 	{
 		tempYaw = std::lerp(tempYaw, -yaw, Game::instance->deltaTime * 10);
+
+		if (health <= 0)
+		{
+			// go away
+			dying = true;
+
+			m.scale = glm::vec3(std::lerp(m.scale.x, 0.0f, Game::instance->deltaTime * 5));
+
+			if (m.scale.x <= 0)
+				dead = true;
+		}
+
+		// arms are buggy but its funny
 
 		leftArm->position.x = std::lerp(leftArm->position.x, la.x + front.x * 0.5f, Game::instance->deltaTime * 5);
 		leftArm->position.z = std::lerp(leftArm->position.z, la.z + front.z * 0.5f, Game::instance->deltaTime * 5);
@@ -132,11 +146,14 @@ void Zombie::Draw()
 
 	Game::instance->shader->SetUniform1f("lightLevel", (float)lightLevel);
 
+	Game::instance->shader->SetUniform1f("redness", redness);
+
 	m.Draw();
 
 	Game::instance->shader->Bind();
 
 	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
+	Game::instance->shader->SetUniform1f("redness", 0.0f);
 
 	Game::instance->shader->Unbind();
 
@@ -144,7 +161,7 @@ void Zombie::Draw()
 
 	float dist = glm::distance(position, gp->player->position);
 
-	if (dist <= 2.0)
+	if (dist <= 2.0 && !dead && !dying)
 		Attack();
 
 	if (dist <= 10 && !gp->player->noTarget)
@@ -196,7 +213,7 @@ void Zombie::Attack()
 	{
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-		gp->player->Hurt(2.5f);
+		gp->player->Hurt(2.5f, position);
 
 		attackCooldown = glfwGetTime() + 1.0f;
 

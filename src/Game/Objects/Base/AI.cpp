@@ -180,6 +180,36 @@ void AI::MoveToRandom()
 	MoveTo(r);
 }
 
+void AI::Hurt(float damage, glm::vec3 from)
+{
+	if (damageCooldown > glfwGetTime())
+		return;
+
+	health -= damage;
+	redness = 0.6f;
+
+	if (health <= 0)
+		health = 0;
+
+	// knockback
+
+	glm::vec3 direction = glm::normalize(from - position);
+
+	Launch(direction, 20.0f, 2.0f);
+
+	damageCooldown = glfwGetTime() + 0.25f;
+}
+
+bool AI::IsPositionInMe(glm::vec3 pos)
+{
+	glm::vec3 p = position - glm::vec3(0.5, 0.9f, 0.5);
+
+	if (pos.x > p.x && pos.x < p.x + 1 && pos.y > p.y && pos.y < p.y + 1 && pos.z > p.z && pos.z < p.z + 1)
+		return true;
+
+	return false;
+}
+
 void AI::Draw()
 {
 	// move to target if we have one
@@ -199,7 +229,9 @@ void AI::Draw()
 			c->DrawDebugCube(p, glm::vec3(0.25f, 0.25f, 0.25f));
 	}
 
-	if (path.size() != 0)
+	float ourVel = 0;
+
+	if (path.size() != 0 && !dead)
 	{
 		glm::vec3 p = path[0];
 
@@ -219,7 +251,7 @@ void AI::Draw()
 
 		SetDirection();
 
-		forwardVelocity += sp;
+		ourVel += sp;
 
 
 		// set our down velocity
@@ -255,18 +287,15 @@ void AI::Draw()
 		target = position;
 	}
 
-	if (forwardVelocity > sp)
-		forwardVelocity = sp;
+	forwardVelocity += ourVel;
 
-	if (forwardVelocity < -sp)
-		forwardVelocity = -sp;
+	if (health > 0 && redness > 0)
+	{
+		redness -= 5 * Game::instance->deltaTime;
 
-	if (strafeVelocity > sp)
-		strafeVelocity = sp;
-
-	if (strafeVelocity < -sp)
-		strafeVelocity = -sp;
-
+		if (redness < 0)
+			redness = 0;
+	}
 
 	Entity::Draw(); // physics
 }

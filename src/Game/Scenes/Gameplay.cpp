@@ -202,6 +202,14 @@ void Gameplay::Draw()
 
 	c2d->DrawDebugText("Mobs: " + std::to_string(mm->mobs.size()), glm::vec2(4, 52), 24);
 
+	// player foward/strafe velocity
+
+	c2d->DrawDebugText("Forward Velocity: " + StringTools::ToTheDecimial(player->forwardVelocity, 2), glm::vec2(4, 76), 24);
+
+	c2d->DrawDebugText("Strafe Velocity: " + StringTools::ToTheDecimial(player->strafeVelocity, 2), glm::vec2(4, 100), 24);
+
+	c2d->DrawDebugText("Downwards Velocity: " + StringTools::ToTheDecimial(player->downVelocity, 2), glm::vec2(4, 124), 24);
+
 	MusicManager::GetInstance()->Set3DPosition(player->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();
@@ -626,7 +634,7 @@ void Gameplay::KeyPress(int key)
 	if (key == GLFW_KEY_F11)
 	{
 		Camera* camera = Game::instance->GetCamera();
-		player->Launch(camera->position - camera->cameraFront, 10.0f);
+		player->Launch(camera->cameraFront - camera->position, 10);
 	}
 
 	if (key == GLFW_KEY_F12)

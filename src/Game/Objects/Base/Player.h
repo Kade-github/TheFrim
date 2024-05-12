@@ -47,7 +47,7 @@ public:
 
 	void CameraShake(float amount);
 
-	void Hurt(float damage);
+	void Hurt(float damage, glm::vec3 position = glm::vec3(0,0,0));
 	void Heal(float amount);
 
 	void ToggleInventory();
