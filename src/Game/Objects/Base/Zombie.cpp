@@ -65,7 +65,6 @@ void Zombie::Draw()
 
 	if (!Hud::GamePaused) // animation stuff
 	{
-		tempYaw = std::lerp(tempYaw, -yaw, Game::instance->deltaTime * 10);
 
 		if (health <= 0)
 		{
@@ -74,67 +73,73 @@ void Zombie::Draw()
 
 			m.scale = glm::vec3(std::lerp(m.scale.x, 0.0f, Game::instance->deltaTime * 5));
 
-			if (m.scale.x <= 0)
+			if (m.scale.x <= 0.1f)
 				dead = true;
 		}
 
-		// arms are buggy but its funny
-
-		leftArm->position.x = std::lerp(leftArm->position.x, la.x + front.x * 0.5f, Game::instance->deltaTime * 5);
-		leftArm->position.z = std::lerp(leftArm->position.z, la.z + front.z * 0.5f, Game::instance->deltaTime * 5);
-
-		rightArm->position.x = std::lerp(rightArm->position.x, ra.x + front.x * 0.5f, Game::instance->deltaTime * 5);
-		rightArm->position.z = std::lerp(rightArm->position.z, ra.z + front.z * 0.5f, Game::instance->deltaTime * 5);
-
-		if (path.size() != 0)
+		if (!dying && !dead)
 		{
-			// leg movement
+			tempYaw = std::lerp(tempYaw, -yaw, Game::instance->deltaTime * 10);
 
-			float dist = glm::distance(position, path[0]);
 
-			if (dist > 0.5f)
+			// arms are buggy but its funny
+
+			leftArm->position.x = std::lerp(leftArm->position.x, la.x + front.x * 0.5f, Game::instance->deltaTime * 5);
+			leftArm->position.z = std::lerp(leftArm->position.z, la.z + front.z * 0.5f, Game::instance->deltaTime * 5);
+
+			rightArm->position.x = std::lerp(rightArm->position.x, ra.x + front.x * 0.5f, Game::instance->deltaTime * 5);
+			rightArm->position.z = std::lerp(rightArm->position.z, ra.z + front.z * 0.5f, Game::instance->deltaTime * 5);
+
+			if (path.size() != 0)
 			{
-				if (isOnGround)
+				// leg movement
+
+				float dist = glm::distance(position, path[0]);
+
+				if (dist > 0.5f)
 				{
-					leftLeg->angle = -sin(glfwGetTime() * 5) * 15;
-					rightLeg->angle = sin(glfwGetTime() * 5) * 15;
+					if (isOnGround)
+					{
+						leftLeg->angle = -sin(glfwGetTime() * 5) * 15;
+						rightLeg->angle = sin(glfwGetTime() * 5) * 15;
 
-					if (leftLeg->angle < 0 && !swappedLeft)
-					{
-						Footstep();
-						swappedLeft = true;
-					}
-					else if (leftLeg->angle > 0 && swappedLeft)
-					{
-						swappedLeft = false;
-					}
+						if (leftLeg->angle < 0 && !swappedLeft)
+						{
+							Footstep();
+							swappedLeft = true;
+						}
+						else if (leftLeg->angle > 0 && swappedLeft)
+						{
+							swappedLeft = false;
+						}
 
-					if (rightLeg->angle < 0 && !swappedRight)
-					{
-						Footstep();
-						swappedRight = true;
+						if (rightLeg->angle < 0 && !swappedRight)
+						{
+							Footstep();
+							swappedRight = true;
+						}
+						else if (rightLeg->angle > 0 && swappedRight)
+						{
+							swappedRight = false;
+						}
 					}
-					else if (rightLeg->angle > 0 && swappedRight)
+					else
 					{
-						swappedRight = false;
+						leftLeg->angle = std::lerp(leftLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+						rightLeg->angle = std::lerp(rightLeg->angle, 0.0f, Game::instance->deltaTime * 5);
 					}
 				}
 				else
 				{
-					leftLeg->angle = std::lerp(leftLeg->angle, 0.0f, Game::instance->deltaTime * 5);
-					rightLeg->angle = std::lerp(rightLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+					leftLeg->angle = 0;
+					rightLeg->angle = 0;
 				}
 			}
 			else
 			{
-				leftLeg->angle = 0;
-				rightLeg->angle = 0;
+				leftLeg->angle = std::lerp(leftLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+				rightLeg->angle = std::lerp(rightLeg->angle, 0.0f, Game::instance->deltaTime * 5);
 			}
-		}
-		else
-		{
-			leftLeg->angle = std::lerp(leftLeg->angle, 0.0f, Game::instance->deltaTime * 5);
-			rightLeg->angle = std::lerp(rightLeg->angle, 0.0f, Game::instance->deltaTime * 5);
 		}
 	}
 
@@ -213,7 +218,7 @@ void Zombie::Attack()
 	{
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-		gp->player->Hurt(2.5f, position);
+		gp->player->Hurt(2.5f, position + front);
 
 		attackCooldown = glfwGetTime() + 1.0f;
 

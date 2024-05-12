@@ -195,7 +195,7 @@ void AI::Hurt(float damage, glm::vec3 from)
 
 	glm::vec3 direction = glm::normalize(from - position);
 
-	Launch(direction, 20.0f, 2.0f);
+	Launch(direction, 30.0f, 2.0f);
 
 	damageCooldown = glfwGetTime() + 0.25f;
 }
@@ -231,7 +231,7 @@ void AI::Draw()
 
 	float ourVel = 0;
 
-	if (path.size() != 0 && !dead)
+	if (path.size() != 0 && !dead && !dying)
 	{
 		glm::vec3 p = path[0];
 

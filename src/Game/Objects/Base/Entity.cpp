@@ -423,6 +423,12 @@ void Entity::Draw()
 
 		CheckVerticalCollision(motion);
 
+		if (strafeVelocity > speed / Game::instance->deltaTime)
+			strafeVelocity = speed / Game::instance->deltaTime;
+
+		if (strafeVelocity < -speed / Game::instance->deltaTime)
+			strafeVelocity = -speed / Game::instance->deltaTime;
+
 		motion += front * (forwardVelocity * Game::instance->deltaTime);
 
 		motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
@@ -447,10 +453,11 @@ void Entity::Draw()
 
 		position = motion;
 
+
 		if (forwardVelocity != 0)
-			forwardVelocity *= 0.92;
+			forwardVelocity *= 0.94;
 		if (strafeVelocity != 0)
-			strafeVelocity *= 0.95;
+			strafeVelocity *= 0.94;
 
 		if (forwardVelocity <= 0.01 && forwardVelocity >= -0.01)
 			forwardVelocity = 0;

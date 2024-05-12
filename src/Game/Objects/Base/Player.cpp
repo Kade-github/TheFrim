@@ -32,7 +32,7 @@ void Player::Hurt(float damage, glm::vec3 from)
 	{
 		glm::vec3 dir = glm::normalize(from - position);
 
-		Launch(dir, 20.0f, 2.0f);
+		Launch(dir, 30.0f, 2.0f);
 	}
 }
 
@@ -639,7 +639,7 @@ void Player::Draw()
 	{
 		if (selectedEntity != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
-			selectedEntity->Hurt(1.0f, position);
+			selectedEntity->Hurt(1.0f, position + camera->cameraFront);
 		}
 
 		if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
