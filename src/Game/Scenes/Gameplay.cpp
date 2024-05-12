@@ -106,19 +106,6 @@ void Gameplay::Draw()
 		shouldUpdate = true;
 
 		lastUpdate = currentTime;
-
-		if (testZomb != nullptr && ticks % 15 == 0)
-		{
-			static glm::vec3 lastPos = glm::vec3((int)player->position.x, (int)player->position.y, (int)player->position.z);
-
-			glm::vec3 currentPos = glm::vec3((int)player->position.x, (int)player->position.y, (int)player->position.z);
-
-			if (lastPos != currentPos)
-			{
-				testZomb->MoveTo(player->position);
-				lastPos = currentPos;
-			}
-		}
 	}
 
 
@@ -622,6 +609,12 @@ void Gameplay::KeyPress(int key)
 		testZomb->order = 2;
 
 		AddObject(testZomb);
+
+	}
+
+	if (key == GLFW_KEY_P)
+	{
+		player->noTarget = !player->noTarget;
 
 	}
 

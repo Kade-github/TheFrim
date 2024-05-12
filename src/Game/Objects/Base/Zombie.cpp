@@ -1,6 +1,7 @@
 #include "Zombie.h"
 #include "../../LightingManager.h"
 #include <Game.h>
+#include "../../Scenes/Gameplay.h"
 #include "Hud.h"
 
 Zombie::Zombie(glm::vec3 pos) : AI(pos)
@@ -50,8 +51,16 @@ Zombie::Zombie(glm::vec3 pos) : AI(pos)
 
 void Zombie::Draw()
 {
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
 	m.position = position - glm::vec3(0,0.9f,0);
 	m.rotateAxis = rotateAxis;
+
+	if (isOnGround && !init)
+	{
+		init = true;
+		target = position;
+	}
 
 	if (!Hud::GamePaused)
 	{
@@ -134,4 +143,72 @@ void Zombie::Draw()
 	Game::instance->shader->Unbind();
 
 	AI::Draw(); // physics and AI pathing
+
+	float dist = glm::distance(position, gp->player->position);
+
+	if (dist <= 1.5)
+		Attack();
+
+	if (dist <= 10 && !gp->player->noTarget)
+	{
+		if (gp->ticks % 10 != 0)
+			return;
+
+		// check if we can see the player
+
+		glm::vec3 direction = gp->player->position - position;
+
+		float angle = glm::degrees(glm::acos(glm::dot(glm::normalize(direction), glm::normalize(front))));
+
+		if (angle > 70)
+		{
+			canSeePlayer = false;
+			return;
+		}
+
+		// ray cast
+
+		glm::vec3 p = gp->player->position;
+
+		bool collision = RayTo(p);
+
+		if (!collision)
+		{
+			if (glfwGetTime() - lastUpdate > 0.1f)
+			{
+				lastUpdate = glfwGetTime();
+				MoveTo(gp->player->position);
+			}
+			canSeePlayer = true;
+		}
+		else
+		{
+			canSeePlayer = false;
+		}
+	}
+	else
+	{
+		bool isAtTarget = glm::distance(target, position) <= 0.9f || lastPosition + 30 < glfwGetTime();
+		if (isAtTarget && glfwGetTime() - lastUpdate > 0.1f)
+		{
+			lastPosition = glfwGetTime();
+			float random = rand() % 25;
+
+			lastUpdate = glfwGetTime() + random;
+
+			MoveToRandom();
+		}
+	}
+}
+
+void Zombie::Attack()
+{
+	if (glfwGetTime() > attackCooldown)
+	{
+		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+		gp->player->Hurt(2.5f);
+
+		attackCooldown = glfwGetTime() + 1.0f;
+	}
 }

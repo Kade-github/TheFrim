@@ -174,9 +174,7 @@ bool AI::CheckBlock(glm::vec3 from, glm::vec3 pos)
 
 void AI::MoveToRandom()
 {
-	glm::vec3 r = GenerateRandomPosition(10);
-	if (std::abs(r.y - position.y) > 4)
-		return;
+	glm::vec3 r = GenerateRandomPosition(32);
 
 	MoveTo(r);
 }

@@ -36,6 +36,8 @@ public:
 	Block* selectedBlock = nullptr;
 	BlockFace selectedFace;
 
+	bool noTarget = false;
+
 	int lastBreakSfx = 0;
 	float breakCooldown = 0;
 	bool wasDead = false;

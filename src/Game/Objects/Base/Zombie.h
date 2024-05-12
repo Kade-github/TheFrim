@@ -6,14 +6,18 @@
 class Zombie : public AI
 {
 	Model m;
-
+	bool init = false;
+	float lastPosition = 0;
 public:
 	float tempYaw = 0;
-
+	float attackCooldown = 0;
+	float lastUpdate = 0;
 	Zombie(glm::vec3 pos);
 
 	bool swappedLeft = false;
 	bool swappedRight = false;
+
+	bool canSeePlayer = false;
 
 	Mesh* torso;
 	Mesh* head;
@@ -35,6 +39,8 @@ public:
 	}
 
 	void Draw() override;
+
+	void Attack();
 };
 
 #endif
