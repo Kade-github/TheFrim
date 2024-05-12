@@ -30,7 +30,7 @@ void Player::Hurt(float damage, glm::vec3 from)
 	// knockback
 	if (from.y > 0)
 	{
-		glm::vec3 dir = glm::normalize(from - position);
+		glm::vec3 dir = glm::normalize(position - from);
 
 		Launch(dir, 30.0f, 2.0f);
 	}

@@ -187,7 +187,12 @@ void Zombie::Draw()
 
 		glm::vec3 p = gp->player->position;
 
+		bool wasSeeing = canSeePlayer;
+
 		canSeePlayer = !RayTo(p);
+
+		if (!wasSeeing)
+			lastUpdate = glfwGetTime() - 0.1f;
 	}
 	else
 	{
