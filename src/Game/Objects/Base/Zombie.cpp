@@ -38,6 +38,9 @@ Zombie::Zombie(glm::vec3 pos) : AI(pos)
 	leftLeg = &m.GetMesh("LeftLeg");
 	rightLeg = &m.GetMesh("RightLeg");
 
+	leftLeg->axis = glm::vec3(0, 0, 1);
+	rightLeg->axis = glm::vec3(0, 0, 1);
+
 	speed = 3.5f;
 
 	rotateAxis = glm::vec3(0, 1, 0);
@@ -58,9 +61,45 @@ void Zombie::Draw()
 
 		rightArm->position.x = std::lerp(rightArm->position.x, ra.x + front.x * 0.5f, Game::instance->deltaTime * 5);
 		rightArm->position.z = std::lerp(rightArm->position.z, ra.z + front.z * 0.5f, Game::instance->deltaTime * 5);
-
-
 		
+	}
+
+	if (path.size() != 0)
+	{
+		// leg movement
+
+		float dist = glm::distance(position, path[0]);
+
+		if (dist > 0.5f)
+		{
+			leftLeg->angle = -sin(glfwGetTime() * 5) * 15;
+			rightLeg->angle = sin(glfwGetTime() * 5) * 15;
+
+			if (leftLeg->angle < 0 && !swappedLeft)
+			{
+				Footstep();
+				swappedLeft = true;
+			}
+			else if (leftLeg->angle > 0 && swappedLeft)
+			{
+				swappedLeft = false;
+			}
+
+			if (rightLeg->angle < 0 && !swappedRight)
+			{
+				Footstep();
+				swappedRight = true;
+			}
+			else if (rightLeg->angle > 0 && swappedRight)
+			{
+				swappedRight = false;
+			}
+		}
+		else
+		{
+			leftLeg->angle = 0;
+			rightLeg->angle = 0;
+		}
 	}
 
 	m.angle = tempYaw;

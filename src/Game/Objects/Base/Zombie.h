@@ -12,6 +12,9 @@ public:
 
 	Zombie(glm::vec3 pos);
 
+	bool swappedLeft = false;
+	bool swappedRight = false;
+
 	Mesh* torso;
 	Mesh* head;
 	Mesh* leftArm;
