@@ -1,6 +1,7 @@
 #include "Zombie.h"
 #include "../../LightingManager.h"
 #include <Game.h>
+#include "Hud.h"
 
 Zombie::Zombie(glm::vec3 pos) : AI(pos)
 {
@@ -52,7 +53,7 @@ void Zombie::Draw()
 	m.position = position - glm::vec3(0,0.9f,0);
 	m.rotateAxis = rotateAxis;
 
-	if (std::abs(yaw - tempYaw) > 0.1f)
+	if (!Hud::GamePaused)
 	{
 		tempYaw = std::lerp(tempYaw, -yaw, Game::instance->deltaTime * 10);
 
@@ -61,44 +62,56 @@ void Zombie::Draw()
 
 		rightArm->position.x = std::lerp(rightArm->position.x, ra.x + front.x * 0.5f, Game::instance->deltaTime * 5);
 		rightArm->position.z = std::lerp(rightArm->position.z, ra.z + front.z * 0.5f, Game::instance->deltaTime * 5);
-		
-	}
 
-	if (path.size() != 0)
-	{
-		// leg movement
-
-		float dist = glm::distance(position, path[0]);
-
-		if (dist > 0.5f)
+		if (path.size() != 0)
 		{
-			leftLeg->angle = -sin(glfwGetTime() * 5) * 15;
-			rightLeg->angle = sin(glfwGetTime() * 5) * 15;
+			// leg movement
 
-			if (leftLeg->angle < 0 && !swappedLeft)
-			{
-				Footstep();
-				swappedLeft = true;
-			}
-			else if (leftLeg->angle > 0 && swappedLeft)
-			{
-				swappedLeft = false;
-			}
+			float dist = glm::distance(position, path[0]);
 
-			if (rightLeg->angle < 0 && !swappedRight)
+			if (dist > 0.5f)
 			{
-				Footstep();
-				swappedRight = true;
+				if (isOnGround)
+				{
+					leftLeg->angle = -sin(glfwGetTime() * 5) * 15;
+					rightLeg->angle = sin(glfwGetTime() * 5) * 15;
+
+					if (leftLeg->angle < 0 && !swappedLeft)
+					{
+						Footstep();
+						swappedLeft = true;
+					}
+					else if (leftLeg->angle > 0 && swappedLeft)
+					{
+						swappedLeft = false;
+					}
+
+					if (rightLeg->angle < 0 && !swappedRight)
+					{
+						Footstep();
+						swappedRight = true;
+					}
+					else if (rightLeg->angle > 0 && swappedRight)
+					{
+						swappedRight = false;
+					}
+				}
+				else
+				{
+					leftLeg->angle = std::lerp(leftLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+					rightLeg->angle = std::lerp(rightLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+				}
 			}
-			else if (rightLeg->angle > 0 && swappedRight)
+			else
 			{
-				swappedRight = false;
+				leftLeg->angle = 0;
+				rightLeg->angle = 0;
 			}
 		}
 		else
 		{
-			leftLeg->angle = 0;
-			rightLeg->angle = 0;
+			leftLeg->angle = std::lerp(leftLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+			rightLeg->angle = std::lerp(rightLeg->angle, 0.0f, Game::instance->deltaTime * 5);
 		}
 	}
 

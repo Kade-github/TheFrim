@@ -228,7 +228,7 @@ void MusicManager::PlaySFX(std::string path, glm::vec3 from, float pitch, std::s
 
 	float dist = glm::distance(from, _currentPos);
 
-	if (dist > 18)
+	if (dist > 12)
 		return;
 
 	Channel* c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);

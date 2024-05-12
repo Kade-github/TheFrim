@@ -48,6 +48,8 @@ void AI::MoveTo(glm::vec3 pos)
 
 	glm::vec3 p = position - glm::vec3(-0.5,0.9f,-0.5);
 
+	p = glm::vec3((int)p.x, p.y, (int)p.z);
+
 	float d = glm::distance(target, p);
 
 	while (d > 1)
@@ -232,7 +234,7 @@ void AI::Draw()
 
 		// check if we are at the target
 
-		if (dist <= 0.5f)
+		if (dist <= 0.8f)
 		{
 			nextPath = true;
 			path.erase(path.begin());
