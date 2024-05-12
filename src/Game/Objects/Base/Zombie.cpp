@@ -188,10 +188,9 @@ void Zombie::Draw()
 	}
 	else
 	{
-		bool isAtTarget = glm::distance(target, position) <= 0.9f || lastPosition + 30 < glfwGetTime();
+		bool isAtTarget = glm::distance(target, position) <= 0.9f;
 		if (isAtTarget && glfwGetTime() - lastUpdate > 0.1f)
 		{
-			lastPosition = glfwGetTime();
 			float random = rand() % 25;
 
 			lastUpdate = glfwGetTime() + random;

@@ -148,6 +148,7 @@ void AI::MoveTo(glm::vec3 pos)
 
 	target += glm::vec3(0, 0.9f, 0);
 
+	lastPosition = glfwGetTime();
 	nextPath = true;
 
 }
@@ -232,9 +233,17 @@ void AI::Draw()
 
 		if (dist <= 0.8f)
 		{
+			lastPosition = glfwGetTime();
 			nextPath = true;
 			path.erase(path.begin());
 		}
+	}
+
+	if (glfwGetTime() > lastPosition + 30 && isOnGround)
+	{
+		// give up
+		path.clear();
+		target = position;
 	}
 
 	if (forwardVelocity > sp)

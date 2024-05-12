@@ -9,6 +9,7 @@ class AI : public Entity
 	bool CheckBlock(glm::vec3 from, glm::vec3 pos);
 
 	bool nextPath = false;
+	float lastPosition = 0;
 
 public:
 	bool debug = false;

@@ -7,7 +7,6 @@ class Zombie : public AI
 {
 	Model m;
 	bool init = false;
-	float lastPosition = 0;
 public:
 	float tempYaw = 0;
 	float attackCooldown = 0;
