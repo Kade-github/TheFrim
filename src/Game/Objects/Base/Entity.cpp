@@ -7,6 +7,7 @@
 
 Entity::Entity(glm::vec3 pos) : GameObject(pos)
 {
+	lightUpdate = glfwGetTime();
 	Texture* t = Texture::createWithImage("Assets/Textures/entity_shadow.png");
 
 	shadow = new Sprite3D(t, glm::vec3(0,0,0));
@@ -468,23 +469,35 @@ void Entity::Draw()
 	{
 		int topBlock = currentChunk->GetHighestBlock(position.x, position.z, true);
 
-		float diff = topBlock - position.y;
-
-		shadow->position.y = topBlock + 1.05;
-
-		if (diff > -6)
+		if (position.y >= topBlock)
 		{
-			if (diff < -4 && diff > -6)
-				shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_25");
-			else if (diff < -2 && diff > -4)
-				shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_50");
-			else if (diff <= 0 && diff > -2)
-				shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_100");
 
-			shadow->UpdateSprite();
+
+			float diff = topBlock - position.y;
+
+			shadow->position.y = topBlock + 1.05;
+
+			if (diff > -6)
+			{
+				if (diff < -4 && diff > -6)
+					shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_25");
+				else if (diff < -2 && diff > -4)
+					shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_50");
+				else if (diff <= 0 && diff > -2)
+					shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_100");
+
+				shadow->UpdateSprite();
+			}
+			else
+				drawShadow = false;
 		}
 		else
-			drawShadow = false;
+		{
+			shadow->src = shadow->t->spriteSheet.GetUVFlip("entity_shadow_100");
+			if (!isOnGround)
+				drawShadow = false;
+			shadow->UpdateSprite();
+		}
 	}
 
 	shadow->angle = 90;

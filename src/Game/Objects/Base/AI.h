@@ -3,6 +3,11 @@
 
 #include "Entity.h"
 
+enum AI_Type {
+	TZombie = 0,
+	TPig = 1
+};
+
 class AI : public Entity
 {
 	bool DoesBlockExist(glm::vec3 pos);
@@ -13,6 +18,8 @@ class AI : public Entity
 
 public:
 	bool debug = false;
+
+	AI_Type type = TZombie;
 
 	float aiYaw = 0;
 	float aiPitch = 0;

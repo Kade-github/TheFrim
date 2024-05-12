@@ -8,6 +8,7 @@
 #include "../Objects/Base/Hud.h"
 #include "../WorldManager.h"
 #include "../DroppedItemManager.h"
+#include "../MobManager.h"
 #include <OpenGL/Model.h>
 
 class Gameplay : public Scene
@@ -15,6 +16,7 @@ class Gameplay : public Scene
 public:
 	bool showHud = true;
 	DroppedItemManager* dim;
+	MobManager* mm;
 	WorldManager* wm;
 	Hud* hud;
 	Player* player;

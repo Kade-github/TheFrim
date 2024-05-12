@@ -130,15 +130,13 @@ void Zombie::Draw()
 
 	Game::instance->shader->Bind();
 
-	//Game::instance->shader->SetUniform1f("lightLevel", (float)lightLevel);
-
+	Game::instance->shader->SetUniform1f("lightLevel", (float)lightLevel);
 
 	m.Draw();
 
-
 	Game::instance->shader->Bind();
 
-	//Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
+	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
 
 	Game::instance->shader->Unbind();
 
@@ -209,5 +207,7 @@ void Zombie::Attack()
 		gp->player->Hurt(2.5f);
 
 		attackCooldown = glfwGetTime() + 1.0f;
+
+		MoveTo(gp->player->position);
 	}
 }

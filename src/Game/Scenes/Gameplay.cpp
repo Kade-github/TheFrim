@@ -9,8 +9,6 @@
 #include "../CraftingManager.h"
 #include "../Objects/Base/Zombie.h"
 
-Zombie* testZomb = nullptr;
-
 glm::vec3 rotate(const glm::vec3& v, const glm::vec3& k, float theta)
 {
 	float cos_theta = cos(theta);
@@ -36,6 +34,8 @@ void Gameplay::Create()
 	Game::instance->SetLockedCursor(true);
 
 	dim = new DroppedItemManager();
+
+	mm = new MobManager();
 
 	c2d = new Camera2D(glm::vec3(0, 0, 0));
 
@@ -106,6 +106,9 @@ void Gameplay::Draw()
 		shouldUpdate = true;
 
 		lastUpdate = currentTime;
+
+		if (ticks % 10 == 0)
+			mm->Update();
 	}
 
 
@@ -196,6 +199,11 @@ void Gameplay::Draw()
 		c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
 	else
 		c2d->DrawDebugText("Game Paused", glm::vec2(4, 28), 24);
+
+	// mobs
+
+	c2d->DrawDebugText("Mobs: " + std::to_string(mm->mobs.size()), glm::vec2(4, 52), 24);
+
 	MusicManager::GetInstance()->Set3DPosition(player->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();
@@ -600,22 +608,15 @@ void Gameplay::KeyPress(int key)
 			UnloadChunk(c);
 	}
 
-	if (key == GLFW_KEY_O)
-	{
-		// Spawn a zombie
-
-		testZomb = new Zombie(player->position + glm::vec3(0, 4, 0));
-
-		testZomb->order = 2;
-
-		AddObject(testZomb);
-
-	}
-
 	if (key == GLFW_KEY_P)
 	{
 		player->noTarget = !player->noTarget;
 
+	}
+
+	if (key == GLFW_KEY_O)
+	{
+		mm->lastWave = glfwGetTime() - 30;
 	}
 
 	if (key == GLFW_KEY_F7)

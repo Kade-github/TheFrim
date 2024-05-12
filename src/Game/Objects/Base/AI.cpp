@@ -239,9 +239,10 @@ void AI::Draw()
 		}
 	}
 
-	if (glfwGetTime() > lastPosition + 30 && isOnGround)
+	if (glfwGetTime() > lastPosition + 2 && isOnGround)
 	{
 		// give up
+		lastPosition = glfwGetTime();
 		path.clear();
 		target = position;
 	}
