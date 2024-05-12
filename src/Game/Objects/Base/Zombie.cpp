@@ -144,12 +144,12 @@ void Zombie::Draw()
 
 	float dist = glm::distance(position, gp->player->position);
 
-	if (dist <= 1.5)
+	if (dist <= 2.0)
 		Attack();
 
 	if (dist <= 10 && !gp->player->noTarget)
 	{
-		if (gp->ticks % 10 != 0)
+		if (gp->ticks % 2 != 0)
 			return;
 
 		// check if we can see the player
@@ -158,7 +158,7 @@ void Zombie::Draw()
 
 		float angle = glm::degrees(glm::acos(glm::dot(glm::normalize(direction), glm::normalize(front))));
 
-		if (angle > 70)
+		if (angle > 70 && dist > 4.0f)
 		{
 			canSeePlayer = false;
 			return;

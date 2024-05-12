@@ -55,7 +55,7 @@ void MobManager::Update()
 	Camera* cam = Game::instance->GetCamera();
 
 	// spawn mobs around player
-	if (glfwGetTime() - lastWave > 30 && mobs.size() < 65)
+	if (glfwGetTime() - lastWave > 30 && mobs.size() < 30)
 	{
 		lastWave = glfwGetTime();
 

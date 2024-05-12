@@ -162,7 +162,7 @@ bool AI::DoesBlockExist(glm::vec3 pos)
 
 	int toBlock = toChunk->GetBlock(pos.x, pos.y, pos.z);
 
-	return toBlock > 0;
+	return toBlock > 0 && toBlock != WATER;
 }
 
 bool AI::CheckBlock(glm::vec3 from, glm::vec3 pos)
@@ -225,8 +225,16 @@ void AI::Draw()
 		// set our down velocity
 		if (isOnGround || inWater)
 		{
-			if (p.y > position.y)
+			if (p.y > position.y && !inWater)
 				downVelocity = jumpStrength;
+
+			if (inWater)
+			{
+				if (topWater)
+					downVelocity = jumpStrength / 2;
+				else
+					downVelocity = jumpStrength;
+			}
 		}
 
 		// check if we are at the target

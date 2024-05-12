@@ -36,7 +36,7 @@ void main()
 
         // darken based on the light level
 
-        float light = max(0.1, lightLevel / 10.0);
+        float light = max(0.5, lightLevel / 10.0);
 
 	    FragColor = vec4(FragColor.rgb * light, FragColor.a);
     }
