@@ -149,9 +149,6 @@ void Zombie::Draw()
 
 	if (dist <= 10 && !gp->player->noTarget)
 	{
-		if (gp->ticks % 2 != 0)
-			return;
-
 		// check if we can see the player
 
 		glm::vec3 direction = gp->player->position - position;
@@ -168,21 +165,7 @@ void Zombie::Draw()
 
 		glm::vec3 p = gp->player->position;
 
-		bool collision = RayTo(p);
-
-		if (!collision)
-		{
-			if (glfwGetTime() - lastUpdate > 0.1f)
-			{
-				lastUpdate = glfwGetTime();
-				MoveTo(gp->player->position);
-			}
-			canSeePlayer = true;
-		}
-		else
-		{
-			canSeePlayer = false;
-		}
+		canSeePlayer = !RayTo(p);
 	}
 	else
 	{
@@ -194,6 +177,15 @@ void Zombie::Draw()
 			lastUpdate = glfwGetTime() + random;
 
 			MoveToRandom();
+		}
+	}
+
+	if (canSeePlayer)
+	{
+		if (glfwGetTime() - lastUpdate > 0.05f)
+		{
+			lastUpdate = glfwGetTime();
+			MoveTo(gp->player->position);
 		}
 	}
 }
