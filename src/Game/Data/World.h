@@ -233,6 +233,17 @@ namespace Data
 				chunks[i] = std::vector<Chunk>(REGION_SIZE);
 		};
 
+		~Region()
+		{
+			for (int i = 0; i < REGION_SIZE; i++)
+			{
+				for (int j = 0; j < REGION_SIZE; j++)
+				{
+					chunks[i][j].~Chunk();
+				}
+			}
+		}
+
 		Chunk getChunk(int x, int z);
 		Chunk* getChunkPtr(int x, int z);
 		void addChunk(Chunk c);
@@ -269,6 +280,11 @@ namespace Data
 		World()
 		{
 			name = "";
+		}
+
+		~World()
+		{
+			storedRegions.clear();
 		}
 
 		void scanForRegions();

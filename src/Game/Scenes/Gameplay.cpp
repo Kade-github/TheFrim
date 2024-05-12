@@ -209,7 +209,7 @@ void Gameplay::Draw()
 		c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
 	else
 		c2d->DrawDebugText("Game Paused", glm::vec2(4, 28), 24);
-	MusicManager::GetInstance()->Set3DPosition(camera->position, camera->cameraFront, camera->cameraUp);
+	MusicManager::GetInstance()->Set3DPosition(player->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();
 

@@ -50,8 +50,19 @@ public:
 		_path = path;
 		name = _name;
 
+		auto flags = BASS_STREAM_PRESCAN;
 
-		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, BASS_STREAM_PRESCAN | BASS_SAMPLE_FLOAT);
+		if (IsStereo())
+			flags |= BASS_SAMPLE_FLOAT;
+		else
+			flags |= BASS_SAMPLE_MONO | BASS_SAMPLE_3D;
+
+		id = BASS_StreamCreateFile(FALSE, _path.c_str(), 0, 0, flags);
+
+		if (!IsStereo())
+		{
+			BASS_ChannelSet3DAttributes(id, BASS_3DMODE_OFF, -1, -1, -1, -1, 1);
+		}
 
 		CheckError();
 
@@ -111,7 +122,9 @@ public:
 		if (!IsLoaded())
 			return;
 
-		BASS_Set3DFactors(dist, -1.0f, -1.0f);
+		BASS_Set3DFactors(-1, pow(2, (dist - 10) / 5.0), -1);
+
+		BASS_ChannelSet3DAttributes(id, BASS_3DMODE_NORMAL, 0, 8, -1, -1, 0);
 		CheckError();
 	}
 
@@ -136,12 +149,31 @@ public:
 		volume = vol;
 	}
 
+	bool IsStereo()
+	{
+		if (!IsLoaded())
+			return false;
+
+		BASS_CHANNELINFO info;
+
+		BASS_ChannelGetInfo(id, &info);
+
+		return info.chans == 2 || _path.find(".mp3") != std::string::npos;
+	}
+
 	void CreateFX()
 	{
 		if (!IsLoaded())
 			return;
 
-		id = BASS_FX_TempoCreate(decode, BASS_FX_FREESOURCE);
+		auto flags = BASS_FX_FREESOURCE | BASS_STREAM_PRESCAN;
+
+		if (IsStereo())
+			flags |= BASS_SAMPLE_FLOAT;
+		else
+			flags |= BASS_SAMPLE_MONO | BASS_SAMPLE_3D;
+
+		id = BASS_FX_TempoCreate(decode, flags);
 
 		CheckError();
 	}

@@ -205,12 +205,31 @@ void MusicManager::PlaySFX(std::string path, std::string customName)
 
 	c->CreateFX();
 
+	c->Set3DDistanceFactor(0);
+
+	Game::instance->audioManager->Apply3D();
+
+	Game::instance->audioManager->Apply3D();
+
 	c->Play();
 }
 
 void MusicManager::PlaySFX(std::string path, glm::vec3 from, float pitch, std::string customName)
 {
 	std::string rPath = "Assets/Sfx/" + path + ".ogg";
+
+
+	BASS_3DVECTOR pos;
+
+	BASS_Get3DPosition(&pos, nullptr, nullptr, nullptr);
+
+	glm::vec3 _currentPos = { pos.x, pos.y, pos.z };
+
+
+	float dist = glm::distance(from, _currentPos);
+
+	if (dist > 18)
+		return;
 
 	Channel* c = Game::instance->audioManager->CreateChannel(rPath, customName == "sfx" ? path : customName, true);
 
@@ -221,13 +240,7 @@ void MusicManager::PlaySFX(std::string path, glm::vec3 from, float pitch, std::s
 
 	c->SetPitch(pitch);
 
-	BASS_3DVECTOR pos;
-
-	BASS_Get3DPosition(&pos, nullptr, nullptr, nullptr);
-
-	glm::vec3 _currentPos = { pos.x, pos.y, pos.z };
-
-	c->Set3DDistanceFactor(glm::distance(from, _currentPos));
+	c->Set3DDistanceFactor(dist);
 
 	Game::instance->audioManager->Apply3D();
 
