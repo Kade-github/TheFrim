@@ -27,6 +27,8 @@ void MobManager::RemoveMob(AI* mob)
 {
 	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
+	mob->Destroy();
+
 	gp->RemoveObject(mob);
 
 	mobs.erase(std::remove(mobs.begin(), mobs.end(), mob), mobs.end());
@@ -108,4 +110,17 @@ void MobManager::Update()
 		}
 	}
 
+	for (AI* mob : mobs)
+	{
+		float angle = cam->YawAngleTo(mob->position);
+
+		if (angle > 100 && glfwGetTime() - mob->lastSeen > 140) // not visible
+		{
+			RemoveMob(mob);
+			break;
+		}
+		else if (angle > 100)
+			mob->lastSeen = glfwGetTime();
+			
+	}
 }

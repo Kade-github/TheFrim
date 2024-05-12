@@ -18,6 +18,9 @@ class AI : public Entity
 
 public:
 	bool debug = false;
+	float lastSeen = 0;
+
+	float health = 10;
 
 	AI_Type type = TZombie;
 
