@@ -209,7 +209,7 @@ void Zombie::Draw()
 
 	if (canSeePlayer)
 	{
-		if (glfwGetTime() - lastUpdate > 0.05f)
+		if (glfwGetTime() - lastUpdate > 0.25f)
 		{
 			lastUpdate = glfwGetTime();
 			MoveTo(gp->player->position);
