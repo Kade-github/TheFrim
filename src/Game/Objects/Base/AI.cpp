@@ -193,9 +193,7 @@ void AI::Hurt(float damage, glm::vec3 from)
 
 	// knockback
 
-	glm::vec3 direction = glm::normalize(from - (position + front));
-
-	Launch(direction, 50.0f, 2.0f);
+	Launch(from, 35.0f, 2.0f);
 
 	damageCooldown = glfwGetTime() + 0.25f;
 }

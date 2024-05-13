@@ -71,7 +71,7 @@ void Zombie::Draw()
 			// go away
 			dying = true;
 
-			m.scale = glm::vec3(std::lerp(m.scale.x, 0.0f, Game::instance->deltaTime * 5));
+			m.scale = glm::vec3(std::lerp(m.scale.x, 0.0f, Game::instance->deltaTime * 2));
 
 			if (m.scale.x <= 0.1f)
 				dead = true;
@@ -79,16 +79,16 @@ void Zombie::Draw()
 
 		if (!dying && !dead)
 		{
-			tempYaw = std::lerp(tempYaw, -yaw, Game::instance->deltaTime * 10);
+			tempYaw = std::lerp(tempYaw, -yaw, Game::instance->deltaTime * 5);
 
 
 			// arms are buggy but its funny
 
-			leftArm->position.x = std::lerp(leftArm->position.x, la.x + front.x * 0.5f, Game::instance->deltaTime * 5);
-			leftArm->position.z = std::lerp(leftArm->position.z, la.z + front.z * 0.5f, Game::instance->deltaTime * 5);
+			leftArm->position.x = std::lerp(leftArm->position.x, la.x + front.x * 0.5f, Game::instance->deltaTime * 2);
+			leftArm->position.z = std::lerp(leftArm->position.z, la.z + front.z * 0.5f, Game::instance->deltaTime * 2);
 
-			rightArm->position.x = std::lerp(rightArm->position.x, ra.x + front.x * 0.5f, Game::instance->deltaTime * 5);
-			rightArm->position.z = std::lerp(rightArm->position.z, ra.z + front.z * 0.5f, Game::instance->deltaTime * 5);
+			rightArm->position.x = std::lerp(rightArm->position.x, ra.x + front.x * 0.5f, Game::instance->deltaTime * 2);
+			rightArm->position.z = std::lerp(rightArm->position.z, ra.z + front.z * 0.5f, Game::instance->deltaTime * 2);
 
 			if (path.size() != 0)
 			{
@@ -166,7 +166,7 @@ void Zombie::Draw()
 
 	float dist = glm::distance(position, gp->player->position);
 
-	if (dist <= 2.0 && !dead && !dying)
+	if (dist <= 2.0 && !dead && !dying && !gp->player->noTarget)
 		Attack();
 
 	if (dist <= 10 && !gp->player->noTarget)
@@ -223,7 +223,9 @@ void Zombie::Attack()
 	{
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-		gp->player->Hurt(2.5f, position + front);
+		glm::vec3 dir = glm::normalize(gp->player->position - (position + front));
+
+		gp->player->Hurt(2.5f, dir);
 
 		attackCooldown = glfwGetTime() + 1.0f;
 

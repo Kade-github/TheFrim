@@ -70,15 +70,17 @@ void Entity::FootstepSound(Block* b, std::string append, float pitchAdd)
 
 void Entity::Launch(glm::vec3 direction, float force)
 {
-	downVelocity += force;
-
-	forwardVelocity += direction.z * force;
+	forwardVelocity += direction.x * force;
+	strafeVelocity += direction.z * force;
 }
 
 void Entity::Launch(glm::vec3 direction, float force, float upForce)
 {
-	forwardVelocity += direction.z * force;
-	downVelocity += upForce;
+	forwardVelocity += direction.x * force;
+	strafeVelocity += direction.z * force;
+
+	downVelocity = upForce;
+
 }
 
 void Entity::CheckCollision(glm::vec3& motion, float down)

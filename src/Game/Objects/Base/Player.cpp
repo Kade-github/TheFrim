@@ -18,6 +18,9 @@ void Player::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 n
 
 void Player::Hurt(float damage, glm::vec3 from)
 {
+	if (playerData.health <= 0)
+		return;
+
 	MusicManager::GetInstance()->PlaySFX("hurt", "hurtSFX");
 	playerData.health -= damage;
 
@@ -32,9 +35,7 @@ void Player::Hurt(float damage, glm::vec3 from)
 	{
 		Camera* c = Game::instance->GetCamera();
 
-		glm::vec3 dir = glm::normalize((position + c->cameraFront) - from);
-
-		Launch(dir, 50.0f, 2.0f);
+		Launch(from, 35.0f, 2.0f);
 	}
 }
 
@@ -641,7 +642,14 @@ void Player::Draw()
 	{
 		if (selectedEntity != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
-			selectedEntity->Hurt(1.0f, position + camera->cameraFront);
+			// knockback direction
+
+			glm::vec3 dir = selectedEntity->position - position;
+
+			dir = glm::normalize(dir);
+
+			selectedEntity->Hurt(1.0f, dir);
+
 		}
 
 		if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)

@@ -634,7 +634,10 @@ void Gameplay::KeyPress(int key)
 	if (key == GLFW_KEY_F11)
 	{
 		Camera* camera = Game::instance->GetCamera();
-		player->Launch(camera->cameraFront - camera->position, 10);
+
+		glm::vec3 dir = camera->cameraFront;
+
+		player->Launch(dir, 35, 1.0f);
 	}
 
 	if (key == GLFW_KEY_F12)
