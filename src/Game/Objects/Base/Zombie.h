@@ -25,9 +25,6 @@ public:
 	Mesh* leftLeg;
 	Mesh* rightLeg;
 
-	glm::vec3 la;
-	glm::vec3 ra;
-
 	glm::vec3 GetFakeDirection()
 	{
 		glm::vec3 direction;
