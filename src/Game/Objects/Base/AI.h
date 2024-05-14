@@ -17,6 +17,7 @@ class AI : public Entity
 	float lastPosition = 0;
 	float damageCooldown = 0.0f;
 public:
+	bool wasHit = false;
 	bool dying = false;
 	float redness = 0.0f;
 	bool dead = false;

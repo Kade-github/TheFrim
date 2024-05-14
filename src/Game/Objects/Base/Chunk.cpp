@@ -943,24 +943,29 @@ void Chunk::CreateSubChunks()
 
 void Chunk::SetBuffer()
 {
-	// bind first vertex array
-	glBindVertexArray(VAO);
+	if (vertices.size() != 0)
+	{
+		// bind first vertex array
+		glBindVertexArray(VAO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GameObject::VVertex), vertices.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ARRAY_BUFFER, VBO);
+		glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GameObject::VVertex), vertices.data(), GL_STATIC_DRAW);
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
-	// position attribute
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)0);
-	glEnableVertexAttribArray(0);
+		// position attribute
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)0);
+		glEnableVertexAttribArray(0);
 
-	// uv attribute
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
-	glEnableVertexAttribArray(1);
+		// uv attribute
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
+		glEnableVertexAttribArray(1);
 
-	glBindVertexArray(0);
+		glBindVertexArray(0);
+
+		size = indices.size();
+	}
 
 	if (modelsPresent.size() != 0)
 		modelsPresent.clear();
@@ -973,11 +978,15 @@ void Chunk::SetBuffer()
 		modelsPresent.push_back(block->m);
 	}
 
-	size = indices.size();
+	vertices.clear();
+	indices.clear();
 }
 
 void Chunk::SetTransparentBuffer()
 {
+	if (transparentVertices.size() == 0)
+		return;
+
 	// bind transparent vertex array
 	glBindVertexArray(TRANSPARENTVAO);
 
@@ -996,10 +1005,18 @@ void Chunk::SetTransparentBuffer()
 	glEnableVertexAttribArray(1);
 
 	glBindVertexArray(0);
+
+	transparentSize = transparentIndices.size();
+
+	transparentIndices.clear();
+	transparentVertices.clear();
 }
 
 void Chunk::SetShadowBuffer()
 {
+	if (shadowVertices.size() == 0)
+		return;
+
 	// bind shadow vertex array
 	glBindVertexArray(SHADOWVAO);
 
@@ -1020,7 +1037,8 @@ void Chunk::SetShadowBuffer()
 	glBindVertexArray(0);
 
 	shadowSize = shadowIndices.size();
-
+	shadowVertices.clear();
+	shadowIndices.clear();
 }
 
 void Chunk::Init()
@@ -1136,7 +1154,7 @@ void Chunk::DrawModels()
 
 void Chunk::DrawTransparent()
 {
-	if (!isRendered || transparentIndices.size() == 0)
+	if (!isRendered || transparentSize == 0)
 		return;
 
 	Shader* s = Game::instance->shader;
@@ -1155,7 +1173,7 @@ void Chunk::DrawTransparent()
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, TRANSPARENTEBO);
 
-	glDrawElements(GL_TRIANGLES, transparentIndices.size(), GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, transparentSize, GL_UNSIGNED_INT, 0);
 
 	txp->Unbind();
 	s->Unbind();
@@ -1171,7 +1189,7 @@ void Chunk::DrawShadows()
 		return;
 
 	Shader* s = Game::instance->shader;
-	
+
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);
 
@@ -1179,6 +1197,10 @@ void Chunk::DrawShadows()
 	txp->Bind();
 	s->Bind();
 	s->SetUniform1f("lightLevel", 10.0f);
+
+	glm::mat4 model = glm::mat4(1.0f);
+
+	s->SetUniformMat4f("model", &model[0][0]);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, SHADOWEBO);
 
@@ -1207,32 +1229,30 @@ void Chunk::UpdateChunk(int tick)
 	if (subChunks.size() == 0)
 		return;
 
-	if (chunkMutex.try_lock())
+
+	for (int i = 0; i < subChunks.size(); i++)
 	{
-		for (int i = 0; i < subChunks.size(); i++)
+		subChunk& sbc = subChunks[i];
+
+		if (sbc.y == -1)
+			continue;
+
+		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
-			subChunk& sbc = subChunks[i];
-
-			if (sbc.y == -1)
-				continue;
-
-			for (int x = 0; x < CHUNK_SIZE; x++)
+			for (int z = 0; z < CHUNK_SIZE; z++)
 			{
-				for (int z = 0; z < CHUNK_SIZE; z++)
-				{
-					Block* b = sbc.blocks[x][z];
+				Block* b = sbc.blocks[x][z];
 
-					if (b == nullptr)
-						continue;
+				if (b == nullptr)
+					continue;
 
-					if (!b->updateable)
-						continue;
+				if (!b->updateable)
+					continue;
 
-					b->Update(tick);
-				}
+				b->Update(tick);
 			}
 		}
-
-		chunkMutex.unlock();
 	}
+
+
 }

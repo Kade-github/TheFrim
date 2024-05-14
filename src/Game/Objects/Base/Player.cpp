@@ -29,14 +29,6 @@ void Player::Hurt(float damage, glm::vec3 from)
 	scene->hud->UpdateHearts();
 
 	CameraShake(0.25f);
-
-	// knockback
-	if (from.y > 0)
-	{
-		Camera* c = Game::instance->GetCamera();
-
-		Launch(from, 35.0f, 2.0f);
-	}
 }
 
 void Player::Heal(float amount)
@@ -331,6 +323,9 @@ void Player::Draw()
 
 	if (inWater)
 		sp = speed / 2;
+
+	if (shift)
+		sp = sp / 2;
 
     bool hasLandedThisFrame = false;
 
@@ -642,13 +637,7 @@ void Player::Draw()
 	{
 		if (selectedEntity != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
-			// knockback direction
-
-			glm::vec3 dir = selectedEntity->position - position;
-
-			dir = glm::normalize(dir);
-
-			selectedEntity->Hurt(1.0f, dir);
+			selectedEntity->Hurt(1.0f, position);
 
 		}
 
@@ -842,9 +831,7 @@ void Player::Draw()
 
 					breakCooldown = glfwGetTime();
 
-					c->chunkMutex.lock();
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
-					c->chunkMutex.unlock();
 
 					selectedBlock = nullptr;
 				}
@@ -889,7 +876,9 @@ void Player::Draw()
 	}
 
 	if (!freeCam)
+	{
 		Entity::Draw(); // physics
+	}
 }
 
 void Player::MouseClick(int button, glm::vec2 mPos)

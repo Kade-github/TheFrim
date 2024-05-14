@@ -18,10 +18,10 @@ FallingBlock::FallingBlock(glm::vec3 _pos, Texture* t, std::vector<GameObject::V
 	glBindVertexArray(VAO);
 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GameObject::VVertex), &vertices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ARRAY_BUFFER, vertices.size() * sizeof(GameObject::VVertex), vertices.data(), GL_STATIC_DRAW);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), &indices[0], GL_STATIC_DRAW);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices.size() * sizeof(unsigned int), indices.data(), GL_STATIC_DRAW);
 
 	// position attribute
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)0);
@@ -38,11 +38,11 @@ void FallingBlock::Draw()
 {
 	Shader* s = Game::instance->shader;
 
-	glEnable(GL_DEPTH_CLAMP);
+	glDisable(GL_DEPTH_CLAMP);
 
 	glDisable(GL_CULL_FACE);
 
-	glBindVertexArray(VAO); // transparent faces
+	glBindVertexArray(VAO);
 	txp->Bind();
 	s->Bind();
 

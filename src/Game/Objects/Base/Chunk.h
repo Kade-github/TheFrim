@@ -45,6 +45,7 @@ class Chunk : public GameObject
     bool keepUpdating = false;
 
     int shadowSize = 0;
+    int transparentSize = 0;
     int size = 0;
 public:
     std::mutex chunkMutex;
