@@ -11,6 +11,8 @@ public:
 
 	bool loaded = true;
 
+	bool shouldUnload = false;
+
 	Data::Region data;
 
 	std::vector<Chunk*> chunks;

@@ -673,6 +673,9 @@ void Player::Draw()
 					}
 					break;
 				case S_WOOD:
+					if (item.type == Data::ITEM_NULL)
+						correctTool = true;
+
 					if (StringTools::Contains(item.tag, "axe"))
 					{
 						toughness *= item.breakingPower;

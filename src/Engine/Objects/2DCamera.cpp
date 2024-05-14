@@ -255,7 +255,7 @@ void Camera2D::MouseMove(float x, float y)
 
 void Camera2D::KeyPress(int key)
 {
-	if (key == GLFW_KEY_KP_0)
+	if (key == GLFW_KEY_F3)
 		debug = !debug;
 
 	for (int i = 0; i < objects.size(); i++)
@@ -298,24 +298,19 @@ void Camera2D::Draw()
 
 	framesDone++;
 
-	std::string format = StringTools::ToTheDecimial(fps, 0);
-
-	DrawDebugText("FPS: " + format, glm::vec2(4, _h - 28), 24);
-
-    size_t memoryUsageBytes = getCurrentRSS();
-
-    float memUsage = memoryUsageBytes / 1024.0f / 1024.0f;
-
-    format = StringTools::ToTheDecimial(memUsage, 2);
-
-    DrawDebugText("Memory Usage: " + format + "MB", glm::vec2(4, _h - 52), 24);
-
 	if (debug)
 	{
-		for(int i = 0; i < Game::instance->log->logs.size(); i++)
-		{
-			DrawDebugText(Game::instance->log->logs[i], glm::vec2(4, _h - 52 - (i * 24)), 24);
-		}
+		std::string format = StringTools::ToTheDecimial(fps, 0);
+
+		DrawDebugText("FPS: " + format, glm::vec2(4, _h - 28), 24);
+
+		size_t memoryUsageBytes = getCurrentRSS();
+
+		float memUsage = memoryUsageBytes / 1024.0f / 1024.0f;
+
+		format = StringTools::ToTheDecimial(memUsage, 2);
+
+		DrawDebugText("Memory Usage: " + format + "MB", glm::vec2(4, _h - 52), 24);
 	}
 
 	UpdateFramebuffer();

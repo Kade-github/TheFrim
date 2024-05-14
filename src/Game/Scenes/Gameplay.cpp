@@ -191,25 +191,6 @@ void Gameplay::Draw()
 
 	Chunk* currentChunk = wm->GetChunk(player->position.x, player->position.z);
 
-	c2d->DrawDebugText("Player Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(4, 4), 24);
-	
-	if (!Hud::GamePaused)
-		c2d->DrawDebugText("TPS: " + StringTools::ToTheDecimial(tps, 2), glm::vec2(4, 28), 24);
-	else
-		c2d->DrawDebugText("Game Paused", glm::vec2(4, 28), 24);
-
-	// mobs
-
-	c2d->DrawDebugText("Mobs: " + std::to_string(mm->mobs.size()), glm::vec2(4, 52), 24);
-
-	// player foward/strafe velocity
-
-	c2d->DrawDebugText("Forward Velocity: " + StringTools::ToTheDecimial(player->forwardVelocity, 2), glm::vec2(4, 76), 24);
-
-	c2d->DrawDebugText("Strafe Velocity: " + StringTools::ToTheDecimial(player->strafeVelocity, 2), glm::vec2(4, 100), 24);
-
-	c2d->DrawDebugText("Downwards Velocity: " + StringTools::ToTheDecimial(player->downVelocity, 2), glm::vec2(4, 124), 24);
-
 	MusicManager::GetInstance()->Set3DPosition(player->position, camera->cameraFront, camera->cameraUp);
 
 	MusicManager::GetInstance()->Update();
@@ -379,13 +360,17 @@ void Gameplay::UpdateChunks()
 					}
 
 					r.chunks.clear();
-
+					r.shouldUnload = true;
 					r.loaded = false;
-
-					wm->regions.erase(std::remove(wm->regions.begin(), wm->regions.end(), r), wm->regions.end());
 				});
 			Game::instance->log->Write("Unloading region: " + std::to_string(r.startX) + ", " + std::to_string(r.startZ));
 
+			break;
+		}
+
+		if (r.shouldUnload)
+		{
+			wm->regions.erase(std::remove(wm->regions.begin(), wm->regions.end(), r), wm->regions.end());
 			break;
 		}
 
@@ -618,6 +603,13 @@ void Gameplay::KeyPress(int key)
 	{
 		player->noTarget = !player->noTarget;
 
+	}
+
+	if (key == GLFW_KEY_Y)
+	{
+		Data::InventoryItem it(Data::ITEM_TORCH, 4);
+
+		player->playerData.GiveItem(it);
 	}
 
 	if (key == GLFW_KEY_O)

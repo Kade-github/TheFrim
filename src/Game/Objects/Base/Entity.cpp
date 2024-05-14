@@ -19,6 +19,10 @@ Entity::Entity(glm::vec3 pos) : GameObject(pos)
 void Entity::Footstep()
 {
 	Chunk* c = WorldManager::instance->GetChunk(position.x, position.z);
+
+	if (c == nullptr)
+		return;
+
 	// get block under player
 
 	int y = (int)position.y - 2;
