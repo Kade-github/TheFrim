@@ -37,8 +37,8 @@ class Chunk : public GameObject
     std::vector<GameObject::VVertex> shadowVertices;
     std::vector<unsigned int> shadowIndices;
 
-    std::vector<Block*> models;
-    std::vector<Model> modelsPresent;
+    std::deque<Block*> models;
+    std::deque<Model> modelsPresent;
     void CreateFaces(Block* b);
 
     void ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal);
@@ -67,7 +67,7 @@ public:
     Chunk* front = nullptr;
     Chunk* back = nullptr;
 
-    std::vector<subChunk> subChunks;
+    std::deque<subChunk> subChunks;
 
     subChunk& GetSubChunk(int y);
 

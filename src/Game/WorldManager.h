@@ -55,7 +55,7 @@ public:
 class WorldManager
 {
 
-	std::vector<Region> _generatedRegions;
+	std::deque<Region> _generatedRegions;
 public:
 	Data::World _world;
 	std::mutex generateMutex;
@@ -63,7 +63,7 @@ public:
 	BS::thread_pool _generatePool;
 	static WorldManager* instance;
 
-	std::vector<Region> regions;
+	std::deque<Region> regions;
 
 	Texture* texturePack;
 

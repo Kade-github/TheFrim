@@ -168,10 +168,36 @@ void LightingManager::SunUpdate()
 	}
 }
 
+void LightingManager::RefreshAround(glm::vec3 pos)
+{
+	// around a 2x2 area
+
+	Chunk* current = WorldManager::instance->GetChunk(pos.x, pos.z);
+
+	if (current == nullptr)
+		return;
+
+	for (int x = -1; x < 1; x++)
+	{
+		for (int z = -1; z < 1; z++)
+		{
+			Chunk* c = WorldManager::instance->GetChunk(current->position.x + x * 16, current->position.z + z * 16);
+
+			if (c != nullptr)
+			{
+				c->isShadowLoaded = false;
+				((Gameplay*)Game::instance->currentScene)->QueueShadow(c);
+			}
+		}
+	}
+}
+
 void LightingManager::RefreshShadows()
 {
 	auto gp = (Gameplay*)Game::instance->currentScene;
 	// Get all regions
+
+	std::lock_guard<std::mutex> lock(WorldManager::instance->generateMutex);
 
 	for (auto& r : WorldManager::instance->regions)
 	{
@@ -193,7 +219,7 @@ void LightingManager::AddLight(glm::vec3 pos, int strength)
 {
 	lights.push_back({ glm::vec3((int)pos.x, (int)pos.y, (int)pos.z), strength});
 
-	nextFrameRefresh = true;
+	RefreshAround(pos);
 }
 
 void LightingManager::RemoveLight(glm::vec3 pos)
@@ -203,11 +229,11 @@ void LightingManager::RemoveLight(glm::vec3 pos)
 		if (glm::vec3((int)pos.x, (int)pos.y, (int)pos.z) == lights[i].position)
 		{
 			lights.erase(lights.begin() + i);
+
+			RefreshAround(pos);
 			break;
 		}
 	}
-
-	nextFrameRefresh = true;
 }
 int LightingManager::GetLightLevel(glm::vec3 pos)
 {

@@ -38,6 +38,8 @@ public:
 	void SunColor();
 	void SunUpdate();
 
+	void RefreshAround(glm::vec3 pos);
+
 	void ClearLights()
 	{
 		lights.clear();
