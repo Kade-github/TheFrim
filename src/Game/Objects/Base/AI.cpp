@@ -192,7 +192,7 @@ void AI::Hurt(float damage, glm::vec3 from)
 		health = 0;
 
 
-	damageCooldown = glfwGetTime() + 0.5f;
+	damageCooldown = glfwGetTime() + 0.25f;
 }
 
 bool AI::IsPositionInMe(glm::vec3 pos)
