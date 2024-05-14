@@ -14,7 +14,7 @@ Torch::Torch(glm::vec3 _position) : Block(_position, BlockType::TORCH)
 	collidable = false;
 
 	LightingManager::GetInstance()->AddLight(position, 10);
-
+	updateable = true;
 	currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
 }
 

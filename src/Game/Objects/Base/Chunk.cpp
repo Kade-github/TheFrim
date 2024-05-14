@@ -1225,6 +1225,9 @@ void Chunk::UpdateChunk(int tick)
 					if (b == nullptr)
 						continue;
 
+					if (!b->updateable)
+						continue;
+
 					b->Update(tick);
 				}
 			}

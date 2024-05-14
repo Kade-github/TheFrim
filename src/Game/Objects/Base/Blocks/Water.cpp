@@ -13,6 +13,7 @@ Water::Water(glm::vec3 _position, int strength, bool isSource) : Block(_position
 
 	this->strength = strength;
 	source = isSource;
+	updateable = true;
 
 	currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this
 }

@@ -94,6 +94,9 @@ class Block
 	glm::vec4 GetBreakUV();
 
 public:
+
+	bool updateable = false;
+
 	Data::BlockData data;
 	glm::vec3 position;
 	glm::vec3 chunkPosition;

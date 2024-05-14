@@ -11,6 +11,7 @@ Sand::Sand(glm::vec3 _position, bool functional) : Block(_position, BlockType::S
 	toughness = 1.4;
 
 	func = functional;
+	updateable = true;
 
 	if (func)
 		currentChunk = WorldManager::instance->GetChunk(position.x, position.z); // cache this

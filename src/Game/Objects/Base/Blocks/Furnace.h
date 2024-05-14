@@ -22,7 +22,7 @@ public:
 		soundType = SoundType::S_STONE;
 		toughness = 0.3f;
 		isInteractable = true;
-
+		updateable = true;
 		currentChunk = WorldManager::instance->GetChunk(position.x, position.z);
 	}
 

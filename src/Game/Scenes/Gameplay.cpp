@@ -189,6 +189,9 @@ void Gameplay::Draw()
 
 	realTPS /= tickTimes.size();
 
+	if (c2d->debug)
+		c2d->DrawDebugText("Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(0, 0), 24);
+
 	Chunk* currentChunk = wm->GetChunk(player->position.x, player->position.z);
 
 	MusicManager::GetInstance()->Set3DPosition(player->position, camera->cameraFront, camera->cameraUp);
