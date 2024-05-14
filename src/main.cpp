@@ -9,7 +9,7 @@
 
 int main()
 {
-	Game game("The Frim", "0.0.4");
+	Game game("The Frim", "0.0.5");
 
 	Settings::instance->Load();
 
