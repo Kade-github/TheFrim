@@ -132,13 +132,13 @@ void MobManager::Update()
 				{
 					int r = rand() % 100;
 
-					if (r < 15)
+					if (r < 5)
 					{
 						Data::InventoryItem it{ Data::ITEM_GOLD_INGOT, 1 };
 
 						gp->dim->SpawnItem(mob->position, it);
 					}
-					else if (r < 45)
+					else if (r < 8)
 					{
 						Data::InventoryItem it{ Data::ITEM_IRON_INGOT, 1 };
 
