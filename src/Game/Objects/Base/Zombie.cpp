@@ -26,7 +26,7 @@ Zombie::Zombie(glm::vec3 pos) : AI(pos)
 	leftLeg->axis = glm::vec3(0, 0, 1);
 	rightLeg->axis = glm::vec3(0, 0, 1);
 
-	speed = 0.4f;
+	speed = 0.2f;
 
 	rotateAxis = glm::vec3(0, 1, 0);
 
