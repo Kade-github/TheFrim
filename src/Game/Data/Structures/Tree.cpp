@@ -13,7 +13,7 @@ void Data::Tree::Variant1()
 	v.zWidth = 3;
 
 	v.blocks.push_back(BlueprintBlock(LEAVES, 0, 6, 0));
-	for (int y = 5; y > -1; y--) // stem
+	for (int y = 5; y > -2; y--) // stem
 		v.blocks.push_back(BlueprintBlock(WOOD, 0, y, 0));
 
 	// 3x3 at top
@@ -64,7 +64,7 @@ void Data::Tree::Variant2()
 		}
 	}
 
-	for (int y = 5; y > -1; y--) // stem
+	for (int y = 5; y > -2; y--) // stem
 		v.blocks.push_back(BlueprintBlock(WOOD, 0, y, 0));
 
 	// 4x4 at top
@@ -108,7 +108,7 @@ void Data::Tree::Variant3()
 	v.zWidth = 3;
 
 	v.blocks.push_back(BlueprintBlock(LEAVES, 0, 10, 0));
-	for (int y = 9; y > -1; y--) // stem
+	for (int y = 9; y > -2; y--) // stem
 		v.blocks.push_back(BlueprintBlock(WOOD, 0, y, 0));
 
 	// 3x3 at top
