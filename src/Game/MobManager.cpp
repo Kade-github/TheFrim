@@ -132,7 +132,7 @@ void MobManager::Update()
 				{
 					int r = rand() % 100;
 
-					if (r < 5)
+					if (r < 2)
 					{
 						Data::InventoryItem it{ Data::ITEM_GOLD_INGOT, 1 };
 
