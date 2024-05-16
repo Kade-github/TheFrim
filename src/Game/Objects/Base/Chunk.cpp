@@ -595,6 +595,9 @@ Data::Chunk Chunk::GetChunkData()
 	c.x = position.x;
 	c.z = position.z;
 
+	if (!myData.isGenerated)
+		return c;
+
 	for (int y = 0; y < CHUNK_HEIGHT; y++)
 	{
 		subChunk& sbc = GetSubChunk(y);

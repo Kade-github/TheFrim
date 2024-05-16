@@ -344,27 +344,24 @@ void Gameplay::UpdateChunks()
 
 		if (distanceToCenter > camera->cameraFar * 3.0f && r.loaded)
 		{
-			loadPool.detach_task([&]()
+			wm->SaveRegion(r.startX, r.startZ);
+
+			// unload
+			for (Chunk* c : r.chunks)
+			{
+				if (c->isLoaded)
 				{
-					wm->SaveRegion(r.startX, r.startZ);
+					UnloadChunk(c);
+					c->myData = {};
+					delete c;
+				}
 
-					// unload
-					for (Chunk* c : r.chunks)
-					{
-						if (c->isLoaded)
-						{
-							UnloadChunk(c);
-							c->myData = {};
-							delete c;
-						}
+				allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
+			}
 
-						allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
-					}
-
-					r.chunks.clear();
-					r.shouldUnload = true;
-					r.loaded = false;
-				});
+			r.chunks.clear();
+			r.shouldUnload = true;
+			r.loaded = false;
 			Game::instance->log->Write("Unloading region: " + std::to_string(r.startX) + ", " + std::to_string(r.startZ));
 
 			break;

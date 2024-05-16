@@ -320,6 +320,9 @@ void WorldManager::SaveRegion(Region& r)
 {
 	for (auto& c : r.chunks)
 	{
+		if (c == nullptr)
+			continue;
+
 		Data::Chunk* cD = r.GetChunkDataRef(c->position.x, c->position.z);
 
 		if (cD != nullptr)
