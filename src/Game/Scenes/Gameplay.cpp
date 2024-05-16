@@ -328,175 +328,177 @@ void Gameplay::UpdateChunks()
 
 	regionsSize = wm->regions.size();
 
-
-	for (int i = 0; i < regionsSize; i++)
+	if (ticks % 2 == 0)
 	{
-		wm->generateMutex.lock();
-		Region& r = wm->regions[i];
-		wm->generateMutex.unlock();
-		if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)) != toLoadedRegion.end())
+		for (int i = 0; i < regionsSize; i++)
 		{
-			r.loaded = false;
-			toLoadedRegion.erase(std::remove(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)), toLoadedRegion.end());
-		}
-
-		float distanceToCenter = glm::distance(fakePos, glm::vec3(r.startX + (regionSize / 2), 0, r.startZ + (regionSize / 2)));
-
-		if (distanceToCenter > camera->cameraFar * 3.0f && r.loaded)
-		{
-			wm->SaveRegion(r.startX, r.startZ);
-
-			// unload
-			for (Chunk* c : r.chunks)
+			wm->generateMutex.lock();
+			Region& r = wm->regions[i];
+			wm->generateMutex.unlock();
+			if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)) != toLoadedRegion.end())
 			{
-				if (c->isLoaded)
-				{
-					UnloadChunk(c);
-					c->myData = {};
-					delete c;
-				}
-
-				allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
+				r.loaded = false;
+				toLoadedRegion.erase(std::remove(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)), toLoadedRegion.end());
 			}
 
-			r.chunks.clear();
-			r.shouldUnload = true;
-			r.loaded = false;
-			Game::instance->log->Write("Unloading region: " + std::to_string(r.startX) + ", " + std::to_string(r.startZ));
+			float distanceToCenter = glm::distance(fakePos, glm::vec3(r.startX + (regionSize / 2), 0, r.startZ + (regionSize / 2)));
 
-			break;
-		}
+			if (distanceToCenter > camera->cameraFar * 3.0f && r.loaded)
+			{
+				wm->SaveRegion(r.startX, r.startZ);
 
-		if (r.shouldUnload)
-		{
-			wm->regions.erase(std::remove(wm->regions.begin(), wm->regions.end(), r), wm->regions.end());
-			break;
-		}
-
-		if (!r.loaded)
-		{
-			allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
-		}
-
-		r.loaded = true;
-		regionsLoaded++;
-
-		float distanceToLeft = glm::distance(fakePos, glm::vec3(r.startX - regionSize, 0, r.startZ));
-		float distanceToRight = glm::distance(fakePos, glm::vec3(r.startX + regionSize, 0, r.startZ));
-		float distanceToTop = glm::distance(fakePos, glm::vec3(r.startX, 0, r.startZ - regionSize));
-		float distanceToBottom = glm::distance(fakePos, glm::vec3(r.startX, 0, r.startZ + regionSize));
-
-		if (distanceToLeft < camera->cameraFar * 2)
-		{
-			glm::vec2 pos = glm::vec2((r.startX / regionSize) - 1, r.startZ / regionSize);
-
-			if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
-				if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
+				// unload
+				for (Chunk* c : r.chunks)
 				{
-					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
-					toLoadedRegion.push_back(pos);
-					loadPool.detach_task([this, pos]()
-						{
-							wm->LoadRegion(pos.x, pos.y);
-						});
-
-					// Queue load for edge chunks
-
-					for (Chunk* c : r.chunks)
+					if (c->isLoaded)
 					{
-						if (c->position.x == r.startX)
-							UnloadChunk(c);
+						UnloadChunk(c);
+						c->myData = {};
+						delete c;
 					}
+
+					allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
 				}
+
+				r.chunks.clear();
+				r.shouldUnload = true;
+				r.loaded = false;
+				Game::instance->log->Write("Unloading region: " + std::to_string(r.startX) + ", " + std::to_string(r.startZ));
+
+				break;
+			}
+
+			if (r.shouldUnload)
+			{
+				wm->regions.erase(std::remove(wm->regions.begin(), wm->regions.end(), r), wm->regions.end());
+				break;
+			}
+
+			if (!r.loaded)
+			{
+				allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
+			}
+
+			r.loaded = true;
+			regionsLoaded++;
+
+			float distanceToLeft = glm::distance(fakePos, glm::vec3(r.startX - regionSize, 0, r.startZ));
+			float distanceToRight = glm::distance(fakePos, glm::vec3(r.startX + regionSize, 0, r.startZ));
+			float distanceToTop = glm::distance(fakePos, glm::vec3(r.startX, 0, r.startZ - regionSize));
+			float distanceToBottom = glm::distance(fakePos, glm::vec3(r.startX, 0, r.startZ + regionSize));
+
+			if (distanceToLeft < camera->cameraFar * 2)
+			{
+				glm::vec2 pos = glm::vec2((r.startX / regionSize) - 1, r.startZ / regionSize);
+
+				if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
+					if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
+					{
+						Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
+						toLoadedRegion.push_back(pos);
+						loadPool.detach_task([this, pos]()
+							{
+								wm->LoadRegion(pos.x, pos.y);
+							});
+
+						// Queue load for edge chunks
+
+						for (Chunk* c : r.chunks)
+						{
+							if (c->position.x == r.startX)
+								UnloadChunk(c);
+						}
+					}
+			}
+
+			if (distanceToRight < camera->cameraFar * 2)
+			{
+				glm::vec2 pos = glm::vec2((r.startX / regionSize) + 1, r.startZ / regionSize);
+
+				if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
+					if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
+					{
+						Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
+						toLoadedRegion.push_back(pos);
+						loadPool.detach_task([this, pos]()
+							{
+								wm->LoadRegion(pos.x, pos.y);
+							});
+
+
+						// Queue load for edge chunks
+
+						for (Chunk* c : r.chunks)
+						{
+							if (c->position.x == r.startX + regionSize - 16)
+								UnloadChunk(c);
+						}
+					}
+			}
+
+			if (distanceToTop < camera->cameraFar * 2)
+			{
+				glm::vec2 pos = glm::vec2(r.startX / regionSize, (r.startZ / regionSize) - 1);
+
+				if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
+					if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
+					{
+						Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
+						toLoadedRegion.push_back(pos);
+						loadPool.detach_task([this, pos]()
+							{
+								wm->LoadRegion(pos.x, pos.y);
+							});
+
+						// Queue load for edge chunks
+
+						for (Chunk* c : r.chunks)
+						{
+							if (c->position.z == r.startZ)
+								UnloadChunk(c);
+						}
+					}
+			}
+
+			if (distanceToBottom < camera->cameraFar * 2)
+			{
+				glm::vec2 pos = glm::vec2(r.startX / regionSize, (r.startZ / regionSize) + 1);
+
+				if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
+					if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
+					{
+						Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
+						toLoadedRegion.push_back(pos);
+						loadPool.detach_task([this, pos]()
+							{
+								wm->LoadRegion(pos.x, pos.y);
+							});
+
+						// Queue load for edge chunks
+
+						for (Chunk* c : r.chunks)
+						{
+							if (c->position.z == r.startZ + regionSize - 16)
+								UnloadChunk(c);
+						}
+					}
+			}
 		}
 
-		if (distanceToRight < camera->cameraFar * 2)
-		{
-			glm::vec2 pos = glm::vec2((r.startX / regionSize) + 1, r.startZ / regionSize);
 
-			if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
-				if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
-				{
-					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
-					toLoadedRegion.push_back(pos);
-					loadPool.detach_task([this, pos]()
-						{
-							wm->LoadRegion(pos.x, pos.y);
-						});
+		// sort chunks by distance
 
+		std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
+			{
+				glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
+				glm::vec3 fakePosB = glm::vec3(b->position.x, camera->position.y, b->position.z);
 
-					// Queue load for edge chunks
+				float distanceA = glm::distance(camera->position, fakePosA);
+				float distanceB = glm::distance(camera->position, fakePosB);
 
-					for (Chunk* c : r.chunks)
-					{
-						if (c->position.x == r.startX + regionSize - 16)
-							UnloadChunk(c);
-					}
-				}
-		}
-
-		if (distanceToTop < camera->cameraFar * 2)
-		{
-			glm::vec2 pos = glm::vec2(r.startX / regionSize, (r.startZ / regionSize) - 1);
-
-			if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
-				if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
-				{
-					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
-					toLoadedRegion.push_back(pos);
-					loadPool.detach_task([this, pos]()
-						{
-							wm->LoadRegion(pos.x, pos.y);
-						});
-
-					// Queue load for edge chunks
-
-					for (Chunk* c : r.chunks)
-					{
-						if (c->position.z == r.startZ)
-							UnloadChunk(c);
-					}
-				}
-		}
-
-		if (distanceToBottom < camera->cameraFar * 2)
-		{
-			glm::vec2 pos = glm::vec2(r.startX / regionSize, (r.startZ / regionSize) + 1);
-
-			if (!wm->isRegionLoaded(pos.x * regionSize, pos.y * regionSize))
-				if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), pos) == toLoadedRegion.end())
-				{
-					Game::instance->log->Write("Loading region: " + std::to_string(pos.x * regionSize) + ", " + std::to_string(pos.y * regionSize));
-					toLoadedRegion.push_back(pos);
-					loadPool.detach_task([this, pos]()
-						{
-							wm->LoadRegion(pos.x, pos.y);
-						});
-
-					// Queue load for edge chunks
-
-					for (Chunk* c : r.chunks)
-					{
-						if (c->position.z == r.startZ + regionSize - 16)
-							UnloadChunk(c);
-					}
-				}
-		}
+				return distanceA < distanceB;
+			});
 	}
-
-
-	// sort chunks by distance
-
-	std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
-		{
-			glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
-			glm::vec3 fakePosB = glm::vec3(b->position.x, camera->position.y, b->position.z);
-
-			float distanceA = glm::distance(camera->position, fakePosA);
-			float distanceB = glm::distance(camera->position, fakePosB);
-
-			return distanceA < distanceB;
-		});
 
 	chunksLoaded = 0;
 	chunksRendered = 0;
