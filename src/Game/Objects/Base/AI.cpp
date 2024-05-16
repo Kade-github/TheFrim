@@ -182,7 +182,7 @@ void AI::MoveToRandom()
 
 void AI::Hurt(float damage, glm::vec3 from)
 {
-	if (damageCooldown > glfwGetTime())
+	if (damageCooldown > glfwGetTime() || dying || dead)
 		return;
 
 	health -= damage;
@@ -208,7 +208,7 @@ bool AI::IsPositionInMe(glm::vec3 pos)
 	if (tiny)
 		p = position - glm::vec3(0.5, 1.2f, 0.5);
 
-	if (pos.x - 0.5 > p.x - 0.5 && pos.x < p.x - 0.5 + 1 && pos.y + 0.8 > p.y && pos.y + 0.8 < p.y + 1.5 && pos.z > p.z - 0.5 && pos.z < p.z - 0.5 + 1)
+	if (pos.x > p.x && pos.x < p.x + 1 && pos.y + 0.8 > p.y && pos.y + 0.8 < p.y + 1.5 && pos.z > p.z && pos.z < p.z + 1)
 		return true;
 
 	return false;

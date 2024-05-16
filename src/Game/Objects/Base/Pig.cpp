@@ -81,9 +81,9 @@ void Pig::Draw()
 					{
 
 						frontLeftLeg->angle = sin(glfwGetTime() * 7) * 15;
-						frontRightLeg->angle = sin(glfwGetTime() * 7) * 15;
+						frontRightLeg->angle = -sin(glfwGetTime() * 7) * 15;
 
-						backLeftLeg->angle = -sin(glfwGetTime() * 7) * 15;
+						backLeftLeg->angle = sin(glfwGetTime() * 7) * 15;
 						backRightLeg->angle = -sin(glfwGetTime() * 7) * 15;
 
 						if (frontLeftLeg->angle < 0 && !swappedLeft)
@@ -96,12 +96,12 @@ void Pig::Draw()
 							swappedLeft = false;
 						}
 
-						if (backLeftLeg->angle < 0 && !swappedRight)
+						if (backRightLeg->angle < 0 && !swappedRight)
 						{
 							Footstep();
 							swappedRight = true;
 						}
-						else if (backLeftLeg->angle > 0 && swappedRight)
+						else if (backRightLeg->angle > 0 && swappedRight)
 						{
 							swappedRight = false;
 						}
