@@ -199,7 +199,15 @@ void Zombie::Attack()
 
 		glm::vec3 dir = glm::normalize(gp->player->position - (position + front));
 
-		gp->player->Hurt(2.5f, dir);
+		float damage = 3.0f;
+
+		// get armor (helmet, and chestplate)
+
+		float armor = gp->player->playerData.armor[0].armor + gp->player->playerData.armor[1].armor;
+
+		damage = std::max(0.5f, damage - (armor / 3.5f));
+
+		gp->player->Hurt(damage, dir);
 
 		attackCooldown = glfwGetTime() + 1.0f;
 

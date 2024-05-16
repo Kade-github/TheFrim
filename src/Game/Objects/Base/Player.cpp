@@ -637,8 +637,8 @@ void Player::Draw()
 	{
 		if (selectedEntity != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
-			selectedEntity->Hurt(1.0f, position);
-
+			float damage = playerData.GetInventoryItem(playerData.selectedSlot, PLAYER_INVENTORY_HEIGHT - 1).damage;
+			selectedEntity->Hurt(damage, position);
 		}
 
 		if (selectedBlock != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
@@ -662,14 +662,10 @@ void Player::Draw()
 					}
 					break;
 				case S_WOOD:
-					if (item.type == Data::ITEM_NULL)
-						correctTool = true;
+					correctTool = true;
 
 					if (StringTools::Contains(item.tag, "axe"))
-					{
 						toughness *= item.breakingPower;
-						correctTool = true;
-					}
 					break;
 				case S_STONE:
 					if (StringTools::Contains(item.tag, "pick"))
@@ -952,6 +948,8 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 					Block* b = c->CreateBlock(x, y, z, item.type, d);
 					c->PlaceBlock(x, y, z, b);
+
+					FootstepSound(b, "place");
 
 					if (item.count == 1)
 						playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = {};
