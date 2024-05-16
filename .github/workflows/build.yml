@@ -60,6 +60,10 @@ jobs:
         run: mkdir ./final-build
       - name: Copy assets
         run: cp -r ./Assets ./final-build/Assets
+      - name: Copy Bass Binaries
+        run: cp -r ./src/bassLibrary ./final-build/
+      - name: Copy Other Binaries
+        run: cp -r ./src/otherBinaries ./final-build/
       - name: Copy DLLs
         run: cp -r ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/assimp-vc143-mt.dll ./final-build && cp -r ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/glfw3.dll ./final-build && cp -r ${{ github.workspace }}/vcpkg/installed/x64-windows-release/bin/pugixml.dll ./final-build && cp -r ./src/bassLibrary/bass.dll ./final-build && cp -r ./src/bassLibrary/bass_fx.dll ./final-build
       - name: Copy executable
