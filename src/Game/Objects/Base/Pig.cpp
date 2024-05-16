@@ -16,6 +16,21 @@ Pig::Pig(glm::vec3 pos) : AI(pos)
 	rotateAxis = glm::vec3(0, 1, 0);
 	health = 5;
 
+	frontLeftLeg = &m.GetMesh("FrontLeftLeg");
+	frontRightLeg = &m.GetMesh("FrontRightLeg");
+
+	backLeftLeg = &m.GetMesh("BackLeftLeg");
+	backRightLeg = &m.GetMesh("BackRightLeg");
+
+	frontLeftLeg->axis = glm::vec3(0, 0, 1);
+	frontRightLeg->axis = glm::vec3(0, 0, 1);
+
+	backLeftLeg->axis = glm::vec3(0, 0, 1);
+	backRightLeg->axis = glm::vec3(0, 0, 1);
+
+
+	torso = &m.GetMesh("Torso");
+
 	type = AI_Type::TPig;
 }
 
@@ -43,6 +58,62 @@ void Pig::Draw()
 		if (!dying && !dead)
 		{
 			tempYaw = std::lerp(tempYaw, -yaw, Game::instance->deltaTime * 5);
+
+			if (path.size() != 0)
+			{
+				// leg movement
+
+				float dist = glm::distance(position, path[0]);
+
+				if (dist > 0.5f)
+				{
+					if (isOnGround)
+					{
+
+						frontLeftLeg->angle = sin(glfwGetTime() * 7) * 15;
+						frontRightLeg->angle = sin(glfwGetTime() * 7) * 15;
+
+						backLeftLeg->angle = -sin(glfwGetTime() * 7) * 15;
+						backRightLeg->angle = -sin(glfwGetTime() * 7) * 15;
+
+						if (frontLeftLeg->angle < 0 && !swappedLeft)
+						{
+							Footstep();
+							swappedLeft = true;
+						}
+						else if (frontLeftLeg->angle > 0 && swappedLeft)
+						{
+							swappedLeft = false;
+						}
+
+						if (backLeftLeg->angle < 0 && !swappedRight)
+						{
+							Footstep();
+							swappedRight = true;
+						}
+						else if (backLeftLeg->angle > 0 && swappedRight)
+						{
+							swappedRight = false;
+						}
+					}
+					else
+					{
+						frontLeftLeg->angle = std::lerp(frontLeftLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+						frontRightLeg->angle = std::lerp(frontRightLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+
+						backLeftLeg->angle = std::lerp(backLeftLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+						backRightLeg->angle = std::lerp(backRightLeg->angle, 0.0f, Game::instance->deltaTime * 5);
+					}
+				}
+				else
+				{
+					frontLeftLeg->angle = 0;
+					frontRightLeg->angle = 0;
+
+					backLeftLeg->angle = 0;
+					backRightLeg->angle = 0;
+				}
+			}
 		}
 	}
 
