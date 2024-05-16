@@ -4,8 +4,6 @@ A Story focused 3D-Voxel (minecraft clone) game completely written from *scratch
 
 > Trailer
 
-(put video here)
-
 https://github.com/Kade-github/TheFrim/assets/26305836/b84e82ee-5f13-4347-93b4-19b6217b0533
 
 # Description
