@@ -727,6 +727,9 @@ void Gameplay::Destroy()
 	wm->regions.clear();
 
 	delete wm;
+
+	dim->RemoveItems();
+
 	delete dim;
 
 	delete player;

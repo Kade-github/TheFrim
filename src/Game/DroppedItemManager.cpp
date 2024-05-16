@@ -5,8 +5,15 @@
 
 DroppedItemManager::~DroppedItemManager()
 {
+	RemoveItems();
+}
+
+void DroppedItemManager::RemoveItems()
+{
 	for (int i = 0; i < items.size(); i++)
 	{
+		Gameplay* g = (Gameplay*)Game::instance->currentScene;
+		g->RemoveObject(items[i]);
 		delete items[i];
 	}
 
