@@ -4,7 +4,7 @@ A Story focused 3D-Voxel (minecraft clone) game completely written from *scratch
 
 > Trailer
 
-(put video here)
+https://github.com/Kade-github/TheFrim/assets/26305836/b84e82ee-5f13-4347-93b4-19b6217b0533
 
 # Description
 
@@ -31,8 +31,10 @@ The project is **cross-compatible** with Linux and Windows; I personally used cl
 ```bash
 cmake -B build
 cmake --build build
-# Then copy the `Assets` folder into the `build` folder.
+# Then copy the `Assets` folder into the `build` folder (along with some other binaries you might need!)
 cp ../Assets build/Assets -r
+cp bassLibrary/* build/Assets -r
+cp otherBinaries/* build/Assets -r
 ```
 
 # Binaries
