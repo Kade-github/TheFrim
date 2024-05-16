@@ -36,6 +36,8 @@ public:
 
 	void Draw() override;
 
+	void Noise() override;
+
 	void Attack();
 };
 

@@ -3,6 +3,7 @@
 #include <Game.h>
 #include "../../Scenes/Gameplay.h"
 #include "Hud.h"
+#include "../../MusicManager.h"
 
 Pig::Pig(glm::vec3 pos) : AI(pos)
 {
@@ -32,6 +33,15 @@ Pig::Pig(glm::vec3 pos) : AI(pos)
 	torso = &m.GetMesh("Torso");
 
 	type = AI_Type::TPig;
+}
+
+void Pig::Noise()
+{
+	float randomPitch = 1.0f - (rand() % 25) / 100.0f;
+
+	MusicManager::GetInstance()->PlaySFX("pig", position, randomPitch, "pig_noise");
+
+	AI::Noise();
 }
 
 void Pig::Draw()

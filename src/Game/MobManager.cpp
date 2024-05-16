@@ -181,6 +181,12 @@ void MobManager::Update()
 			}
 
 			RemoveMob(mob);
+			break;
 		}
+
+		float r = rand() % 35 + 20;
+
+		if (mob->lastNoise + r < glfwGetTime())
+			mob->Noise();
 	}
 }

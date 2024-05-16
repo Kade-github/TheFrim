@@ -3,7 +3,7 @@
 #include <Game.h>
 #include "../../Scenes/Gameplay.h"
 #include "Hud.h"
-
+#include "../../MusicManager.h"
 Zombie::Zombie(glm::vec3 pos) : AI(pos)
 {
 	m = Model("Assets/Models/zombie_frim.obj");
@@ -189,6 +189,15 @@ void Zombie::Draw()
 			MoveTo(gp->player->position);
 		}
 	}
+}
+
+void Zombie::Noise()
+{
+	float randomPitch = 1.0f - (rand() % 25) / 100.0f;
+
+	MusicManager::GetInstance()->PlaySFX("zombie", position, randomPitch, "zombie_noise");
+
+	AI::Noise();
 }
 
 void Zombie::Attack()

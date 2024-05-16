@@ -1,7 +1,7 @@
 #include "AI.h"
 #include "../../WorldManager.h"
 #include <Game.h>
-
+#include "../../MusicManager.h"
 glm::vec3 AI::GenerateRandomPosition(float distance)
 {
 	// get a random position within a distance from the current position
@@ -191,8 +191,14 @@ void AI::Hurt(float damage, glm::vec3 from)
 	if (health <= 0)
 		health = 0;
 
+	MusicManager::GetInstance()->PlaySFX("hurt", position, 1.0f, "hit");
 
 	damageCooldown = glfwGetTime() + 0.3f;
+}
+
+void AI::Noise()
+{
+	lastNoise = glfwGetTime();
 }
 
 bool AI::IsPositionInMe(glm::vec3 pos)

@@ -17,6 +17,7 @@ class AI : public Entity
 	float lastPosition = 0;
 	float damageCooldown = 0.0f;
 public:
+	float lastNoise = 0;
 	bool wasHit = false;
 	bool dying = false;
 	float redness = 0.0f;
@@ -43,6 +44,8 @@ public:
 	void MoveToRandom();
 
 	void Hurt(float damage, glm::vec3 from);
+
+	virtual void Noise();
 
 	bool IsPositionInMe(glm::vec3 pos);
 

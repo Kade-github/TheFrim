@@ -34,6 +34,8 @@ public:
 		return glm::normalize(direction);
 	}
 
+	void Noise() override;
+
 	void Draw() override;
 };
 
