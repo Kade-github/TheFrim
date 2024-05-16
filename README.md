@@ -6,6 +6,8 @@ A Story focused 3D-Voxel (minecraft clone) game completely written from *scratch
 
 (put video here)
 
+https://github.com/Kade-github/TheFrim/assets/26305836/b84e82ee-5f13-4347-93b4-19b6217b0533
+
 # Description
 
 The Frim is a 3D Voxel Survival Game that takes place on ‘The Frim,’ a planet on the edge of the galaxy, far away from all that is known. You arrive on the planet by unknown means. With no means of escape, you are forced to venture into the planet, trying to piece together what this place is. Is it truely uninhabited? Were there people here? You’ll find all the answers on The Frim.
