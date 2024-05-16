@@ -334,6 +334,17 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 
 	if (id <= 0) // destroyed block
 	{
+		if (myData.bChunk.blocks[(int)w.x][(int)w.z][(int)w.y] == LEAVES)
+		{
+			// 20% chance of dropping an apple
+
+			if (rand() % 100 < 19)
+			{
+				Data::InventoryItem apple = { Data::ITEM_APPLE, 1 };
+				gp->dim->SpawnItem(glm::vec3(x, y, z), apple);
+			}
+		}
+
 		myData.removeBlockData(w.x, w.y, w.z);
 		myData.placeBlock(w.x, w.y, w.z, 0);
 	}
