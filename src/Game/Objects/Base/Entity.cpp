@@ -441,9 +441,12 @@ void Entity::Draw()
 
 		if (isCreature)
 		{
-			CheckCollision(motion, 0);
+			if (!tiny)
+			{
+				CheckCollision(motion, 0);
 
-			CheckCollision(motion, 0.8);
+				CheckCollision(motion, 0.8);
+			}
 
 			CheckCollision(motion, 1.8);
 		}

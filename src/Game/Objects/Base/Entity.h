@@ -25,6 +25,8 @@ public:
 	float jumpStrength = 7.8f;
 	float speed = 9.0f;
 
+	bool tiny = false;
+
 	float downVelocity = 0;
 	float forwardVelocity = 0;
 	float strafeVelocity = 0;

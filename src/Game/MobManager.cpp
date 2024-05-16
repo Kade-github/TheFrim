@@ -3,6 +3,7 @@
 #include <Game.h>
 
 #include "Objects/Base/Zombie.h"
+#include "Objects/Base/Pig.h"
 
 void MobManager::CreateMob(AI_Type mob, glm::vec3 pos)
 {
@@ -19,6 +20,11 @@ void MobManager::CreateMob(AI_Type mob, glm::vec3 pos)
 		mobs.push_back(a);
 		break;
 	case AI_Type::TPig:
+		a = new Pig(pos);
+
+		gp->AddObject(a);
+
+		mobs.push_back(a);
 		break;
 	}
 }
@@ -67,23 +73,23 @@ void MobManager::Update()
 		{
 			for (int j = -4; j < 4; j++)
 			{
-				if (rand() % 100 < 15)
-				{
+				glm::vec3 pos = glm::vec3(playerChunk->position.x + (16 * i), playerPos.y, playerChunk->position.z + (16 * j));
 
-					glm::vec3 pos = glm::vec3(playerChunk->position.x + (16 * i), playerPos.y, playerChunk->position.z + (16 * j));
+				Chunk* c = WorldManager::instance->GetChunk(pos.x, pos.z);
+
+				if (c == nullptr)
+					continue;
+
+				float r = rand() % 100;
+
+				if (r < 10)
+				{
 
 					float distance = glm::distance(playerPos, pos);
 
 					float angle = cam->YawAngleTo(pos);
 
 					if (angle < 100 || distance < 16)
-						continue;
-
-					// loop through all subchunks
-
-					Chunk* c = WorldManager::instance->GetChunk(pos.x, pos.z);
-
-					if (c == nullptr)
 						continue;
 
 					for (auto& sbc : c->subChunks)
@@ -105,6 +111,28 @@ void MobManager::Update()
 						if (lightLevel < 5)
 							CreateMob(AI_Type::TZombie, glm::vec3(pos.x + randomX, sbc.y, pos.z + randomZ));
 					}
+				}
+				else if (r < 18)
+				{
+					float distance = glm::distance(playerPos, pos);
+
+					float angle = cam->YawAngleTo(pos);
+
+					if (angle < 100 || distance < 16)
+						continue;
+
+					int randomX = rand() % 16;
+					int randomZ = rand() % 16;
+
+					int highest = c->GetHighestBlock(randomX, randomZ);
+
+					if (highest <= 0)
+						continue;
+
+					int type = c->GetBlock(randomX, highest, randomZ);
+
+					if (type == GRASS)
+						CreateMob(AI_Type::TPig, glm::vec3(pos.x + randomX, highest + 1, pos.z + randomZ));
 				}
 			}
 		}

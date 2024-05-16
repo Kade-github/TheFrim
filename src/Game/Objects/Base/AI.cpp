@@ -199,6 +199,9 @@ bool AI::IsPositionInMe(glm::vec3 pos)
 {
 	glm::vec3 p = position - glm::vec3(0.5, 0.9f, 0.5);
 
+	if (tiny)
+		p = position - glm::vec3(0.5, 1.2f, 0.5);
+
 	if (pos.x > p.x && pos.x < p.x + 1 && pos.y > p.y && pos.y < p.y + 1 && pos.z > p.z && pos.z < p.z + 1)
 		return true;
 
