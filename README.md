@@ -31,8 +31,10 @@ The project is **cross-compatible** with Linux and Windows; I personally used cl
 ```bash
 cmake -B build
 cmake --build build
-# Then copy the `Assets` folder into the `build` folder.
+# Then copy the `Assets` folder into the `build` folder (along with some other binaries you might need!)
 cp ../Assets build/Assets -r
+cp ../src/bassLibrary build/Assets -r
+cp ../src/otherBinaries build/Assets -r
 ```
 
 # Binaries
