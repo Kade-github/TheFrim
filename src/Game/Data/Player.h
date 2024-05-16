@@ -313,6 +313,7 @@ namespace Data {
 			case ITEM_APPLE:
 				tag = "item_apple";
 				food = 1;
+				stackable = false;
 				edible = true;
 				break;
 			case ITEM_COAL:
@@ -407,11 +408,13 @@ namespace Data {
 			case ITEM_UNCOOKED_PORK:
 				tag = "item_uncooked_pork";
 				food = 2;
+				stackable = false;
 				edible = true;
 				break;
 			case ITEM_COOKED_PORK:
 				tag = "item_cooked_pork";
 				food = 4;
+				stackable = false;
 				edible = true;
 				break;
 			default:

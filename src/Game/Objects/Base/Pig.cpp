@@ -14,6 +14,7 @@ Pig::Pig(glm::vec3 pos) : AI(pos)
 	speed = 0.2f;
 
 	rotateAxis = glm::vec3(0, 1, 0);
+	health = 5;
 
 	type = AI_Type::TPig;
 }

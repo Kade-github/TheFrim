@@ -69,7 +69,7 @@ void MobManager::Update()
 
 		Chunk* playerChunk = WorldManager::instance->GetChunk(playerPos.x, playerPos.z);
 
-		for(int i = -4; i < 4; i++)
+		for (int i = -4; i < 4; i++)
 		{
 			for (int j = -4; j < 4; j++)
 			{
@@ -156,25 +156,28 @@ void MobManager::Update()
 
 			switch (mob->type)
 			{
-				case AI_Type::TZombie:
+			case AI_Type::TZombie:
+			{
+				int r = rand() % 100;
+
+				if (r < 8)
 				{
-					int r = rand() % 100;
-
-					if (r < 8)
-					{
-						Data::InventoryItem it{ Data::ITEM_COAL, 1 };
-
-						gp->dim->SpawnItem(mob->position, it);
-					}
-					break;
-				}
-				case AI_Type::TPig:
-					int count = rand() % 3 + 1;
-
-					Data::InventoryItem it{ Data::ITEM_UNCOOKED_PORK, count };
+					Data::InventoryItem it{ Data::ITEM_COAL, 1 };
 
 					gp->dim->SpawnItem(mob->position, it);
-					break;
+				}
+				break;
+			}
+			case AI_Type::TPig:
+				int count = rand() % 3 + 1;
+
+				for (int i = 0; i < count; i++)
+				{
+					Data::InventoryItem it{ Data::ITEM_UNCOOKED_PORK, 1 };
+
+					gp->dim->SpawnItem(mob->position, it);
+				}
+				break;
 			}
 
 			RemoveMob(mob);

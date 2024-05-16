@@ -116,6 +116,7 @@ void Hud::ShowDeathScreen()
 void Hud::SetSelected(int s)
 {
 	selected = s;
+	player->playerData.selectedSlot = selected;
 
 	Data::InventoryItem& item = player->playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1];
 
@@ -317,6 +318,8 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 {
 	player = _p;
 	c2d = _c2d;
+
+	selected = player->playerData.selectedSlot;
 
 	h = Texture::createWithImage("Assets/Textures/hud.png", false);
 	h->spriteSheet.Load("Assets/Textures/hud.xml", h->width, h->height);

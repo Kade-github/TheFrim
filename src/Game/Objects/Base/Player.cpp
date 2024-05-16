@@ -884,6 +884,32 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 	Camera* camera = Game::instance->GetCamera();
 
+	if (button == GLFW_MOUSE_BUTTON_RIGHT) // eat food
+	{
+		// get selected item
+
+		Data::InventoryItem& item = playerData.GetInventoryItem(playerData.selectedSlot, PLAYER_INVENTORY_HEIGHT - 1);
+
+		if (item.edible)
+		{
+			playerData.health += item.food;
+
+			if (playerData.health > PLAYER_MAX_HEALTH)
+				playerData.health = PLAYER_MAX_HEALTH;
+
+
+			item.count--;
+
+			if (item.count == 0)
+				item = {};
+
+			Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+			scene->hud->UpdateHearts();
+			scene->hud->UpdateHotbar();
+		}
+	}
+
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && selectedBlock != nullptr)
 	{
 		if (selectedBlock->isInteractable)
@@ -891,7 +917,6 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			selectedBlock->OnInteract(); 
 			return;
 		}
-
 		glm::vec3 ray = position + (camera->cameraFront * 5.0f);
 		bool hit = RayTo(ray);
 		if (hit)
