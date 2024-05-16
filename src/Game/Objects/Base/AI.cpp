@@ -218,6 +218,8 @@ void AI::Draw()
 {
 	// move to target if we have one
 
+	bool hasLandedThisFrame = false;
+
 	float distance = glm::distance(position, target);
 
 	float sp = speed;
@@ -270,6 +272,7 @@ void AI::Draw()
 					downVelocity = jumpStrength / 2;
 				else
 					downVelocity = jumpStrength;
+				hasLandedThisFrame = true;
 			}
 		}
 
@@ -302,4 +305,33 @@ void AI::Draw()
 	}
 
 	Entity::Draw(); // physics
+
+	if ((isOnGround || hasLandedThisFrame) && jumpedFrom > -1)
+	{
+		float distance = jumpedFrom - position.y;
+
+		float fallDamage = (distance - 2) / 2;
+
+		// round to nearest half or whole
+
+		fallDamage = floor((fallDamage * 2) + 0.5f) / 2;
+
+		if (distance < 4)
+			fallDamage = 0;
+
+		// factor in boots
+
+
+		if (fallDamage > 0 && !inWater)
+		{
+			MusicManager::GetInstance()->PlaySFX("fall", position, 1.0, "fallSfxMob");
+			Hurt(fallDamage, position);
+		}
+
+		jumpedFrom = -1;
+	}
+	else if (!(isOnGround || hasLandedThisFrame) && jumpedFrom <= -1)
+	{
+		jumpedFrom = position.y;
+	}
 }

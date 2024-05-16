@@ -16,6 +16,7 @@ class AI : public Entity
 	bool nextPath = false;
 	float lastPosition = 0;
 	float damageCooldown = 0.0f;
+	float jumpedFrom = -1;
 public:
 	float lastNoise = 0;
 	bool wasHit = false;
