@@ -192,7 +192,7 @@ void AI::Hurt(float damage, glm::vec3 from)
 		health = 0;
 
 
-	damageCooldown = glfwGetTime() + 0.25f;
+	damageCooldown = glfwGetTime() + 0.3f;
 }
 
 bool AI::IsPositionInMe(glm::vec3 pos)
@@ -226,7 +226,7 @@ void AI::Draw()
 
 	float ourVel = 0;
 
-	if (path.size() != 0 && !dead && !dying && damageCooldown < glfwGetTime())
+	if (path.size() != 0 && !dead && !dying && damageCooldown - 0.2f < glfwGetTime())
 	{
 		glm::vec3 p = path[0];
 
@@ -286,7 +286,7 @@ void AI::Draw()
 
 	if (health > 0 && redness > 0)
 	{
-		redness -= 5 * Game::instance->deltaTime;
+		redness -= 1.85 * Game::instance->deltaTime;
 
 		if (redness < 0)
 			redness = 0;
