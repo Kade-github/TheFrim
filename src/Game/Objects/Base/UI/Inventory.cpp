@@ -526,6 +526,9 @@ void Inventory::Close()
 	{
 		Data::InventoryItem item = crafting[i];
 
+		if (item.type == 0)
+			continue;
+
 		if (!player->playerData.GiveItem(item)) // inventory full, so drop it
 		{
 			Camera* c = Game::instance->GetCamera();
@@ -677,21 +680,11 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 	{
 		glm::vec2 start = ConvertToSlotPos(startSlot->tag_id);
 
-		Data::InventoryItem* startItem = GetItem(sSlot.id, start);
-		*startItem = stored;
-
-		if (startItem == nullptr || startItem->type == Data::ItemType::ITEM_NULL)
-			return false;
-
-		Data::InventoryItem item = *startItem;
-
 		Camera* c = Game::instance->GetCamera();
 
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-		gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, item);
-
-		*startItem = {};
+		gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, stored);
 
 		return true;
 	}
@@ -736,14 +729,41 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 
 						Data::InventoryItem i = output;
 
+						Data::InventoryItem storedc[3][3];
+
+						for (int y = 0; y < 3; y++)
+						{
+							for (int x = 0; x < 3; x++)
+							{
+								storedc[x][y] = stored_crafting[x][y];
+							}
+						}
+
 						while (i.type != Data::ItemType::ITEM_NULL)
 						{
 							if (!player->playerData.GiveItem(i)) // inventory full, so we stop
+							{
+								for (int y = 0; y < 3; y++)
+								{
+									for (int x = 0; x < 3; x++)
+									{
+										stored_crafting[x][y] = storedc[x][y];
+									}
+								}
 								break;
+							}
 
 							i = CraftingManager::GetInstance()->Craft(stored_crafting);
 							UpdateTable();
 							SetCrafting();
+
+							for (int y = 0; y < 3; y++)
+							{
+								for (int x = 0; x < 3; x++)
+								{
+									storedc[x][y] = stored_crafting[x][y];
+								}
+							}
 						}
 
 						output = i;

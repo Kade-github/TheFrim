@@ -608,9 +608,12 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_Y)
 	{
-		Data::InventoryItem it(Data::ITEM_TORCH, 4);
+		Data::InventoryItem it(Data::ITEM_TORCH, 64);
 
-		player->playerData.GiveItem(it);
+		for (int i = 0; i < 90; i++)
+		{
+			player->playerData.GiveItem(it);
+		}
 	}
 
 	if (key == GLFW_KEY_O)
