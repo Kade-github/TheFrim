@@ -409,7 +409,7 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 		Data::InventoryItem out = CraftingManager::GetInstance()->Craft(stored_crafting);
 
-			output = out;
+		output = out;
 	}
 	else
 	{
@@ -721,8 +721,51 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 				return;
 
 
-			if (sSlot.id == 90 && output.type != Data::ItemType::ITEM_NULL)
+			if (sSlot.id == 90)
+			{
 				UpdateTable();
+				// if shift click, move to inventory
+
+				bool shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+
+				if (shift)
+				{
+					if (!isFurnace)
+					{
+						// craft until we can't anymore
+
+						Data::InventoryItem i = output;
+
+						while (i.type != Data::ItemType::ITEM_NULL)
+						{
+							if (!player->playerData.GiveItem(i)) // inventory full, so we stop
+								break;
+
+							i = CraftingManager::GetInstance()->Craft(stored_crafting);
+							UpdateTable();
+							SetCrafting();
+						}
+
+						output = i;
+						UpdateInventory();
+						return;
+					}
+					else
+					{
+						// instant take
+
+						if (output.type != Data::ItemType::ITEM_NULL)
+						{
+							if (player->playerData.GiveItem(output)) // inventory full, so we do nothing
+							{
+								output = {};
+								UpdateInventory();
+							}
+							return;
+						}
+					}
+				}
+			}
 
 			// check if we are dragging a crafting ingredient
 
