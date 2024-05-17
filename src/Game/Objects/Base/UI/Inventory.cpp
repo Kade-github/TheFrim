@@ -409,7 +409,6 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 		Data::InventoryItem out = CraftingManager::GetInstance()->Craft(stored_crafting);
 
-		if (out.type != Data::ItemType::ITEM_NULL)
 			output = out;
 	}
 	else
