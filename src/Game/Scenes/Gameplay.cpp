@@ -633,7 +633,7 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_P)
 	{
-		recordBlockData = false;
+		recordBlockData = !recordBlockData;
 	}
 
 	if (key == GLFW_KEY_R)
@@ -683,11 +683,11 @@ void Gameplay::KeyPress(int key)
 			file << data;
 
 			file.close();
-
-			blockData.clear();
 		}
 		else
 			firstBlock = glm::vec3(0, 0, 0);
+
+		blockData.clear();
 	}
 
 	if (key == GLFW_KEY_O)

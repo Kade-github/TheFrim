@@ -980,10 +980,15 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 					{
 						glm::vec3 f = gp->firstBlock;
 
-						if (f.x == 0 && f.y == 0 && f.z == 0)
-							gp->firstBlock = { x, y, z };
+						if (f.x <= 0 && f.y <= 0 && f.z <= 0)
+						{
+							gp->firstBlock = { (int)x, (int)y, (int)z };
+							f = gp->firstBlock;
+						}
 
-						std::string v = std::to_string(f.x - x) + "," + std::to_string(f.y - y) + "," + std::to_string(f.z - z);
+						std::string v = std::to_string(f.x - (int)x) + "," + std::to_string(f.y - (int)y) + "," + std::to_string(f.z - (int)z);
+
+						Game::instance->log->Write("Recording " + v + " as " + std::to_string(item.type));
 
 						gp->blockData[v] = item.type;
 					}

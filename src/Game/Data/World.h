@@ -184,6 +184,17 @@ namespace Data
 			}
 		}
 
+		int getHighestBlock(int x, int z)
+		{
+			for (int i = CHUNK_HEIGHT - 1; i > 0; i--)
+			{
+				if (bChunk.blocks[x][z][i] != 0)
+					return i;
+			}
+
+			return 0;
+		}
+
 		int amountOfBlockInRadius(int x, int y, int z, int type, int radius)
 		{
 			int amount = 0;

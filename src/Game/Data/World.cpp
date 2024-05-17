@@ -1,4 +1,5 @@
 #include "Structures/Tree.h"
+#include "Structures/Ruins.h"
 
 #include <iostream>
 #include <filesystem>
@@ -397,6 +398,7 @@ Data::Chunk Data::Region::generateChunk(int x, int z)
 void Data::Region::generateStructures()
 {
 	static Data::Tree struct_tree = Data::Tree();
+	static Data::Ruins struct_ruins = Data::Ruins();
 
 	for (int i = 0; i < REGION_SIZE; i++)
 	{
@@ -405,6 +407,27 @@ void Data::Region::generateStructures()
 			Chunk& c = chunks[i][j];
 
 			if (!c.isGenerated)
+				continue;
+
+			bool madeRuin = false;
+
+			// ruins
+
+			int randomX = getRandom(0, CHUNK_SIZE - 1);
+			int randomZ = getRandom(0, CHUNK_SIZE - 1);
+
+			int randomY = c.getHighestBlock(randomX, randomZ);
+
+			if (getRandom(0, 100) > 80)
+				randomY -= getRandom(0, 60);
+
+			if (getRandom(0, 100) < 2)
+			{
+				struct_ruins.Create(c.x + randomX, c.z + randomZ, randomY, c, this);
+				madeRuin = true;
+			}
+
+			if (madeRuin)
 				continue;
 
 			for (int _x = 0; _x < CHUNK_SIZE; _x++)
@@ -431,6 +454,8 @@ void Data::Region::generateStructures()
 								struct_tree.Create(_rx,_rz,_y - 1, c, this);
 							}
 						}
+
+						
 					}
 				}
 			}
