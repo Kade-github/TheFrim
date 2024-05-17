@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<TextureAtlas imagePath="items.png" width="1280" height="768" scale="1" format="RGBA8888">
+<TextureAtlas imagePath="items.png" width="1408" height="768" scale="1" format="RGBA8888">
   <sprite n="item_apple" x="0" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_bedrock" x="128" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_coal" x="0" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
@@ -39,24 +39,27 @@
   <sprite n="item_iron_pick" x="768" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_iron_shovel" x="768" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
   <sprite n="item_iron_sword" x="768" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_leaves" x="768" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_reinforced_iron_block" x="768" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_ruined_cobblestone" x="768" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_ruined_debris" x="896" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_sand" x="896" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_stick" x="896" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_stone" x="896" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_stone_axe" x="896" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_stone_pick" x="896" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_stone_shovel" x="1024" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_stone_sword" x="1024" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_torch" x="1024" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_uncooked_pork" x="1024" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood" x="1024" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood_axe" x="1024" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood_pick" x="1152" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood_shovel" x="1152" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wood_sword" x="1152" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="item_wooden_planks" x="1152" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
-  <sprite n="null" x="1152" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_knowledge_tablet" x="768" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_leaves" x="768" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_reinforced_iron_block" x="768" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_rocket" x="896" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_rocket_engine" x="896" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_ruined_cobblestone" x="896" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_ruined_debris" x="896" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_sand" x="896" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_stick" x="896" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_stone" x="1024" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_stone_axe" x="1024" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_stone_pick" x="1024" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_stone_shovel" x="1024" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_stone_sword" x="1024" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_torch" x="1024" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_uncooked_pork" x="1152" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood" x="1152" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood_axe" x="1152" y="256" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood_pick" x="1152" y="384" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood_shovel" x="1152" y="512" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wood_sword" x="1152" y="640" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="item_wooden_planks" x="1280" y="0" w="128" h="128" pX="0.5" pY="0.5"/>
+  <sprite n="null" x="1280" y="128" w="128" h="128" pX="0.5" pY="0.5"/>
 </TextureAtlas>
