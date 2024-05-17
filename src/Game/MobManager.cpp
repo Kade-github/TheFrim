@@ -129,6 +129,12 @@ void MobManager::Update()
 					if (highest <= 0)
 						continue;
 
+					int lightLevel = LightingManager::GetInstance()->GetLightLevel(glm::vec3(c->position.x + randomX, highest, c->position.z + randomZ));
+
+					if (lightLevel < 5)
+						continue;
+
+
 					int type = c->GetBlock(randomX, highest, randomZ);
 
 					if (type == GRASS)
