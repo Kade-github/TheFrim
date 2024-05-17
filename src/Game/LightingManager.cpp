@@ -310,12 +310,6 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 			b = true;
 	}
 
-
-	if (isLow && (r || l || f || b))
-	{
-		level -= (int)((oChunkHighest - pos.y));
-	}
-
 	if (level < 3)
 		level = 3;
 

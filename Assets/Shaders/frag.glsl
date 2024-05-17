@@ -35,18 +35,25 @@ void main()
 	float fogFactor = getFogFactor(d);
     if (useAmbientDiffusion == 1)
     {
+        vec3 blockPos = vec3(int(Position.x), int(Position.y), int(Position.z));
+        vec3 camePos = vec3(int(CameraPos.x), int(CameraPos.y), int(CameraPos.z));
+
+        float dist = distance(blockPos, camePos);
+
         vec3 x = dFdx(Position);
         vec3 y = dFdy(Position);
         vec3 normal = cross(x, y);
         vec3 norm = normalize(normal);
 
-        vec3 diffColor1 = vec3(1.0, 1.0, 1.0);
+        vec3 diffColor1 = vec3(0.6, 0.6, 0.6);
 
-        vec3 lightDir1 = normalize(CameraPos - vec3(Position.x, Position.y, Position.z)) * 1.2;
+        vec3 lightDir1 = normalize(camePos - blockPos);
         float diff1 = max(dot(norm, lightDir1), 0.0);
         vec3 diffuse = diff1 * diffColor1;
 
-        color = color * vec4(diffuse, 1.0);
+        vec4 c = color * vec4(diffuse, 1.0);
+
+        color = mix(color, c, min(dist / 24, 1.0));
     }
 
     // darken based on the light level
