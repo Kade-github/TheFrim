@@ -22,6 +22,14 @@ void SettingsMenu::Create()
 
 	c2d->AddObject(background);
 
+	ambientDiffuse = new Bar(glm::vec3(0, 0, 0), "Ambient Diffusion: " + std::string(Settings::instance->useAmbientDiffuse ? "on" : "off"));
+
+	ambientDiffuse->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 + 300, 0);
+
+	ambientDiffuse->position -= glm::vec3(ambientDiffuse->width / 2, 0, 0);
+
+	c2d->AddObject(ambientDiffuse);
+
 	vsync = new Bar(glm::vec3(0, 0, 0), "VSync: " + std::string(Settings::instance->vsync ? "on" : "off"));
 
 	vsync->position = glm::vec3(c2d->_w / 2, (c2d->_h / 2) + 200, 0);
@@ -123,6 +131,11 @@ void SettingsMenu::Draw()
 	else
 		fullscreen->selected = false;
 
+	if (mPos.x > ambientDiffuse->position.x && mPos.x < ambientDiffuse->position.x + ambientDiffuse->width && mPos.y > ambientDiffuse->position.y && mPos.y < ambientDiffuse->position.y + ambientDiffuse->height)
+		ambientDiffuse->selected = true;
+	else
+		ambientDiffuse->selected = false;
+
 	if (mPos.x > back->position.x && mPos.x < back->position.x + back->width && mPos.y > back->position.y && mPos.y < back->position.y + back->height)
 		back->selected = true;
 	else
@@ -139,13 +152,21 @@ void SettingsMenu::MouseClick(int button, glm::vec2 mPos)
 		{
 			Settings::instance->vsync = !Settings::instance->vsync;
 			Game::instance->SetVsync(Settings::instance->vsync);
+			MusicManager::GetInstance()->PlaySFX("select");
 			vsync->SetText("VSync: " + std::string(Settings::instance->vsync ? "on" : "off"));
 		}
 		else if (fullscreen->selected)
 		{
 			Settings::instance->fullscreen = !Settings::instance->fullscreen;
 			Game::instance->SetFullscreen(Settings::instance->fullscreen);
+			MusicManager::GetInstance()->PlaySFX("select");
 			fullscreen->SetText("Fullscreen: " + std::string(Settings::instance->fullscreen ? "on" : "off"));
+		}
+		else if (ambientDiffuse->selected)
+		{
+			Settings::instance->useAmbientDiffuse = !Settings::instance->useAmbientDiffuse;
+			MusicManager::GetInstance()->PlaySFX("select");
+			ambientDiffuse->SetText("Ambient Diffusion: " + std::string(Settings::instance->useAmbientDiffuse ? "on" : "off"));
 		}
 		else if (back->selected)
 		{

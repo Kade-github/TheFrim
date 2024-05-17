@@ -15,6 +15,7 @@ public:
 
 	Bar* vsync;
 	Bar* fullscreen;
+	Bar* ambientDiffuse;
 
 	DragBar* fov;
 	DragBar* renderDistance;

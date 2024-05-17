@@ -980,6 +980,11 @@ void Chunk::SetBuffer()
 		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
 		glEnableVertexAttribArray(1);
 
+		// normal attribute
+
+		glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, normal));
+		glEnableVertexAttribArray(2);
+
 		glBindVertexArray(0);
 
 		size = indices.size();
@@ -1022,6 +1027,11 @@ void Chunk::SetTransparentBuffer()
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
 	glEnableVertexAttribArray(1);
 
+	// normal attribute
+
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, normal));
+	glEnableVertexAttribArray(2);
+
 	glBindVertexArray(0);
 
 	transparentSize = transparentIndices.size();
@@ -1051,6 +1061,11 @@ void Chunk::SetShadowBuffer()
 	// uv attribute
 	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, uv));
 	glEnableVertexAttribArray(1);
+
+	// normal attribute
+
+	glVertexAttribPointer(2, 3, GL_FLOAT, GL_FALSE, sizeof(GameObject::VVertex), (void*)offsetof(GameObject::VVertex, normal));
+	glEnableVertexAttribArray(2);
 
 	glBindVertexArray(0);
 

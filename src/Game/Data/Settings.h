@@ -21,10 +21,12 @@ public:
 	bool vsync = true;
 	bool fullscreen = false;
 
+	bool useAmbientDiffuse = false;
+
 	void Load();
 	void Save();
 
-	MSGPACK_DEFINE_ARRAY(fov, renderDistance, fogDistance, vsync, fullscreen, masterVolume);
+	MSGPACK_DEFINE_ARRAY(fov, renderDistance, fogDistance, vsync, fullscreen, masterVolume, useAmbientDiffuse);
 };
 
 #endif

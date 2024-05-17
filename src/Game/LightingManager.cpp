@@ -264,55 +264,61 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 
 	if (left != nullptr)
 	{
-		int highestBlock = left->GetHighestBlock(pos.x - 1, pos.z);
+		int highestBlock = left->GetHighestBlock(pos.x - 1, pos.z, true);
 		oChunkHighest = highestBlock;
 		isLow = highestBlock > 0 && highestBlock > pos.y;
-		l = true;
+		if (highestBlock > pos.y)
+			l = true;
 	}
 
 	// get right block
 
 	Chunk* right = WorldManager::instance->GetChunk(pos.x + 1, pos.z);
 
-	if (right != nullptr && isLow)
+	if (right != nullptr)
 	{
-		int highestBlock = right->GetHighestBlock(pos.x + 1, pos.z);
+		int highestBlock = right->GetHighestBlock(pos.x + 1, pos.z, true);
 		oChunkHighest = highestBlock;
 		isLow = highestBlock > 0 && highestBlock > pos.y;
-		r = true;
+		if (highestBlock > pos.y)
+			r = true;
 	}
 
 	// get front block
 
 	Chunk* front = WorldManager::instance->GetChunk(pos.x, pos.z + 1);
 
-	if (front != nullptr && isLow)
+	if (front != nullptr)
 	{
-		int highestBlock = front->GetHighestBlock(pos.x, pos.z + 1);
+		int highestBlock = front->GetHighestBlock(pos.x, pos.z + 1, true);
 		oChunkHighest = highestBlock;
 		isLow = highestBlock > 0 && highestBlock > pos.y;
-		f = true;
+		if (highestBlock > pos.y)
+			f = true;
 	}
 
 	// get back block
 
 	Chunk* back = WorldManager::instance->GetChunk(pos.x, pos.z - 1);
 
-	if (back != nullptr && isLow)
+	if (back != nullptr)
 	{
-		int highestBlock = back->GetHighestBlock(pos.x, pos.z - 1);
+		int highestBlock = back->GetHighestBlock(pos.x, pos.z - 1, true);
 		oChunkHighest = highestBlock;
 		isLow = highestBlock > 0 && highestBlock > pos.y;
-		b = true;
+		if (highestBlock > pos.y)
+			b = true;
 	}
 
-	if (isLow && r && l && f && b)
+
+	if (isLow && (r || l || f || b))
 	{
 		level -= (int)((oChunkHighest - pos.y));
 	}
 
-	if (level < 2)
-		level = 2;
+	if (level < 3)
+		level = 3;
+
 
 	for (int i = 0; i < lights.size(); i++)
 	{

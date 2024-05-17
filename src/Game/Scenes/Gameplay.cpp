@@ -170,6 +170,7 @@ void Gameplay::Draw()
 	Game::instance->shader->SetUniform1f("FogFar", fog);
 	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
 	Game::instance->shader->SetUniform1f("redness", 0.0f);
+	Game::instance->shader->SetUniform1i("useAmbientDiffusion", (int)Settings::instance->useAmbientDiffuse);
 
 	Game::instance->shader->Unbind();
 
@@ -338,9 +339,7 @@ void Gameplay::UpdateChunks()
 	{
 		for (int i = 0; i < regionsSize; i++)
 		{
-			wm->generateMutex.lock();
 			Region& r = wm->regions[i];
-			wm->generateMutex.unlock();
 			if (std::find(toLoadedRegion.begin(), toLoadedRegion.end(), glm::vec2(r.startX / regionSize, r.startZ / regionSize)) != toLoadedRegion.end())
 			{
 				r.loaded = false;
@@ -609,26 +608,11 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_Y)
 	{
-		Data::InventoryItem it(Data::ITEM_RUINED_COBBLESTONE, 64);
+		Data::InventoryItem it(Data::ITEM_TORCH, 4);
 
 		for (int i = 0; i < 4; i++)
-		{
 			player->playerData.GiveItem(it);
-		}
 
-		it = Data::InventoryItem(Data::ITEM_RUINED_DEBRIS, 64);
-
-		for (int i = 0; i < 4; i++)
-		{
-			player->playerData.GiveItem(it);
-		}
-
-		it = Data::InventoryItem(Data::ITEM_COBBLESTONE, 64);
-
-		for (int i = 0; i < 4; i++)
-		{
-			player->playerData.GiveItem(it);
-		}
 	}
 
 	if (key == GLFW_KEY_P)
