@@ -14,6 +14,9 @@
 class Gameplay : public Scene
 {
 public:
+	bool recordBlockData = false;
+	std::map<std::string, int> blockData;
+	glm::vec3 firstBlock = glm::vec3(0, 0, 0);
 	bool showHud = true;
 	DroppedItemManager* dim;
 	MobManager* mm;

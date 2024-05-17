@@ -974,6 +974,20 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 					Block* b = c->CreateBlock(x, y, z, item.type, d);
 					c->PlaceBlock(x, y, z, b);
 
+					Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+					if (gp->recordBlockData)
+					{
+						glm::vec3 f = gp->firstBlock;
+
+						if (f.x == 0 && f.y == 0 && f.z == 0)
+							gp->firstBlock = { x, y, z };
+
+						std::string v = std::to_string(f.x - x) + "," + std::to_string(f.y - y) + "," + std::to_string(f.z - z);
+
+						gp->blockData[v] = item.type;
+					}
+
 					FootstepSound(b, "place");
 
 					if (item.count == 1)

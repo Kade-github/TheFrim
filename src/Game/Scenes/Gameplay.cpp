@@ -190,7 +190,13 @@ void Gameplay::Draw()
 	realTPS /= tickTimes.size();
 
 	if (c2d->debug)
+	{
 		c2d->DrawDebugText("Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(0, 0), 24);
+		if (recordBlockData)
+		{
+			c2d->DrawDebugText("Recording block data (" + std::to_string(blockData.size()) + ")", glm::vec2(0, 24), 24);
+		}
+	}
 
 	Chunk* currentChunk = wm->GetChunk(player->position.x, player->position.z);
 
@@ -600,20 +606,88 @@ void Gameplay::KeyPress(int key)
 			UnloadChunk(c);
 	}
 
-	if (key == GLFW_KEY_P)
-	{
-		player->noTarget = !player->noTarget;
-
-	}
 
 	if (key == GLFW_KEY_Y)
 	{
-		Data::InventoryItem it(Data::ITEM_TORCH, 64);
+		Data::InventoryItem it(Data::ITEM_RUINED_COBBLESTONE, 64);
 
-		for (int i = 0; i < 90; i++)
+		for (int i = 0; i < 4; i++)
 		{
 			player->playerData.GiveItem(it);
 		}
+
+		it = Data::InventoryItem(Data::ITEM_RUINED_DEBRIS, 64);
+
+		for (int i = 0; i < 4; i++)
+		{
+			player->playerData.GiveItem(it);
+		}
+
+		it = Data::InventoryItem(Data::ITEM_COBBLESTONE, 64);
+
+		for (int i = 0; i < 4; i++)
+		{
+			player->playerData.GiveItem(it);
+		}
+	}
+
+	if (key == GLFW_KEY_P)
+	{
+		recordBlockData = false;
+	}
+
+	if (key == GLFW_KEY_R)
+	{
+		recordBlockData = !recordBlockData;
+
+		if (!recordBlockData)
+		{
+			std::string data = "// Generated in game\nBlueprint b;\n";
+
+			int negXWidth = 0;
+			int xWidth = 0;
+			int negZWidth = 0;
+			int zWidth = 0;
+
+			for (auto& [v, value] : blockData)
+			{
+				std::vector<std::string> spl = StringTools::Split(v, ",");
+				glm::vec3 key = glm::vec3(std::stoi(spl[0]), std::stoi(spl[1]), std::stoi(spl[2]));
+
+				if (key.x < negXWidth)
+					negXWidth = key.x;
+
+				if (key.x > xWidth)
+					xWidth = key.x;
+
+				if (key.z < negZWidth)
+					negZWidth = key.z;
+
+				if (key.z > zWidth)
+					zWidth = key.z;
+
+				data += "b.blocks.push_back(BlueprintBlock((BlockType)" + std::to_string(value) + ", " + std::to_string(key.x) + ", " + std::to_string(key.y) + ", " + std::to_string(key.z) + "));\n";
+			}
+
+			data += "b.negXWidth = " + std::to_string(negXWidth) + ";\n";
+			data += "b.xWidth = " + std::to_string(xWidth) + ";\n";
+			data += "b.negZWidth = " + std::to_string(negZWidth) + ";\n";
+			data += "b.zWidth = " + std::to_string(zWidth) + ";\n";
+
+			data += "variations.push_back(b);";
+
+			// write to file
+
+			std::ofstream file("recorded_blueprint.cpp");
+
+			file << data;
+
+			file.close();
+
+			blockData.clear();
+		}
+		else
+			firstBlock = glm::vec3(0, 0, 0);
 	}
 
 	if (key == GLFW_KEY_O)
