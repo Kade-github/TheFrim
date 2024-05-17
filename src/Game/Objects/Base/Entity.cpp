@@ -443,9 +443,9 @@ void Entity::Draw()
 		{
 			if (!tiny)
 			{
-				CheckCollision(motion, 0);
+				CheckCollision(motion, 0.2);
 
-				CheckCollision(motion, 0.8);
+				CheckCollision(motion, 0);
 			}
 
 			CheckCollision(motion, 1.8);
