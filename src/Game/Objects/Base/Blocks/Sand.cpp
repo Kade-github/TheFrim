@@ -46,6 +46,7 @@ bool Sand::Update(int tick)
 		FallingBlock* fb = new FallingBlock(position, t, vertices, indices, BlockType::SAND);
 		gp->AddObject(fb);
 
+		changedBlocks = true;
 		currentChunk->ModifyBlock(position.x, position.y, position.z, 0);
 	}
 

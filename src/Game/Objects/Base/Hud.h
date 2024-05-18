@@ -18,6 +18,13 @@ private:
 	Texture* h;
 	Texture* i;
 
+
+	float _heartUpdate = 0;
+
+	bool _exiting = false;
+	bool _askedForScreenshot = false;
+
+public:
 	Text2D* pauseHeader;
 
 	Sprite2D* pauseBackground;
@@ -27,12 +34,6 @@ private:
 	Bar* resume;
 	Bar* title;
 
-	float _heartUpdate = 0;
-
-	bool _exiting = false;
-	bool _askedForScreenshot = false;
-
-public:
 	Sprite3D* hand;
 
 	static bool GamePaused;
@@ -42,6 +43,8 @@ public:
 	int selected = 0;
 
 	Sprite2D* crosshair;
+	bool hintShown = false;
+	Sprite2D* hint;
 
 	std::vector<Sprite2D*> hotbar;
 	std::vector<ItemUI*> hotbarItems;
@@ -54,6 +57,8 @@ public:
 	void ShowFurnace(bool s);
 	void ShowPauseMenu(bool s);
 	void ShowDeathScreen();
+
+	void ShowKnowledgementTablet(Data::InventoryItem& item);
 
 	void SetSelected(int s);
 

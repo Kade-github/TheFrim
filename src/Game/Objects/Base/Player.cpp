@@ -827,7 +827,33 @@ void Player::Draw()
 
 					breakCooldown = glfwGetTime();
 
+					// drop knowledgement tablet (if debris)
+
+					float rander2 = (rand() % 1000);
+
+					if (rander2 > 650) // 35% chance
+					{
+						if (selectedBlock->type == RUINED_DEBRIS)
+						{
+							Data::InventoryItem item = { Data::ITEM_KNOWLEDGEMENT_TABLET, 1 };
+
+							item.SetNBT("used", "false");
+							item.SetNBT("hint", "-1");
+
+							Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+							float rX = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+							float rY = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+							float rZ = ((rand() % 100) - 50) / 100.0f; // -0.5 to 0.5
+
+							scene->dim->SpawnItem(selectedBlock->position + glm::vec3(0.5f, 0.5f, 0.5f), glm::vec3(rX, rY, rZ), item, 10.0f, 1.0f);
+
+						}
+					}
+
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
+
+	
 
 					selectedBlock = nullptr;
 				}
@@ -884,7 +910,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 	Camera* camera = Game::instance->GetCamera();
 
-	if (button == GLFW_MOUSE_BUTTON_RIGHT) // eat food
+	if (button == GLFW_MOUSE_BUTTON_RIGHT) // eat food (or check knowledge tablet)
 	{
 		// get selected item
 
@@ -907,6 +933,12 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 			scene->hud->UpdateHearts();
 			scene->hud->UpdateHotbar();
+		}
+		else if (item.type == Data::ITEM_KNOWLEDGEMENT_TABLET)
+		{
+			Gameplay* scene = (Gameplay*)Game::instance->currentScene;
+
+			scene->hud->ShowKnowledgementTablet(item);
 		}
 	}
 
@@ -1083,6 +1115,22 @@ void Player::KeyPress(int key)
 			ToggleInventory();
 		break;
 	case GLFW_KEY_ESCAPE:
+
+		if (scene->hud->hintShown)
+		{
+			scene->c2d->RemoveObject(scene->hud->hint);
+			delete scene->hud->hint;
+
+			scene->hud->hintShown = false;
+			Hud::GamePaused = false;
+
+			scene->hud->pauseBackground->color = glm::vec4(1, 1, 1, 0);
+			scene->hud->resume->color = glm::vec4(1, 1, 1, 0);
+			scene->hud->title->color = glm::vec4(1, 1, 1, 0);
+			scene->hud->pauseHeader->color = glm::vec4(1, 1, 1, 0);
+			return;
+		}
+
 		if (_inInventory)
 			ToggleInventory();
 		else

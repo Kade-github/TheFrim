@@ -86,6 +86,7 @@ namespace Data {
 		ITEM_CONDENSED_COAL = 164,
 		ITEM_UNCOOKED_PORK = 165,
 		ITEM_COOKED_PORK = 166,
+		ITEM_KNOWLEDGEMENT_TABLET = 167,
 	};
 
 	struct NBT {
@@ -417,6 +418,10 @@ namespace Data {
 				stackable = false;
 				edible = true;
 				break;
+			case ITEM_KNOWLEDGEMENT_TABLET:
+				tag = "item_knowledge_tablet";
+				stackable = false;
+				break;
 			default:
 				tag = "item_null";
 				damage = 0;
@@ -433,13 +438,25 @@ namespace Data {
 			SetTag();
 		}
 
+		void SetNBT(std::string key, std::string value) {
+			for (auto& n : nbt) {
+				if (n.key == key) {
+					n.value = value;
+					return;
+				}
+			}
+
+			nbt.push_back({ key, value });
+		}
+
 		NBT& GetNBT(std::string key) {
 			static NBT n{ "", "" };
 			for (auto& n : nbt) {
 				if (n.key == key)
 					return n;
 			}
-
+			n.value = "";
+			n.key = "";
 			return n;
 		}
 

@@ -113,6 +113,57 @@ void Hud::ShowDeathScreen()
 	resume->SetText("Respawn");
 }
 
+void Hud::ShowKnowledgementTablet(Data::InventoryItem& item)
+{
+	if (hintShown || GamePaused)
+		return;
+
+	std::string level = item.GetNBT("hint").value;
+	int hintLevel = -1;
+	if (!level.empty())
+		hintLevel = std::stoi(level);
+
+	if (hintLevel == -1)
+	{
+		hintLevel = WorldManager::instance->_world.hintLevel;
+		WorldManager::instance->_world.hintLevel++;
+		if (WorldManager::instance->_world.hintLevel > 3)
+			WorldManager::instance->_world.hintLevel = 0;
+		item.SetNBT("hint", std::to_string(hintLevel));
+	}
+
+	std::string hintName = "reinf_hint";
+
+	switch (hintLevel)
+	{
+	case 3:
+		hintName = "rckt_hint";
+		break;
+	case 2:
+		hintName = "rckteng_hint";
+		break;
+	case 1:
+		hintName = "condes_hint";
+		break;
+	default:
+		hintName = "reinf_hint";
+		break;
+	}
+
+
+	hint = new Sprite2D("Assets/Textures/" + hintName + ".png", glm::vec3(0, 0, 0));
+	hint->width = c2d->_w;
+	hint->height = c2d->_h;
+
+	hint->order = 2;
+
+	c2d->AddObject(hint);
+
+	GamePaused = true;
+
+	hintShown = true;
+}
+
 void Hud::SetSelected(int s)
 {
 	selected = s;
@@ -205,7 +256,7 @@ void Hud::UpdateHearts()
 		s->position = glm::vec3(((c2d->_w - 162) / 2) - (i * (s->width / 2)), s->height + 72, 0);
 
 		float rI = 9.0f - (float)i;
-		
+
 		if (hpProgress <= rI + 0.5f && hpProgress >= rI + 0.1f) // half heart
 			s->src = h->spriteSheet.GetUVFlip("hud_heart_half");
 		else if (hpProgress <= rI) // empty heart
@@ -288,17 +339,17 @@ void Hud::UpdateArmor()
 
 		s->position = glm::vec3(lastHotbarX - (realI * ((s->width + 12) / 2)), s->height + 72, 0);
 
-		for(int j = 0; j < up; j++)
+		for (int j = 0; j < up; j++)
 			s->position.y += 36;
 
 		realI = rI;
 
-		while(rI % 8 == 0 && rI != 0)
+		while (rI % 8 == 0 && rI != 0)
 		{
 			rI -= 8;
 			realI = rI;
 
-			s->position.y += 36; 
+			s->position.y += 36;
 			s->position.x = lastHotbarX - (rI * ((s->width + 12) / 2));
 			up++;
 
@@ -387,7 +438,7 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 		c2d->AddObject(s);
 	}
 
-	inv = new Inventory(glm::vec3(0,0,0), player);
+	inv = new Inventory(glm::vec3(0, 0, 0), player);
 
 	inv->position = glm::vec3((c2d->_w / 2) - (inv->renderWidth / 2.25), c2d->_h - (inv->renderHeight * 1.15), 0);
 
@@ -483,7 +534,7 @@ Hud::~Hud()
 
 	armor.clear();
 
-    delete hand;
+	delete hand;
 }
 
 void Hud::Draw()
@@ -541,7 +592,7 @@ void Hud::Draw()
 		{
 			h->color.w = std::lerp(1.0f, 0.45f, progress);
 		}
-		
+
 	}
 
 	// highlights for pause menu
@@ -572,7 +623,7 @@ void Hud::Draw()
 	{
 		// exit
 
-        MainMenu* m = new MainMenu();
+		MainMenu* m = new MainMenu();
 		Game::instance->SwitchScene(m);
 	}
 }
@@ -600,7 +651,7 @@ void Hud::MouseClick(int button, glm::vec2 pos)
 		{
 			MusicManager::GetInstance()->PlaySFX("select");
 			player->TogglePauseMenu();
-			
+
 			WorldManager::instance->SetPlayerPosition(player->position);
 			WorldManager::instance->SaveWorldNow();
 			_exiting = true;

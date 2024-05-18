@@ -278,10 +278,11 @@ namespace Data
 		std::vector<std::string> storedRegions;
 		std::string name;
 
-		float sunAngle = 90;
+		float sunAngle = 90.0f;
 		int waterLevel = -1;
 
 		int randomAdvancement = 0;
+		int hintLevel = 0;
 
 		Player p;
 
@@ -310,7 +311,7 @@ namespace Data
 
 		void saveRegion(Region r);
 
-		MSGPACK_DEFINE_ARRAY(name, seed, p, waterLevel, sunAngle, randomAdvancement);
+		MSGPACK_DEFINE_ARRAY(name, seed, p, waterLevel, sunAngle, randomAdvancement, hintLevel);
 
 	};
 };

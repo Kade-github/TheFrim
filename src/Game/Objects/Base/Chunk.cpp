@@ -1262,14 +1262,14 @@ void Chunk::UpdateChunk(int tick)
 	if (subChunks.size() == 0)
 		return;
 
-
 	for (int i = 0; i < subChunks.size(); i++)
 	{
+		chunkMutex.lock();
 		subChunk& sbc = subChunks[i];
+		chunkMutex.unlock();
 
 		if (sbc.y == -1)
 			continue;
-
 		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
@@ -1283,9 +1283,11 @@ void Chunk::UpdateChunk(int tick)
 					continue;
 
 				b->Update(tick);
+
+				if (b->changedBlocks)
+					return;
 			}
 		}
+
 	}
-
-
 }

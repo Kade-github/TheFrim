@@ -237,12 +237,16 @@ void LightingManager::RemoveLight(glm::vec3 pos)
 }
 int LightingManager::GetLightLevel(glm::vec3 pos)
 {
+	lightMutex.lock();
 	int level = sun.strength;
 
 	Chunk* c = WorldManager::instance->GetChunk(pos.x, pos.z);
 
 	if (c == nullptr)
+	{
+		lightMutex.unlock();
 		return 0;
+	}
 
 	int highestBlock = c->GetHighestBlock(pos.x, pos.z);
 
@@ -330,6 +334,8 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 			}
 		}
 	}
+
+	lightMutex.unlock();
 
 	return level;
 }
