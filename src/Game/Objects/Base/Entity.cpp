@@ -387,6 +387,23 @@ void Entity::Draw()
 	else
 		inWater = topWater;
 
+	if (inWater && !waterSoundEntrance)
+	{
+		waterSoundEntrance = true;
+
+		float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
+
+		MusicManager::GetInstance()->PlaySFX("water_in", position, pitch, "enter");
+	}
+	else if (!inWater && waterSoundEntrance)
+	{
+		waterSoundEntrance = false;
+
+		float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
+
+		MusicManager::GetInstance()->PlaySFX("water_out", position, pitch, "exit");
+	}
+
 	if (glfwGetTime() - lightUpdate > 0.1)
 	{
 		lightUpdate = glfwGetTime();

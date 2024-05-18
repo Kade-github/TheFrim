@@ -8,6 +8,7 @@
 class Entity : public GameObject
 {
 	int lightUpdate = 0;
+	bool waterSoundEntrance = false;
 public:
 	Sprite3D* shadow;
 	

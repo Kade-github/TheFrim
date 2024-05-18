@@ -21,7 +21,7 @@ public:
 	bool vsync = true;
 	bool fullscreen = false;
 
-	bool useAmbientDiffuse = false;
+	bool useAmbientDiffuse = true;
 
 	void Load();
 	void Save();

@@ -83,6 +83,16 @@ void Data::Region::freePlace(int x, int y, int z, int type)
 	c->placeBlock(x - c->x, y, z - c->z, type);
 }
 
+bool Data::Region::doesBlockExist(int x, int y, int z)
+{
+	Chunk* c = getChunkPtr(x, z);
+
+	if (c == nullptr)
+		return false;
+
+	return c->bChunk.blocks[x - c->x][z - c->z][y] > 0;
+}
+
 bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int range)
 {
 	std::lock_guard<std::mutex> lock(m);

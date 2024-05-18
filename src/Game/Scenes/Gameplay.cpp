@@ -535,7 +535,7 @@ void Gameplay::UpdateChunks()
 
 			float angle = camera->YawAngleTo(fakePosC);
 
-			if ((angle <= 260 || distance <= 32) && distance <= fog + 32)
+			if ((angle <= 300 || distance <= 64) && distance <= fog + 64)
 			{
 				if (!c->isRendered || c->pleaseRender)
 				{

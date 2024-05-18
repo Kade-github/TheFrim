@@ -122,9 +122,9 @@ namespace Data
 	{
 	public:
 		bool isGenerated = false;
-		BlockChunk bChunk;
+		BlockChunk bChunk = {};
 		int32_t x, z;
-		DataChunk data;
+		DataChunk data = {};
 
 		void placeBlock(int x, int y, int z, uint8_t block)
 		{
@@ -262,6 +262,7 @@ namespace Data
 		void freePlace(int x, int y, int z, int type);
 
 		bool doesBlockExistInRange(int x, int y, int z, int type, int range);
+		bool doesBlockExist(int x, int y, int z);
 
 		Chunk generateChunk(int x, int z);
 
