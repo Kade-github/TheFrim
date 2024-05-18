@@ -837,7 +837,6 @@ void Player::Draw()
 						{
 							Data::InventoryItem item = { Data::ITEM_KNOWLEDGEMENT_TABLET, 1 };
 
-							item.SetNBT("used", "false");
 							item.SetNBT("hint", "-1");
 
 							Gameplay* scene = (Gameplay*)Game::instance->currentScene;

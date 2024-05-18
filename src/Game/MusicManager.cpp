@@ -1,6 +1,8 @@
 #include "MusicManager.h"
 #include "Game.h"
 
+#include "Scenes/Gameplay.h"
+
 #include <filesystem>
 #include <bass.h>
 #include "Data/Settings.h"
@@ -44,6 +46,18 @@ void MusicManager::GenerateTrackList()
 
 	trackList.clear();
 
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+
+	Chunk* c = WorldManager::instance->GetChunk(gp->player->position.x, gp->player->position.z);
+
+	Region& r = WorldManager::instance->GetRegion(gp->player->position.x, gp->player->position.z);
+
+	if (c != nullptr && r.loaded && r.data.doesBlockExistInRange(gp->player->position.x, gp->player->position.y, gp->player->position.z, RUINED_COBBLESTONE, 32))
+		trackList.push_back("ruins");
+	else if (c != nullptr && gp->player->position.y < c->GetHighestBlock(gp->player->position.x, gp->player->position.z))
+		trackList.push_back("cave");
+
 	std::string path = "Assets/Music/tracks/";
 
 	for (const auto& entry : std::filesystem::directory_iterator(path))
@@ -66,6 +80,17 @@ void MusicManager::GenerateTrackList()
 void MusicManager::GenerateAmbientTrackList()
 {
 	trackList.clear();
+
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+	Chunk* c = WorldManager::instance->GetChunk(gp->player->position.x, gp->player->position.z);
+
+	Region& r = WorldManager::instance->GetRegion(gp->player->position.x, gp->player->position.z);
+
+	if (c != nullptr && r.loaded && r.data.doesBlockExistInRange(gp->player->position.x, gp->player->position.y, gp->player->position.z, RUINED_COBBLESTONE, 32))
+		trackList.push_back("ruins");
+	else if (c != nullptr && gp->player->position.y < c->GetHighestBlock(gp->player->position.x, gp->player->position.z))
+		trackList.push_back("cave");
 
 	trackList.push_back("ambientocclusion");
 	trackList.push_back("imsotired");
@@ -117,7 +142,7 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 {
 	std::string rPath = "Assets/Music/tracks/" + path + ".mp3";
 
-	if (ambient)
+	if (ambient || path.find("caves") != std::string::npos || path.find("ruins") != std::string::npos)
 		rPath = "Assets/Music/amb/" + path + ".mp3";
 
 	if (currentSong == rPath)

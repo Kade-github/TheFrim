@@ -590,14 +590,7 @@ void Gameplay::UnloadChunk(Chunk* c)
 
 void Gameplay::KeyPress(int key)
 {
-
-	if (key == GLFW_KEY_F3)
-		MusicManager::GetInstance()->PlayNext();
-
 	if (key == GLFW_KEY_F5)
-		wm->SaveWorldNow();
-
-	if (key == GLFW_KEY_F6)
 	{
 		Chunk* c = wm->GetChunk(player->position.x, player->position.z);
 
@@ -606,16 +599,7 @@ void Gameplay::KeyPress(int key)
 	}
 
 
-	if (key == GLFW_KEY_Y)
-	{
-		Data::InventoryItem it(Data::ITEM_TORCH, 4);
-
-		for (int i = 0; i < 4; i++)
-			player->playerData.GiveItem(it);
-
-	}
-
-	if (key == GLFW_KEY_P)
+	/*if (key == GLFW_KEY_P)
 	{
 		recordBlockData = !recordBlockData;
 	}
@@ -672,27 +656,7 @@ void Gameplay::KeyPress(int key)
 			firstBlock = glm::vec3(0, 0, 0);
 
 		blockData.clear();
-	}
-
-	if (key == GLFW_KEY_O)
-	{
-		mm->lastWave = glfwGetTime() - 30;
-	}
-
-	if (key == GLFW_KEY_F7)
-		player->freeCam = !player->freeCam;
-
-	if (key == GLFW_KEY_F10)
-		LightingManager::GetInstance()->sun.angle += 25;
-
-	if (key == GLFW_KEY_F11)
-	{
-		Camera* camera = Game::instance->GetCamera();
-
-		glm::vec3 dir = camera->cameraFront;
-
-		player->Launch(dir, 35, 1.0f);
-	}
+	}*/
 
 	if (key == GLFW_KEY_F12)
 	{
