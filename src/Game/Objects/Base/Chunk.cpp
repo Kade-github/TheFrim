@@ -1262,11 +1262,13 @@ void Chunk::UpdateChunk(int tick)
 	if (subChunks.size() == 0)
 		return;
 
-	for (int i = 0; i < subChunks.size(); i++)
+	chunkMutex.lock();
+	std::deque<subChunk> copy = subChunks;
+	chunkMutex.unlock();
+
+	for (int i = 0; i < copy.size(); i++)
 	{
-		chunkMutex.lock();
-		subChunk& sbc = subChunks[i];
-		chunkMutex.unlock();
+		subChunk& sbc = copy[i];
 
 		if (sbc.y == -1)
 			continue;

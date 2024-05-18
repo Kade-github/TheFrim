@@ -2,6 +2,7 @@
 #include <Game.h>
 #include <Helpers/Collision2D.h>
 #include "../../MusicManager.h"
+#include "../../LightingManager.h"
 #include "../../WorldManager.h"
 
 #include "../../Scenes/MainMenu.h"
@@ -556,7 +557,19 @@ void Hud::Draw()
 		pauseHeader->position.y = resume->position.y + resume->height + 100;
 	}
 
+	Game::instance->shader->Bind();
+
+	Game::instance->shader->SetUniform1f("lightLevel", player->lightLevel);
+
+	Game::instance->shader->Unbind();
+
 	hand->Draw();
+
+	Game::instance->shader->Bind();
+
+	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
+
+	Game::instance->shader->Unbind();
 
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
