@@ -22,7 +22,7 @@ public:
 	bool topWater = false;
 	bool inWater = false;
 
-	float gravity = 20.0f;
+	float gravity = 22.0f;
 	float jumpStrength = 7.8f;
 	float speed = 9.0f;
 

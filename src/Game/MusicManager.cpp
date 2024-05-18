@@ -55,7 +55,7 @@ void MusicManager::GenerateTrackList()
 
 	if (c != nullptr && r.loaded && r.data.doesBlockExistInRange(gp->player->position.x, gp->player->position.y, gp->player->position.z, RUINED_COBBLESTONE, 32))
 		trackList.push_back("ruins");
-	else if (c != nullptr && gp->player->position.y < c->GetHighestBlock(gp->player->position.x, gp->player->position.z))
+	else if (c != nullptr && gp->player->position.y < c->GetHighestBlock(gp->player->position.x, gp->player->position.z, true))
 		trackList.push_back("cave");
 
 	std::string path = "Assets/Music/tracks/";
@@ -89,7 +89,7 @@ void MusicManager::GenerateAmbientTrackList()
 
 	if (c != nullptr && r.loaded && r.data.doesBlockExistInRange(gp->player->position.x, gp->player->position.y, gp->player->position.z, RUINED_COBBLESTONE, 32))
 		trackList.push_back("ruins");
-	else if (c != nullptr && gp->player->position.y < c->GetHighestBlock(gp->player->position.x, gp->player->position.z))
+	else if (c != nullptr && gp->player->position.y < c->GetHighestBlock(gp->player->position.x, gp->player->position.z, true))
 		trackList.push_back("cave");
 
 	trackList.push_back("ambientocclusion");

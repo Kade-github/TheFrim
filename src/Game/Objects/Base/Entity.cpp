@@ -269,13 +269,10 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 				if (!isCreature)
 					motion.y = _lastY + 1;
 			}
-			else
+			if (_lastY > position.y)
 			{
-				if (_lastY > position.y)
-				{
-					motion.y = _lastY - 0.05f;
-					downVelocity = 0;
-				}
+				motion.y = _lastY - 0.05f;
+				downVelocity = 0;
 			}
 		}
 	}
