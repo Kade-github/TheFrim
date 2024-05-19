@@ -200,116 +200,116 @@ namespace Data {
 				stackable = false;
 				tag = "item_wood_pick";
 				breakingPower = 2.0f;
-				damage = 1.0;
+				damage = 0.75f;
 				break;
 			case ITEM_WOODEN_SHOVEL:
 				stackable = false;
 				tag = "item_wood_shovel";
 				breakingPower = 1.2f;
-				damage = 1.0;
+				damage = 0.75f;
 				break;
 			case ITEM_WOODEN_AXE:
 				stackable = false;
 				tag = "item_wood_axe";
 				breakingPower = 1.2f;
-				damage = 1.5;
+				damage = 1.0;
 				break;
 			case ITEM_WOODEN_SWORD:
 				stackable = false;
 				tag = "item_wood_sword";
-				damage = 2.0;
+				damage = 1.25;
 				break;
 			case ITEM_STONE_PICKAXE:
 				stackable = false;
 				tag = "item_stone_pick";
 				breakingPower = 4.0f;
-				damage = 1.5;
+				damage = 0.75f;
 				break;
 			case ITEM_STONE_SHOVEL:
 				stackable = false;
 				tag = "item_stone_shovel";
 				breakingPower = 1.5f;
-				damage = 1.5;
+				damage = 0.75f;
 				break;
 			case ITEM_STONE_AXE:
 				stackable = false;
 				tag = "item_stone_axe";
 				breakingPower = 1.5f;
-				damage = 2.0;
+				damage = 1.0f;
 				break;
 			case ITEM_STONE_SWORD:
 				stackable = false;
 				tag = "item_stone_sword";
-				damage = 3.0;
+				damage = 1.25f;
 				break;
 			case ITEM_IRON_PICKAXE:
 				stackable = false;
 				tag = "item_iron_pick";
 				breakingPower = 6.0f;
-				damage = 2.0;
+				damage = 1.0f;
 				break;
 			case ITEM_IRON_SHOVEL:
 				stackable = false;
 				tag = "item_iron_shovel";
 				breakingPower = 1.8f;
-				damage = 2.0;
+				damage = 1.0f;
 				break;
 			case ITEM_IRON_AXE:
 				stackable = false;
 				tag = "item_iron_axe";
 				breakingPower = 1.8f;
-				damage = 3.0;
+				damage = 1.25f;
 				break;
 			case ITEM_IRON_SWORD:
 				stackable = false;
 				tag = "item_iron_sword";
-				damage = 4.5;
+				damage = 1.75f;
 				break;
 			case ITEM_GOLD_PICKAXE:
 				stackable = false;
 				tag = "item_gold_pick";
 				breakingPower = 7.9f;
-				damage = 2.0;
+				damage = 1.25f;
 				break;
 			case ITEM_GOLD_SHOVEL:
 				stackable = false;
 				tag = "item_gold_shovel";
 				breakingPower = 2.2f;
-				damage = 2.0;
+				damage = 1.25f;
 				break;
 			case ITEM_GOLD_AXE:
 				stackable = false;
 				tag = "item_gold_axe";
 				breakingPower = 2.2f;
-				damage = 4.0;
+				damage = 1.5f;
 				break;
 			case ITEM_GOLD_SWORD:
 				stackable = false;
 				tag = "item_gold_sword";
-				damage = 5.0;
+				damage = 2.0f;
 				break;
 			case ITEM_DIAMOND_PICKAXE:
 				stackable = false;
 				tag = "item_diamond_pick";
 				breakingPower = 8.0f;
-				damage = 2.0;
+				damage = 1.25f;
 				break;
 			case ITEM_DIAMOND_SHOVEL:
 				stackable = false;
 				tag = "item_diamond_shovel";
 				breakingPower = 2.0f;
-				damage = 2.0;
+				damage = 1.25f;
 				break;
 			case ITEM_DIAMOND_AXE:
 				stackable = false;
 				tag = "item_diamond_axe";
 				breakingPower = 2.0f;
-				damage = 3.5;
+				damage = 1.5f;
 				break;
 			case ITEM_DIAMOND_SWORD:
 				stackable = false;
 				tag = "item_diamond_sword";
-				damage = 4.5;
+				damage = 1.75f;
 				break;
 			case ITEM_APPLE:
 				tag = "item_apple";
