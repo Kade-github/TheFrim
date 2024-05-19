@@ -1145,6 +1145,10 @@ void Player::KeyPress(int key)
 		else
 			TogglePauseMenu();
 		break;
+	case GLFW_KEY_H:
+		instantBreak = !instantBreak;
+		scene->hud->ShowHint("Instant Break: " + std::to_string(instantBreak));
+		break;
 	}
 
 }

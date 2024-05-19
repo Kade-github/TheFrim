@@ -1,0 +1,67 @@
+[Textures/logo.png]
+Credits
+
+
+
+Created in 6 months as a school project
+
+
+
+Programmer
+Kade
+
+
+Artist/Textures
+Kade
+
+
+Models
+Kade
+
+
+Music
+Kade
+
+
+Sounds
+Kade
+
+
+Engine
+Kade
+
+
+
+
+Inspired by Minecraft (Mojang)
+
+
+
+
+Libraries and Attributions
+
+
+OpenGL - Khronos Group
+
+
+GLFW
+
+
+msgpack-c
+
+
+glad
+
+
+Open Asset Import Library (assimp)
+
+
+BS::thread_pool
+
+
+BASS - Un4seen Developments
+
+
+
+
+Thank you for playing.

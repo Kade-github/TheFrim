@@ -24,6 +24,7 @@ public:
 	Hud* hud;
 	Player* player;
 	Camera2D* c2d = nullptr;
+	Camera2D* credits = nullptr;
 
 	Sprite3D* celestialSun;
 	Sprite3D* celestialMoon;

@@ -45,6 +45,12 @@ void Gameplay::Create()
 
 	c2d->order = 3;
 
+	credits = new Camera2D(glm::vec3(0, 0, 0));
+
+	credits->s = c2d->s;
+
+	credits->order = 1000;
+
 	Camera* camera = Game::instance->GetCamera();
 
 	camera->fov = Settings::instance->fov;
@@ -279,6 +285,9 @@ void Gameplay::Draw()
 
 		c2d->Draw();
 	}
+
+	if (Hud::endSequence)
+		credits->Draw();
 
 	if (shouldUpdate && !hud->GamePaused)
 		dim->Update(); // these use delayed 

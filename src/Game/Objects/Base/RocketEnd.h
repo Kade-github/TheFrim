@@ -4,12 +4,18 @@
 #include <Objects/GameObject.h>
 #include <OpenGL/Model.h>
 #include <Objects/3DSprite.h>
+#include "../../CreditsReader.h"
 
 class RocketEnd : public GameObject
 {
 public:
 	bool creditsSong = false;
 	bool playedLift = false;
+
+	CreditsReader cr;
+
+	Camera2D* creditCam;
+	std::vector<Text2D*> credits;
 
 	Sprite3D* fire;
 

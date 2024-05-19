@@ -3,6 +3,8 @@
 #include <Game.h>
 #include "../../WorldManager.h"
 #include "../../LightingManager.h"
+#include "../../Scenes/Gameplay.h"
+
 RocketEnd::RocketEnd(glm::vec3 _pos) : GameObject(_pos)
 {
 	m = Model("Assets/Models/rocket_frim.obj");
@@ -21,7 +23,31 @@ RocketEnd::RocketEnd(glm::vec3 _pos) : GameObject(_pos)
 
 	fire->UpdateSprite();
 
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
+	creditCam = gp->credits;
+
+	cr.ReadCredits("Assets/credits.txt");
+
+	for(Credit& c : cr.credits)
+	{
+		if (c.credit[0] == '[')
+		{
+			// image
+
+			std::string path = c.credit.substr(1, c.credit.size() - 2);
+
+			Sprite2D* s = new Sprite2D("Assets/" + path, glm::vec3(0, -600, 0));
+			s->position.x = 350 - (s->width / 2);
+
+			creditCam->AddObject(s);
+			continue;
+		}
+		Text2D* t = new Text2D(c.credit, "ArialFrim", glm::vec3(0, -600, 0), glm::vec4(1, 1, 1, 1), 42);
+		t->position.x = 350;
+		t->center = true;
+		creditCam->AddObject(t);
+	}
 }
 
 void RocketEnd::Draw()
@@ -35,7 +61,6 @@ void RocketEnd::Draw()
 	{
 		creditsSong = true;
 		MusicManager::GetInstance()->PlayMusic("thesongthatlastedalifetime", 1.0f);
-		LightingManager::GetInstance()->RemoveLight(lightPos);
 
 		position += glm::vec3(0.0f, 10.0f * Game::instance->deltaTime, 0.0f);
 
@@ -82,8 +107,6 @@ void RocketEnd::Draw()
 			{
 				playedLift = true;
 				MusicManager::GetInstance()->PlaySFX("rocket_lift");
-				LightingManager::GetInstance()->AddLight(position, 10.0f);
-				lightPos = position;
 			}
 
 			cam->position = toPosition;
@@ -153,13 +176,44 @@ void RocketEnd::Draw()
 		cam->position = toPosition;
 		cam->LookAt(position);
 		cam->SetDirection();
+
+		// scroll credits
+
+		for(int i = 0; i < creditCam->objects.size(); i++)
+		{
+			Text2D* t = (Text2D*)creditCam->objects[i];
+
+			Credit& c = cr.credits[i];
+
+			float diff = c.time - (time - 4);
+
+			float y = (diff * (300 / 60)) * 12;
+
+			t->position.y = -y;
+		}
 	}
 
 
 	fire->position = position - glm::vec3(0.0f, 1.9f, 0.0f);
 
 	if (playedLift)
+	{
 		fire->Draw();
+
+		float dist = glm::distance(position, lightPos);
+
+		if (lightPos != glm::vec3((int)position.x, (int)position.y, (int)position.z) && position.y < 180 && dist > 4.0f)
+		{
+			LightingManager::GetInstance()->RemoveLight(lightPos);
+			lightPos = glm::vec3((int)position.x, (int)position.y, (int)position.z);
+			LightingManager::GetInstance()->AddLight(lightPos, 10.0f);
+		}
+		else if (position.y > 180 && lightPos.y > -1)
+		{
+			lightPos.y = -1;
+			LightingManager::GetInstance()->RemoveLight(lightPos);
+		}
+	}
 
 	int lightLevel = LightingManager::GetInstance()->GetLightLevel(position);
 
@@ -168,7 +222,6 @@ void RocketEnd::Draw()
 	Game::instance->shader->SetUniform1f("lightLevel", lightLevel);
 
 	Game::instance->shader->Unbind();
-
 
 	m.position = fakePos;
 	m.Draw();
