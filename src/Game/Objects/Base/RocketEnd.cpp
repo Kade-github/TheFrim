@@ -185,9 +185,9 @@ void RocketEnd::Draw()
 
 			Credit& c = cr.credits[i];
 
-			float diff = c.time - (time - 4);
+			float diff = c.time - (time - 6);
 
-			float y = (diff * (300 / 60)) * 12;
+			float y = (diff * (475 / 60)) * 12;
 
 			t->position.y = -y;
 		}

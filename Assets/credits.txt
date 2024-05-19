@@ -3,32 +3,47 @@ Credits
 
 
 
+
+
 Created in 6 months as a school project
 
 
 
+
 Programmer
+
 Kade
+
 
 
 Artist/Textures
+
 Kade
+
 
 
 Models
+
 Kade
+
 
 
 Music
+
 Kade
+
 
 
 Sounds
+
 Kade
+
 
 
 Engine
+
 Kade
+
 
 
 
@@ -38,25 +53,33 @@ Inspired by Minecraft (Mojang)
 
 
 
+
 Libraries and Attributions
+
 
 
 OpenGL - Khronos Group
 
 
+
 GLFW
+
 
 
 msgpack-c
 
 
+
 glad
+
 
 
 Open Asset Import Library (assimp)
 
 
+
 BS::thread_pool
+
 
 
 BASS - Un4seen Developments
@@ -64,4 +87,137 @@ BASS - Un4seen Developments
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[Textures/credit-screenshots/1.png]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[Textures/credit-screenshots/2.png]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[Textures/credit-screenshots/3.png]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[Textures/credit-screenshots/4.png]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[Textures/credit-screenshots/5.png]
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+[Textures/credit-screenshots/6.png]
+
+
+
+
+
+
+
+
+
+
+
+
+
 Thank you for playing.
+
+
+
+<3
