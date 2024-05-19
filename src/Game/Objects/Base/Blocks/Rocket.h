@@ -9,6 +9,8 @@ class Rocket : public Block
 public:
 	Chunk* currentChunk;
 
+	bool destroyed = false;
+
 	Rocket(glm::vec3 _position);
 
 	void LoadModel() override;

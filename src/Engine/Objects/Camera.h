@@ -25,6 +25,8 @@ public:
 
 	float cameraFar = 100.0f;
 
+	glm::vec3 smoothFront = glm::vec3(0.0f, 0.0f, -1.0f);
+
 	glm::vec3 scale = glm::vec3(1, 1, 1);
 
 	Camera();
@@ -49,10 +51,9 @@ public:
 
 	void LookAt(glm::vec3 target)
 	{
-		glm::vec3 direction = glm::normalize(position - target);
+		glm::vec3 direction = -glm::normalize(position - target);
 		pitch = glm::degrees(asin(direction.y));
 		yaw = glm::degrees(atan2(direction.z, direction.x));
-		SetDirection();
 	}
 
 	float YawAngleTo(glm::vec3 pos)
@@ -68,6 +69,8 @@ public:
 
 		return angle;
 	}
+
+	void SetDirectionSmooth(float amount);
 
 	void SetDirection();
 	void SetViewMatrix();

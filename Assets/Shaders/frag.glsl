@@ -67,6 +67,6 @@ void main()
     FragColor = mix(FragColor, vec4(1.0, 0.0, 0.0, FragColor.a), redness);
 
     if (FogFar < 1000)
-	    FragColor = mix(FragColor, vec4(FogColor, 1.0), fogFactor);
+	    FragColor = mix(FragColor, vec4(FogColor, FragColor.a), fogFactor);
 
 }

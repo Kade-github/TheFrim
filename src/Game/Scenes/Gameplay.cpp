@@ -85,6 +85,18 @@ void Gameplay::Create()
 
 	celestialMoon->depth = false;
 
+	celestialStars = new Sprite3D("Assets/Textures/star_bg.png", glm::vec3(0, 0, 0));
+
+	celestialStars->width = 128;
+	celestialStars->height = 128;
+
+	celestialStars->UpdateSprite();
+
+	celestialStars->position = glm::vec3(0, 0, 0);
+	celestialStars->rotateAxis = glm::vec3(1, 0, 0);
+
+	celestialStars->depth = false;
+
 	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
 
 	MusicManager::GetInstance()->nextTrack = glfwGetTime() + 45.0f; // start at 45 seconds
@@ -109,6 +121,12 @@ void Gameplay::Draw()
 
 		if (ticks % 10 == 0)
 			mm->Update();
+
+		if (!hud->playEnd && Hud::endSequence && !MusicManager::GetInstance()->IsPlaying())
+		{
+			MusicManager::GetInstance()->PlayMusic("theend", 0.5f);
+			hud->playEnd = true;
+		}
 	}
 
 
@@ -129,11 +147,6 @@ void Gameplay::Draw()
 
 	wm->_world.sunAngle = LightingManager::GetInstance()->sun.angle;
 
-	celestialSun->position = player->position - rotate(glm::vec3(0, 0, 8), glm::vec3(1, 0, 0), glm::radians(LightingManager::GetInstance()->sun.angle));
-	celestialSun->angle = LightingManager::GetInstance()->sun.angle;
-
-	celestialMoon->position = player->position + rotate(glm::vec3(0, 0, 8), glm::vec3(1, 0, 0), glm::radians(LightingManager::GetInstance()->sun.angle));
-	celestialMoon->angle = LightingManager::GetInstance()->sun.angle;
 
 	if (LightingManager::GetInstance()->sun.angle >= 180) // night time
 	{
@@ -153,6 +166,14 @@ void Gameplay::Draw()
 	}
 
 	Camera* camera = Game::instance->GetCamera();
+
+
+	celestialSun->position = camera->position - rotate(glm::vec3(0, 0, 8), glm::vec3(1, 0, 0), glm::radians(LightingManager::GetInstance()->sun.angle));
+	celestialSun->angle = LightingManager::GetInstance()->sun.angle;
+
+	celestialMoon->position = camera->position + rotate(glm::vec3(0, 0, 8), glm::vec3(1, 0, 0), glm::radians(LightingManager::GetInstance()->sun.angle));
+	celestialMoon->angle = LightingManager::GetInstance()->sun.angle;
+
 
 	Game::instance->shader->Bind();
 
@@ -205,12 +226,25 @@ void Gameplay::Draw()
 
 	MusicManager::GetInstance()->Update();
 
+	if (camera->position.y > 170 || LightingManager::GetInstance()->sun.angle > 200) // draw stars skybox
+	{
+		// celestial stars look at player
+
+		glm::vec3 f = glm::vec3(0, -16, celestialStars->width / 2);
+
+		celestialStars->position = camera->position - f;
+		celestialStars->angle = 90;
+
+		celestialStars->Draw();
+	}
+
+
+
 	celestialSun->Draw();
 
 	celestialMoon->Draw();
 
 	// Draw chunks (regular)
-
 	for (Chunk* c : allChunks)
 	{
 		if (c->isRendered)
@@ -244,12 +278,6 @@ void Gameplay::Draw()
 		hud->Draw();
 
 		c2d->Draw();
-	}
-
-	if (!hud->playEnd && Hud::endSequence && !MusicManager::GetInstance()->IsPlaying())
-	{
-		MusicManager::GetInstance()->PlayMusic("theend", 0.5f);
-		hud->playEnd = true;
 	}
 
 	if (shouldUpdate && !hud->GamePaused)
@@ -617,6 +645,20 @@ void Gameplay::KeyPress(int key)
 		hud->ShowHint("Gave you a rocket");
 	}
 
+	if (key == GLFW_KEY_F7)
+	{
+		player->freeCam = !player->freeCam;
+
+		hud->ShowHint("Free cam: " + std::to_string(player->freeCam));
+	}
+
+	if (key == GLFW_KEY_F10)
+	{
+		LightingManager::GetInstance()->sun.angle += 15;
+
+		hud->ShowHint("Sun angle: " + std::to_string(LightingManager::GetInstance()->sun.angle));
+	}
+
 
 	/*if (key == GLFW_KEY_P)
 	{
@@ -784,6 +826,7 @@ void Gameplay::Destroy()
 
 	delete celestialSun;
 	delete celestialMoon;
+	delete celestialStars;
 }
 
 void Gameplay::Resize(float _w, float _h)

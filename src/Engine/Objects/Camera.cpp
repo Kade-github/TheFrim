@@ -92,6 +92,17 @@ void Camera::DrawDebugCube(glm::vec3 pos, glm::vec3 scale)
 
 }
 
+void Camera::SetDirectionSmooth(float amount)
+{
+	glm::vec3 direction;
+	direction.x = cos(glm::radians(yaw)) * cos(glm::radians(pitch));
+	direction.y = sin(glm::radians(pitch));
+	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
+	cameraFront = glm::mix(smoothFront, glm::normalize(direction), amount);
+
+	SetViewMatrix();
+}
+
 void Camera::SetDirection()
 {
 	glm::vec3 direction;
@@ -99,6 +110,7 @@ void Camera::SetDirection()
 	direction.y = sin(glm::radians(pitch));
 	direction.z = sin(glm::radians(yaw)) * cos(glm::radians(pitch));
 	cameraFront = glm::normalize(direction);
+	smoothFront = cameraFront;
 
 	SetViewMatrix();
 }

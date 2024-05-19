@@ -133,6 +133,7 @@ void MusicManager::PlayMusic(std::string path)
 	c->CreateFX();
 
 	c->Play();
+	_isPlaying = true;
 
 	_fadeTime = 0;
 	_fadeDuration = 0;
@@ -169,6 +170,7 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 
 	c->SetVolume(0);
 	c->Play();
+	_isPlaying = true;
 
 	_fadeTime = glfwGetTime();
 	_fadeDuration = fadeDuration;
@@ -275,6 +277,16 @@ void MusicManager::PlaySFX(std::string path, glm::vec3 from, float pitch, std::s
 	c->Play();
 }
 
+float MusicManager::GetTime()
+{
+	Channel* c = Game::instance->audioManager->GetChannel(currentSong);
+
+	if (c == nullptr)
+		return 0;
+
+	return c->GetPosition();
+}
+
 void MusicManager::FadeOut(float duration)
 {
 	if (currentSong == "")
@@ -333,7 +345,7 @@ void MusicManager::PlayNext()
 
 bool MusicManager::IsPlaying()
 {
-	return _isPlaying;
+	return ChannelIsPlaying(currentSong);
 }
 
 void MusicManager::Update()
@@ -355,6 +367,7 @@ void MusicManager::Update()
 
 	if (Game::instance->audioManager->channels.size() == 0)
 		return;
+
 
 	if (glfwGetTime() > lastCheck)
 	{

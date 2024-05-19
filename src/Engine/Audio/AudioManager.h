@@ -117,6 +117,14 @@ public:
 		CheckError();
 	}
 
+	float GetPosition()
+	{
+		if (!IsLoaded())
+			return 0;
+
+		return BASS_ChannelBytes2Seconds(id, BASS_ChannelGetPosition(id, BASS_POS_BYTE));
+	}
+
 	void Set3DDistanceFactor(float dist)
 	{
 		if (!IsLoaded())

@@ -45,6 +45,8 @@ void LightingManager::SunColor()
 
 	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
+	Camera* cam = Game::instance->GetCamera();
+
 	int playerY = gp->player->position.y;
 	Chunk* c = WorldManager::instance->GetChunk(gp->player->position.x, gp->player->position.z);
 	int highestBlock = 0;
@@ -112,6 +114,11 @@ void LightingManager::SunColor()
 	}
 
     float distance = (float)highestBlock - (float)playerY;
+
+	if (cam->position.y > 170.0f)
+	{
+		distance = 5.0f;
+	}
 
     float mixProgress = distance / 5.0f;
 

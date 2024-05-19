@@ -2,6 +2,7 @@
 #include "../../../LightingManager.h"
 #include "../../../Scenes/Gameplay.h"
 #include <Game.h>
+#include "../RocketEnd.h"
 
 Rocket::Rocket(glm::vec3 _position) : Block(_position, BlockType::ROCKET)
 {
@@ -43,14 +44,33 @@ bool Rocket::Update(int tick)
 		return true;
 
 	int highest = currentChunk->GetHighestBlock(position.x, position.z);
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
 	if (position.y < highest)
 	{
-		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
 		gp->hud->ShowHint("Route blocked, unable to launch.");
 		Hud::endSequence = false;
+		gp->hud->playEnd = false;
 		return true;
+	}
+
+	if (LightingManager::GetInstance()->sun.angle < 200 || LightingManager::GetInstance()->sun.angle > 290)
+	{
+		gp->hud->ShowHint("Route unclear, the sky must be shrouded in darkness.");
+		Hud::endSequence = false;
+		gp->hud->playEnd = false;
+		return true;
+	}
+
+	if (!destroyed)
+	{
+		RocketEnd* end = new RocketEnd(position);
+
+		gp->AddObject(end);
+
+		destroyed = true;
+		currentChunk->ModifyBlock(position.x, position.y, position.z, 0);
 	}
 
 	return true;

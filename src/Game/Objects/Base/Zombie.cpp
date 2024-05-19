@@ -202,7 +202,7 @@ void Zombie::Noise()
 
 void Zombie::Attack()
 {
-	if (glfwGetTime() > attackCooldown)
+	if (glfwGetTime() > attackCooldown && !Hud::endSequence)
 	{
 		Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 

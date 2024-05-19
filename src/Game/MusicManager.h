@@ -56,6 +56,8 @@ public:
 	void PlaySFX(std::string path, std::string customName = "sfx");
 	void PlaySFX(std::string path, glm::vec3 from, float pitch, std::string customName = "sfx");
 
+	float GetTime();
+
 	void FadeOut(float duration);
 
 	void FadeTo(float volume, float duration);

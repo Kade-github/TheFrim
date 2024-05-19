@@ -27,6 +27,7 @@ public:
 
 	Sprite3D* celestialSun;
 	Sprite3D* celestialMoon;
+	Sprite3D* celestialStars;
 
 	float lastUpdate = 0.0f;
 	float lastSecond = 0.0f;

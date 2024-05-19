@@ -63,7 +63,7 @@ void MobManager::Update()
 	Camera* cam = Game::instance->GetCamera();
 
 	// spawn mobs around player
-	if (glfwGetTime() - lastWave > 30 && mobs.size() < 45)
+	if (glfwGetTime() - lastWave > 30 && mobs.size() < 45 && !Hud::endSequence)
 	{
 		lastWave = glfwGetTime();
 
@@ -148,12 +148,12 @@ void MobManager::Update()
 	{
 		float angle = cam->YawAngleTo(mob->position);
 
-		if (angle > 100 && glfwGetTime() - mob->lastSeen > 140) // not visible
+		if (angle > 260 && glfwGetTime() - mob->lastSeen > 140) // not visible
 		{
 			RemoveMob(mob);
 			break;
 		}
-		else if (angle > 100)
+		else if (angle > 260)
 			mob->lastSeen = glfwGetTime();
 
 		if (mob->dead)
@@ -192,7 +192,7 @@ void MobManager::Update()
 
 		float r = rand() % 35 + 20;
 
-		if (mob->lastNoise + r < glfwGetTime())
+		if (mob->lastNoise + r < glfwGetTime() && !Hud::endSequence)
 			mob->Noise();
 	}
 }

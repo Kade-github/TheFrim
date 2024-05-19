@@ -27,6 +27,8 @@ public:
 
 	void Draw() override;
 
+	void LookAt(glm::vec3 target);
+
 	void UpdateSprite();
 
 	void Destroy() override;
