@@ -8,6 +8,7 @@
 #include "../../Scenes/MainMenu.h"
 
 bool Hud::GamePaused = false;
+bool Hud::endSequence = false;
 
 void Hud::InventoryShown(bool s)
 {
@@ -112,6 +113,25 @@ void Hud::ShowDeathScreen()
 	// change text for resume
 
 	resume->SetText("Respawn");
+}
+
+void Hud::ShowRocketScreen()
+{
+	player->TogglePauseMenu();
+
+	rocketScreen = true;
+
+	Game::instance->SetLockedCursor(false);
+
+	pauseHeader->text = "Escape?";
+
+	// change text for respawn
+
+	resume->SetText("Yes");
+
+	// change text for resume
+
+	title->SetText("Not yet");
 }
 
 void Hud::ShowKnowledgementTablet(Data::InventoryItem& item)
@@ -366,6 +386,13 @@ void Hud::UpdateArmor()
 	}
 }
 
+void Hud::ShowHint(std::string text)
+{
+	hintText->text = text;
+
+	hintTime = glfwGetTime() + 2.0f;
+}
+
 Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 {
 	player = _p;
@@ -491,6 +518,18 @@ Hud::Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d) : GameObject(_pos)
 
 	pauseHeader->order = 3;
 
+	hintText = new Text2D("", "ArialFrim", glm::vec3(0, 0, 0), glm::vec4(1, 1, 1, 1), 32);
+
+	hintText->position.x = (c2d->_w / 2) - (hintText->width / 2);
+
+	hintText->position.y = 350;
+
+	hintText->color = glm::vec4(1, 1, 1, 1);
+
+	hintText->order = 3;
+
+	c2d->AddObject(hintText);
+
 	c2d->AddObject(pauseHeader);
 
 	UpdateHotbar();
@@ -555,6 +594,17 @@ void Hud::Draw()
 	{
 		pauseHeader->position.x = (c2d->_w / 2) - (pauseHeader->width / 2);
 		pauseHeader->position.y = resume->position.y + resume->height + 100;
+	}
+
+	hintText->position.x = (c2d->_w / 2) - (hintText->width / 2);
+
+	if (hintTime > glfwGetTime())
+	{
+		hintText->color.a = 1.0f;
+	}
+	else
+	{
+		hintText->color.a = std::lerp(hintText->color.a, 0.0f, 0.1f);
 	}
 
 	Game::instance->shader->Bind();
@@ -625,14 +675,14 @@ void Hud::Draw()
 			title->color = glm::vec4(1, 1, 1, 1);
 	}
 
-	if (_exiting && !Game::instance->DidTakeScreenshot() && !_askedForScreenshot)
+	if (_exiting && !_askedForScreenshot && title->color.a <= 0)
 	{
 		_askedForScreenshot = true;
 		// take screenshot
 
 		Game::instance->TakeScreenshot(WorldManager::instance->_path + "/screenshot.png");
 	}
-	else if (_exiting && _askedForScreenshot)
+	else if (_exiting && _askedForScreenshot && Game::instance->DidTakeScreenshot())
 	{
 		// exit
 
@@ -645,29 +695,49 @@ void Hud::MouseClick(int button, glm::vec2 pos)
 {
 	if (GamePaused && !inv->shown)
 	{
-		if (Collision2D::PointInRect(pos, resume->position, glm::vec2(resume->width, resume->height)))
+		if (rocketScreen)
 		{
-			if (deathOverlay->color.a < 0.5f)
+			if (Collision2D::PointInRect(pos, resume->position, glm::vec2(resume->width, resume->height)))
 			{
 				MusicManager::GetInstance()->PlaySFX("select");
-				ShowPauseMenu(false);
+
+				endSequence = true;
+				rocketScreen = false;
+				player->TogglePauseMenu();
 			}
-			else
+			else if (Collision2D::PointInRect(pos, title->position, glm::vec2(title->width, title->height)))
 			{
-				player->wasDead = true;
-				player->dead = false;
-				deathOverlay->color.a = 0.0f;
-				ShowPauseMenu(false);
+				MusicManager::GetInstance()->PlaySFX("select");
+				rocketScreen = false;
+				player->TogglePauseMenu();
 			}
 		}
-		else if (Collision2D::PointInRect(pos, title->position, glm::vec2(title->width, title->height)))
+		else
 		{
-			MusicManager::GetInstance()->PlaySFX("select");
-			player->TogglePauseMenu();
+			if (Collision2D::PointInRect(pos, resume->position, glm::vec2(resume->width, resume->height)))
+			{
+				if (deathOverlay->color.a < 0.5f)
+				{
+					MusicManager::GetInstance()->PlaySFX("select");
+					ShowPauseMenu(false);
+				}
+				else
+				{
+					player->wasDead = true;
+					player->dead = false;
+					deathOverlay->color.a = 0.0f;
+					ShowPauseMenu(false);
+				}
+			}
+			else if (Collision2D::PointInRect(pos, title->position, glm::vec2(title->width, title->height)))
+			{
+				MusicManager::GetInstance()->PlaySFX("select");
+				player->TogglePauseMenu();
 
-			WorldManager::instance->SetPlayerPosition(player->position);
-			WorldManager::instance->SaveWorldNow();
-			_exiting = true;
+				WorldManager::instance->SetPlayerPosition(player->position);
+				WorldManager::instance->SaveWorldNow();
+				_exiting = true;
+			}
 		}
 	}
 

@@ -26,6 +26,7 @@ private:
 
 public:
 	Text2D* pauseHeader;
+	Text2D* hintText;
 
 	Sprite2D* pauseBackground;
 	Sprite2D* waterOverlay;
@@ -37,6 +38,9 @@ public:
 	Sprite3D* hand;
 
 	static bool GamePaused;
+	static bool endSequence;
+
+	bool rocketScreen = false;
 
 	Inventory* inv;
 
@@ -58,6 +62,8 @@ public:
 	void ShowPauseMenu(bool s);
 	void ShowDeathScreen();
 
+	void ShowRocketScreen();
+
 	void ShowKnowledgementTablet(Data::InventoryItem& item);
 
 	void SetSelected(int s);
@@ -67,6 +73,10 @@ public:
 	void ClearAir();
 	void UpdateAir();
 	void UpdateArmor();
+
+	float hintTime = 0;
+
+	void ShowHint(std::string text);
 
 	Hud(glm::vec3 _pos, Player* _p, Camera2D* _c2d);
 

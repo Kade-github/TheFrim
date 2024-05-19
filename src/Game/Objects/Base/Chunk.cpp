@@ -27,6 +27,7 @@
 #include "Blocks/RuinedCobblestone.h"
 #include "Blocks/RuinedDebris.h"
 #include "Blocks/ReinforcedIronBlock.h"
+#include "Blocks/Rocket.h"
 
 void Chunk::ApplyNormal(std::vector<GameObject::VVertex>& vertices, glm::vec3 normal)
 {
@@ -117,7 +118,7 @@ int Chunk::GetHighestBlock(float x, float z, bool water)
 		}
 		else
 		{
-			if (data > 0 && data != WATER && data != LEAVES && data != TORCH)
+			if (data > 0 && data != WATER && data != LEAVES && data != TORCH && data != ROCKET)
 				return y;
 		}
 	}
@@ -419,22 +420,22 @@ void Chunk::CreateFaces(Block* b)
 
 	int t = GetBlock(x, y + 1, z);
 	// in our chunk
-	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH && t != ROCKET) || b->transparent))
 		top = false;
 	t = GetBlock(x, y - 1, z);
-	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH && t != ROCKET) || b->transparent))
 		bottom = false;
 	t = GetBlockInterchunk(x + 1, y, z);
-	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH && t != ROCKET) || b->transparent))
 		left = false;
 	t = GetBlockInterchunk(x - 1, y, z);
-	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH && t != ROCKET) || b->transparent))
 		right = false;
 	t = GetBlockInterchunk(x, y, z - 1);
-	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH && t != ROCKET) || b->transparent))
 		front = false;
 	t = GetBlockInterchunk(x, y, z + 1);
-	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH) || b->transparent))
+	if (t > 0 && ((t != WATER && t != GLASS && t != TORCH && t != ROCKET) || b->transparent))
 		back = false;
 
 	// create faces
@@ -887,6 +888,9 @@ Block* Chunk::CreateBlock(int x, int y, int z, int id, Data::BlockData data)
 	case REINFORCED_IRON_BLOCK:
 		block = new ReinforcedIronBlock(position + glm::vec3(x, y, z));
 		break;
+	case ROCKET:
+		block = new Rocket(position + glm::vec3(x, y, z));
+		break;
 	default:
 		block = new NullBlock(position + glm::vec3(x, y, z));
 		break;
@@ -1175,11 +1179,27 @@ void Chunk::DrawModels()
 	glEnable(GL_DEPTH_CLAMP);
 	glEnable(GL_CULL_FACE);
 
+	Shader* s = Game::instance->shader;
+
 	for (int i = 0; i < modelsPresent.size(); i++)
 	{
 		auto&& m = modelsPresent[i];
 
+		int lightLevel = LightingManager::GetInstance()->GetLightLevel(m.position);
+
+		s->Bind();
+
+		s->SetUniform1f("lightLevel", lightLevel);
+
+		s->Unbind();
+
 		m.Draw();
+
+		s->Bind();
+
+		s->SetUniform1f("lightLevel", 10.0f);
+
+		s->Unbind();
 	}
 
 	glDisable(GL_CULL_FACE);

@@ -596,6 +596,19 @@ void Gameplay::KeyPress(int key)
 
 		if (c != nullptr)
 			UnloadChunk(c);
+
+		hud->ShowHint("Reloading chunk");
+	}
+
+	if (key == GLFW_KEY_Y)
+	{
+		Data::InventoryItem item(Data::ITEM_ROCKET, 1);
+
+		player->playerData.GiveItem(item);
+
+		hud->UpdateHotbar();
+
+		hud->ShowHint("Gave you a rocket");
 	}
 
 
