@@ -334,7 +334,7 @@ void Player::Draw()
 
 	if (!freeCam)
 	{
-		if (!_inInventory && !Hud::GamePaused)
+		if (!_inInventory && !Hud::GamePaused && !Hud::endSequence)
 		{
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_W) == GLFW_PRESS)
 			{
@@ -469,7 +469,7 @@ void Player::Draw()
 		}
 	}
 
-	if (!freeCam)
+	if (!freeCam && !Hud::endSequence)
 	{
 		glm::vec3 storedPos = position;
 
@@ -500,22 +500,25 @@ void Player::Draw()
 			footstepped = false;
 	}
 
-
-	camera->pitch = p;
-	camera->yaw = yaw;
-
-	playerData.pitch = p;
-	playerData.yaw = yaw;
-
-	if (_shake > 0)
+	if (!Hud::endSequence)
 	{
-		_shake -= 1.75f * Game::instance->deltaTime;
-		camera->position.x += ((rand() % 100) / 100.0f) * _shake;
-		camera->position.y += ((rand() % 100) / 100.0f) * _shake;
-		camera->position.z += ((rand() % 100) / 100.0f) * _shake;
-	}
 
-	camera->SetDirection();
+		camera->pitch = p;
+		camera->yaw = yaw;
+
+		playerData.pitch = p;
+		playerData.yaw = yaw;
+
+		if (_shake > 0)
+		{
+			_shake -= 1.75f * Game::instance->deltaTime;
+			camera->position.x += ((rand() % 100) / 100.0f) * _shake;
+			camera->position.y += ((rand() % 100) / 100.0f) * _shake;
+			camera->position.z += ((rand() % 100) / 100.0f) * _shake;
+		}
+
+		camera->SetDirection();
+	}
 
 	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
 
@@ -633,7 +636,7 @@ void Player::Draw()
 	vertices.clear();
 	indices.clear();
 
-	if (!_inInventory && !Hud::GamePaused)
+	if (!_inInventory && !Hud::GamePaused && !Hud::endSequence)
 	{
 		if (selectedEntity != nullptr && glfwGetMouseButton(Game::instance->GetWindow(), GLFW_MOUSE_BUTTON_LEFT) == GLFW_PRESS)
 		{
@@ -896,7 +899,7 @@ void Player::Draw()
 		}
 	}
 
-	if (!freeCam)
+	if (!freeCam && !Hud::endSequence)
 	{
 		Entity::Draw(); // physics
 	}
@@ -904,7 +907,7 @@ void Player::Draw()
 
 void Player::MouseClick(int button, glm::vec2 mPos)
 {
-	if (_inInventory || Hud::GamePaused)
+	if (_inInventory || Hud::GamePaused || Hud::endSequence)
 		return;
 
 	Camera* camera = Game::instance->GetCamera();
@@ -1041,10 +1044,14 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 void Player::KeyPress(int key)
 {
+	if (Hud::GamePaused || Hud::endSequence)
+		return;
+
 	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
 	Camera* c = Game::instance->GetCamera();
 	Data::InventoryItem item;
 	int selected = 0;
+
 
 	// select hotbar
 
@@ -1087,26 +1094,29 @@ void Player::KeyPress(int key)
 		scene->hud->UpdateHotbar();
 		break;
 	case GLFW_KEY_Q:
-		selected = scene->hud->selected;
-
-		item = playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1];
-
-		if (item.type != Data::ITEM_NULL)
+		if (!_inInventory)
 		{
-			if (item.count == 1)
-			{
-				scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
-				playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = {};
-			}
-			else
-			{
-				item.count--;
-				playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = item;
-				item.count = 1;
-				scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
-			}
+			selected = scene->hud->selected;
 
-			scene->hud->UpdateHotbar();
+			item = playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1];
+
+			if (item.type != Data::ITEM_NULL)
+			{
+				if (item.count == 1)
+				{
+					scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
+					playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = {};
+				}
+				else
+				{
+					item.count--;
+					playerData.inventory[selected][PLAYER_INVENTORY_HEIGHT - 1] = item;
+					item.count = 1;
+					scene->dim->SpawnItem(position + c->cameraFront, c->cameraFront, item);
+				}
+
+				scene->hud->UpdateHotbar();
+			}
 		}
 		break;
 	case GLFW_KEY_E:
@@ -1134,9 +1144,6 @@ void Player::KeyPress(int key)
 			ToggleInventory();
 		else
 			TogglePauseMenu();
-		break;
-	case GLFW_KEY_H:
-		instantBreak = !instantBreak;
 		break;
 	}
 

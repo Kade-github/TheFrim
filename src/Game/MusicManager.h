@@ -18,6 +18,7 @@ class MusicManager
 	std::default_random_engine generator;
 
 public:
+	bool pauseMusic = false;
 	float nextTrack = 0.0f;
 
 	float ourVolume = 1.0f;

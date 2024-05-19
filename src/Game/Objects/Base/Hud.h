@@ -46,6 +46,8 @@ public:
 
 	int selected = 0;
 
+	bool playEnd = false;
+
 	Sprite2D* crosshair;
 	bool hintShown = false;
 	Sprite2D* hint;

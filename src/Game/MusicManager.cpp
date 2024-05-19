@@ -145,6 +145,9 @@ void MusicManager::PlayMusic(std::string path, float fadeDuration)
 	if (ambient || path.find("caves") != std::string::npos || path.find("ruins") != std::string::npos)
 		rPath = "Assets/Music/amb/" + path + ".mp3";
 
+	if (path.find("theend") != std::string::npos || path.find("thesongthatlastedalifetime") != std::string::npos)
+		rPath = "Assets/Music/cutscene/" + path + ".mp3";
+
 	if (currentSong == rPath)
 		return;
 
@@ -337,7 +340,7 @@ void MusicManager::Update()
 {
 	static float lastCheck = 0;
 
-	if (glfwGetTime() > nextTrack)
+	if (glfwGetTime() > nextTrack && !pauseMusic)
 		PlayNext();
 
 	float systemVol = BASS_GetVolume();

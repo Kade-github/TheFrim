@@ -607,19 +607,23 @@ void Hud::Draw()
 		hintText->color.a = std::lerp(hintText->color.a, 0.0f, 0.1f);
 	}
 
-	Game::instance->shader->Bind();
 
-	Game::instance->shader->SetUniform1f("lightLevel", player->lightLevel);
+	if (!endSequence)
+	{
+		Game::instance->shader->Bind();
 
-	Game::instance->shader->Unbind();
+		Game::instance->shader->SetUniform1f("lightLevel", player->lightLevel);
 
-	hand->Draw();
+		Game::instance->shader->Unbind();
 
-	Game::instance->shader->Bind();
+		hand->Draw();
 
-	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
+		Game::instance->shader->Bind();
 
-	Game::instance->shader->Unbind();
+		Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
+
+		Game::instance->shader->Unbind();
+	}
 
 	crosshair->position = glm::vec3((c2d->_w / 2) - crosshair->width / 2, (c2d->_h / 2) - crosshair->height / 2, 0);
 
@@ -700,6 +704,8 @@ void Hud::MouseClick(int button, glm::vec2 pos)
 			if (Collision2D::PointInRect(pos, resume->position, glm::vec2(resume->width, resume->height)))
 			{
 				MusicManager::GetInstance()->PlaySFX("select");
+				MusicManager::GetInstance()->pauseMusic = true;
+				MusicManager::GetInstance()->FadeOut(1.0f);
 
 				endSequence = true;
 				rocketScreen = false;

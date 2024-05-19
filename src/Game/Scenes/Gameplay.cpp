@@ -239,11 +239,17 @@ void Gameplay::Draw()
 			c->DrawTransparent();
 	}
 
-	if (showHud)
+	if (showHud && !Hud::endSequence)
 	{
 		hud->Draw();
 
 		c2d->Draw();
+	}
+
+	if (!hud->playEnd && Hud::endSequence && !MusicManager::GetInstance()->IsPlaying())
+	{
+		MusicManager::GetInstance()->PlayMusic("theend", 0.5f);
+		hud->playEnd = true;
 	}
 
 	if (shouldUpdate && !hud->GamePaused)
