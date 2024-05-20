@@ -12,7 +12,10 @@
 
 siv::PerlinNoise perlin;
 siv::PerlinNoise cavePerlin;
-siv::PerlinNoise orePerlin;
+siv::PerlinNoise coalPerlin;
+siv::PerlinNoise ironPerlin;
+siv::PerlinNoise diamondPerlin;
+siv::PerlinNoise goldPerlin;
 
 std::mutex m;
 
@@ -163,7 +166,10 @@ void Data::World::parseSeed()
 
 	cavePerlin.reseed(seedNum + 1);
 
-	orePerlin.reseed(seedNum + 2);
+	coalPerlin.reseed(seedNum + 2);
+	ironPerlin.reseed(seedNum + 3);
+	diamondPerlin.reseed(seedNum + 4);
+	goldPerlin.reseed(seedNum + 5);
 
 	srand(seedNum);
 
@@ -282,12 +288,12 @@ void Data::Chunk::placeStone(int x, int y, int z, float multiplier)
 	else if (y <= 40)
 		m *= 1.25;
 
-	double coalNoise = std::abs((orePerlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
-	double ironNoise = std::abs((orePerlin.normalizedOctave3D(x * 0.002, y * 0.02, z * 0.002, 10, 0.5)) * m);
-	double diamondNoise = std::abs((orePerlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
-	double goldNoise = std::abs((orePerlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
+	double coalNoise = std::abs((coalPerlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
+	double ironNoise = std::abs((ironPerlin.normalizedOctave3D(x * 0.002, y * 0.02, z * 0.002, 10, 0.5)) * m);
+	double diamondNoise = std::abs((diamondPerlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
+	double goldNoise = std::abs((goldPerlin.normalizedOctave3D(x * 0.002, y * 0.002, z * 0.002, 10, 0.5)) * m);
 
-	if (coalNoise >= 0.4 && amountOfBlockInRadius(x, y, z, COAL_ORE, 16) < 8)
+	if (coalNoise >= 0.2 && amountOfBlockInRadius(x, y, z, COAL_ORE, 16) < 8)
 	{
 		placeBlock(x, y, z, COAL_ORE);
 	}
