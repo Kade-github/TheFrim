@@ -901,13 +901,17 @@ Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3]
 
 		if (recipe.anywhere)
 		{
+			match = true;
+
 			// how many ingredients do we need
 			std::map<int, int> needed;
 
+			// how many ingredients do we have
+			std::map<int, int> have;
+
 			for (int j = 0; j < 3; j++) {
 				for (int k = 0; k < 3; k++) {
-					if (recipe.ingredients[j][k].type != 0)
-						needed[recipe.ingredients[j][k].type] += recipe.ingredients[j][k].count;
+					needed[recipe.ingredients[j][k].type] += recipe.ingredients[j][k].count;
 				}
 			}
 
@@ -915,10 +919,15 @@ Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3]
 
 			for (int j = 0; j < 3; j++) {
 				for (int k = 0; k < 3; k++) {
-					if (ingredients[j][k].type == 0)
-						continue;
-					if (ingredients[j][k].count >= needed[ingredients[j][k].type])
-						match = true;
+					have[ingredients[j][k].type] += ingredients[j][k].count;
+				}
+			}
+
+			for (auto& [key, value] : needed) {
+				if (have[key] < value)
+				{
+					match = false;
+					break;
 				}
 			}
 

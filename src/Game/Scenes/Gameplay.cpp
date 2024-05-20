@@ -105,6 +105,11 @@ void Gameplay::Create()
 
 	celestialStars->depth = false;
 
+	glm::vec2 size = Game::instance->GetWindowSize();
+
+	camera->width = size.x;
+	camera->height = size.y;
+
 	MusicManager::GetInstance()->GenerateTrackList(); // generate track list
 
 	MusicManager::GetInstance()->nextTrack = glfwGetTime() + 45.0f; // start at 45 seconds
@@ -639,7 +644,7 @@ void Gameplay::UnloadChunk(Chunk* c)
 
 void Gameplay::KeyPress(int key)
 {
-	if (key == GLFW_KEY_F5)
+	/*if (key == GLFW_KEY_F5)
 	{
 		Chunk* c = wm->GetChunk(player->position.x, player->position.z);
 
@@ -672,7 +677,7 @@ void Gameplay::KeyPress(int key)
 		LightingManager::GetInstance()->sun.angle += 15;
 
 		hud->ShowHint("Sun angle: " + std::to_string(LightingManager::GetInstance()->sun.angle));
-	}
+	}*/
 
 
 	/*if (key == GLFW_KEY_P)

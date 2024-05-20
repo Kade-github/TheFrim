@@ -551,6 +551,7 @@ void Player::Draw()
 						{
 							last->breakProgress = 0;
 							lastBreakSfx = 0;
+							breakCooldown = 0;
 						}
 
 						// get the closest face
@@ -1142,8 +1143,8 @@ void Player::KeyPress(int key)
 			TogglePauseMenu();
 		break;
 	case GLFW_KEY_H:
-		instantBreak = !instantBreak;
-		scene->hud->ShowHint("Instant Break: " + std::to_string(instantBreak));
+		//instantBreak = !instantBreak;
+		//scene->hud->ShowHint("Instant Break: " + std::to_string(instantBreak));
 		break;
 	}
 
