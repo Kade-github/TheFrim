@@ -50,7 +50,7 @@ void SettingsMenu::Create()
 
 	fov = new DragBar(glm::vec3(0, 0, 0), "FOV", fovPerc);
 
-	fov->max = 140;
+	fov->max = 110;
 	fov->min = 70;
 
 	fov->UpdateBar();

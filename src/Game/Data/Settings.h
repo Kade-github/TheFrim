@@ -11,10 +11,10 @@ class Settings
 public:
 	static Settings* instance;
 
-	float fov = 75.0f;
-	float renderDistance = 1.0f;
+	float fov = 90.0f;
+	float renderDistance = 0.75f;
 
-	float fogDistance = 1.0f;
+	float fogDistance = 0.75f;
 
 	float masterVolume = 0.2f;
 
