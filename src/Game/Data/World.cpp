@@ -428,12 +428,12 @@ void Data::Region::generateStructures()
 
 			int randomY = c.getHighestBlock(randomX, randomZ);
 
-			randomY -= 40;
+			randomY -= 25;
 
 			if (getRandom(0, 100) > 65)
 				randomY -= getRandom(0, 60);
 
-			if (getRandom(0, 1000) < 5)
+			if (getRandom(0, 1000) < 25)
 			{
 				struct_ruins.Create(c.x + randomX, c.z + randomZ, randomY, c, this);
 				madeRuin = true;
