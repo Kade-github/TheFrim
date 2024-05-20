@@ -564,7 +564,7 @@ void Gameplay::UpdateChunks()
 
 	for (Chunk* c : allChunks)
 	{
-		glm::vec3 fakePosC = glm::vec3(c->position.x, 0, c->position.z);
+		glm::vec3 fakePosC = glm::vec3(c->position.x + 8, 0, c->position.z + 8);
 
 		float distance = glm::distance(fakePos, fakePosC);
 
@@ -584,7 +584,7 @@ void Gameplay::UpdateChunks()
 
 			float angle = glm::degrees(glm::acos(glm::dot(glm::normalize(fakePos - fakePosC), glm::normalize(camera->cameraFront))));
 
-			if ((angle >= 25 || distance <= 16) && distance <= fog + 64)
+			if ((angle >= 25 || distance <= 32) && distance <= fog + 64)
 			{
 				if (!c->isRendered || c->pleaseRender)
 				{

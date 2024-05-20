@@ -917,9 +917,8 @@ Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3]
 				for (int k = 0; k < 3; k++) {
 					if (ingredients[j][k].type == 0)
 						continue;
-
-					if (needed[ingredients[j][k].type] < ingredients[j][k].count)
-						match = false;
+					if (ingredients[j][k].count >= needed[ingredients[j][k].type])
+						match = true;
 				}
 			}
 
