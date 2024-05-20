@@ -834,7 +834,7 @@ void Player::Draw()
 
 					float rander2 = (rand() % 1000);
 
-					if (rander2 > 650) // 35% chance
+					if (rander2 > 950) // 5% chance
 					{
 						if (selectedBlock->type == RUINED_DEBRIS)
 						{

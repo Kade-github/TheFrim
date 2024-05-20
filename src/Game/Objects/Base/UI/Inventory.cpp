@@ -627,9 +627,6 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 		if (s.id == 90) // can't move to output
 			return false;
 
-		if (sSlot.id == 90 && endItem->type != Data::ItemType::ITEM_NULL && !endItem->stackable) // can't move to output
-			return false;
-
 		if (s.id == 48) // fuel
 		{
 			if (startItem->type == Data::ItemType::ITEM_NULL)

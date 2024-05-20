@@ -337,9 +337,9 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	{
 		if (myData.bChunk.blocks[(int)w.x][(int)w.z][(int)w.y] == LEAVES)
 		{
-			// 20% chance of dropping an apple
+			// 5% chance of dropping an apple
 
-			if (rand() % 100 < 19)
+			if (rand() % 100 < 5)
 			{
 				Data::InventoryItem apple = { Data::ITEM_APPLE, 1 };
 				gp->dim->SpawnItem(glm::vec3(x, y, z), apple);
