@@ -550,11 +550,9 @@ void Player::Draw()
 						if (last != nullptr && last->breakProgress > selectedBlock->breakProgress)
 						{
 							last->breakProgress = 0;
-						}
-						else if (last != nullptr && last->breakProgress < selectedBlock->breakProgress)
-						{
 							lastBreakSfx = 0;
 						}
+	
 
 						// get the closest face
 
@@ -828,7 +826,7 @@ void Player::Draw()
 					int rander = (rand() % 1000);
 					FootstepSound(selectedBlock, std::to_string(lastBreakSfx + rander), 40);
 
-					lastBreakSfx = 100;
+					lastBreakSfx = 0;
 
 					breakCooldown = glfwGetTime();
 
