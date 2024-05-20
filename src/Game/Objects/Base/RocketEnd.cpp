@@ -211,21 +211,26 @@ void RocketEnd::Draw()
 			t->position.y = -y;
 		}
 
-		if (time > 120.5f && !takeScreen)
+		if (time > 120.5f)
 		{
-			takeScreen = true;
 			black->position.y = 0;
-			Game::instance->TakeScreenshot(WorldManager::instance->_path + "/screenshot.png");
 			logo->position.y = logo->height / 2;
 		}
 	}
 
-	if (MusicManager::GetInstance()->currentSong == "Assets/Music/cutscene/thesongthatlastedalifetime.mp3" && time > 124 && !switched && Game::instance->DidTakeScreenshot())
+	if (MusicManager::GetInstance()->currentSong == "Assets/Music/cutscene/thesongthatlastedalifetime.mp3" && time > 124)
 	{
-		switched = true;
-		MainMenu* mm = new MainMenu();
+		if (!takeScreen)
+		{
+			takeScreen = true;
+			Game::instance->TakeScreenshot(WorldManager::instance->_path + "/screenshot.png");
+		}
+		if (Game::instance->DidTakeScreenshot())
+		{
+			MainMenu* mm = new MainMenu();
 
-		Game::instance->SwitchScene(mm);
+			Game::instance->SwitchScene(mm);
+		}
 	}
 
 
