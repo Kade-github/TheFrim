@@ -428,10 +428,12 @@ void Data::Region::generateStructures()
 
 			int randomY = c.getHighestBlock(randomX, randomZ);
 
-			if (getRandom(0, 100) > 65) // 45% chance of it being under ground
-				randomY += getRandom(0, 60);
+			randomY -= 40;
 
-			if (getRandom(0, 1000) < 50) // 5% chance of a ruin
+			if (getRandom(0, 100) > 65)
+				randomY -= getRandom(0, 60);
+
+			if (getRandom(0, 1000) < 5)
 			{
 				struct_ruins.Create(c.x + randomX, c.z + randomZ, randomY, c, this);
 				madeRuin = true;
