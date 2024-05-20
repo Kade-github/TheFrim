@@ -54,7 +54,6 @@ RocketEnd::RocketEnd(glm::vec3 _pos) : GameObject(_pos)
 	}
 
 	black = new Sprite2D("Assets/Textures/MainMenu/background.png", glm::vec3(0, -1920, 0));
-	black->color = glm::vec4(0, 0, 0, 1);
 	black->width = creditCam->_w;
 	black->height = creditCam->_h;
 	black->tag_id = "b";
@@ -211,7 +210,7 @@ void RocketEnd::Draw()
 			t->position.y = -y;
 		}
 
-		if (time > 120.5f)
+		if (time > 120.003f)
 		{
 			black->position.y = 0;
 			logo->position.y = logo->height / 2;

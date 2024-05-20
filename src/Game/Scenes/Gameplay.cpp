@@ -33,6 +33,8 @@ void Gameplay::Create()
 
 	Game::instance->SetLockedCursor(true);
 
+	Hud::endSequence = false;
+
 	dim = new DroppedItemManager();
 
 	mm = new MobManager();
@@ -224,6 +226,7 @@ void Gameplay::Draw()
 		{
 			c2d->DrawDebugText("Recording block data (" + std::to_string(blockData.size()) + ")", glm::vec2(0, 24), 24);
 		}
+		c2d->DrawDebugText("Chunks (Drawn/Loaded): " + std::to_string(chunksRendered) + "/" + std::to_string(chunksLoaded), glm::vec2(0, 48), 24);
 	}
 
 	Chunk* currentChunk = wm->GetChunk(player->position.x, player->position.z);
@@ -554,6 +557,8 @@ void Gameplay::UpdateChunks()
 
 	int fog = (camera->cameraFar / 2) * Settings::instance->fogDistance;
 
+	float fov = Settings::instance->fov;
+
 	if (Settings::instance->fogDistance >= 2.0)
 		fog = 10000;
 
@@ -577,9 +582,9 @@ void Gameplay::UpdateChunks()
 				return;
 			}
 
-			float angle = camera->YawAngleTo(fakePosC);
+			float angle = glm::degrees(glm::acos(glm::dot(glm::normalize(fakePos - fakePosC), glm::normalize(camera->cameraFront))));
 
-			if ((angle <= 300 || distance <= 64) && distance <= fog + 64)
+			if ((angle >= 25 || distance <= 16) && distance <= fog + 64)
 			{
 				if (!c->isRendered || c->pleaseRender)
 				{
