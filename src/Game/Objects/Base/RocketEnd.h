@@ -11,11 +11,15 @@ class RocketEnd : public GameObject
 public:
 	bool creditsSong = false;
 	bool playedLift = false;
-
+	bool switched = false;
+	bool takeScreen = false;
 	CreditsReader cr;
 
 	Camera2D* creditCam;
 	std::vector<Text2D*> credits;
+
+	Sprite2D* black;
+	Sprite2D* logo;
 
 	Sprite3D* fire;
 

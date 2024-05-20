@@ -4,6 +4,7 @@
 #include "../../WorldManager.h"
 #include "../../LightingManager.h"
 #include "../../Scenes/Gameplay.h"
+#include "../../Scenes/MainMenu.h"
 
 RocketEnd::RocketEnd(glm::vec3 _pos) : GameObject(_pos)
 {
@@ -11,6 +12,11 @@ RocketEnd::RocketEnd(glm::vec3 _pos) : GameObject(_pos)
 	m.LoadUVMap("rocket_frim");
 	m.scale = glm::vec3(0.6f, 0.8f, 0.6f);
 	position += glm::vec3(0.5f, 0.0f, 0.5f);
+
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+	WorldManager::instance->SetPlayerPosition(gp->player->position);
+	WorldManager::instance->SaveWorldNow();
 
 	Camera* cam = Game::instance->GetCamera();
 
@@ -22,8 +28,6 @@ RocketEnd::RocketEnd(glm::vec3 _pos) : GameObject(_pos)
 	fire->height = 2;
 
 	fire->UpdateSprite();
-
-	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
 	creditCam = gp->credits;
 
@@ -48,6 +52,18 @@ RocketEnd::RocketEnd(glm::vec3 _pos) : GameObject(_pos)
 		t->center = true;
 		creditCam->AddObject(t);
 	}
+
+	black = new Sprite2D("Assets/Textures/MainMenu/background.png", glm::vec3(0, -1920, 0));
+	black->color = glm::vec4(0, 0, 0, 1);
+	black->width = creditCam->_w;
+	black->height = creditCam->_h;
+	black->tag_id = "b";
+	creditCam->AddObject(black);
+
+	logo = new Sprite2D("Assets/Textures/logo.png", glm::vec3(0, -600, 0));
+	logo->position.x = (creditCam->_w / 2) - (logo->width / 2);
+	logo->tag_id = "b";
+	creditCam->AddObject(logo);
 }
 
 void RocketEnd::Draw()
@@ -80,7 +96,7 @@ void RocketEnd::Draw()
 		cam->LookAt(position);
 		cam->SetDirection();
 	}
-	else if (!creditsSong && playing)
+	else if (!creditsSong && playing && MusicManager::GetInstance()->currentSong == "Assets/Music/cutscene/theend.mp3")
 	{
 		if (time < 4.72f)
 		{
@@ -159,7 +175,7 @@ void RocketEnd::Draw()
 			cam->SetDirection();
 		}
 	}
-	else
+	else if (creditsSong)
 	{
 		position += glm::vec3(0.0f, 10.0f * Game::instance->deltaTime, 0.0f);
 
@@ -181,7 +197,10 @@ void RocketEnd::Draw()
 
 		for(int i = 0; i < creditCam->objects.size(); i++)
 		{
-			Text2D* t = (Text2D*)creditCam->objects[i];
+			GameObject2D* t = (GameObject2D*)creditCam->objects[i];
+
+			if (t->tag_id == "b")
+				continue;
 
 			Credit& c = cr.credits[i];
 
@@ -191,6 +210,22 @@ void RocketEnd::Draw()
 
 			t->position.y = -y;
 		}
+
+		if (time > 120.5f && !takeScreen)
+		{
+			takeScreen = true;
+			black->position.y = 0;
+			Game::instance->TakeScreenshot(WorldManager::instance->_path + "/screenshot.png");
+			logo->position.y = logo->height / 2;
+		}
+	}
+
+	if (MusicManager::GetInstance()->currentSong == "Assets/Music/cutscene/thesongthatlastedalifetime.mp3" && time > 124 && !switched && Game::instance->DidTakeScreenshot())
+	{
+		switched = true;
+		MainMenu* mm = new MainMenu();
+
+		Game::instance->SwitchScene(mm);
 	}
 
 
