@@ -33,8 +33,8 @@ cmake -B build
 cmake --build build
 # Then copy the `Assets` folder into the `build` folder (along with some other binaries you might need!)
 cp ../Assets build/Assets -r
-cp bassLibrary/* build/Assets -r
-cp otherBinaries/* build/Assets -r
+cp bassLibrary/* build/ -r
+cp otherBinaries/* build/ -r
 ```
 
 # Binaries
