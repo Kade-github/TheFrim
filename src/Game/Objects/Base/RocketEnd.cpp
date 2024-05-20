@@ -171,6 +171,7 @@ void RocketEnd::Draw()
 		}
 		else if (time < 18.7f)
 		{
+			playedLift = false;
 			position += glm::vec3(0.0f, 10.0f * Game::instance->deltaTime, 0.0f);
 
 			float randX = ((rand() % 10) - 5) / 100.0f;
@@ -269,9 +270,9 @@ void RocketEnd::Draw()
 
 	if (playedLift)
 	{
+		fire->Draw();
 		fire3->Draw();
 		fire4->Draw();
-		fire->Draw();
 		fire2->Draw();
 
 		float dist = glm::distance(position, lightPos);
