@@ -550,8 +550,10 @@ void Player::Draw()
 						if (last != nullptr && last->breakProgress > selectedBlock->breakProgress)
 						{
 							last->breakProgress = 0;
+						}
+						else if (last != nullptr && last->breakProgress < selectedBlock->breakProgress)
+						{
 							lastBreakSfx = 0;
-							breakCooldown = 0;
 						}
 
 						// get the closest face
