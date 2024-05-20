@@ -648,7 +648,19 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 				return false;
 		}
 
-		ApplyMove(startItem, endItem);
+		if (sSlot.id == 90 && endItem->type != Data::ITEM_NULL && endItem->type != stored.type)
+		{
+			Data::InventoryItem temp = *endItem;
+			*endItem = stored;
+
+			*startItem = {};
+
+			player->playerData.GiveItem(temp);
+
+
+		}
+		else
+			ApplyMove(startItem, endItem);
 
 		if (s.id == 48 || s.id == 49 || sSlot.id == 48 || sSlot.id == 49)
 		{
@@ -675,6 +687,7 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 			if (player->selectedBlock != nullptr)
 				player->selectedBlock->data = furnace;
 		}
+
 	}
 	else if (startSlot != nullptr)
 	{

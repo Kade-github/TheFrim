@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.27)
 
 if (WIN32)
     # /ENTRY:mainCRTStartup keeps the same "main" function instead of requiring "WinMain"
-    set(SUBSYSTEM_LINKER_OPTIONS "/SUBSYSTEM:WINDOWS /ENTRY:mainCRTStartup")
+    set(SUBSYSTEM_LINKER_OPTIONS "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
 else()
     set(SUBSYSTEM_LINKER_OPTIONS "-mwindows")
 endif()
@@ -74,6 +74,8 @@ glad.c
 link_directories(bassLibrary)
 
 add_executable(TheFrim ${SOURCE_FILES} "Game/Objects/Base/Zombie.cpp")
+
+target_link_options(TheFrim PRIVATE ${SUBSYSTEM_LINKER_OPTIONS})
 
 set_target_properties(TheFrim PROPERTIES 
 VS_DEBUGGER_WORKING_DIRECTORY "${CMAKE_SOURCE_DIR}"

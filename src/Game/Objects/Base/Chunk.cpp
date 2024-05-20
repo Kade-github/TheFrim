@@ -333,7 +333,6 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	if (w.z > CHUNK_SIZE - 1)
 		return;
 
-	chunkMutex.lock();
 	if (id <= 0) // destroyed block
 	{
 		if (myData.bChunk.blocks[(int)w.x][(int)w.z][(int)w.y] == LEAVES)
@@ -352,7 +351,6 @@ void Chunk::ModifyBlock(float x, float y, float z, int id)
 	}
 	else
 		myData.placeBlock(w.x, w.y, w.z, id);
-	chunkMutex.unlock();
 
 	modified = true;
 
@@ -379,10 +377,8 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 	if (w.z > CHUNK_SIZE - 1)
 		return;
 
-	chunkMutex.lock();
 	myData.addBlockData(b->data, w.x, w.y, w.z);
 	myData.placeBlock(w.x, w.y, w.z, b->type);
-	chunkMutex.unlock();
 
 
 	modified = true;
@@ -1281,17 +1277,14 @@ void Chunk::UpdateChunk(int tick)
 
 	if (subChunks.size() == 0)
 		return;
-
 	chunkMutex.lock();
-	std::deque<subChunk> copy = subChunks;
-	chunkMutex.unlock();
-
-	for (int i = 0; i < copy.size(); i++)
+	for (int i = 0; i < subChunks.size(); i++)
 	{
-		subChunk& sbc = copy[i];
+		subChunk sbc = subChunks[i];
 
 		if (sbc.y == -1)
 			continue;
+
 		for (int x = 0; x < CHUNK_SIZE; x++)
 		{
 			for (int z = 0; z < CHUNK_SIZE; z++)
@@ -1299,17 +1292,19 @@ void Chunk::UpdateChunk(int tick)
 				Block* b = sbc.blocks[x][z];
 
 				if (b == nullptr)
+				{
 					continue;
+				}
 
 				if (!b->updateable)
+				{
 					continue;
+				}
 
 				b->Update(tick);
-
-				if (b->changedBlocks)
-					return;
 			}
 		}
 
 	}
+	chunkMutex.unlock();
 }

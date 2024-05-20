@@ -327,7 +327,7 @@ void Player::Draw()
 	if (shift)
 		sp = sp / 2;
 
-    bool hasLandedThisFrame = false;
+	bool hasLandedThisFrame = false;
 
 	float ourForward = 0;
 	float ourStrafe = 0;
@@ -362,7 +362,7 @@ void Player::Draw()
 				ourStrafe += sp;
 				headBop += 10.0f * Game::instance->deltaTime;
 				moving = true;
-			} 
+			}
 
 			if (glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_SPACE) == GLFW_PRESS && (isOnGround || inWater))
 			{
@@ -374,7 +374,7 @@ void Player::Draw()
 				downVelocity = jumpStrength;
 				if (topWater)
 					downVelocity = jumpStrength / 2;
-                hasLandedThisFrame = true;
+				hasLandedThisFrame = true;
 				isOnGround = false;
 			}
 
@@ -529,86 +529,82 @@ void Player::Draw()
 	{
 		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
-		if (c != nullptr)
+		if (c != nullptr && c->isLoaded && !c->isBeingLoaded)
 		{
-			subChunk& sb = c->GetSubChunk(ray.y);
-
-			if (sb.y != -1)
+			if (c->chunkMutex.try_lock())
 			{
+				subChunk& sb = c->GetSubChunk(ray.y);
 
-				glm::vec3 _world = c->WorldToChunk(ray);
-
-				Block* next = sb.getBlock(_world.x, _world.z);
-
-				if (selectedBlock != nullptr)
+				if (sb.y != -1)
 				{
-					if (next != nullptr && next->position != selectedBlock->position)
+
+					glm::vec3 _world = c->WorldToChunk(ray);
+
+					Block* last = selectedBlock;
+
+					selectedBlock = sb.getBlock(_world.x, _world.z);
+
+					if (selectedBlock != nullptr)
 					{
-						selectedBlock->breakProgress = 0;
-						lastBreakSfx = 0;
-					}
-				}
-				else
-				{
-					lastBreakSfx = 0;
-				}
 
-				if (next != nullptr)
-				{
-					selectedBlock = next;
+						if (last != nullptr && last->breakProgress > selectedBlock->breakProgress)
+							last->breakProgress = 0;
 
-					// get the closest face
+						// get the closest face
 
-					bool stop = false;
+						bool stop = false;
 
-					for (BlockFace f : selectedBlock->faces)
-					{
-						if (stop)
-							break;
-
-						float dist = 0;
-
-						if (f.vertices.size() == 0)
-							continue;
-
-						switch (f.type)
+						for (BlockFace f : selectedBlock->faces)
 						{
-						case 0:
-						case 1:
-							dist = abs(f.vertices[0].position.y - ray.y);
-							if (dist < 0.1f)
+							if (stop)
+								break;
+
+							float dist = 0;
+
+							if (f.vertices.size() == 0)
+								continue;
+
+							switch (f.type)
 							{
-								selectedFace = f;
-								stop = true;
+							case 0:
+							case 1:
+								dist = abs(f.vertices[0].position.y - ray.y);
+								if (dist < 0.1f)
+								{
+									selectedFace = f;
+									stop = true;
+								}
+								break;
+							case 2:
+							case 3:
+								dist = abs(f.vertices[0].position.x - ray.x);
+								if (dist < 0.1f)
+								{
+									selectedFace = f;
+									stop = true;
+								}
+								break;
+							case 4:
+							case 5:
+								dist = abs(f.vertices[0].position.z - ray.z);
+								if (dist < 0.1f)
+								{
+									selectedFace = f;
+									stop = true;
+								}
+								break;
 							}
-							break;
-						case 2:
-						case 3:
-							dist = abs(f.vertices[0].position.x - ray.x);
-							if (dist < 0.1f)
-							{
-								selectedFace = f;
-								stop = true;
-							}
-							break;
-						case 4:
-						case 5:
-							dist = abs(f.vertices[0].position.z - ray.z);
-							if (dist < 0.1f)
-							{
-								selectedFace = f;
-								stop = true;
-							}
-							break;
 						}
 					}
+					else
+						selectedFace = {};
 				}
 				else
 					selectedBlock = nullptr;
 
+
+				c->chunkMutex.unlock();
 			}
-			else
-				selectedBlock = nullptr;
 		}
 		else
 			selectedBlock = nullptr;
@@ -656,31 +652,31 @@ void Player::Draw()
 
 			switch (selectedBlock->soundType)
 			{
-				case S_GRASS:
-				case S_SAND:
-					if (StringTools::Contains(item.tag, "shovel"))
-					{
-						toughness *= item.breakingPower;
-						correctTool = true;
-					}
-					break;
-				case S_WOOD:
-					correctTool = true;
-
-					if (StringTools::Contains(item.tag, "axe"))
-						toughness *= item.breakingPower;
-					break;
-				case S_STONE:
-					if (StringTools::Contains(item.tag, "pick"))
-					{
-						toughness *= item.breakingPower;
-						correctTool = true;
-					}
-					break;
-				default:
+			case S_GRASS:
+			case S_SAND:
+				if (StringTools::Contains(item.tag, "shovel"))
+				{
 					toughness *= item.breakingPower;
 					correctTool = true;
-					break;
+				}
+				break;
+			case S_WOOD:
+				correctTool = true;
+
+				if (StringTools::Contains(item.tag, "axe"))
+					toughness *= item.breakingPower;
+				break;
+			case S_STONE:
+				if (StringTools::Contains(item.tag, "pick"))
+				{
+					toughness *= item.breakingPower;
+					correctTool = true;
+				}
+				break;
+			default:
+				toughness *= item.breakingPower;
+				correctTool = true;
+				break;
 			}
 
 			if (topWater)
@@ -691,56 +687,56 @@ void Player::Draw()
 				toughness = 1000.0f;
 				correctTool = true;
 			}
-            bool giveItem = true;
+			bool giveItem = true;
 
-            switch (selectedBlock->type)
-            {
-                case LEAVES:
-                    giveItem = false;
-                    break;
-                case TORCH:
-                    giveItem = true;
-                    break;
-            }
+			switch (selectedBlock->type)
+			{
+			case LEAVES:
+				giveItem = false;
+				break;
+			case TORCH:
+				giveItem = true;
+				break;
+			}
 
-            if (instantBreak)
-                giveItem = true;
+			if (instantBreak)
+				giveItem = true;
 
-            switch(selectedBlock->soundType)
-            {
-                case S_STONE:
-                    if (correctTool)
-                    {
-                        switch (selectedBlock->type)
-                        {
-                            case STONE:
-                            case COBBLESTONE:
-                                giveItem = item.breakingPower >= 2;
-                                break;
-                            case IRON_ORE:
-                                giveItem = item.breakingPower >= 4;
-                                break;
-                            case GOLD_ORE:
-                                giveItem = item.breakingPower >= 6;
-                                break;
-                            case DIAMOND_ORE:
-                                giveItem = item.breakingPower >= 6;
-                                break;
-                            case RUINED_DEBRIS:
-                                giveItem = item.breakingPower >= 2;
-                                break;
-                        }
-                    }
-                    break;
-            }
+			switch (selectedBlock->soundType)
+			{
+			case S_STONE:
+				if (correctTool)
+				{
+					switch (selectedBlock->type)
+					{
+					case STONE:
+					case COBBLESTONE:
+						giveItem = item.breakingPower >= 2;
+						break;
+					case IRON_ORE:
+						giveItem = item.breakingPower >= 4;
+						break;
+					case GOLD_ORE:
+						giveItem = item.breakingPower >= 6;
+						break;
+					case DIAMOND_ORE:
+						giveItem = item.breakingPower >= 6;
+						break;
+					case RUINED_DEBRIS:
+						giveItem = item.breakingPower >= 2;
+						break;
+					}
+				}
+				break;
+			}
 
-            if (!giveItem)
-                toughness *= 0.5f;
+			if (!giveItem)
+				toughness *= 0.5f;
 
 			if (!correctTool)
 				toughness *= 0.5f;
 
-			int p = std::max((int)(selectedBlock->breakProgress * 100),0);
+			int p = std::max((int)(selectedBlock->breakProgress * 100), 0);
 
 			if (lastBreakSfx == 0)
 			{
@@ -778,7 +774,7 @@ void Player::Draw()
 				lastBreakSfx = 75;
 			}
 
-            selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * toughness;
+			selectedBlock->breakProgress += (1.0f * Game::instance->deltaTime) * toughness;
 
 
 
@@ -855,7 +851,7 @@ void Player::Draw()
 
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
 
-	
+
 
 					selectedBlock = nullptr;
 				}
@@ -948,7 +944,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 	{
 		if (selectedBlock->isInteractable)
 		{
-			selectedBlock->OnInteract(); 
+			selectedBlock->OnInteract();
 			return;
 		}
 		glm::vec3 ray = position + (camera->cameraFront * 5.0f);
@@ -1036,7 +1032,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 					scene->hud->UpdateHotbar();
 				}
-				
+
 			}
 		}
 	}
@@ -1044,9 +1040,6 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 void Player::KeyPress(int key)
 {
-	if (Hud::GamePaused || Hud::endSequence)
-		return;
-
 	Gameplay* scene = (Gameplay*)Game::instance->currentScene;
 	Camera* c = Game::instance->GetCamera();
 	Data::InventoryItem item;

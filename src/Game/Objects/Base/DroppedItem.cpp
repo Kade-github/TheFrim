@@ -19,7 +19,7 @@ DroppedItem::DroppedItem(glm::vec3 _pos, Texture* t, Data::InventoryItem i) : En
 	sprite->src = t->spriteSheet.GetUVFlip(item.tag);
 
 	sprite->UpdateSprite();
-	
+	playSounds = false;
 	lifeTime = glfwGetTime();
 }
 
@@ -40,6 +40,9 @@ void DroppedItem::Draw()
 	sprite->angle = angle;
 
 	Entity::Draw();
+
+	if (inWater)
+		downVelocity += 10.0f * Game::instance->deltaTime;
 
 	Game::instance->shader->Bind();
 

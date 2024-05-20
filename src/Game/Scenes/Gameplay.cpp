@@ -268,8 +268,6 @@ void Gameplay::Draw()
 			c->DrawShadows();
 	}
 
-	player->Draw();
-	Scene::Draw();
 
 	// Draw chunks (transparent)
 
@@ -278,6 +276,9 @@ void Gameplay::Draw()
 		if (c->isRendered)
 			c->DrawTransparent();
 	}
+
+	player->Draw();
+	Scene::Draw();
 
 	if (showHud && !Hud::endSequence)
 	{

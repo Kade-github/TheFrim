@@ -36,6 +36,8 @@ public:
 	Block* selectedBlock = nullptr;
 	BlockFace selectedFace;
 
+	float lastBreakProg = 0;
+
 	bool noTarget = false;
 	bool shift = false;
 	glm::vec3 blockOnShift = glm::vec3(0, 0, 0);

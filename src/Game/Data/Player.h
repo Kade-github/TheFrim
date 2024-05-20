@@ -474,7 +474,7 @@ namespace Data {
 	};
 
 	struct Player {
-		float x = 0, y = -100, z = 0;
+		float x = 0.5, y = -100, z = 0.5;
 		float pitch = 0, yaw = 0;
 
 		uint8_t selectedSlot = 0;

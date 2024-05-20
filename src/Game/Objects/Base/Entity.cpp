@@ -49,6 +49,9 @@ void Entity::Footstep()
 
 void Entity::FootstepSound(Block* b, std::string append, float pitchAdd)
 {
+	if (!playSounds)
+		return;
+
 	float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
 
 	if (pitchAdd != 0)
@@ -384,23 +387,26 @@ void Entity::Draw()
 	else
 		inWater = topWater;
 
-	if (inWater && !waterSoundEntrance)
+	if (playSounds)
 	{
-		waterSoundEntrance = true;
+		if (inWater && !waterSoundEntrance)
+		{
+			waterSoundEntrance = true;
 
-		float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
+			float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
 
-		MusicManager::GetInstance()->PlaySFX("water_in", position, pitch, "enter");
+			MusicManager::GetInstance()->PlaySFX("water_in", position, pitch, "enter");
+		}
+		else if (!inWater && waterSoundEntrance)
+		{
+			waterSoundEntrance = false;
+
+			float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
+
+			MusicManager::GetInstance()->PlaySFX("water_out", position, pitch, "exit");
+		}
+
 	}
-	else if (!inWater && waterSoundEntrance)
-	{
-		waterSoundEntrance = false;
-
-		float pitch = 1.0f + ((rand() % 20) - 10) / 100.0f;
-
-		MusicManager::GetInstance()->PlaySFX("water_out", position, pitch, "exit");
-	}
-
 	if (glfwGetTime() - lightUpdate > 0.1)
 	{
 		lightUpdate = glfwGetTime();
@@ -500,7 +506,7 @@ void Entity::Draw()
 
 	if (currentChunk != nullptr)
 	{
-		int topBlock = currentChunk->GetHighestBlock(position.x, position.z, true);
+		int topBlock = currentChunk->GetHighestBlock(position.x, position.z);
 
 		if (position.y >= topBlock)
 		{
