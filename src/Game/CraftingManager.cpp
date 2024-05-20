@@ -918,7 +918,7 @@ Data::InventoryItem CraftingManager::Craft(Data::InventoryItem ingredients[3][3]
 					if (ingredients[j][k].type == 0)
 						continue;
 
-					if (!needed.contains(ingredients[j][k].type) || needed[ingredients[j][k].type] != ingredients[j][k].count)
+					if (needed[ingredients[j][k].type] < ingredients[j][k].count)
 						match = false;
 				}
 			}
