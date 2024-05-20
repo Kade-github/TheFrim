@@ -22,6 +22,9 @@ public:
 	Sprite2D* logo;
 
 	Sprite3D* fire;
+	Sprite3D* fire2;
+	Sprite3D* fire3;
+	Sprite3D* fire4;
 
 	glm::vec3 smoothPos;
 	glm::vec3 fakePos;

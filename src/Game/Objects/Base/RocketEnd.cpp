@@ -25,9 +25,35 @@ RocketEnd::RocketEnd(glm::vec3 _pos) : GameObject(_pos)
 
 	fire = new Sprite3D("Assets/Textures/rocket_burn.png", position);
 	fire->width = 1.25;
-	fire->height = 2;
+	fire->height = 1.4;
 
 	fire->UpdateSprite();
+
+	fire2 = new Sprite3D("Assets/Textures/rocket_burn.png", position);
+	fire2->width = 1.25;
+	fire2->height = 1.4;
+
+	fire2->UpdateSprite();
+
+	fire3 = new Sprite3D("Assets/Textures/rocket_burn.png", position);
+
+	fire3->width = 1.25;
+	fire3->height = 1.4;
+
+	fire3->rotateAxis = glm::vec3(0, 1, 0);
+	fire3->angle = 90;
+
+	fire3->UpdateSprite();
+
+	fire4 = new Sprite3D("Assets/Textures/rocket_burn.png", position);
+
+	fire4->width = 1.25;
+	fire4->height = 1.4;
+
+	fire4->rotateAxis = glm::vec3(0, 1, 0);
+	fire4->angle = 90;
+
+	fire4->UpdateSprite();
 
 	creditCam = gp->credits;
 
@@ -167,7 +193,7 @@ void RocketEnd::Draw()
 
 			fakePos = position + glm::vec3(randX, 0.0f, randZ);
 
-			glm::vec3 toPosition = position + glm::vec3(5.0f, -6.0f, 6.0f);
+			glm::vec3 toPosition = position + glm::vec3(3.0f, -2.0f, 2.0f);
 
 			cam->position = toPosition;
 			cam->LookAt(position);
@@ -186,7 +212,7 @@ void RocketEnd::Draw()
 
 		fakePos = position + glm::vec3(randX, 0.0f, randZ);
 
-		glm::vec3 toPosition = position + glm::vec3(5.0f, -6.0f, 6.0f);
+		glm::vec3 toPosition = position + glm::vec3(3.0f, -2.0f, 2.0f);
 
 		cam->position = toPosition;
 		cam->LookAt(position);
@@ -232,12 +258,21 @@ void RocketEnd::Draw()
 		}
 	}
 
-
-	fire->position = position - glm::vec3(0.0f, 1.9f, 0.0f);
+	// back
+	fire->position = position - glm::vec3(0.0, 1.42f, 0.6f);
+	// front
+	fire2->position = position - glm::vec3(0.0, 1.42f, -0.6f);
+	// left
+	fire3->position = position - glm::vec3(0.6f, 1.42f, 0.0);
+	// right
+	fire4->position = position - glm::vec3(-0.6f, 1.42f, 0.0);
 
 	if (playedLift)
 	{
+		fire3->Draw();
+		fire4->Draw();
 		fire->Draw();
+		fire2->Draw();
 
 		float dist = glm::distance(position, lightPos);
 
