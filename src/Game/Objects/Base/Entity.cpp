@@ -96,9 +96,9 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 	float toY = motion.y - down;
 
-	glm::vec3 diff = motion - position;
+	glm::vec3 diff = motion - (position - glm::vec3(0, 0.2, 0));
 
-	glm::vec3 rp = position;
+	glm::vec3 rp = position - glm::vec3(0, 0.2, 0);
 
 	rp.y -= down;
 
@@ -159,7 +159,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 		progress = 0;
 
-		ray = position;
+		ray = position - glm::vec3(0, 0.2, 0);
 		ray.y = toY; 
 
 		float _lastZ = motion.z;
@@ -233,6 +233,8 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		glm::vec3 ray = position;
 
 		ray.y = toY;
+		ray.x = (int)position.x + 0.5;
+		ray.z = (int)position.z - 0.5;
 
 		float toX = position.x;
 		float toZ = position.z;
@@ -242,6 +244,8 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		bool hit = false;
 
 		float progress = 0;
+
+		Camera* cam = Game::instance->GetCamera();
 
 		while (progress < 1)
 		{
@@ -256,7 +260,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 				break;
 			}
 
-			progress += 0.05;
+			progress += 0.1;
 		}
 
 		if (_lastY >= 0)
@@ -292,11 +296,13 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 
 	float progress = 0;
 
-	glm::vec3 ray = position;
+	glm::vec3 ray = position - glm::vec3(0, 0.2, 0);
 
-	glm::vec3 start = position;
+	glm::vec3 start = position - glm::vec3(0, 0.2, 0);
 
 	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+	Camera* cam = Game::instance->GetCamera();
 
 	std::vector<AI*> mobs = gp->mm->mobs;
 
@@ -330,6 +336,8 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 		}
 
 		progress += 0.05;
+
+		//cam->DrawDebugCube(ray, glm::vec3(0.05f));
 	}
 
 	return false;
@@ -458,6 +466,12 @@ void Entity::Draw()
 		motion += front * (forwardVelocity * Game::instance->deltaTime);
 
 		motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
+
+		if (shift && (int)motion.x != blockOnShift.x)
+			motion.x = preMotion.x;
+
+		if (shift && (int)motion.z != blockOnShift.z)
+			motion.z = preMotion.z;
 
 		if (isCreature)
 		{

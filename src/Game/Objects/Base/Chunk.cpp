@@ -574,7 +574,7 @@ void Chunk::RenderSubChunks()
 
 glm::vec3 Chunk::WorldToChunk(glm::vec3 pos)
 {
-	return glm::vec3((int)std::abs(pos.x - position.x), pos.y, (int)std::abs(pos.z - position.z));
+	return glm::vec3(std::abs(pos.x - position.x), pos.y, std::abs(pos.z - position.z));
 }
 
 

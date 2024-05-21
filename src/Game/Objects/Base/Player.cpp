@@ -217,6 +217,10 @@ void Player::Draw()
 	Camera* camera = Game::instance->GetCamera();
 	float p = camera->pitch;
 
+	bool wasShift = shift;
+
+	shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+
 	if (!_inInventory && !Hud::GamePaused)
 	{
 		glm::vec2 mousePos = Game::instance->GetCursorPos(false);
@@ -327,6 +331,10 @@ void Player::Draw()
 	if (shift)
 		sp = sp / 2;
 
+
+	if (!wasShift)
+		blockOnShift = glm::vec3((int)position.x, (int)position.y, (int)position.z);
+
 	bool hasLandedThisFrame = false;
 
 	float ourForward = 0;
@@ -404,8 +412,6 @@ void Player::Draw()
 			position.y -= 0.25f;
 
 		shadow->Draw();
-
-		camera->position = position;
 	}
 
 	if ((isOnGround || hasLandedThisFrame) && jumpedFrom > -1)
@@ -471,9 +477,28 @@ void Player::Draw()
 
 	if (!freeCam && !Hud::endSequence)
 	{
+		static float timer = 0;
 		glm::vec3 storedPos = position;
 
-		camera->position = storedPos;
+		glm::vec3 fr = camera->cameraFront;
+		fr.y = 0.25f;
+
+		if (!shift)
+		{
+			camera->position = storedPos;
+			timer = 0;
+		}
+		else
+		{
+			timer += 10 * Game::instance->deltaTime;
+
+			float perc = timer / 1.0f;
+
+			if (perc > 1)
+				perc = 1;
+
+			camera->position = glm::mix(storedPos, storedPos - glm::vec3(0, 0.15, 0), perc);
+		}
 		camera->position.y -= 0.1;
 	}
 
@@ -520,7 +545,7 @@ void Player::Draw()
 		camera->SetDirection();
 	}
 
-	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
+	glm::vec3 ray = camera->position + (camera->cameraFront * 5.0f);
 
 	AI* selectedEntity = nullptr;
 
@@ -952,7 +977,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			selectedBlock->OnInteract();
 			return;
 		}
-		glm::vec3 ray = position + (camera->cameraFront * 5.0f);
+		glm::vec3 ray = camera->position + (camera->cameraFront * 5.0f);
 		bool hit = RayTo(ray);
 		if (hit)
 		{

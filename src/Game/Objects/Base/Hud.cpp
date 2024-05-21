@@ -643,7 +643,7 @@ void Hud::Draw()
 
 	// update hand position
 
-	glm::vec3 finalPos = ((player->position + cam->cameraFront * 0.4f) - glm::vec3(0, 0.4, 0)) + (camRight * 0.25f);
+	glm::vec3 finalPos = ((cam->position + cam->cameraFront * 0.4f) - glm::vec3(0, 0.4, 0)) + (camRight * 0.25f);
 
 	glm::vec3 lerped = glm::vec3(std::lerp(hand->position.x, finalPos.x, 0.2f), std::lerp(hand->position.y, finalPos.y, 0.2f), std::lerp(hand->position.z, finalPos.z, 0.2f));
 

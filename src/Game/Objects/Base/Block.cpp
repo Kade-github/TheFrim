@@ -184,6 +184,9 @@ int Block::GetBreakTexture()
 
 glm::vec4 Block::GetBreakUV()
 {
+	if (t == nullptr)
+		return glm::vec4();
+
 	switch (GetBreakTexture())
 	{
 	case 0:
