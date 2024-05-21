@@ -556,7 +556,7 @@ void Player::Draw()
 	bool hit = RayToCustom(camera->position, ray, true);
 	if (hit)
 	{
-		camera->DrawDebugCube(ray - camera->cameraFront, glm::vec3(0.05f));
+		//camera->DrawDebugCube(ray - camera->cameraFront, glm::vec3(0.05f));
 		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 		if (c != nullptr && c->isLoaded && !c->isBeingLoaded)
