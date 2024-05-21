@@ -142,8 +142,6 @@ void Gameplay::Draw()
 		}
 	}
 
-
-
 	if (lastSecond < currentTime)
 	{
 		tps = ticks - lastTickSecond;
@@ -159,7 +157,6 @@ void Gameplay::Draw()
 	LightingManager::GetInstance()->SunColor();
 
 	wm->_world.sunAngle = LightingManager::GetInstance()->sun.angle;
-
 
 	if (LightingManager::GetInstance()->sun.angle >= 180) // night time
 	{
@@ -186,7 +183,6 @@ void Gameplay::Draw()
 
 	celestialMoon->position = camera->position + rotate(glm::vec3(0, 0, 8), glm::vec3(1, 0, 0), glm::radians(LightingManager::GetInstance()->sun.angle));
 	celestialMoon->angle = LightingManager::GetInstance()->sun.angle;
-
 
 	Game::instance->shader->Bind();
 
@@ -215,15 +211,6 @@ void Gameplay::Draw()
 		player->position.y = c->GetHighestBlock(player->position.x, player->position.z);
 	}
 
-	float realTPS = 0;
-
-	for (float tickTime : tickTimes)
-	{
-		realTPS += tickTime;
-	}
-
-	realTPS /= tickTimes.size();
-
 	if (c2d->debug)
 	{
 		c2d->DrawDebugText("Position: " + StringTools::ToTheDecimial(player->position.x, 2) + ", " + StringTools::ToTheDecimial(player->position.y, 2) + ", " + StringTools::ToTheDecimial(player->position.z, 2), glm::vec2(0, 0), 24);
@@ -251,8 +238,6 @@ void Gameplay::Draw()
 
 		celestialStars->Draw();
 	}
-
-
 
 	celestialSun->Draw();
 

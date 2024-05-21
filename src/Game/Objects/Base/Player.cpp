@@ -187,7 +187,7 @@ void Player::RenderBreak()
 
 Player::Player(glm::vec3 pos) : Entity(pos)
 {
-	speed = 0.7f;
+	speed = 0.4f;
 	glGenVertexArrays(1, &VAO);
 	glGenBuffers(1, &VBO);
 	glGenBuffers(1, &EBO);
@@ -552,7 +552,7 @@ void Player::Draw()
 							last->breakProgress = 0;
 							lastBreakSfx = 0;
 						}
-	
+
 
 						// get the closest face
 
@@ -834,7 +834,7 @@ void Player::Draw()
 
 					float rander2 = (rand() % 1000);
 
-					if (rander2 > 950) // 5% chance
+					if (rander2 > 850) // 20% chance
 					{
 						if (selectedBlock->type == RUINED_DEBRIS)
 						{
@@ -891,6 +891,7 @@ void Player::Draw()
 
 				RenderBreak();
 			}
+
 		}
 		else if (selectedBlock != nullptr)
 		{

@@ -152,7 +152,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 				break;
 			}
 
-			progress += 0.1;
+			progress += 0.05;
 		}
 
 		// second raycast (z axis)
@@ -185,7 +185,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 				break;
 			}
 
-			progress += 0.1;
+			progress += 0.05;
 		}
 
 		motion = glm::vec3(_lastX, motion.y, _lastZ);
@@ -256,7 +256,7 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 				break;
 			}
 
-			progress += 0.1;
+			progress += 0.05;
 		}
 
 		if (_lastY >= 0)

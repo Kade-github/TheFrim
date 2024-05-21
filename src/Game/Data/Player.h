@@ -539,7 +539,7 @@ namespace Data {
 			return false;
 		}
 
-		MSGPACK_DEFINE_ARRAY(x, y, z, pitch, yaw, selectedSlot, health, inventory);
+		MSGPACK_DEFINE_ARRAY(x, y, z, pitch, yaw, selectedSlot, health, inventory, armor);
 	};
 }
 

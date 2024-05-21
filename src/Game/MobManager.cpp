@@ -63,7 +63,7 @@ void MobManager::Update()
 	Camera* cam = Game::instance->GetCamera();
 
 	// spawn mobs around player
-	if (glfwGetTime() - lastWave > 30 && mobs.size() < 45 && !Hud::endSequence)
+	if (glfwGetTime() - lastWave > 30 && mobs.size() < 125 && !Hud::endSequence)
 	{
 		lastWave = glfwGetTime();
 
@@ -112,7 +112,7 @@ void MobManager::Update()
 							CreateMob(AI_Type::TZombie, glm::vec3(pos.x + randomX, sbc.y, pos.z + randomZ));
 					}
 				}
-				else if (r < 18)
+				else if (r < 32)
 				{
 					float distance = glm::distance(playerPos, pos);
 
@@ -131,7 +131,7 @@ void MobManager::Update()
 
 					int lightLevel = LightingManager::GetInstance()->GetLightLevel(glm::vec3(c->position.x + randomX, highest, c->position.z + randomZ));
 
-					if (lightLevel < 5)
+					if (lightLevel < 3)
 						continue;
 
 
@@ -146,14 +146,15 @@ void MobManager::Update()
 
 	for (AI* mob : mobs)
 	{
-		float angle = cam->YawAngleTo(mob->position);
 
-		if (angle > 260 && glfwGetTime() - mob->lastSeen > 140) // not visible
+		float dist = glm::distance(playerPos, mob->position);
+
+		if (dist > 64 && glfwGetTime() - mob->lastSeen > 60) // not visible
 		{
 			RemoveMob(mob);
 			break;
 		}
-		else if (angle > 260)
+		else
 			mob->lastSeen = glfwGetTime();
 
 		if (mob->dead)

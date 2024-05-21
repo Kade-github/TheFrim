@@ -180,7 +180,7 @@ void Data::World::parseSeed()
 	staticSeed = seedNum;
 
 	if (waterLevel == -1)
-		waterLevel = getRandom(80, 125);
+		waterLevel = getRandom(65, 90);
 
 	staticWaterLevel = waterLevel;
 
@@ -297,7 +297,7 @@ void Data::Chunk::placeStone(int x, int y, int z, float multiplier)
 	{
 		placeBlock(x, y, z, COAL_ORE);
 	}
-	else if (ironNoise >= 0.5 && amountOfBlockInRadius(x, y, z, IRON_ORE, 16) < 4)
+	else if (ironNoise >= 0.4 && amountOfBlockInRadius(x, y, z, IRON_ORE, 16) < 4)
 		placeBlock(x, y, z, IRON_ORE);
 	else if (diamondNoise >= 0.5 && y <= 40 && amountOfBlockInRadius(x, y, z, DIAMOND_ORE, 24) < 4)
 		placeBlock(x, y, z, DIAMOND_ORE);
@@ -434,12 +434,12 @@ void Data::Region::generateStructures()
 
 			int randomY = c.getHighestBlock(randomX, randomZ);
 
-			randomY -= 25;
+			randomY -= 2;
 
-			if (getRandom(0, 100) > 65)
+			if (getRandom(0, 100) > 85)
 				randomY -= getRandom(0, 60);
 
-			if (getRandom(0, 1000) < 25)
+			if (getRandom(0, 1000) < 200)
 			{
 				struct_ruins.Create(c.x + randomX, c.z + randomZ, randomY, c, this);
 				madeRuin = true;

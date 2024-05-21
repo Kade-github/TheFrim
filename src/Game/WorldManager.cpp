@@ -1,4 +1,4 @@
-#include "WorldManager.h"
+#include "Scenes/Gameplay.h"
 #include <Game.h>
 #include <fstream>
 #include <Helpers/StringTools.h>
@@ -354,24 +354,14 @@ void WorldManager::SaveWorld()
 
 Chunk* WorldManager::GetChunk(float x, float z)
 {
-	if (!isRegionLoaded(x, z))
-		return nullptr;
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-	Region& r = GetRegion(x, z);
-
-	if (r.chunks.size() == 0)
-		return nullptr;
-
-
+	for (auto&& c : gp->allChunks)
 	{
-		for (auto&& c : r.chunks)
+		if (c->IsInChunk(x, z))
 		{
-			if (c->IsInChunk(x, z))
-			{
-				return c;
-			}
+			return c;
 		}
-
 	}
 
 	return nullptr;
@@ -380,15 +370,17 @@ Chunk* WorldManager::GetChunk(float x, float z)
 
 Data::Chunk WorldManager::GetChunkData(float x, float z)
 {
-	if (!isRegionLoaded(x, z))
-		return {};
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
-	Region& r = GetRegion(x, z);
+	for (auto&& c : gp->allChunks)
+	{
+		if (c->IsInChunk(x, z))
+		{
+			return c->GetChunkData();
+		}
+	}
 
-	if (r.chunks.empty())
-		return {};
-
-	return r.GetChunkData(x, z);
+	return {};
 }
 
 glm::vec3 WorldManager::GetPlayerPosition()

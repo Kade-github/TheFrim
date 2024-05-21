@@ -652,7 +652,16 @@ bool Inventory::SwitchItem(glm::vec3 from, glm::vec3 to, bool one)
 
 			*startItem = {};
 
-			player->playerData.GiveItem(temp);
+			if (!player->playerData.GiveItem(temp))
+			{
+				// drop item
+
+				Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+				Camera* c = Game::instance->GetCamera();
+
+				gp->dim->SpawnItem(player->position + c->cameraFront, c->cameraFront, temp);
+			}
 
 
 		}
