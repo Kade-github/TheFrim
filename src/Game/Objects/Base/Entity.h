@@ -19,6 +19,9 @@ public:
 
 	bool shift = false;
 	glm::vec3 blockOnShift = glm::vec3(0, 0, 0);
+	glm::vec3 lastFrameMotion = glm::vec3(0, 0, 0);
+	glm::vec3 lastLastFrameMotion = glm::vec3(0, 0, 0);
+	glm::vec3 lastFootstep = glm::vec3(0, 0, 0);
 
 	int lightLevel = 10;
 
@@ -32,6 +35,8 @@ public:
 	float speed = 9.0f;
 
 	bool tiny = false;
+
+	bool didFall = false;
 
 	float downVelocity = 0;
 	float forwardVelocity = 0;
@@ -54,6 +59,7 @@ public:
 	void CheckCollision(glm::vec3& motion, float down);
 	void CheckVerticalCollision(glm::vec3& motion);
 
+	bool RayToCustom(glm::vec3 start, glm::vec3& to, bool inside = false);
 	bool RayTo(glm::vec3& to, bool inside = false);
 	bool RayToIncludeWater(glm::vec3& to, bool inside = false);
 

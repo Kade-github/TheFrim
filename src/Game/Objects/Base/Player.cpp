@@ -217,7 +217,12 @@ void Player::Draw()
 	Camera* camera = Game::instance->GetCamera();
 	float p = camera->pitch;
 
-	//shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	bool wasShift = shift;
+
+	shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+
+	if (!wasShift)
+		blockOnShift.y = -1000;
 
 	if (!_inInventory && !Hud::GamePaused)
 	{
@@ -469,10 +474,10 @@ void Player::Draw()
 	if (!freeCam && !Hud::endSequence)
 	{
 		static float timer = 0;
-		glm::vec3 storedPos = position;
+		glm::vec3 storedPos = position - (front * 0.1f);
 
-		glm::vec3 fr = camera->cameraFront;
-		fr.y = 0.25f;
+		glm::vec3 fr = front * 1.1f;
+		fr.y = 0.2f;
 
 		glm::vec3 shiftPos = position - glm::vec3(0, 0.15, 0) - fr;
 
@@ -481,7 +486,7 @@ void Player::Draw()
 			if (timer > 0)
 				timer -= 10 * Game::instance->deltaTime;
 
-			float perc = timer / 1.0f;
+			float perc = timer / 4.0f;
 
 			camera->position = glm::mix(storedPos, shiftPos, perc);
 		}
@@ -490,7 +495,7 @@ void Player::Draw()
 			if (timer < 1.0f)
 				timer += 10 * Game::instance->deltaTime;
 
-			float perc = timer / 1.0f;
+			float perc = timer / 4.0f;
 
 			if (perc > 1)
 				perc = 1;
@@ -541,15 +546,17 @@ void Player::Draw()
 		}
 
 		camera->SetDirection();
+		SetDirection();
 	}
 
-	glm::vec3 ray = camera->position + (camera->cameraFront * 5.0f);
+	glm::vec3 ray = position + (camera->cameraFront * 5.0f);
 
 	AI* selectedEntity = nullptr;
 
-	bool hit = RayTo(ray, true);
+	bool hit = RayToCustom(camera->position, ray, true);
 	if (hit)
 	{
+		camera->DrawDebugCube(ray - camera->cameraFront, glm::vec3(0.05f));
 		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
 
 		if (c != nullptr && c->isLoaded && !c->isBeingLoaded)
@@ -975,8 +982,8 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			selectedBlock->OnInteract();
 			return;
 		}
-		glm::vec3 ray = camera->position + (camera->cameraFront * 5.0f);
-		bool hit = RayTo(ray);
+		glm::vec3 ray = position + (camera->cameraFront * 5.0f);
+		bool hit = RayToCustom(camera->position, ray);
 		if (hit)
 		{
 			float x = ray.x;
@@ -990,7 +997,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			if (type > 0 && type != WATER)
 				return;
 
-			if ((int)x == (int)camera->position.x && (int)z == (int)camera->position.z && (y == (int)camera->position.y || y == (int)camera->position.y - 1))
+			if ((int)x == (int)position.x && (int)z == (int)position.z && (y == (int)position.y || y == (int)position.y - 1))
 				return;
 
 			if (c != nullptr)

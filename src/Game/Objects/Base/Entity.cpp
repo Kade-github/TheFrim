@@ -27,8 +27,11 @@ void Entity::Footstep()
 
 	int y = (int)position.y - 2;
 
-	if (c->DoesBlockExist(position.x, y, position.z))
+	glm::vec3 block = glm::vec3(position.x, y, position.z);
+
+	if (c->DoesBlockExist(position.x, y, position.z) && lastFootstep != block)
 	{
+		lastFootstep = block;
 		subChunk& sb = c->GetSubChunk(y);
 
 		if (sb.y == -1)
@@ -289,6 +292,64 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 	}
 }
 
+bool Entity::RayToCustom(glm::vec3 s, glm::vec3& to, bool inside)
+{
+	glm::vec3 diff = to - position;
+
+	float sum = diff.x + diff.y + diff.z;
+
+	if (sum == 0)
+		return false;
+
+	float progress = 0;
+
+	glm::vec3 ray = s;
+
+	glm::vec3 start = s;
+
+	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
+
+	Camera* cam = Game::instance->GetCamera();
+
+	std::vector<AI*> mobs = gp->mm->mobs;
+
+	while (progress < 1)
+	{
+		glm::vec3 lastRay = ray;
+		ray = start + (diff * progress);
+		if (inside)
+		{
+			lastRay = ray;
+
+			for (int i = 0; i < mobs.size(); i++)
+			{
+				if (mobs[i]->IsPositionInMe(ray))
+				{
+					to = lastRay;
+					return false;
+				}
+			}
+		}
+		Chunk* c = WorldManager::instance->GetChunk(ray.x, ray.z);
+
+		if (c != nullptr)
+		{
+			int type = c->GetBlock(ray.x, ray.y, ray.z);
+			if (type > 0 && type != WATER)
+			{
+				to = lastRay;
+				return true;
+			}
+		}
+
+		progress += 0.01;
+
+		//cam->DrawDebugCube(ray, glm::vec3(0.02f));
+	}
+
+	return false;
+}
+
 bool Entity::RayTo(glm::vec3& to, bool inside)
 {
 	glm::vec3 diff = to - position;
@@ -300,9 +361,9 @@ bool Entity::RayTo(glm::vec3& to, bool inside)
 
 	float progress = 0;
 
-	glm::vec3 ray = position - glm::vec3(0, 0.2, 0);
+	glm::vec3 ray = position;
 
-	glm::vec3 start = position - glm::vec3(0, 0.2, 0);
+	glm::vec3 start = position;
 
 	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
@@ -478,13 +539,10 @@ void Entity::Draw()
 		if (forwardVelocity < -sped / Game::instance->deltaTime)
 			forwardVelocity = -sped / Game::instance->deltaTime;
 
-		bool wouldHaveFallen = motion.y < blockOnShift.y;
-
 
 		motion += front * (forwardVelocity * Game::instance->deltaTime);
 
 		motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
-
 
 		if (isCreature)
 		{
@@ -502,18 +560,18 @@ void Entity::Draw()
 			CheckCollision(motion, 0);
 		}
 
+		bool wouldHaveFallen = motion.y < blockOnShift.y;
+
+
 		if (wouldHaveFallen && shift)
 		{
 			motion.y = blockOnShift.y;
 
-			if ((int)motion.x != blockOnShift.x)
-				motion.x = preMotion.x;
-
-			if ((int)motion.z != blockOnShift.z)
-				motion.z = preMotion.z;
+			motion.x = lastLastFrameMotion.x;
+			motion.z = lastLastFrameMotion.z;
 		}
 
-		if (shift)
+		if (shift && !wouldHaveFallen)
 			blockOnShift = glm::vec3((int)motion.x, motion.y, (int)motion.z);
 
 		// check if motion is NaN
@@ -522,7 +580,8 @@ void Entity::Draw()
 			motion = preMotion;
 
 		position = motion;
-
+		lastLastFrameMotion = lastFrameMotion;
+		lastFrameMotion = motion;
 
 		if (forwardVelocity != 0)
 			forwardVelocity *= 0.94;
