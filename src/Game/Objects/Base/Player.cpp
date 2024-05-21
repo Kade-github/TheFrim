@@ -217,9 +217,7 @@ void Player::Draw()
 	Camera* camera = Game::instance->GetCamera();
 	float p = camera->pitch;
 
-	bool wasShift = shift;
-
-	shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	//shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 
 	if (!_inInventory && !Hud::GamePaused)
 	{
@@ -327,13 +325,6 @@ void Player::Draw()
 
 	if (inWater)
 		sp = speed / 2;
-
-	if (shift)
-		sp = sp / 2;
-
-
-	if (!wasShift)
-		blockOnShift = glm::vec3((int)position.x, (int)position.y, (int)position.z);
 
 	bool hasLandedThisFrame = false;
 
@@ -483,21 +474,28 @@ void Player::Draw()
 		glm::vec3 fr = camera->cameraFront;
 		fr.y = 0.25f;
 
+		glm::vec3 shiftPos = position - glm::vec3(0, 0.15, 0) - fr;
+
 		if (!shift)
 		{
-			camera->position = storedPos;
-			timer = 0;
+			if (timer > 0)
+				timer -= 10 * Game::instance->deltaTime;
+
+			float perc = timer / 1.0f;
+
+			camera->position = glm::mix(storedPos, shiftPos, perc);
 		}
 		else
 		{
-			timer += 10 * Game::instance->deltaTime;
+			if (timer < 1.0f)
+				timer += 10 * Game::instance->deltaTime;
 
 			float perc = timer / 1.0f;
 
 			if (perc > 1)
 				perc = 1;
 
-			camera->position = glm::mix(storedPos, storedPos - glm::vec3(0, 0.15, 0), perc);
+			camera->position = glm::mix(storedPos, shiftPos, perc);
 		}
 		camera->position.y -= 0.1;
 	}
@@ -992,7 +990,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 			if (type > 0 && type != WATER)
 				return;
 
-			if ((int)x == (int)position.x && (int)z == (int)position.z && (y == (int)position.y || y == (int)position.y - 1))
+			if ((int)x == (int)camera->position.x && (int)z == (int)camera->position.z && (y == (int)camera->position.y || y == (int)camera->position.y - 1))
 				return;
 
 			if (c != nullptr)

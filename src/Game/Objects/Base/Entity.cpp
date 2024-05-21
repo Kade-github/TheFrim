@@ -461,21 +461,30 @@ void Entity::Draw()
 
 		CheckVerticalCollision(motion);
 
-		if (strafeVelocity > speed / Game::instance->deltaTime)
-			strafeVelocity = speed / Game::instance->deltaTime;
+		float sped = speed;
 
-		if (strafeVelocity < -speed / Game::instance->deltaTime)
-			strafeVelocity = -speed / Game::instance->deltaTime;
+		if (shift)
+			sped /= 4;
+
+		if (strafeVelocity > sped / Game::instance->deltaTime)
+			strafeVelocity = sped / Game::instance->deltaTime;
+
+		if (strafeVelocity < -sped / Game::instance->deltaTime)
+			strafeVelocity = -sped / Game::instance->deltaTime;
+
+		if (forwardVelocity > sped / Game::instance->deltaTime)
+			forwardVelocity = sped / Game::instance->deltaTime;
+
+		if (forwardVelocity < -sped / Game::instance->deltaTime)
+			forwardVelocity = -sped / Game::instance->deltaTime;
+
+		bool wouldHaveFallen = motion.y < blockOnShift.y;
+
 
 		motion += front * (forwardVelocity * Game::instance->deltaTime);
 
 		motion += glm::normalize(glm::cross(front, up)) * (strafeVelocity * Game::instance->deltaTime);
 
-		if (shift && (int)motion.x != blockOnShift.x)
-			motion.x = preMotion.x;
-
-		if (shift && (int)motion.z != blockOnShift.z)
-			motion.z = preMotion.z;
 
 		if (isCreature)
 		{
@@ -492,6 +501,20 @@ void Entity::Draw()
 		{
 			CheckCollision(motion, 0);
 		}
+
+		if (wouldHaveFallen && shift)
+		{
+			motion.y = blockOnShift.y;
+
+			if ((int)motion.x != blockOnShift.x)
+				motion.x = preMotion.x;
+
+			if ((int)motion.z != blockOnShift.z)
+				motion.z = preMotion.z;
+		}
+
+		if (shift)
+			blockOnShift = glm::vec3((int)motion.x, motion.y, (int)motion.z);
 
 		// check if motion is NaN
 
