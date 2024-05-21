@@ -240,8 +240,8 @@ void Entity::CheckVerticalCollision(glm::vec3& motion)
 		glm::vec3 ray = position;
 
 		ray.y = toY;
-		ray.x = (int)position.x + 0.5;
-		ray.z = (int)position.z - 0.5;
+		ray.x = position.x;
+		ray.z = position.z;
 
 		float toX = position.x;
 		float toZ = position.z;

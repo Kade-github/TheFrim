@@ -3,8 +3,6 @@ cmake_minimum_required(VERSION 3.27)
 if (WIN32)
     # /ENTRY:mainCRTStartup keeps the same "main" function instead of requiring "WinMain"
     set(SUBSYSTEM_LINKER_OPTIONS "/SUBSYSTEM:WINDOWS" "/ENTRY:mainCRTStartup")
-else()
-    set(SUBSYSTEM_LINKER_OPTIONS "-mwindows")
 endif()
 
 project(

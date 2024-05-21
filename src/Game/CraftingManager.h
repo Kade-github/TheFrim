@@ -6,19 +6,6 @@
 
 struct CraftingRecipe
 {
-	CraftingRecipe(Data::InventoryItem result, Data::InventoryItem ingredients[3][3])
-	{
-		this->result = result;
-
-		for (int x = 0; x < 3; x++)
-		{
-			for (int y = 0; y < 3; y++)
-			{
-				this->ingredients[x][y] = ingredients[x][y];
-			}
-		}
-	}
-
 	Data::InventoryItem result;
 	Data::InventoryItem ingredients[3][3];
 
