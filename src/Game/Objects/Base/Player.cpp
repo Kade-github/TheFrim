@@ -221,6 +221,14 @@ void Player::Draw()
 
 	shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 
+	if (shiftCancel && shift)
+	{
+		if (!isOnGround)
+			shift = false;
+		else
+			shiftCancel = false;
+	}
+
 	if (!wasShift)
 		blockOnShift.y = -1000;
 
@@ -884,6 +892,7 @@ void Player::Draw()
 					}
 
 					c->ModifyBlock(_world.x, _world.y, _world.z, 0);
+					shiftCancel = true;
 
 
 
@@ -977,7 +986,7 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 
 	if (button == GLFW_MOUSE_BUTTON_RIGHT && selectedBlock != nullptr)
 	{
-		if (selectedBlock->isInteractable)
+		if (selectedBlock->isInteractable && !shift)
 		{
 			selectedBlock->OnInteract();
 			return;

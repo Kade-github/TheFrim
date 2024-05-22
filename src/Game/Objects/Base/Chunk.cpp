@@ -371,10 +371,10 @@ void Chunk::PlaceBlock(float x, float y, float z, Block* b)
 	if (z >= 0 && z < CHUNK_SIZE - 1)
 		w.z = (int)z;
 
-	if (w.x > CHUNK_SIZE - 1)
+	if ((int)w.x > CHUNK_SIZE - 1)
 		return;
 
-	if (w.z > CHUNK_SIZE - 1)
+	if ((int)w.z > CHUNK_SIZE - 1)
 		return;
 
 	myData.addBlockData(b->data, w.x, w.y, w.z);

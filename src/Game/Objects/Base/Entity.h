@@ -17,6 +17,7 @@ public:
 	glm::vec3 front = glm::vec3(0.0f, 0.0f, -1.0f);
 	glm::vec3 up = glm::vec3(0.0f, 1.0f, 0.0f);
 
+	bool shiftCancel = false;
 	bool shift = false;
 	glm::vec3 blockOnShift = glm::vec3(0, 0, 0);
 	glm::vec3 lastFrameMotion = glm::vec3(0, 0, 0);

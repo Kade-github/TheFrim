@@ -152,7 +152,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			if (hit)
 			{
-				progress -= 0.5;
+				progress -= 25 * Game::instance->deltaTime;
 				_lastX = rp.x + (diff.x * progress);
 				break;
 			}
@@ -187,7 +187,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			if (hit)
 			{
-				progress -= 0.5;
+				progress -= 25 * Game::instance->deltaTime;
 				_lastZ = rp.z + (diff.z * progress);
 				break;
 			}
@@ -562,6 +562,11 @@ void Entity::Draw()
 
 		bool wouldHaveFallen = motion.y < blockOnShift.y;
 
+		if ((downVelocity > 0) && shift && !shiftCancel)
+		{
+			shift = false;
+			shiftCancel = true;
+		}
 
 		if (wouldHaveFallen && shift)
 		{
