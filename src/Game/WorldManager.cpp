@@ -41,19 +41,25 @@ std::vector<Data::World> WorldManager::GetWorlds()
 
 			zstr::ifstream is_p(path + "/world.frim", std::ios::binary);
 
-			std::stringstream buffer;
+            try {
+                std::stringstream buffer;
 
-			buffer << is_p.rdbuf();
+                buffer << is_p.rdbuf();
 
-			msgpack::unpacked upd = msgpack::unpack(buffer.str().data(), buffer.str().size());
+                msgpack::unpacked upd = msgpack::unpack(buffer.str().data(), buffer.str().size());
 
-			is_p.close();
+                is_p.close();
 
-			upd.get().convert(_world);
+                upd.get().convert(_world);
 
-			_world._path = path;
+                _world._path = path;
 
-			worlds.push_back(_world);
+                worlds.push_back(_world);
+            }
+            catch (const std::exception& e)
+            {
+                Game::instance->log->Write("Error loading world: " + path + " - " + e.what());
+            }
 		}
 	}
 
