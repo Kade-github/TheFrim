@@ -310,7 +310,7 @@ void Camera2D::Draw()
 
 		format = StringTools::ToTheDecimial(memUsage, 2);
 
-		DrawDebugText("Memory Usage: " + format + "MB", glm::vec2(4, _h - 52), 24);
+		DrawDebugText("Memory Allocated: " + format + "MB", glm::vec2(4, _h - 52), 24);
 	}
 
 	UpdateFramebuffer();

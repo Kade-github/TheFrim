@@ -33,11 +33,6 @@ public:
 	float length = 0.0f;
 	float pitch = 1.0f;
 
-	~Channel()
-	{
-		Free();
-	}
-
 	Channel(std::string path, std::string _name, bool autoFree = false) {
 
 		if (path == "NaA")
@@ -274,22 +269,7 @@ public:
 	}
 
 
-	void Free()
-	{
-		if (isFreed)
-			return;
-
-		if (IsLoaded())
-		{
-			RemoveFXHandles();
-			BASS_ChannelStop(id);
-			BASS_StreamFree(id);
-
-
-		}
-
-		id = -1;
-	}
+	void Free();
 };
 
 class AudioManager {
@@ -339,6 +319,7 @@ public:
 					break;
 				}
 				channels.erase(channels.begin() + i);
+				c->Free();
 				delete c;
 				break;
 			}
