@@ -282,8 +282,10 @@ void Camera2D::Draw()
 		return;
 
 	static float lT = 0;
+    static int averagedTime = 0;
 	static int framesDone = 0;
 	static float fps = 0;
+    static float lowestFPS = 0;
 
 	float ct = glfwGetTime();
 
@@ -295,6 +297,16 @@ void Camera2D::Draw()
 	}
 	else
 		fps = framesDone / (ct - lT);
+    averagedTime++;
+
+    if (fps < lowestFPS || lowestFPS == 0)
+        lowestFPS = fps;
+
+    if (averagedTime > 25)
+    {
+        averagedTime = 0;
+        lowestFPS = fps;
+    }
 
 	framesDone++;
 
@@ -304,13 +316,17 @@ void Camera2D::Draw()
 
 		DrawDebugText("FPS: " + format, glm::vec2(4, _h - 28), 24);
 
+        std::string lowestFromat = StringTools::ToTheDecimial(lowestFPS, 0);
+
+        DrawDebugText("Lowest FPS: " + lowestFromat, glm::vec2(4, _h - 52), 24);
+
 		size_t memoryUsageBytes = getCurrentRSS();
 
 		float memUsage = memoryUsageBytes / 1024.0f / 1024.0f;
 
 		format = StringTools::ToTheDecimial(memUsage, 2);
 
-		DrawDebugText("Memory Allocated: " + format + "MB", glm::vec2(4, _h - 52), 24);
+		DrawDebugText("Memory Allocated: " + format + "MB", glm::vec2(4, _h - 76), 24);
 	}
 
 	UpdateFramebuffer();

@@ -578,7 +578,10 @@ void Data::Ruins::Create(int x, int z, int y, Data::Chunk& c, Data::Region* r)
 
 	for (BlueprintBlock& block : b.blocks)
 	{
-		float realY = y - block.y;
-		r->freePlace(_x + block.x, realY, _z + block.z, block.type);
+		int realY = y - block.y;
+        int _xx = _x + block.x;
+        int _zz = _z + block.z;
+
+		r->freePlace(_xx, realY, _zz, block.type);
 	}
 }
