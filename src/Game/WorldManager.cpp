@@ -58,7 +58,7 @@ std::vector<Data::World> WorldManager::GetWorlds()
             }
             catch (const std::exception& e)
             {
-                Game::instance->log->Write("Error loading world: " + path + " - " + e.what());
+                Game::instance->log->Write("Error loading world: " + path + " - " + e.what() + " | It's probably corrupted.");
             }
 		}
 	}
