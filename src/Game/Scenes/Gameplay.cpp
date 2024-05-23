@@ -201,6 +201,7 @@ void Gameplay::Draw()
 	Game::instance->shader->SetUniform1f("lightLevel", 10.0f);
 	Game::instance->shader->SetUniform1f("redness", 0.0f);
 	Game::instance->shader->SetUniform1i("useAmbientDiffusion", (int)Settings::instance->useAmbientDiffuse);
+    Game::instance->shader->SetUniform1f("brightness", Settings::instance->brightness);
 
 	Game::instance->shader->Unbind();
 

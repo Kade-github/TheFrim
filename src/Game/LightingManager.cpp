@@ -2,6 +2,7 @@
 #include "WorldManager.h"
 #include <glad/glad.h>
 #include <Game.h>
+#include "Data/Settings.h"
 #include "Scenes/Gameplay.h"
 
 LightingManager* LightingManager::instance = nullptr;
@@ -144,6 +145,8 @@ void LightingManager::SunColor()
 
         sun.color = glm::mix(sun.color, cave, std::lerp(0, lastMax, caveLerp));
     }
+
+    sun.color *= Settings::instance->brightness;
 
 	glClearColor(sun.color.x, sun.color.y, sun.color.z, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);

@@ -14,6 +14,8 @@ uniform float FogFar;
 uniform vec3 FogColor;
 uniform float lightLevel;
 uniform float redness;
+uniform float brightness;
+
 float FogMin = 0.0;
 
 float getFogFactor(float d)
@@ -66,7 +68,11 @@ void main()
 
     FragColor = mix(FragColor, vec4(1.0, 0.0, 0.0, FragColor.a), redness);
 
+    // Adjust brightness and contrast
+
+    FragColor = vec4(FragColor.rgb * brightness, FragColor.a);
+
     if (FogFar < 1000)
-	    FragColor = mix(FragColor, vec4(FogColor, FragColor.a), fogFactor);
+	    FragColor = mix(FragColor, vec4(FogColor.rgb * brightness, FragColor.a), fogFactor);
 
 }

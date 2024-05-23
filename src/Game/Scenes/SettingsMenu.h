@@ -17,6 +17,7 @@ public:
 	Bar* fullscreen;
 	Bar* ambientDiffuse;
 
+    DragBar* brightness;
 	DragBar* fov;
 	DragBar* renderDistance;
 	DragBar* fogDistance;

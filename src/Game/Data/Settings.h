@@ -18,6 +18,8 @@ public:
 
 	float masterVolume = 0.2f;
 
+    float brightness = 1.0f;
+
 	bool vsync = true;
 	bool fullscreen = false;
 
@@ -26,7 +28,7 @@ public:
 	void Load();
 	void Save();
 
-	MSGPACK_DEFINE_ARRAY(fov, renderDistance, fogDistance, vsync, fullscreen, masterVolume, useAmbientDiffuse);
+	MSGPACK_DEFINE_ARRAY(fov, renderDistance, fogDistance, vsync, fullscreen, masterVolume, useAmbientDiffuse, brightness);
 };
 
 #endif
