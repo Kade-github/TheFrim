@@ -114,12 +114,15 @@ namespace Data {
 		float damage = 0.5f;
 
 		int type = ITEM_NULL;
-		int count = 1;
+		uint8_t count = 1;
 
 		void SetTag() {
 			stackable = true;
 			equipable = false;
 			placeable = false;
+
+			if (count < 0)
+				count = 1;
 
 			armor = 0;
 			armorSlot = 0;

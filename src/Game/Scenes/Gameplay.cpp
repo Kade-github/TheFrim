@@ -367,7 +367,6 @@ void Gameplay::UpdateChunks()
 
 	wm->GetOrLoadRegion(player->position.x, player->position.z); // always load the current region
 
-
 	if (!hud->GamePaused)
 		ticks++;
 
