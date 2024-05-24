@@ -219,7 +219,7 @@ void Player::Draw()
 
 	bool wasShift = shift;
 
-	if (isOnGround)
+	if (isOnGround && !_inInventory)
 		shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 
 	if (shiftCancel && shift)
