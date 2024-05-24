@@ -17,6 +17,7 @@ siv::PerlinNoise ironPerlin;
 siv::PerlinNoise diamondPerlin;
 siv::PerlinNoise goldPerlin;
 
+std::mutex Data::World::worldMutex = {};
 
 int staticWaterLevel = 0;
 int staticRandomAdvancement = 0;
@@ -74,26 +75,37 @@ void Data::Region::addChunk(Chunk c)
 
 void Data::Region::freePlace(int x, int y, int z, int type)
 {
+	Data::World::worldMutex.lock();
 	Chunk* c = getChunkPtr(x, z);
 
 	if (c == nullptr)
+	{
+		Data::World::worldMutex.unlock();
 		return;
+	}
 
 	c->placeBlock(x - c->x, y, z - c->z, type);
+	Data::World::worldMutex.unlock();
 }
 
 bool Data::Region::doesBlockExist(int x, int y, int z)
 {
+	Data::World::worldMutex.lock();
 	Chunk* c = getChunkPtr(x, z);
 
 	if (c == nullptr)
+	{
+		Data::World::worldMutex.unlock();
 		return false;
+	}
+	Data::World::worldMutex.unlock();
 
 	return c->bChunk.blocks[x - c->x][z - c->z][y] > 0;
 }
 
 bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int range)
 {
+	Data::World::worldMutex.lock();
 	for (int i = 0; i < REGION_SIZE; i++)
 	{
 		for (int j = 0; j < REGION_SIZE; j++)
@@ -109,14 +121,17 @@ bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int rang
 						if (c.bChunk.blocks[_x][_z][_y] == type)
 						{
 							if (abs(c.x + _x - x) < range && abs(c.z + _z - z) < range && abs(_y - y) < range)
+							{
+								Data::World::worldMutex.unlock();
 								return true;
+							}
 						}
 					}
 				}
 			}
 		}
 	}
-
+	Data::World::worldMutex.unlock();
 	return false;
 }
 

@@ -244,7 +244,6 @@ void Gameplay::Draw()
 
 	celestialMoon->Draw();
 
-	gpMutex.lock();
 	// Draw chunks (regular)
 	for (Chunk* c : allChunks)
 	{
@@ -271,8 +270,6 @@ void Gameplay::Draw()
 		if (c->isRendered)
 			c->DrawTransparent();
 	}
-
-	gpMutex.unlock();
 
 	player->Draw();
 	Scene::Draw();
@@ -304,6 +301,7 @@ void Gameplay::QueueLoad(Chunk* c)
 
 	loadPool.detach_task([c]()
 		{
+
 			c->CreateSubChunks();
 
 			c->RenderSubChunks();
@@ -311,6 +309,7 @@ void Gameplay::QueueLoad(Chunk* c)
 			c->pleaseRender = true;
 			c->isLoaded = true;
 			c->isBeingLoaded = false;
+		
 		});
 }
 
@@ -401,9 +400,7 @@ void Gameplay::UpdateChunks()
 						c->myData = {};
 						delete c;
 					}
-					gpMutex.lock();
 					allChunks.erase(std::remove(allChunks.begin(), allChunks.end(), c), allChunks.end());
-					gpMutex.unlock();
 				}
 
 				r.chunks.clear();
@@ -422,9 +419,7 @@ void Gameplay::UpdateChunks()
 
 			if (!r.loaded)
 			{
-				gpMutex.lock();
 				allChunks.insert(allChunks.end(), r.chunks.begin(), r.chunks.end());
-				gpMutex.unlock();
 			}
 
 			r.loaded = true;
@@ -535,7 +530,6 @@ void Gameplay::UpdateChunks()
 
 
 		// sort chunks by distance
-		gpMutex.lock();
 		std::sort(allChunks.begin(), allChunks.end(), [camera](Chunk* a, Chunk* b)
 			{
 				glm::vec3 fakePosA = glm::vec3(a->position.x, camera->position.y, a->position.z);
@@ -546,7 +540,6 @@ void Gameplay::UpdateChunks()
 
 				return distanceA < distanceB;
 			});
-		gpMutex.unlock();
 	}
 
 	chunksLoaded = 0;
@@ -558,7 +551,7 @@ void Gameplay::UpdateChunks()
 
 	if (Settings::instance->fogDistance >= 2.0)
 		fog = 10000;
-	gpMutex.lock();
+
 	for (Chunk* c : allChunks)
 	{
 		glm::vec3 fakePosC = glm::vec3(c->position.x + 8, 0, c->position.z + 8);
@@ -621,8 +614,6 @@ void Gameplay::UpdateChunks()
 			chunksRendered++;
 		}
 	}
-	gpMutex.unlock();
-
 }
 
 void Gameplay::UnloadChunk(Chunk* c)

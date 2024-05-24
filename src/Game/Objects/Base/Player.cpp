@@ -570,84 +570,80 @@ void Player::Draw()
 
 		if (c != nullptr && c->isLoaded && !c->isBeingLoaded)
 		{
-			if (c->chunkMutex.try_lock())
-			{
-				subChunk& sb = c->GetSubChunk(ray.y);
+			std::lock_guard<std::mutex> lock(Data::World::worldMutex);
+			subChunk& sb = c->GetSubChunk(ray.y);
 
-				if (sb.y != -1)
+			if (sb.y != -1)
+			{
+
+				glm::vec3 _world = c->WorldToChunk(ray);
+
+				Block* last = selectedBlock;
+
+				selectedBlock = sb.getBlock(_world.x, _world.z);
+
+				if (selectedBlock != nullptr)
 				{
 
-					glm::vec3 _world = c->WorldToChunk(ray);
-
-					Block* last = selectedBlock;
-
-					selectedBlock = sb.getBlock(_world.x, _world.z);
-
-					if (selectedBlock != nullptr)
+					if (last != nullptr && last->breakProgress > selectedBlock->breakProgress)
 					{
+						last->breakProgress = 0;
+						lastBreakSfx = 0;
+					}
 
-						if (last != nullptr && last->breakProgress > selectedBlock->breakProgress)
+
+					// get the closest face
+
+					bool stop = false;
+
+					for (BlockFace f : selectedBlock->faces)
+					{
+						if (stop)
+							break;
+
+						float dist = 0;
+
+						if (f.vertices.size() == 0)
+							continue;
+
+						switch (f.type)
 						{
-							last->breakProgress = 0;
-							lastBreakSfx = 0;
-						}
-
-
-						// get the closest face
-
-						bool stop = false;
-
-						for (BlockFace f : selectedBlock->faces)
-						{
-							if (stop)
-								break;
-
-							float dist = 0;
-
-							if (f.vertices.size() == 0)
-								continue;
-
-							switch (f.type)
+						case 0:
+						case 1:
+							dist = abs(f.vertices[0].position.y - ray.y);
+							if (dist < 0.1f)
 							{
-							case 0:
-							case 1:
-								dist = abs(f.vertices[0].position.y - ray.y);
-								if (dist < 0.1f)
-								{
-									selectedFace = f;
-									stop = true;
-								}
-								break;
-							case 2:
-							case 3:
-								dist = abs(f.vertices[0].position.x - ray.x);
-								if (dist < 0.1f)
-								{
-									selectedFace = f;
-									stop = true;
-								}
-								break;
-							case 4:
-							case 5:
-								dist = abs(f.vertices[0].position.z - ray.z);
-								if (dist < 0.1f)
-								{
-									selectedFace = f;
-									stop = true;
-								}
-								break;
+								selectedFace = f;
+								stop = true;
 							}
+							break;
+						case 2:
+						case 3:
+							dist = abs(f.vertices[0].position.x - ray.x);
+							if (dist < 0.1f)
+							{
+								selectedFace = f;
+								stop = true;
+							}
+							break;
+						case 4:
+						case 5:
+							dist = abs(f.vertices[0].position.z - ray.z);
+							if (dist < 0.1f)
+							{
+								selectedFace = f;
+								stop = true;
+							}
+							break;
 						}
 					}
-					else
-						selectedFace = {};
 				}
 				else
-					selectedBlock = nullptr;
-
-
-				c->chunkMutex.unlock();
+					selectedFace = {};
 			}
+			else
+				selectedBlock = nullptr;
+
 		}
 		else
 			selectedBlock = nullptr;
@@ -1045,6 +1041,8 @@ void Player::MouseClick(int button, glm::vec2 mPos)
 						else
 							d.AddTag("facing", "0");
 					}
+
+					std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 
 					Block* b = c->CreateBlock(x, y, z, item.type, d);
 					c->PlaceBlock(x, y, z, b);

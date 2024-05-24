@@ -560,7 +560,7 @@ void Chunk::RenderSubChunks()
 
 	models.clear();
 
-	chunkMutex.lock();
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 	for (int i = 0; i < subChunks.size(); i++)
 	{
 		subChunk& sbc = subChunks[i];
@@ -569,7 +569,7 @@ void Chunk::RenderSubChunks()
 
 		RenderSubChunk(sbc);
 	}
-	chunkMutex.unlock();
+
 }
 
 glm::vec3 Chunk::WorldToChunk(glm::vec3 pos)
@@ -712,9 +712,9 @@ void Chunk::RenderSubChunkShadow(subChunk& sbc)
 
 void Chunk::RenderSubChunksShadow()
 {
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 	shadowVertices.clear();
 	shadowIndices.clear();
-	chunkMutex.lock();
 	for (int i = 0; i < subChunks.size(); i++)
 	{
 		subChunk& sbc = subChunks[i];
@@ -723,7 +723,6 @@ void Chunk::RenderSubChunksShadow()
 
 		RenderSubChunkShadow(sbc);
 	}
-	chunkMutex.unlock();
 }
 
 subChunk Chunk::CreateSubChunk(int y)
@@ -934,21 +933,20 @@ void Chunk::DestroySubChunk(subChunk& c)
 
 void Chunk::DestroySubChunks()
 {
-	chunkMutex.lock();
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 	for (int i = CHUNK_HEIGHT; i > -1; i--)
 		DestroySubChunk(i);
 
 	models.clear();
 
 	subChunks.clear();
-	chunkMutex.unlock();
 }
 
 void Chunk::CreateSubChunks()
 {
 	DestroySubChunks();
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 
-	chunkMutex.lock();
 	for (int y = CHUNK_HEIGHT - 1; y > -1; y--)
 	{
 		subChunk sbc = CreateSubChunk(y);
@@ -956,7 +954,6 @@ void Chunk::CreateSubChunks()
 			subChunks.push_back(sbc);
 	}
 
-	chunkMutex.unlock();
 }
 
 void Chunk::SetBuffer()
@@ -1277,34 +1274,36 @@ void Chunk::UpdateChunk(int tick)
 
 	if (subChunks.size() == 0)
 		return;
-	chunkMutex.lock();
-	for (int i = 0; i < subChunks.size(); i++)
+
 	{
-		subChunk& sbc = subChunks[i];
-
-		if (sbc.y == -1)
-			continue;
-
-		for (int x = 0; x < CHUNK_SIZE; x++)
+		std::lock_guard<std::mutex> lock(Data::World::worldMutex);
+		for (int i = 0; i < subChunks.size(); i++)
 		{
-			for (int z = 0; z < CHUNK_SIZE; z++)
+			subChunk& sbc = subChunks[i];
+
+			if (sbc.y == -1)
+				continue;
+
+			for (int x = 0; x < CHUNK_SIZE; x++)
 			{
-				Block* b = sbc.blocks[x][z];
-
-				if (b == nullptr)
+				for (int z = 0; z < CHUNK_SIZE; z++)
 				{
-					continue;
-				}
+					Block* b = sbc.blocks[x][z];
 
-				if (!b->updateable)
-				{
-					continue;
-				}
+					if (b == nullptr)
+					{
+						continue;
+					}
 
-				b->Update(tick);
+					if (!b->updateable)
+					{
+						continue;
+					}
+
+					b->Update(tick);
+				}
 			}
-		}
 
+		}
 	}
-	chunkMutex.unlock();
 }

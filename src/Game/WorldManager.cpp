@@ -154,6 +154,7 @@ void WorldManager::CreateChunks(Region& r)
 
 void WorldManager::CheckGeneratedRegions()
 {
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 	if (_generatedRegions.size() != 0)
 	{
 		for (Region r : _generatedRegions)
@@ -183,6 +184,7 @@ void WorldManager::GenerateRegion(int x, int z)
 	CreateChunks(reg);
 
 	{
+		std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 		_generatedRegions.push_back(reg);
 	}
 
@@ -295,6 +297,7 @@ void WorldManager::LoadRegion(int x, int z)
 	CreateChunks(reg);
 
 	{
+		std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 		_generatedRegions.push_back(reg);
 	}
 

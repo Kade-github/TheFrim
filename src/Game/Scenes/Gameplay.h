@@ -42,7 +42,7 @@ public:
 
 	BS::thread_pool loadPool;
 
-	std::vector<Chunk*> allChunks;
+	std::deque<Chunk*> allChunks;
 
 	Gameplay(WorldManager* _wm);
 

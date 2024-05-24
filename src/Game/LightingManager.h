@@ -20,7 +20,6 @@ class LightingManager
 {
 	static LightingManager* instance;
 	LightingManager() {}
-	std::mutex lightMutex;
 public:
     bool nextFrameRefresh = false;
 	std::vector<Light> lights;

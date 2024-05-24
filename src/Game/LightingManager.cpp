@@ -14,6 +14,7 @@ bool IsLightBlocked(glm::vec3 start, glm::vec3 end)
 	if (abs(start.y - end.y) < 2)
 		return false;
 
+
 	float progress = 0;
 	glm::vec3 direction = glm::normalize(end - start);
 
@@ -182,6 +183,8 @@ void LightingManager::RefreshAround(glm::vec3 pos)
 {
 	// around a 2x2 area
 
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
+
 	Chunk* current = WorldManager::instance->GetChunk(pos.x, pos.z);
 
 	if (current == nullptr)
@@ -207,6 +210,7 @@ void LightingManager::RefreshShadows()
 	auto gp = (Gameplay*)Game::instance->currentScene;
 	// Get all regions
 
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 
 	for (auto& r : WorldManager::instance->regions)
 	{
@@ -246,14 +250,12 @@ void LightingManager::RemoveLight(glm::vec3 pos)
 }
 int LightingManager::GetLightLevel(glm::vec3 pos)
 {
-	lightMutex.lock();
 	int level = sun.strength;
 
 	Chunk* c = WorldManager::instance->GetChunk(pos.x, pos.z);
 
 	if (c == nullptr)
 	{
-		lightMutex.unlock();
 		return 0;
 	}
 
@@ -344,7 +346,6 @@ int LightingManager::GetLightLevel(glm::vec3 pos)
 		}
 	}
 
-	lightMutex.unlock();
 
 	return level;
 }

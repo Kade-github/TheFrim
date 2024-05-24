@@ -16,6 +16,7 @@
 
 namespace Data
 {
+
 	struct DataTag
 	{
 		char name[32] = "tag";
@@ -274,6 +275,7 @@ namespace Data
 	class World
 	{
 	public:
+		static std::mutex worldMutex;
 		std::string _path = "";
 		std::vector<std::string> storedRegions;
 		std::string name;
