@@ -152,7 +152,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			if (hit)
 			{
-				progress -= 25 * Game::instance->deltaTime;
+				progress -= 0.5f;
 				_lastX = rp.x + (diff.x * progress);
 				break;
 			}
@@ -187,7 +187,7 @@ void Entity::CheckCollision(glm::vec3& motion, float down)
 
 			if (hit)
 			{
-				progress -= 25 * Game::instance->deltaTime;
+				progress -= 0.5f;
 				_lastZ = rp.z + (diff.z * progress);
 				break;
 			}

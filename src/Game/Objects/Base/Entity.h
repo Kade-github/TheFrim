@@ -32,7 +32,7 @@ public:
 	bool inWater = false;
 
 	float gravity = 22.0f;
-	float jumpStrength = 7.8f;
+	float jumpStrength = 6.8f;
 	float speed = 9.0f;
 
 	bool tiny = false;

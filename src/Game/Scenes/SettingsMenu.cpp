@@ -24,7 +24,7 @@ void SettingsMenu::Create()
 
 	ambientDiffuse = new Bar(glm::vec3(0, 0, 0), "Ambient Diffusion: " + std::string(Settings::instance->useAmbientDiffuse ? "on" : "off"));
 
-	ambientDiffuse->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 + 200, 0);
+	ambientDiffuse->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 + 400, 0);
 
 	ambientDiffuse->position -= glm::vec3(ambientDiffuse->width / 2, 0, 0);
 
@@ -32,7 +32,7 @@ void SettingsMenu::Create()
 
 	vsync = new Bar(glm::vec3(0, 0, 0), "VSync: " + std::string(Settings::instance->vsync ? "on" : "off"));
 
-	vsync->position = glm::vec3(c2d->_w / 2, (c2d->_h / 2) + 100, 0);
+	vsync->position = glm::vec3(c2d->_w / 2, (c2d->_h / 2) + 300, 0);
 
 	vsync->position -= glm::vec3(vsync->width / 2, 0, 0);
 
@@ -40,7 +40,7 @@ void SettingsMenu::Create()
 
 	fullscreen = new Bar(glm::vec3(0, 0, 0), "Fullscreen: " + std::string(Settings::instance->fullscreen ? "on" : "off"));
 
-	fullscreen->position = glm::vec3(c2d->_w / 2, c2d->_h / 2, 0);
+	fullscreen->position = glm::vec3(c2d->_w / 2, c2d->_h / 2 + 200, 0);
 
 	fullscreen->position -= glm::vec3(fullscreen->width / 2, 0, 0);
 
