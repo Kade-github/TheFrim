@@ -524,8 +524,6 @@ void Entity::Draw()
 
 		float sped = speed;
 
-		if (shift)
-			sped /= 4;
 
 		if (strafeVelocity > sped / Game::instance->deltaTime)
 			strafeVelocity = sped / Game::instance->deltaTime;
@@ -538,6 +536,12 @@ void Entity::Draw()
 
 		if (forwardVelocity < -sped / Game::instance->deltaTime)
 			forwardVelocity = -sped / Game::instance->deltaTime;
+
+		if (shift)
+		{
+			forwardVelocity *= 0.9;
+			strafeVelocity *= 0.9;
+		}
 
 
 		motion += front * (forwardVelocity * Game::instance->deltaTime);
