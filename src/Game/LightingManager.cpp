@@ -183,8 +183,6 @@ void LightingManager::RefreshAround(glm::vec3 pos)
 {
 	// around a 2x2 area
 
-	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
-
 	Chunk* current = WorldManager::instance->GetChunk(pos.x, pos.z);
 
 	if (current == nullptr)
