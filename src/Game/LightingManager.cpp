@@ -207,7 +207,6 @@ void LightingManager::RefreshShadows()
 	auto gp = (Gameplay*)Game::instance->currentScene;
 	// Get all regions
 
-	std::lock_guard<std::mutex> lock(WorldManager::instance->generateMutex);
 
 	for (auto& r : WorldManager::instance->regions)
 	{

@@ -17,7 +17,6 @@ siv::PerlinNoise ironPerlin;
 siv::PerlinNoise diamondPerlin;
 siv::PerlinNoise goldPerlin;
 
-std::mutex m;
 
 int staticWaterLevel = 0;
 int staticRandomAdvancement = 0;
@@ -27,7 +26,6 @@ std::minstd_rand0 r;
 
 Data::Chunk Data::Region::getChunk(int x, int z)
 {
-	std::lock_guard<std::mutex> lock(m);
 	int realX = (x - startX) / CHUNK_SIZE;
 	int realZ = (z - startZ) / CHUNK_SIZE;
 
@@ -45,7 +43,6 @@ Data::Chunk Data::Region::getChunk(int x, int z)
 
 Data::Chunk* Data::Region::getChunkPtr(int x, int z)
 {
-	std::lock_guard<std::mutex> lock(m);
 	int realX = (x - startX) / CHUNK_SIZE;
 	int realZ = (z - startZ) / CHUNK_SIZE;
 
@@ -63,7 +60,6 @@ Data::Chunk* Data::Region::getChunkPtr(int x, int z)
 
 void Data::Region::addChunk(Chunk c)
 {
-	std::lock_guard<std::mutex> lock(m);
 
 	int realX = (c.x - startX) / CHUNK_SIZE;
 	int realZ = (c.z - startZ) / CHUNK_SIZE;
@@ -98,8 +94,6 @@ bool Data::Region::doesBlockExist(int x, int y, int z)
 
 bool Data::Region::doesBlockExistInRange(int x, int y, int z, int type, int range)
 {
-	std::lock_guard<std::mutex> lock(m);
-
 	for (int i = 0; i < REGION_SIZE; i++)
 	{
 		for (int j = 0; j < REGION_SIZE; j++)

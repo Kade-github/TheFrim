@@ -48,7 +48,6 @@ class Chunk : public GameObject
     int transparentSize = 0;
     int size = 0;
 public:
-    std::mutex chunkMutex;
     bool inited = false;
     bool isBeingLoaded = false;
     bool isShadowLoaded = false;

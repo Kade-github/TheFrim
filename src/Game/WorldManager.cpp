@@ -154,7 +154,6 @@ void WorldManager::CreateChunks(Region& r)
 
 void WorldManager::CheckGeneratedRegions()
 {
-	const std::lock_guard<std::mutex> g(generateMutex);
 	if (_generatedRegions.size() != 0)
 	{
 		for (Region r : _generatedRegions)
@@ -184,7 +183,6 @@ void WorldManager::GenerateRegion(int x, int z)
 	CreateChunks(reg);
 
 	{
-		const std::lock_guard<std::mutex> g(generateMutex);
 		_generatedRegions.push_back(reg);
 	}
 
@@ -297,7 +295,6 @@ void WorldManager::LoadRegion(int x, int z)
 	CreateChunks(reg);
 
 	{
-		const std::lock_guard<std::mutex> g(generateMutex);
 		_generatedRegions.push_back(reg);
 	}
 
@@ -362,6 +359,7 @@ Chunk* WorldManager::GetChunk(float x, float z)
 {
 	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
 
+
 	for (auto&& c : gp->allChunks)
 	{
 		if (c->IsInChunk(x, z))
@@ -385,6 +383,7 @@ Data::Chunk WorldManager::GetChunkData(float x, float z)
 			return c->GetChunkData();
 		}
 	}
+
 
 	return {};
 }

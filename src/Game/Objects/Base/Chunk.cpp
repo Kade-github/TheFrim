@@ -1280,7 +1280,7 @@ void Chunk::UpdateChunk(int tick)
 	chunkMutex.lock();
 	for (int i = 0; i < subChunks.size(); i++)
 	{
-		subChunk sbc = subChunks[i];
+		subChunk& sbc = subChunks[i];
 
 		if (sbc.y == -1)
 			continue;
