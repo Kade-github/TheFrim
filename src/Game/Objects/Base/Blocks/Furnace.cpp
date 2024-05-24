@@ -131,7 +131,7 @@ bool Furnace::Update(int tick)
 			update = true;
 		}
 
-		if (fuelCount == 0)
+		if (fuelCount <= 0)
 		{
 			data.SetTag("fuel", "-1");
 			data.SetTag("fuel_count", "0");

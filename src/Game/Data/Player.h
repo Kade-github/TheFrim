@@ -530,7 +530,7 @@ namespace Data {
 
 			for (int y = PLAYER_INVENTORY_HEIGHT - 1; y >= 0; y--) {
 				for (int x = 0; x < PLAYER_INVENTORY_WIDTH; x++) {
-					InventoryItem i = inventory[x][y];
+					InventoryItem& i = inventory[x][y];
 
 					if (i.type == ITEM_NULL) {
 						i = item;

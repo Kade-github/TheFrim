@@ -641,13 +641,13 @@ void Gameplay::KeyPress(int key)
 
 	if (key == GLFW_KEY_Y)
 	{
-		Data::InventoryItem item(Data::ITEM_ROCKET, 1);
+		Data::InventoryItem item(Data::ITEM_COAL, 32);
 
 		player->playerData.GiveItem(item);
 
 		hud->UpdateHotbar();
 
-		hud->ShowHint("Gave you a rocket");
+		hud->ShowHint("Gave you some coal!");
 	}
 
 	if (key == GLFW_KEY_F10)
