@@ -369,7 +369,7 @@ public:
 		{
 			Channel* c = channels[i];
 
-			if (!c->isFreed && !c->IsPlaying() && c->lifeTime + c->length < time)
+			if (c->lifeTime + c->length < time)
 			{
 				RemoveChannel(c);
 				break;

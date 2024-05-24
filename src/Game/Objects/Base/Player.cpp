@@ -219,7 +219,8 @@ void Player::Draw()
 
 	bool wasShift = shift;
 
-	shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
+	if (isOnGround)
+		shift = glfwGetKey(Game::instance->GetWindow(), GLFW_KEY_LEFT_SHIFT) == GLFW_PRESS;
 
 	if (shiftCancel && shift)
 	{
