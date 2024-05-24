@@ -651,13 +651,6 @@ void Gameplay::KeyPress(int key)
 		hud->ShowHint("Gave you a rocket");
 	}
 
-	if (key == GLFW_KEY_F7)
-	{
-		player->freeCam = !player->freeCam;
-
-		hud->ShowHint("Free cam: " + std::to_string(player->freeCam));
-	}
-
 	if (key == GLFW_KEY_F10)
 	{
 		LightingManager::GetInstance()->sun.angle += 15;
