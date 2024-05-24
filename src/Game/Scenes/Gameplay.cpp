@@ -632,12 +632,12 @@ void Gameplay::KeyPress(int key)
 {
 	if (key == GLFW_KEY_F5)
 	{
-		Chunk* c = wm->GetChunk(player->position.x, player->position.z);
+		wm->_world.p = player->playerData;
 
-		if (c != nullptr)
-			UnloadChunk(c);
+		wm->SetPlayerPosition(player->position);
+		wm->SaveWorldNow();
 
-		hud->ShowHint("Reloading chunk");
+		hud->ShowHint("Saved world");
 	}
 
 	if (key == GLFW_KEY_Y)
