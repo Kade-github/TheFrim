@@ -96,7 +96,7 @@ bool Furnace::Update(int tick)
 		return true;
 	}
 
-	if (ticksNeeded <= -1 && ticks <= -1)
+	if (ticksNeeded <= -1 && ticks <= -1 && !light)
 	{
 		// decide how long it should take
 
@@ -133,7 +133,7 @@ bool Furnace::Update(int tick)
 
 		if (fuelCount <= 0)
 		{
-			data.SetTag("fuel", "-1");
+			data.SetTag("fuel", "0");
 			data.SetTag("fuel_count", "0");
 			update = true;
 		}
@@ -148,7 +148,7 @@ bool Furnace::Update(int tick)
 
 		if (cookingCount == 0)
 		{
-			data.SetTag("cooking", "-1");
+			data.SetTag("cooking", "0");
 			update = true;
 		}
 
@@ -170,7 +170,7 @@ bool Furnace::Update(int tick)
 
 		ticksNeeded = ticksForItem;
 		ticks = ticksForItem;
-
+		light = true;
 		data.SetTag("ticksLeft", std::to_string(ticksNeeded));
 		return true;
 	}

@@ -197,9 +197,6 @@ void Inventory::CreateFurnace()
 		int cTag = std::stoi(cookingTag);
 		int fTag = std::stoi(fuelTag);
 
-		if (cTag == -1 || fTag == -1)
-			return;
-
 		furnace_cooking = Data::InventoryItem(std::stoi(cookingTag), std::stoi(cookingCount));
 		furnace_fuel = Data::InventoryItem(std::stoi(fuelTag), std::stoi(furnace.GetTag("fuel_count").value));
 	}
