@@ -79,6 +79,8 @@ void MusicManager::GenerateTrackList()
 
 void MusicManager::GenerateAmbientTrackList()
 {
+	generator.seed(time(nullptr));
+
 	trackList.clear();
 
 	Gameplay* gp = (Gameplay*)Game::instance->currentScene;
