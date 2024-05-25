@@ -794,7 +794,6 @@ void Gameplay::Destroy()
 {
 	loadPool.wait();
 
-	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 
 	wm->_world.p = player->playerData;
 
@@ -806,33 +805,44 @@ void Gameplay::Destroy()
 		for (Chunk* c : r.chunks)
 		{
 			UnloadChunk(c);
-			c->myData = {};
-			delete c;
-		}
+			{
+				std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 
-		r.chunks.clear();
+				c->myData = {};
+				delete c;
+			}
+		}
+		{
+			std::lock_guard<std::mutex> lock(Data::World::worldMutex);
+
+			r.chunks.clear();
+		}
 	}
 
-	allChunks.clear();
+	{
+		std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 
-	wm->regions.clear();
+		allChunks.clear();
 
-	delete wm;
+		wm->regions.clear();
 
-	dim->RemoveItems();
+		delete wm;
 
-	delete dim;
+		dim->RemoveItems();
 
-	delete player;
-	delete hud;
+		delete dim;
 
-	c2d->Destroy();
+		delete player;
+		delete hud;
 
-	delete c2d;
+		c2d->Destroy();
 
-	delete celestialSun;
-	delete celestialMoon;
-	delete celestialStars;
+		delete c2d;
+
+		delete celestialSun;
+		delete celestialMoon;
+		delete celestialStars;
+	}
 }
 
 void Gameplay::Resize(float _w, float _h)
