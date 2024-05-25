@@ -792,6 +792,10 @@ void Gameplay::FocusChange(bool focus)
 
 void Gameplay::Destroy()
 {
+	loadPool.wait();
+
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
+
 	wm->_world.p = player->playerData;
 
 	wm->SetPlayerPosition(player->position);

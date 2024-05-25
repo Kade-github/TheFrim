@@ -247,7 +247,7 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 			if (item.type == Data::ItemType::ITEM_NULL)
 			{
-				id++;
+				id--;
 				continue;
 			}
 
@@ -255,7 +255,7 @@ void Inventory::UpdateInventory(bool dontRemoveOutput)
 
 			if (sl.id == -1)
 			{
-				id++;
+				id--;
 				continue;
 			}
 

@@ -209,20 +209,14 @@ void LightingManager::RefreshShadows()
 	// Get all regions
 
 	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
-
-	for (auto& r : WorldManager::instance->regions)
+	for (auto& c : gp->allChunks)
 	{
-		// Get all chunks in that region
-
-		for (auto& c : r.chunks)
+		if (c->isLoaded)
 		{
-			if (c->isLoaded)
-			{
-				c->isShadowLoaded = false;
-				gp->QueueShadow(c);
-			}
-			
+			c->isShadowLoaded = false;
+			gp->QueueShadow(c);
 		}
+
 	}
 }
 
