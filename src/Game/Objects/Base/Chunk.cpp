@@ -552,6 +552,7 @@ void Chunk::RenderSubChunk(subChunk& sbc)
 
 void Chunk::RenderSubChunks()
 {
+	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 	vertices.clear();
 	indices.clear();
 
@@ -560,7 +561,6 @@ void Chunk::RenderSubChunks()
 
 	models.clear();
 
-	std::lock_guard<std::mutex> lock(Data::World::worldMutex);
 	for (int i = 0; i < subChunks.size(); i++)
 	{
 		subChunk& sbc = subChunks[i];

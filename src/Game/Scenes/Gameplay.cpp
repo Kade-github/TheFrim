@@ -573,9 +573,9 @@ void Gameplay::UpdateChunks()
 
 			}
 
-			float angle = glm::degrees(glm::acos(glm::dot(glm::normalize(fakePos - fakePosC), glm::normalize(camera->cameraFront))));
+			float angle = glm::degrees(acos(glm::dot(glm::normalize(camera->cameraFront), glm::normalize(fakePosC - camera->position))));
 
-			if ((angle >= 25 || distance <= 32) && distance <= fog + 64)
+			if ((angle < 180 || distance <= 32) && distance <= fog + 64)
 			{
 				if (!c->isRendered || c->pleaseRender)
 				{
