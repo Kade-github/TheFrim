@@ -81,7 +81,7 @@ bool Torch::Update(int tick)
 	Data::InventoryItem i(Data::ITEM_TORCH, 1);
 	switch (_facing)
 	{
-	case 0:
+	default:
 		if (currentChunk->GetBlock(position.x, position.y - 1, position.z) == 0)
 		{
 			currentChunk->ModifyBlock(chunkPosition.x, chunkPosition.y, chunkPosition.z, 0);
