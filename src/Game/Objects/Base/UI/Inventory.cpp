@@ -794,6 +794,10 @@ void Inventory::MouseClick(int button, glm::vec2 pos)
 						{
 							if (player->playerData.GiveItem(output)) // inventory full, so we do nothing
 							{
+                                furnace.SetTag("output", "0");
+                                furnace.SetTag("outputCount", "-1");
+                                if (player->selectedBlock != nullptr)
+                                    player->selectedBlock->data = furnace;
 								output = {};
 								UpdateInventory();
 							}
