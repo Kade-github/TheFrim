@@ -573,7 +573,7 @@ void Gameplay::UpdateChunks()
 
 			}
 
-			float angle = glm::degrees(acos(glm::dot(glm::normalize(camera->cameraFront), glm::normalize(fakePosC - fakePos))));
+			float angle = glm::degrees(acos(glm::dot(glm::normalize(camera->cameraFront), glm::normalize(fakePosC - fakePos)))) * 0.75f;
 
 			if ((angle < fov || distance <= 16) && distance <= fog + 64)
 			{
